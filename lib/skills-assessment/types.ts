@@ -64,6 +64,11 @@ export interface ProcessingTime {
   ifIncomplete?: number;
   /** Optional context note (e.g. "Fast Track applies only to..."). */
   note?: LocalizedString;
+  /**
+   * How the report states the time when the source does not state it in weeks ("around 14 days", "within 6 months");
+   * shown instead of "<standard> wk".
+   */
+  label?: LocalizedString;
 }
 
 export interface CompetencyAssessment {

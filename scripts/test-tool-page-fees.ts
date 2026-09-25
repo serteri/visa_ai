@@ -21,6 +21,8 @@
  *   - Every tool-page occupation names the assessing authority the report resolves for it
  *     (resolveAssessingAuthority on "<title> <code>"); pre-existing mismatches outside the 5 fixed codes are listed
  *     with the Home Affairs authority, and the list can only shrink.
+ *   - Engineers Australia and AIMS: the cards carry the extracted fee tables' figures (engineers-australia-fees.json,
+ *     aims-fees.json) and cite their pages; 234611 / 311213 / 311216 map to the AIMS (medical scientists) card.
  *   - TRA: codes on TRA's OSAP list carry an override -- the OSAP fee for the four licensed occupations, an OSAP note
  *     (listed passports) for the rest -- citing the list page; codes not on it keep the standard AUD 795 card.
  * Pure data checks: runs in CI (no data/knowledge needed).
@@ -42,6 +44,8 @@ import { aacaAuthority } from "../lib/skills-assessment/authorities/aaca";
 import { otcAustraliaAuthority } from "../lib/skills-assessment/authorities/otc-australia";
 import { resolveAssessingAuthority } from "../lib/skills-assessment/resolve-authority";
 import { OSAP_FEES, TRA_OSAP_OCCUPATIONS } from "../lib/skills-assessment/tra-osap";
+import { eaFee } from "../lib/skills-assessment/engineers-australia-fees";
+import { AIMS_FEES, AIMS_PROCESSING, aimsFee } from "../lib/skills-assessment/aims-fees";
 import anzscoList from "../src/data/anzsco-list.json";
 import type { SkillsAssessmentAuthority } from "../lib/skills-assessment/types";
 
@@ -321,6 +325,33 @@ console.log("\n==================== TRA occupations: OSAP where TRA's guidelines
   if (failures === before) ok(`TRA tool codes: ${counts.osapOnly} OSAP-only (AUD ${OSAP_FEES.pathway2}–${OSAP_FEES.pathway1Max}), ${counts.passport} OSAP for listed passports (note), ${counts.msa} standard MSA`);
 }
 
+console.log("\n==================== Engineers Australia and AIMS (tool page) vs their extracted fee tables ====================");
+{
+  const before = failures;
+  const money = (v: number) => v.toLocaleString("en-AU", { minimumFractionDigits: Number.isInteger(v) ? 0 : 2 });
+  // Engineers Australia: pathway fees excl. GST on the tile, incl. GST in the note; no time to an outcome; manager
+  // (133211) = CDR + relevant skilled employment.
+  const ea = bodies["Engineers Australia"];
+  const [au, accord, cdr, cdrRse, fast] = ["ea_australian", "ea_accord", "ea_cdr", "ea_cdr_rse", "ea_fast_track"].map(eaFee);
+  if (!same(numbers(ea.fee ?? ""), [au.feeExclGstAud, accord.feeExclGstAud, cdr.feeExclGstAud])) fail(`EA fee "${ea.fee}" != extracted ${au.feeExclGstAud} / ${accord.feeExclGstAud} / ${cdr.feeExclGstAud}`);
+  for (const t of allText(ea.feeNote)) {
+    for (const v of [au, accord, cdr].flatMap((f) => [f.feeExclGstAud, f.feeInclGstAud]).concat(fast.feeExclGstAud)) if (!t.includes(money(v))) fail(`EA fee note must state AUD ${money(v)}: "${t}"`);
+  }
+  if (allText(ea.processingTime).some((t) => numbers(t).length)) fail("EA: the document states no time to an outcome -- the tool must not show one");
+  const m = ea.occupationOverrides?.["133211"];
+  if (!m?.fee?.includes(money(cdrRse.feeExclGstAud)) || !m.fee.includes(money(cdrRse.feeInclGstAud))) fail(`EA 133211 override "${m?.fee}" != CDR + skilled employment ${money(cdrRse.feeExclGstAud)}–${money(cdrRse.feeInclGstAud)}`);
+  if (!ea.source?.includes(String(cdr.page)) || !ea.source.includes(String(au.page))) fail(`EA source must cite pp.${au.page}–${cdr.page}: "${ea.source}"`);
+  // AIMS (medical scientists): outside / within Australia figures and the stated months; the three AIMS codes map to it.
+  const aims = bodies["AIMS-MS"];
+  const assess = aimsFee("aims_assessment_mls_mlt");
+  if (!aims || !same(numbers(aims.fee ?? ""), [assess.outsideAustraliaExclGstAud!, assess.withinAustraliaInclGstAud!])) fail(`AIMS fee "${aims?.fee}" != extracted ${assess.outsideAustraliaExclGstAud} / ${assess.withinAustraliaInclGstAud}`);
+  noteFiguresWithin("AIMS", aims?.feeNote, AIMS_FEES.flatMap((f) => [f.outsideAustraliaExclGstAud, f.withinAustraliaInclGstAud]).filter((x): x is number => x !== null));
+  if (!allText(aims?.processingTime).every((t) => numbers(t).includes(AIMS_PROCESSING.individual.months))) fail(`AIMS time must be the stated ${AIMS_PROCESSING.individual.months} months`);
+  if (!aims?.source?.includes(String(assess.page))) fail(`AIMS source must cite p.${assess.page}: "${aims?.source}"`);
+  for (const c of ["234611", "311213", "311216"]) if (mapping[c] !== "AIMS-MS") fail(`${c} should map to AIMS-MS on the tool page, maps to ${mapping[c]}`);
+  if (failures === before) ok(`EA: ${ea.fee} excl. GST (CDR incl. ${money(cdr.feeInclGstAud)}; 133211 ${m?.fee}); AIMS: ${aims?.fee}, within ${AIMS_PROCESSING.individual.months} months -- = extracted tables`);
+}
+
 console.log("\n==================== Every tool-page occupation: same assessing authority as the report ====================");
 {
   const before = failures;
@@ -328,7 +359,7 @@ console.log("\n==================== Every tool-page occupation: same assessing a
   // the tool page reads occupationMapping. Registry authorityId -> the tool page's body key for the same body.
   const TOOL_KEY: Record<string, string> = {
     ACS: "ACS", EA: "Engineers Australia", ANMAC: "ANMAC", VETASSESS: "VETASSESS", TRA: "TRA", CPA: "CPAA",
-    "CA-ANZ": "ICAA", IPA: "IPA", AHPRA: "AHPRA", AACA: "AACA", OTC: "OTC",
+    "CA-ANZ": "ICAA", IPA: "IPA", AHPRA: "AHPRA", AACA: "AACA", OTC: "OTC", AIMS: "AIMS-MS",
   };
   // Mismatches that predate this guard, on occupations outside the 5 it was written for. Each is recorded with the
   // authority the Home Affairs skilled occupation list (data/knowledge/Skilled Occupation List.md) names, so the
@@ -340,7 +371,6 @@ console.log("\n==================== Every tool-page occupation: same assessing a
     "224999": { tool: "VETASSESS", report: "ACS", homeAffairs: "VETASSESS; ACS (Data Scientist only)" },
     "234111": { tool: "AAA", report: "VETASSESS", homeAffairs: "VETASSESS" },
     "234112": { tool: "AAA", report: "VETASSESS", homeAffairs: "VETASSESS" },
-    "234611": { tool: "AHPRA", report: "AIMS", homeAffairs: "AIMS (Medical Scientists)" },
     "234711": { tool: "AVBC", report: "GENERAL", homeAffairs: "AVBC" },
     "241111": { tool: "TEQSA", report: "GENERAL", homeAffairs: "ACECQA" },
     "241213": { tool: "TEQSA", report: "GENERAL", homeAffairs: "AITSL" },

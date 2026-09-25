@@ -79,7 +79,6 @@ export const traAustraliaAuthority: SkillsAssessmentAuthority = {
     { anzscoCode: "323214", title: "Metal Machinist (First Class)" },
     { anzscoCode: "321111", title: "Automotive Electrician" },
     { anzscoCode: "321213", title: "Motorcycle Mechanic" },
-    { anzscoCode: "313213", title: "Telecommunications Network Planner" },
     { anzscoCode: "399913", title: "Optical Dispenser (Aus) \\ Dispensing Optician (NZ)" },
     { anzscoCode: "332211", title: "Painter" },
     { anzscoCode: "332299", title: "Painting Trades Workers nec" },
@@ -107,7 +106,6 @@ export const traAustraliaAuthority: SkillsAssessmentAuthority = {
     { anzscoCode: "333212", title: "Renderer (Solid Plaster)" },
     { anzscoCode: "331112", title: "Stonemason" },
     { anzscoCode: "342412", title: "Telecommunications Cable Jointer" },
-    { anzscoCode: "313214", title: "Telecommunications Technical Officer or Technologist" },
     { anzscoCode: "342414", title: "Telecommunications Technician" },
     { anzscoCode: "323215", title: "Textile, Clothing and Footwear Mechanic" },
     { anzscoCode: "323412", title: "Toolmaker" },
@@ -129,6 +127,11 @@ export const traAustraliaAuthority: SkillsAssessmentAuthority = {
     { anzscoCode: "323299", title: "Metal Fitters and Machinists nec" },
     { anzscoCode: "324111", title: "Panelbeater" },
     { anzscoCode: "322211", title: "Sheetmetal Trades Worker" },
+    // Home Affairs skilled occupation list names TRA for these three (previously under Engineers Australia); 313213 and
+    // 313214 moved to Engineers Australia, which the same list names for them.
+    { anzscoCode: "312312", title: "Electrical Engineering Technician" },
+    { anzscoCode: "312412", title: "Electronic Engineering Technician" },
+    { anzscoCode: "312512", title: "Mechanical Engineering Technician" },
   ],
   lastVerified: "2026-08-05",
   sourceDocument:

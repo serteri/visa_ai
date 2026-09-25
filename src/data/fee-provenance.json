@@ -339,513 +339,6 @@
       ]
     },
     {
-      "id": "authority_conflict_121211",
-      "description": "ANZSCO 121211 (Cotton Grower): the codebase names more than one assessing authority -- VETASSESS (registry) vs VETASSESS (dataset authority field) vs ACS (dataset critical_warning). The report resolves ONE authority from the registry (lib/skills-assessment/authorities/*.ts) and suppresses the dataset warning text that names another; which body is correct is not decided here.",
-      "value": null,
-      "currency": null,
-      "effective_from": null,
-      "last_verified": null,
-      "source": "needs human verification -- authority named inconsistently; not checkable against an official source from inside this environment",
-      "locations": [
-        "lib/skills-assessment/authorities/*.ts",
-        "src/data/occupations.json"
-      ]
-    },
-    {
-      "id": "authority_conflict_121213",
-      "description": "ANZSCO 121213 (Fruit or Nut Grower): the codebase names more than one assessing authority -- VETASSESS (registry) vs VETASSESS (dataset authority field) vs ACS (dataset critical_warning). The report resolves ONE authority from the registry (lib/skills-assessment/authorities/*.ts) and suppresses the dataset warning text that names another; which body is correct is not decided here.",
-      "value": null,
-      "currency": null,
-      "effective_from": null,
-      "last_verified": null,
-      "source": "needs human verification -- authority named inconsistently; not checkable against an official source from inside this environment",
-      "locations": [
-        "lib/skills-assessment/authorities/*.ts",
-        "src/data/occupations.json"
-      ]
-    },
-    {
-      "id": "authority_conflict_132211",
-      "description": "ANZSCO 132211 (Finance Manager): the codebase names more than one assessing authority -- CPA (registry) vs CA-ANZ (registry) vs IPA (registry) vs CA-ANZ (dataset authority field) vs CPA (dataset authority field) vs IPA (dataset authority field) vs VETASSESS (dataset critical_warning). The report resolves ONE authority from the registry (lib/skills-assessment/authorities/*.ts) and suppresses the dataset warning text that names another; which body is correct is not decided here.",
-      "value": null,
-      "currency": null,
-      "effective_from": null,
-      "last_verified": null,
-      "source": "needs human verification -- authority named inconsistently; not checkable against an official source from inside this environment",
-      "locations": [
-        "lib/skills-assessment/authorities/*.ts",
-        "src/data/occupations.json"
-      ]
-    },
-    {
-      "id": "authority_conflict_134211",
-      "description": "ANZSCO 134211 (Medical Administrator): the codebase names more than one assessing authority -- AHPRA (registry) vs AHPRA (dataset authority field) vs VETASSESS (dataset critical_warning). The report resolves ONE authority from the registry (lib/skills-assessment/authorities/*.ts) and suppresses the dataset warning text that names another; which body is correct is not decided here.",
-      "value": null,
-      "currency": null,
-      "effective_from": null,
-      "last_verified": null,
-      "source": "needs human verification -- authority named inconsistently; not checkable against an official source from inside this environment",
-      "locations": [
-        "lib/skills-assessment/authorities/*.ts",
-        "src/data/occupations.json"
-      ]
-    },
-    {
-      "id": "authority_conflict_221213",
-      "description": "ANZSCO 221213 (External Auditor): the codebase names more than one assessing authority -- CPA (registry) vs CA-ANZ (registry) vs IPA (registry) vs CA-ANZ (dataset authority field) vs CPA (dataset authority field) vs IPA (dataset authority field) vs VETASSESS (dataset critical_warning). The report resolves ONE authority from the registry (lib/skills-assessment/authorities/*.ts) and suppresses the dataset warning text that names another; which body is correct is not decided here.",
-      "value": null,
-      "currency": null,
-      "effective_from": null,
-      "last_verified": null,
-      "source": "needs human verification -- authority named inconsistently; not checkable against an official source from inside this environment",
-      "locations": [
-        "lib/skills-assessment/authorities/*.ts",
-        "src/data/occupations.json"
-      ]
-    },
-    {
-      "id": "authority_conflict_225211",
-      "description": "ANZSCO 225211 (ICT Account Manager): the codebase names more than one assessing authority -- ACS (registry) vs ACS (dataset authority field) vs VETASSESS (dataset critical_warning). The report resolves ONE authority from the registry (lib/skills-assessment/authorities/*.ts) and suppresses the dataset warning text that names another; which body is correct is not decided here.",
-      "value": null,
-      "currency": null,
-      "effective_from": null,
-      "last_verified": null,
-      "source": "needs human verification -- authority named inconsistently; not checkable against an official source from inside this environment",
-      "locations": [
-        "lib/skills-assessment/authorities/*.ts",
-        "src/data/occupations.json"
-      ]
-    },
-    {
-      "id": "authority_conflict_225212",
-      "description": "ANZSCO 225212 (ICT Business Development Manager): the codebase names more than one assessing authority -- ACS (registry) vs ACS (dataset authority field) vs VETASSESS (dataset critical_warning). The report resolves ONE authority from the registry (lib/skills-assessment/authorities/*.ts) and suppresses the dataset warning text that names another; which body is correct is not decided here.",
-      "value": null,
-      "currency": null,
-      "effective_from": null,
-      "last_verified": null,
-      "source": "needs human verification -- authority named inconsistently; not checkable against an official source from inside this environment",
-      "locations": [
-        "lib/skills-assessment/authorities/*.ts",
-        "src/data/occupations.json"
-      ]
-    },
-    {
-      "id": "authority_conflict_232111",
-      "description": "ANZSCO 232111 (Architect): the codebase names more than one assessing authority -- AACA (registry) vs VETASSESS (registry) vs VETASSESS (dataset authority field) vs AACA (dataset critical_warning). The report resolves ONE authority from the registry (lib/skills-assessment/authorities/*.ts) and suppresses the dataset warning text that names another; which body is correct is not decided here.",
-      "value": null,
-      "currency": null,
-      "effective_from": null,
-      "last_verified": null,
-      "source": "needs human verification -- authority named inconsistently; not checkable against an official source from inside this environment",
-      "locations": [
-        "lib/skills-assessment/authorities/*.ts",
-        "src/data/occupations.json"
-      ]
-    },
-    {
-      "id": "authority_conflict_233916",
-      "description": "ANZSCO 233916 (Naval Architect): the codebase names more than one assessing authority -- EA (registry) vs EA (dataset authority field) vs ACS (dataset critical_warning). The report resolves ONE authority from the registry (lib/skills-assessment/authorities/*.ts) and suppresses the dataset warning text that names another; which body is correct is not decided here.",
-      "value": null,
-      "currency": null,
-      "effective_from": null,
-      "last_verified": null,
-      "source": "needs human verification -- authority named inconsistently; not checkable against an official source from inside this environment",
-      "locations": [
-        "lib/skills-assessment/authorities/*.ts",
-        "src/data/occupations.json"
-      ]
-    },
-    {
-      "id": "authority_conflict_234611",
-      "description": "ANZSCO 234611 (Medical Laboratory Scientist): the codebase names more than one assessing authority -- AIMS (registry) vs AIMS (dataset authority field) vs VETASSESS (dataset critical_warning). The report resolves ONE authority from the registry (lib/skills-assessment/authorities/*.ts) and suppresses the dataset warning text that names another; which body is correct is not decided here.",
-      "value": null,
-      "currency": null,
-      "effective_from": null,
-      "last_verified": null,
-      "source": "needs human verification -- authority named inconsistently; not checkable against an official source from inside this environment",
-      "locations": [
-        "lib/skills-assessment/authorities/*.ts",
-        "src/data/occupations.json"
-      ]
-    },
-    {
-      "id": "authority_conflict_242211",
-      "description": "ANZSCO 242211 (Vocational Education Teacher): the codebase names more than one assessing authority -- TRA (registry) vs TRA (dataset authority field) vs ANMAC (dataset critical_warning) vs AHPRA (dataset critical_warning). The report resolves ONE authority from the registry (lib/skills-assessment/authorities/*.ts) and suppresses the dataset warning text that names another; which body is correct is not decided here.",
-      "value": null,
-      "currency": null,
-      "effective_from": null,
-      "last_verified": null,
-      "source": "needs human verification -- authority named inconsistently; not checkable against an official source from inside this environment",
-      "locations": [
-        "lib/skills-assessment/authorities/*.ts",
-        "src/data/occupations.json"
-      ]
-    },
-    {
-      "id": "authority_conflict_252311",
-      "description": "ANZSCO 252311 (Dental Specialist): the codebase names more than one assessing authority -- ADC (registry) vs ADC (dataset authority field) vs VETASSESS (dataset critical_warning). The report resolves ONE authority from the registry (lib/skills-assessment/authorities/*.ts) and suppresses the dataset warning text that names another; which body is correct is not decided here.",
-      "value": null,
-      "currency": null,
-      "effective_from": null,
-      "last_verified": null,
-      "source": "needs human verification -- authority named inconsistently; not checkable against an official source from inside this environment",
-      "locations": [
-        "lib/skills-assessment/authorities/*.ts",
-        "src/data/occupations.json"
-      ]
-    },
-    {
-      "id": "authority_conflict_252312",
-      "description": "ANZSCO 252312 (Dentist): the codebase names more than one assessing authority -- ADC (registry) vs ADC (dataset authority field) vs VETASSESS (dataset critical_warning). The report resolves ONE authority from the registry (lib/skills-assessment/authorities/*.ts) and suppresses the dataset warning text that names another; which body is correct is not decided here.",
-      "value": null,
-      "currency": null,
-      "effective_from": null,
-      "last_verified": null,
-      "source": "needs human verification -- authority named inconsistently; not checkable against an official source from inside this environment",
-      "locations": [
-        "lib/skills-assessment/authorities/*.ts",
-        "src/data/occupations.json"
-      ]
-    },
-    {
-      "id": "authority_conflict_253111",
-      "description": "ANZSCO 253111 (General Practitioner): the codebase names more than one assessing authority -- AHPRA (registry) vs AHPRA (dataset authority field) vs AMC (dataset critical_warning). The report resolves ONE authority from the registry (lib/skills-assessment/authorities/*.ts) and suppresses the dataset warning text that names another; which body is correct is not decided here.",
-      "value": null,
-      "currency": null,
-      "effective_from": null,
-      "last_verified": null,
-      "source": "needs human verification -- authority named inconsistently; not checkable against an official source from inside this environment",
-      "locations": [
-        "lib/skills-assessment/authorities/*.ts",
-        "src/data/occupations.json"
-      ]
-    },
-    {
-      "id": "authority_conflict_254211",
-      "description": "ANZSCO 254211 (Nurse Educator): the codebase names more than one assessing authority -- ANMAC (registry) vs ANMAC (dataset authority field) vs ANMAC (dataset critical_warning) vs AHPRA (dataset critical_warning). The report resolves ONE authority from the registry (lib/skills-assessment/authorities/*.ts) and suppresses the dataset warning text that names another; which body is correct is not decided here.",
-      "value": null,
-      "currency": null,
-      "effective_from": null,
-      "last_verified": null,
-      "source": "needs human verification -- authority named inconsistently; not checkable against an official source from inside this environment",
-      "locations": [
-        "lib/skills-assessment/authorities/*.ts",
-        "src/data/occupations.json"
-      ]
-    },
-    {
-      "id": "authority_conflict_254212",
-      "description": "ANZSCO 254212 (Nurse Researcher): the codebase names more than one assessing authority -- ANMAC (registry) vs ANMAC (dataset authority field) vs ANMAC (dataset critical_warning) vs AHPRA (dataset critical_warning). The report resolves ONE authority from the registry (lib/skills-assessment/authorities/*.ts) and suppresses the dataset warning text that names another; which body is correct is not decided here.",
-      "value": null,
-      "currency": null,
-      "effective_from": null,
-      "last_verified": null,
-      "source": "needs human verification -- authority named inconsistently; not checkable against an official source from inside this environment",
-      "locations": [
-        "lib/skills-assessment/authorities/*.ts",
-        "src/data/occupations.json"
-      ]
-    },
-    {
-      "id": "authority_conflict_254311",
-      "description": "ANZSCO 254311 (Nurse Manager): the codebase names more than one assessing authority -- ANMAC (registry) vs ANMAC (dataset authority field) vs ANMAC (dataset critical_warning) vs AHPRA (dataset critical_warning). The report resolves ONE authority from the registry (lib/skills-assessment/authorities/*.ts) and suppresses the dataset warning text that names another; which body is correct is not decided here.",
-      "value": null,
-      "currency": null,
-      "effective_from": null,
-      "last_verified": null,
-      "source": "needs human verification -- authority named inconsistently; not checkable against an official source from inside this environment",
-      "locations": [
-        "lib/skills-assessment/authorities/*.ts",
-        "src/data/occupations.json"
-      ]
-    },
-    {
-      "id": "authority_conflict_254411",
-      "description": "ANZSCO 254411 (Nurse Practitioner): the codebase names more than one assessing authority -- ANMAC (registry) vs ANMAC (dataset authority field) vs ANMAC (dataset critical_warning) vs AHPRA (dataset critical_warning). The report resolves ONE authority from the registry (lib/skills-assessment/authorities/*.ts) and suppresses the dataset warning text that names another; which body is correct is not decided here.",
-      "value": null,
-      "currency": null,
-      "effective_from": null,
-      "last_verified": null,
-      "source": "needs human verification -- authority named inconsistently; not checkable against an official source from inside this environment",
-      "locations": [
-        "lib/skills-assessment/authorities/*.ts",
-        "src/data/occupations.json"
-      ]
-    },
-    {
-      "id": "authority_conflict_254412",
-      "description": "ANZSCO 254412 (Registered Nurse (Aged Care)): the codebase names more than one assessing authority -- ANMAC (registry) vs ANMAC (dataset authority field) vs ANMAC (dataset critical_warning) vs AHPRA (dataset critical_warning). The report resolves ONE authority from the registry (lib/skills-assessment/authorities/*.ts) and suppresses the dataset warning text that names another; which body is correct is not decided here.",
-      "value": null,
-      "currency": null,
-      "effective_from": null,
-      "last_verified": null,
-      "source": "needs human verification -- authority named inconsistently; not checkable against an official source from inside this environment",
-      "locations": [
-        "lib/skills-assessment/authorities/*.ts",
-        "src/data/occupations.json"
-      ]
-    },
-    {
-      "id": "authority_conflict_254413",
-      "description": "ANZSCO 254413 (Registered Nurse (Child and Family Health)): the codebase names more than one assessing authority -- ANMAC (registry) vs ANMAC (dataset authority field) vs ANMAC (dataset critical_warning) vs AHPRA (dataset critical_warning). The report resolves ONE authority from the registry (lib/skills-assessment/authorities/*.ts) and suppresses the dataset warning text that names another; which body is correct is not decided here.",
-      "value": null,
-      "currency": null,
-      "effective_from": null,
-      "last_verified": null,
-      "source": "needs human verification -- authority named inconsistently; not checkable against an official source from inside this environment",
-      "locations": [
-        "lib/skills-assessment/authorities/*.ts",
-        "src/data/occupations.json"
-      ]
-    },
-    {
-      "id": "authority_conflict_254414",
-      "description": "ANZSCO 254414 (Registered Nurse (Community Health)): the codebase names more than one assessing authority -- ANMAC (registry) vs ANMAC (dataset authority field) vs ANMAC (dataset critical_warning) vs AHPRA (dataset critical_warning). The report resolves ONE authority from the registry (lib/skills-assessment/authorities/*.ts) and suppresses the dataset warning text that names another; which body is correct is not decided here.",
-      "value": null,
-      "currency": null,
-      "effective_from": null,
-      "last_verified": null,
-      "source": "needs human verification -- authority named inconsistently; not checkable against an official source from inside this environment",
-      "locations": [
-        "lib/skills-assessment/authorities/*.ts",
-        "src/data/occupations.json"
-      ]
-    },
-    {
-      "id": "authority_conflict_254415",
-      "description": "ANZSCO 254415 (Registered Nurse (Critical Care and Emergency)): the codebase names more than one assessing authority -- ANMAC (registry) vs ANMAC (dataset authority field) vs ANMAC (dataset critical_warning) vs AHPRA (dataset critical_warning). The report resolves ONE authority from the registry (lib/skills-assessment/authorities/*.ts) and suppresses the dataset warning text that names another; which body is correct is not decided here.",
-      "value": null,
-      "currency": null,
-      "effective_from": null,
-      "last_verified": null,
-      "source": "needs human verification -- authority named inconsistently; not checkable against an official source from inside this environment",
-      "locations": [
-        "lib/skills-assessment/authorities/*.ts",
-        "src/data/occupations.json"
-      ]
-    },
-    {
-      "id": "authority_conflict_254418",
-      "description": "ANZSCO 254418 (Registered Nurse (Medical)): the codebase names more than one assessing authority -- ANMAC (registry) vs ANMAC (dataset authority field) vs ANMAC (dataset critical_warning) vs AHPRA (dataset critical_warning). The report resolves ONE authority from the registry (lib/skills-assessment/authorities/*.ts) and suppresses the dataset warning text that names another; which body is correct is not decided here.",
-      "value": null,
-      "currency": null,
-      "effective_from": null,
-      "last_verified": null,
-      "source": "needs human verification -- authority named inconsistently; not checkable against an official source from inside this environment",
-      "locations": [
-        "lib/skills-assessment/authorities/*.ts",
-        "src/data/occupations.json"
-      ]
-    },
-    {
-      "id": "authority_conflict_254422",
-      "description": "ANZSCO 254422 (Registered Nurse (Mental Health)): the codebase names more than one assessing authority -- ANMAC (registry) vs ANMAC (dataset authority field) vs ANMAC (dataset critical_warning) vs AHPRA (dataset critical_warning). The report resolves ONE authority from the registry (lib/skills-assessment/authorities/*.ts) and suppresses the dataset warning text that names another; which body is correct is not decided here.",
-      "value": null,
-      "currency": null,
-      "effective_from": null,
-      "last_verified": null,
-      "source": "needs human verification -- authority named inconsistently; not checkable against an official source from inside this environment",
-      "locations": [
-        "lib/skills-assessment/authorities/*.ts",
-        "src/data/occupations.json"
-      ]
-    },
-    {
-      "id": "authority_conflict_254423",
-      "description": "ANZSCO 254423 (Registered Nurse (Perioperative)): the codebase names more than one assessing authority -- ANMAC (registry) vs ANMAC (dataset authority field) vs ANMAC (dataset critical_warning) vs AHPRA (dataset critical_warning). The report resolves ONE authority from the registry (lib/skills-assessment/authorities/*.ts) and suppresses the dataset warning text that names another; which body is correct is not decided here.",
-      "value": null,
-      "currency": null,
-      "effective_from": null,
-      "last_verified": null,
-      "source": "needs human verification -- authority named inconsistently; not checkable against an official source from inside this environment",
-      "locations": [
-        "lib/skills-assessment/authorities/*.ts",
-        "src/data/occupations.json"
-      ]
-    },
-    {
-      "id": "authority_conflict_254425",
-      "description": "ANZSCO 254425 (Registered Nurse (Paediatrics)): the codebase names more than one assessing authority -- ANMAC (registry) vs ANMAC (dataset authority field) vs ANMAC (dataset critical_warning) vs AHPRA (dataset critical_warning). The report resolves ONE authority from the registry (lib/skills-assessment/authorities/*.ts) and suppresses the dataset warning text that names another; which body is correct is not decided here.",
-      "value": null,
-      "currency": null,
-      "effective_from": null,
-      "last_verified": null,
-      "source": "needs human verification -- authority named inconsistently; not checkable against an official source from inside this environment",
-      "locations": [
-        "lib/skills-assessment/authorities/*.ts",
-        "src/data/occupations.json"
-      ]
-    },
-    {
-      "id": "authority_conflict_254499",
-      "description": "ANZSCO 254499 (Registered Nurses nec): the codebase names more than one assessing authority -- ANMAC (registry) vs ANMAC (dataset authority field) vs ANMAC (dataset critical_warning) vs AHPRA (dataset critical_warning). The report resolves ONE authority from the registry (lib/skills-assessment/authorities/*.ts) and suppresses the dataset warning text that names another; which body is correct is not decided here.",
-      "value": null,
-      "currency": null,
-      "effective_from": null,
-      "last_verified": null,
-      "source": "needs human verification -- authority named inconsistently; not checkable against an official source from inside this environment",
-      "locations": [
-        "lib/skills-assessment/authorities/*.ts",
-        "src/data/occupations.json"
-      ]
-    },
-    {
-      "id": "authority_conflict_311213",
-      "description": "ANZSCO 311213 (Medical Laboratory Technician): the codebase names more than one assessing authority -- VETASSESS (registry) vs AIMS (registry) vs VETASSESS (dataset authority field) vs VETASSESS (dataset critical_warning). The report resolves ONE authority from the registry (lib/skills-assessment/authorities/*.ts) and suppresses the dataset warning text that names another; which body is correct is not decided here.",
-      "value": null,
-      "currency": null,
-      "effective_from": null,
-      "last_verified": null,
-      "source": "needs human verification -- authority named inconsistently; not checkable against an official source from inside this environment",
-      "locations": [
-        "lib/skills-assessment/authorities/*.ts",
-        "src/data/occupations.json"
-      ]
-    },
-    {
-      "id": "authority_conflict_312211",
-      "description": "ANZSCO 312211 (Civil Engineering Draftsperson): the codebase names more than one assessing authority -- EA (registry) vs EA (dataset authority field) vs VETASSESS (dataset critical_warning). The report resolves ONE authority from the registry (lib/skills-assessment/authorities/*.ts) and suppresses the dataset warning text that names another; which body is correct is not decided here.",
-      "value": null,
-      "currency": null,
-      "effective_from": null,
-      "last_verified": null,
-      "source": "needs human verification -- authority named inconsistently; not checkable against an official source from inside this environment",
-      "locations": [
-        "lib/skills-assessment/authorities/*.ts",
-        "src/data/occupations.json"
-      ]
-    },
-    {
-      "id": "authority_conflict_312311",
-      "description": "ANZSCO 312311 (Electrical Engineering Draftsperson): the codebase names more than one assessing authority -- EA (registry) vs EA (dataset authority field) vs VETASSESS (dataset critical_warning). The report resolves ONE authority from the registry (lib/skills-assessment/authorities/*.ts) and suppresses the dataset warning text that names another; which body is correct is not decided here.",
-      "value": null,
-      "currency": null,
-      "effective_from": null,
-      "last_verified": null,
-      "source": "needs human verification -- authority named inconsistently; not checkable against an official source from inside this environment",
-      "locations": [
-        "lib/skills-assessment/authorities/*.ts",
-        "src/data/occupations.json"
-      ]
-    },
-    {
-      "id": "authority_conflict_312312",
-      "description": "ANZSCO 312312 (Electrical Engineering Technician): the codebase names more than one assessing authority -- EA (registry) vs EA (dataset authority field) vs VETASSESS (dataset critical_warning). The report resolves ONE authority from the registry (lib/skills-assessment/authorities/*.ts) and suppresses the dataset warning text that names another; which body is correct is not decided here.",
-      "value": null,
-      "currency": null,
-      "effective_from": null,
-      "last_verified": null,
-      "source": "needs human verification -- authority named inconsistently; not checkable against an official source from inside this environment",
-      "locations": [
-        "lib/skills-assessment/authorities/*.ts",
-        "src/data/occupations.json"
-      ]
-    },
-    {
-      "id": "authority_conflict_312411",
-      "description": "ANZSCO 312411 (Electronic Engineering Draftsperson): the codebase names more than one assessing authority -- EA (registry) vs EA (dataset authority field) vs VETASSESS (dataset critical_warning). The report resolves ONE authority from the registry (lib/skills-assessment/authorities/*.ts) and suppresses the dataset warning text that names another; which body is correct is not decided here.",
-      "value": null,
-      "currency": null,
-      "effective_from": null,
-      "last_verified": null,
-      "source": "needs human verification -- authority named inconsistently; not checkable against an official source from inside this environment",
-      "locations": [
-        "lib/skills-assessment/authorities/*.ts",
-        "src/data/occupations.json"
-      ]
-    },
-    {
-      "id": "authority_conflict_312412",
-      "description": "ANZSCO 312412 (Electronic Engineering Technician): the codebase names more than one assessing authority -- EA (registry) vs EA (dataset authority field) vs VETASSESS (dataset critical_warning). The report resolves ONE authority from the registry (lib/skills-assessment/authorities/*.ts) and suppresses the dataset warning text that names another; which body is correct is not decided here.",
-      "value": null,
-      "currency": null,
-      "effective_from": null,
-      "last_verified": null,
-      "source": "needs human verification -- authority named inconsistently; not checkable against an official source from inside this environment",
-      "locations": [
-        "lib/skills-assessment/authorities/*.ts",
-        "src/data/occupations.json"
-      ]
-    },
-    {
-      "id": "authority_conflict_312511",
-      "description": "ANZSCO 312511 (Mechanical Engineering Draftsperson): the codebase names more than one assessing authority -- EA (registry) vs EA (dataset authority field) vs VETASSESS (dataset critical_warning). The report resolves ONE authority from the registry (lib/skills-assessment/authorities/*.ts) and suppresses the dataset warning text that names another; which body is correct is not decided here.",
-      "value": null,
-      "currency": null,
-      "effective_from": null,
-      "last_verified": null,
-      "source": "needs human verification -- authority named inconsistently; not checkable against an official source from inside this environment",
-      "locations": [
-        "lib/skills-assessment/authorities/*.ts",
-        "src/data/occupations.json"
-      ]
-    },
-    {
-      "id": "authority_conflict_312512",
-      "description": "ANZSCO 312512 (Mechanical Engineering Technician): the codebase names more than one assessing authority -- EA (registry) vs EA (dataset authority field) vs VETASSESS (dataset critical_warning). The report resolves ONE authority from the registry (lib/skills-assessment/authorities/*.ts) and suppresses the dataset warning text that names another; which body is correct is not decided here.",
-      "value": null,
-      "currency": null,
-      "effective_from": null,
-      "last_verified": null,
-      "source": "needs human verification -- authority named inconsistently; not checkable against an official source from inside this environment",
-      "locations": [
-        "lib/skills-assessment/authorities/*.ts",
-        "src/data/occupations.json"
-      ]
-    },
-    {
-      "id": "authority_conflict_313213",
-      "description": "ANZSCO 313213 (Telecommunications Network Planner): the codebase names more than one assessing authority -- TRA (registry) vs TRA (dataset authority field) vs ACS (dataset critical_warning). The report resolves ONE authority from the registry (lib/skills-assessment/authorities/*.ts) and suppresses the dataset warning text that names another; which body is correct is not decided here.",
-      "value": null,
-      "currency": null,
-      "effective_from": null,
-      "last_verified": null,
-      "source": "needs human verification -- authority named inconsistently; not checkable against an official source from inside this environment",
-      "locations": [
-        "lib/skills-assessment/authorities/*.ts",
-        "src/data/occupations.json"
-      ]
-    },
-    {
-      "id": "authority_conflict_399111",
-      "description": "ANZSCO 399111 (Boat Builder and Repairer): the codebase names more than one assessing authority -- TRA (registry) vs TRA (dataset authority field) vs VETASSESS (dataset critical_warning). The report resolves ONE authority from the registry (lib/skills-assessment/authorities/*.ts) and suppresses the dataset warning text that names another; which body is correct is not decided here.",
-      "value": null,
-      "currency": null,
-      "effective_from": null,
-      "last_verified": null,
-      "source": "needs human verification -- authority named inconsistently; not checkable against an official source from inside this environment",
-      "locations": [
-        "lib/skills-assessment/authorities/*.ts",
-        "src/data/occupations.json"
-      ]
-    },
-    {
-      "id": "authority_conflict_399511",
-      "description": "ANZSCO 399511 (Broadcast Transmitter Operator): the codebase names more than one assessing authority -- VETASSESS (registry) vs VETASSESS (dataset authority field) vs TRA (dataset authority field). The report resolves ONE authority from the registry (lib/skills-assessment/authorities/*.ts) and suppresses the dataset warning text that names another; which body is correct is not decided here.",
-      "value": null,
-      "currency": null,
-      "effective_from": null,
-      "last_verified": null,
-      "source": "needs human verification -- authority named inconsistently; not checkable against an official source from inside this environment",
-      "locations": [
-        "lib/skills-assessment/authorities/*.ts",
-        "src/data/occupations.json"
-      ]
-    },
-    {
-      "id": "authority_conflict_411411",
-      "description": "ANZSCO 411411 (Enrolled Nurse): the codebase names more than one assessing authority -- ANMAC (registry) vs ANMAC (dataset authority field) vs VETASSESS (dataset critical_warning). The report resolves ONE authority from the registry (lib/skills-assessment/authorities/*.ts) and suppresses the dataset warning text that names another; which body is correct is not decided here.",
-      "value": null,
-      "currency": null,
-      "effective_from": null,
-      "last_verified": null,
-      "source": "needs human verification -- authority named inconsistently; not checkable against an official source from inside this environment",
-      "locations": [
-        "lib/skills-assessment/authorities/*.ts",
-        "src/data/occupations.json"
-      ]
-    },
-    {
       "id": "anmac_full_skills_assessment_fee",
       "description": "Anmac Full skills assessment fee (nurses currently or previously registered as a nurse in Canada, Hong Kong, Ireland, Singapore, Spain, the United Kingdom or the United States; midwives with a minimum Bachelor of Midwifery from Ireland, the UK or the US registered in that country)",
       "value": 595,
@@ -1326,6 +819,1020 @@
       "locations": [
         "src/data/skills-assessment/caanz-fees.json:fees[caanz_withdrawal].amountAud",
         "lib/skills-assessment/authorities/caanz.ts:feesSchedule"
+      ]
+    },
+    {
+      "id": "ea_accord_fee",
+      "description": "Engineers Australia 2026–2027: Washington/Sydney/Dublin Accord qualification assessment -- AUD 505 excl. GST (value) / AUD 555.5 incl. GST",
+      "value": 505,
+      "currency": "AUD",
+      "effective_from": null,
+      "last_verified": "2026-09-26",
+      "source": "data/knowledge/Skill Assessments/The Institution of Engineers Australia/The Institution of Engineers Australia (1).pdf p.8 -- \"Washington/Sydney/Dublin Accord qualification assessment $505 $555.50\"",
+      "locations": [
+        "src/data/skills-assessment/engineers-australia-fees.json:fees[ea_accord]",
+        "lib/skills-assessment/authorities/engineers-australia.ts (pathway fees via eaRegistryFees)"
+      ]
+    },
+    {
+      "id": "ea_accord_rse_fee",
+      "description": "Engineers Australia 2026–2027: Washington/Sydney/Dublin Accord qualification assessment plus relevant skilled employment assessment -- AUD 940 excl. GST (value) / AUD 1034 incl. GST",
+      "value": 940,
+      "currency": "AUD",
+      "effective_from": null,
+      "last_verified": "2026-09-26",
+      "source": "data/knowledge/Skill Assessments/The Institution of Engineers Australia/The Institution of Engineers Australia (1).pdf p.8 -- \"Washington/Sydney/Dublin Accord qualification assessment plus relevant skilled employment assessment $940 $1034\"",
+      "locations": [
+        "src/data/skills-assessment/engineers-australia-fees.json:fees[ea_accord_rse]",
+        "lib/skills-assessment/authorities/engineers-australia.ts (pathway fees via eaRegistryFees)"
+      ]
+    },
+    {
+      "id": "ea_accord_phd_fee",
+      "description": "Engineers Australia 2026–2027: Washington/Sydney/Dublin Accord qualification assessment plus overseas PhD assessment -- AUD 780 excl. GST (value) / AUD 858 incl. GST",
+      "value": 780,
+      "currency": "AUD",
+      "effective_from": null,
+      "last_verified": "2026-09-26",
+      "source": "data/knowledge/Skill Assessments/The Institution of Engineers Australia/The Institution of Engineers Australia (1).pdf p.8 -- \"Washington/Sydney/Dublin Accord qualification assessment plus overseas PhD assessment $780 $858\"",
+      "locations": [
+        "src/data/skills-assessment/engineers-australia-fees.json:fees[ea_accord_phd]",
+        "lib/skills-assessment/authorities/engineers-australia.ts (pathway fees via eaRegistryFees)"
+      ]
+    },
+    {
+      "id": "ea_accord_rse_phd_fee",
+      "description": "Engineers Australia 2026–2027: Washington/Sydney/Dublin Accord qualification assessment plus relevant skilled employment assessment plus overseas engineering PhD assessment -- AUD 1215 excl. GST (value) / AUD 1336.5 incl. GST",
+      "value": 1215,
+      "currency": "AUD",
+      "effective_from": null,
+      "last_verified": "2026-09-26",
+      "source": "data/knowledge/Skill Assessments/The Institution of Engineers Australia/The Institution of Engineers Australia (1).pdf p.8 -- \"Washington/Sydney/Dublin Accord qualification assessment plus relevant skilled employment assessment plus overseas engineering PhD assessment $1215 $1336.50\"",
+      "locations": [
+        "src/data/skills-assessment/engineers-australia-fees.json:fees[ea_accord_rse_phd]",
+        "lib/skills-assessment/authorities/engineers-australia.ts (pathway fees via eaRegistryFees)"
+      ]
+    },
+    {
+      "id": "ea_australian_fee",
+      "description": "Engineers Australia 2026–2027: Australian engineering qualification assessment -- AUD 315 excl. GST (value) / AUD 346.5 incl. GST",
+      "value": 315,
+      "currency": "AUD",
+      "effective_from": null,
+      "last_verified": "2026-09-26",
+      "source": "data/knowledge/Skill Assessments/The Institution of Engineers Australia/The Institution of Engineers Australia (1).pdf p.8 -- \"Australian engineering qualification assessment $315 $346.50\"",
+      "locations": [
+        "src/data/skills-assessment/engineers-australia-fees.json:fees[ea_australian]",
+        "lib/skills-assessment/authorities/engineers-australia.ts (pathway fees via eaRegistryFees)"
+      ]
+    },
+    {
+      "id": "ea_australian_rse_fee",
+      "description": "Engineers Australia 2026–2027: Australian engineering qualification assessment plus relevant skilled employment assessment -- AUD 750 excl. GST (value) / AUD 825 incl. GST",
+      "value": 750,
+      "currency": "AUD",
+      "effective_from": null,
+      "last_verified": "2026-09-26",
+      "source": "data/knowledge/Skill Assessments/The Institution of Engineers Australia/The Institution of Engineers Australia (1).pdf p.8 -- \"Australian engineering qualification assessment plus relevant skilled employment assessment $750 $825\"",
+      "locations": [
+        "src/data/skills-assessment/engineers-australia-fees.json:fees[ea_australian_rse]",
+        "lib/skills-assessment/authorities/engineers-australia.ts (pathway fees via eaRegistryFees)"
+      ]
+    },
+    {
+      "id": "ea_australian_phd_fee",
+      "description": "Engineers Australia 2026–2027: Australian engineering qualification assessment plus overseas engineering PhD assessment -- AUD 590 excl. GST (value) / AUD 649 incl. GST",
+      "value": 590,
+      "currency": "AUD",
+      "effective_from": null,
+      "last_verified": "2026-09-26",
+      "source": "data/knowledge/Skill Assessments/The Institution of Engineers Australia/The Institution of Engineers Australia (1).pdf p.8 -- \"Australian engineering qualification assessment plus overseas engineering PhD assessment $590 $649\"",
+      "locations": [
+        "src/data/skills-assessment/engineers-australia-fees.json:fees[ea_australian_phd]",
+        "lib/skills-assessment/authorities/engineers-australia.ts (pathway fees via eaRegistryFees)"
+      ]
+    },
+    {
+      "id": "ea_australian_rse_phd_fee",
+      "description": "Engineers Australia 2026–2027: Australian engineering qualification assessment plus relevant skilled employment assessment plus overseas engineering PhD assessment -- AUD 1025 excl. GST (value) / AUD 1127.5 incl. GST",
+      "value": 1025,
+      "currency": "AUD",
+      "effective_from": null,
+      "last_verified": "2026-09-26",
+      "source": "data/knowledge/Skill Assessments/The Institution of Engineers Australia/The Institution of Engineers Australia (1).pdf p.8 -- \"Australian engineering qualification assessment plus relevant skilled employment assessment plus overseas engineering PhD assessment $1025 $1127.50\"",
+      "locations": [
+        "src/data/skills-assessment/engineers-australia-fees.json:fees[ea_australian_rse_phd]",
+        "lib/skills-assessment/authorities/engineers-australia.ts (pathway fees via eaRegistryFees)"
+      ]
+    },
+    {
+      "id": "ea_cdr_fee",
+      "description": "Engineers Australia 2026–2027: Standard competency demonstration report -- AUD 940 excl. GST (value) / AUD 1034 incl. GST",
+      "value": 940,
+      "currency": "AUD",
+      "effective_from": null,
+      "last_verified": "2026-09-26",
+      "source": "data/knowledge/Skill Assessments/The Institution of Engineers Australia/The Institution of Engineers Australia (1).pdf p.9 -- \"Standard competency demonstration report $940 $1034\"",
+      "locations": [
+        "src/data/skills-assessment/engineers-australia-fees.json:fees[ea_cdr]",
+        "lib/skills-assessment/authorities/engineers-australia.ts (pathway fees via eaRegistryFees)"
+      ]
+    },
+    {
+      "id": "ea_cdr_rse_fee",
+      "description": "Engineers Australia 2026–2027: Competency demonstration report plus relevant skilled employment assessment -- AUD 1375 excl. GST (value) / AUD 1512.5 incl. GST",
+      "value": 1375,
+      "currency": "AUD",
+      "effective_from": null,
+      "last_verified": "2026-09-26",
+      "source": "data/knowledge/Skill Assessments/The Institution of Engineers Australia/The Institution of Engineers Australia (1).pdf p.9 -- \"Competency demonstration report plus relevant skilled employment assessment $1375 $1512.50\"",
+      "locations": [
+        "src/data/skills-assessment/engineers-australia-fees.json:fees[ea_cdr_rse]",
+        "lib/skills-assessment/authorities/engineers-australia.ts (pathway fees via eaRegistryFees)"
+      ]
+    },
+    {
+      "id": "ea_cdr_phd_fee",
+      "description": "Engineers Australia 2026–2027: Competency demonstration report plus overseas engineering PhD assessment -- AUD 1215 excl. GST (value) / AUD 1336.5 incl. GST",
+      "value": 1215,
+      "currency": "AUD",
+      "effective_from": null,
+      "last_verified": "2026-09-26",
+      "source": "data/knowledge/Skill Assessments/The Institution of Engineers Australia/The Institution of Engineers Australia (1).pdf p.9 -- \"Competency demonstration report plus overseas engineering PhD assessment $1215 $1336.50\"",
+      "locations": [
+        "src/data/skills-assessment/engineers-australia-fees.json:fees[ea_cdr_phd]",
+        "lib/skills-assessment/authorities/engineers-australia.ts (pathway fees via eaRegistryFees)"
+      ]
+    },
+    {
+      "id": "ea_cdr_rse_phd_fee",
+      "description": "Engineers Australia 2026–2027: Competency demonstration report plus relevant skilled employment assessment plus overseas engineering PhD assessment -- AUD 1650 excl. GST (value) / AUD 1815 incl. GST",
+      "value": 1650,
+      "currency": "AUD",
+      "effective_from": null,
+      "last_verified": "2026-09-26",
+      "source": "data/knowledge/Skill Assessments/The Institution of Engineers Australia/The Institution of Engineers Australia (1).pdf p.9 -- \"Competency demonstration report plus relevant skilled employment assessment plus overseas engineering PhD assessment $1650 $1815\"",
+      "locations": [
+        "src/data/skills-assessment/engineers-australia-fees.json:fees[ea_cdr_rse_phd]",
+        "lib/skills-assessment/authorities/engineers-australia.ts (pathway fees via eaRegistryFees)"
+      ]
+    },
+    {
+      "id": "ea_fast_track_fee",
+      "description": "Engineers Australia 2026–2027: Fast-track assessment fee (additional to MSA assessment fee) -- AUD 360 excl. GST (value) / AUD 396 incl. GST",
+      "value": 360,
+      "currency": "AUD",
+      "effective_from": null,
+      "last_verified": "2026-09-26",
+      "source": "data/knowledge/Skill Assessments/The Institution of Engineers Australia/The Institution of Engineers Australia (1).pdf p.10 -- \"Fast-track assessment fee (additional to MSA assessment fee) $360 $396\"",
+      "locations": [
+        "src/data/skills-assessment/engineers-australia-fees.json:fees[ea_fast_track]",
+        "lib/skills-assessment/authorities/engineers-australia.ts (pathway fees via eaRegistryFees)"
+      ]
+    },
+    {
+      "id": "ea_separate_rse_fee",
+      "description": "Engineers Australia 2026–2027: Separate relevant skilled employment assessment -- AUD 485 excl. GST (value) / AUD 533.5 incl. GST",
+      "value": 485,
+      "currency": "AUD",
+      "effective_from": null,
+      "last_verified": "2026-09-26",
+      "source": "data/knowledge/Skill Assessments/The Institution of Engineers Australia/The Institution of Engineers Australia (1).pdf p.10 -- \"Separate relevant skilled employment assessment $485 $533.50\"",
+      "locations": [
+        "src/data/skills-assessment/engineers-australia-fees.json:fees[ea_separate_rse]",
+        "lib/skills-assessment/authorities/engineers-australia.ts (pathway fees via eaRegistryFees)"
+      ]
+    },
+    {
+      "id": "ea_separate_phd_fee",
+      "description": "Engineers Australia 2026–2027: Separate overseas engineering PhD assessment -- AUD 325 excl. GST (value) / AUD 357.5 incl. GST",
+      "value": 325,
+      "currency": "AUD",
+      "effective_from": null,
+      "last_verified": "2026-09-26",
+      "source": "data/knowledge/Skill Assessments/The Institution of Engineers Australia/The Institution of Engineers Australia (1).pdf p.10 -- \"Separate overseas engineering PhD assessment $325 $357.50\"",
+      "locations": [
+        "src/data/skills-assessment/engineers-australia-fees.json:fees[ea_separate_phd]",
+        "lib/skills-assessment/authorities/engineers-australia.ts (pathway fees via eaRegistryFees)"
+      ]
+    },
+    {
+      "id": "ea_separate_rse_phd_fee",
+      "description": "Engineers Australia 2026–2027: Separate relevant skilled employment assessment plus overseas engineering PhD assessment -- AUD 760 excl. GST (value) / AUD 836 incl. GST",
+      "value": 760,
+      "currency": "AUD",
+      "effective_from": null,
+      "last_verified": "2026-09-26",
+      "source": "data/knowledge/Skill Assessments/The Institution of Engineers Australia/The Institution of Engineers Australia (1).pdf p.10 -- \"Separate relevant skilled employment assessment plus overseas engineering PhD assessment $760 $836\"",
+      "locations": [
+        "src/data/skills-assessment/engineers-australia-fees.json:fees[ea_separate_rse_phd]",
+        "lib/skills-assessment/authorities/engineers-australia.ts (pathway fees via eaRegistryFees)"
+      ]
+    },
+    {
+      "id": "ea_review_fee",
+      "description": "Engineers Australia 2026–2027: Review fee -- AUD 335 excl. GST (value) / AUD 368.5 incl. GST",
+      "value": 335,
+      "currency": "AUD",
+      "effective_from": null,
+      "last_verified": "2026-09-26",
+      "source": "data/knowledge/Skill Assessments/The Institution of Engineers Australia/The Institution of Engineers Australia (1).pdf p.10 -- \"Review fee $335 $368.50\"",
+      "locations": [
+        "src/data/skills-assessment/engineers-australia-fees.json:fees[ea_review]",
+        "lib/skills-assessment/authorities/engineers-australia.ts (pathway fees via eaRegistryFees)"
+      ]
+    },
+    {
+      "id": "ea_appeal_fee",
+      "description": "Engineers Australia 2026–2027: Appeal fee -- AUD 640 excl. GST (value) / AUD 704 incl. GST",
+      "value": 640,
+      "currency": "AUD",
+      "effective_from": null,
+      "last_verified": "2026-09-26",
+      "source": "data/knowledge/Skill Assessments/The Institution of Engineers Australia/The Institution of Engineers Australia (1).pdf p.10 -- \"Appeal fee $640 $704\"",
+      "locations": [
+        "src/data/skills-assessment/engineers-australia-fees.json:fees[ea_appeal]",
+        "lib/skills-assessment/authorities/engineers-australia.ts (pathway fees via eaRegistryFees)"
+      ]
+    },
+    {
+      "id": "ea_updated_outcome_letter_fee",
+      "description": "Engineers Australia 2026–2027: Updated outcome letter -- AUD 165 excl. GST (value) / AUD 181.5 incl. GST",
+      "value": 165,
+      "currency": "AUD",
+      "effective_from": null,
+      "last_verified": "2026-09-26",
+      "source": "data/knowledge/Skill Assessments/The Institution of Engineers Australia/The Institution of Engineers Australia (1).pdf p.10 -- \"Updated outcome letter $165 $181.50\"",
+      "locations": [
+        "src/data/skills-assessment/engineers-australia-fees.json:fees[ea_updated_outcome_letter]",
+        "lib/skills-assessment/authorities/engineers-australia.ts (pathway fees via eaRegistryFees)"
+      ]
+    },
+    {
+      "id": "ea_administration_fee",
+      "description": "Engineers Australia 2026–2027: Standard administration fee -- AUD 130 excl. GST (value) / AUD 143 incl. GST",
+      "value": 130,
+      "currency": "AUD",
+      "effective_from": null,
+      "last_verified": "2026-09-26",
+      "source": "data/knowledge/Skill Assessments/The Institution of Engineers Australia/The Institution of Engineers Australia (1).pdf p.10 -- \"Standard administration fee $130 $143\"",
+      "locations": [
+        "src/data/skills-assessment/engineers-australia-fees.json:fees[ea_administration]",
+        "lib/skills-assessment/authorities/engineers-australia.ts (pathway fees via eaRegistryFees)"
+      ]
+    },
+    {
+      "id": "aims_assessment_mls_mlt_fee",
+      "description": "AIMS: Assessment - Medical Laboratory Scientist & Technician -- AUD 900 applying from outside Australia (value) / AUD 990 within Australia incl. GST",
+      "value": 900,
+      "currency": "AUD",
+      "effective_from": null,
+      "last_verified": "2026-09-26",
+      "source": "data/knowledge/Skill Assessments/Australian Institute of Medical Scientists/Australian Institute of Medical Scientists.pdf p.18 -- \"Assessment - Medical Laboratory Scientist & Technician 900.00 AUD 990.00 AUD\"",
+      "locations": [
+        "src/data/skills-assessment/aims-fees.json:fees[aims_assessment_mls_mlt]",
+        "lib/skills-assessment/authorities/aims.ts (pathway fees via aimsRegistryFees)"
+      ]
+    },
+    {
+      "id": "aims_assessment_ivf_fee",
+      "description": "AIMS: Assessment - Medical Laboratory Scientist - IVF Embryologist -- AUD 900 applying from outside Australia (value) / AUD 990 within Australia incl. GST",
+      "value": 900,
+      "currency": "AUD",
+      "effective_from": null,
+      "last_verified": "2026-09-26",
+      "source": "data/knowledge/Skill Assessments/Australian Institute of Medical Scientists/Australian Institute of Medical Scientists.pdf p.18 -- \"Assessment - Medical Laboratory Scientist - IVF Embryologist 900.00 AUD 990.00 AUD\"",
+      "locations": [
+        "src/data/skills-assessment/aims-fees.json:fees[aims_assessment_ivf]",
+        "lib/skills-assessment/authorities/aims.ts (pathway fees via aimsRegistryFees)"
+      ]
+    },
+    {
+      "id": "aims_assessment_pathology_collector_fee",
+      "description": "AIMS: Assessment - Phlebotomy & Pathology Collector -- AUD 900 applying from outside Australia (value) / AUD 990 within Australia incl. GST",
+      "value": 900,
+      "currency": "AUD",
+      "effective_from": null,
+      "last_verified": "2026-09-26",
+      "source": "data/knowledge/Skill Assessments/Australian Institute of Medical Scientists/Australian Institute of Medical Scientists.pdf p.18 -- \"Assessment - Phlebotomy & Pathology Collector 900.00 AUD 990.00 AUD\"",
+      "locations": [
+        "src/data/skills-assessment/aims-fees.json:fees[aims_assessment_pathology_collector]",
+        "lib/skills-assessment/authorities/aims.ts (pathway fees via aimsRegistryFees)"
+      ]
+    },
+    {
+      "id": "aims_assessment_employer_requested_fee",
+      "description": "AIMS: Assessment - Employer requested (not for individuals) -- AUD 990 (single figure; column not stated)",
+      "value": 990,
+      "currency": "AUD",
+      "effective_from": null,
+      "last_verified": "2026-09-26",
+      "source": "data/knowledge/Skill Assessments/Australian Institute of Medical Scientists/Australian Institute of Medical Scientists.pdf p.18 -- \"Assessment - Employer requested (not for individuals) * 990.00 AUD\"",
+      "locations": [
+        "src/data/skills-assessment/aims-fees.json:fees[aims_assessment_employer_requested]",
+        "lib/skills-assessment/authorities/aims.ts (pathway fees via aimsRegistryFees)"
+      ]
+    },
+    {
+      "id": "aims_amendment_fee",
+      "description": "AIMS: Amendment to Professional Skills & Qualifications Assessment -- AUD 200 applying from outside Australia (value) / AUD 220 within Australia incl. GST",
+      "value": 200,
+      "currency": "AUD",
+      "effective_from": null,
+      "last_verified": "2026-09-26",
+      "source": "data/knowledge/Skill Assessments/Australian Institute of Medical Scientists/Australian Institute of Medical Scientists.pdf p.18 -- \"Amendment to Professional Skills & Qualifications Assessment 200.00 AUD 220.00 AUD\"",
+      "locations": [
+        "src/data/skills-assessment/aims-fees.json:fees[aims_amendment]",
+        "lib/skills-assessment/authorities/aims.ts (pathway fees via aimsRegistryFees)"
+      ]
+    },
+    {
+      "id": "aims_appeal_fee",
+      "description": "AIMS: Appeal of Professional Skills & Qualifications Assessment -- AUD 200 applying from outside Australia (value) / AUD 220 within Australia incl. GST",
+      "value": 200,
+      "currency": "AUD",
+      "effective_from": null,
+      "last_verified": "2026-09-26",
+      "source": "data/knowledge/Skill Assessments/Australian Institute of Medical Scientists/Australian Institute of Medical Scientists.pdf p.18 -- \"Appeal of Professional Skills & Qualifications Assessment 200.00 AUD 220.00 AUD\"",
+      "locations": [
+        "src/data/skills-assessment/aims-fees.json:fees[aims_appeal]",
+        "lib/skills-assessment/authorities/aims.ts (pathway fees via aimsRegistryFees)"
+      ]
+    },
+    {
+      "id": "aims_reissue_lost_letter_fee",
+      "description": "AIMS: Re-issue “Lost” Assessment & Examination Letter -- AUD 150 applying from outside Australia (value) / AUD 165 within Australia incl. GST",
+      "value": 150,
+      "currency": "AUD",
+      "effective_from": null,
+      "last_verified": "2026-09-26",
+      "source": "data/knowledge/Skill Assessments/Australian Institute of Medical Scientists/Australian Institute of Medical Scientists.pdf p.19 -- \"Re-issue “Lost” Assessment & Examination Letter 150.00 AUD 165.00 AUD\"",
+      "locations": [
+        "src/data/skills-assessment/aims-fees.json:fees[aims_reissue_lost_letter]",
+        "lib/skills-assessment/authorities/aims.ts (pathway fees via aimsRegistryFees)"
+      ]
+    },
+    {
+      "id": "aims_exam_mls_fee",
+      "description": "AIMS: Professional Examination - Medical Laboratory Scientist -- AUD 800 applying from outside Australia (value) / AUD 880 within Australia incl. GST",
+      "value": 800,
+      "currency": "AUD",
+      "effective_from": null,
+      "last_verified": "2026-09-26",
+      "source": "data/knowledge/Skill Assessments/Australian Institute of Medical Scientists/Australian Institute of Medical Scientists.pdf p.19 -- \"Professional Examination - Medical Laboratory Scientist 800.00 AUD 880.00 AUD\"",
+      "locations": [
+        "src/data/skills-assessment/aims-fees.json:fees[aims_exam_mls]",
+        "lib/skills-assessment/authorities/aims.ts (pathway fees via aimsRegistryFees)"
+      ]
+    },
+    {
+      "id": "aims_exam_ivf_fee",
+      "description": "AIMS: Professional Examination - IVF Embryologist -- AUD 800 applying from outside Australia (value) / AUD 880 within Australia incl. GST",
+      "value": 800,
+      "currency": "AUD",
+      "effective_from": null,
+      "last_verified": "2026-09-26",
+      "source": "data/knowledge/Skill Assessments/Australian Institute of Medical Scientists/Australian Institute of Medical Scientists.pdf p.19 -- \"Professional Examination - IVF Embryologist 800.00 AUD 880.00 AUD\"",
+      "locations": [
+        "src/data/skills-assessment/aims-fees.json:fees[aims_exam_ivf]",
+        "lib/skills-assessment/authorities/aims.ts (pathway fees via aimsRegistryFees)"
+      ]
+    },
+    {
+      "id": "aims_exam_pathology_collector_fee",
+      "description": "AIMS: Professional Examination - Phlebotomy & Pathology Collector -- AUD 800 applying from outside Australia (value) / AUD 880 within Australia incl. GST",
+      "value": 800,
+      "currency": "AUD",
+      "effective_from": null,
+      "last_verified": "2026-09-26",
+      "source": "data/knowledge/Skill Assessments/Australian Institute of Medical Scientists/Australian Institute of Medical Scientists.pdf p.19 -- \"Professional Examination - Phlebotomy & Pathology Collector 800.00 AUD 880.00 AUD\"",
+      "locations": [
+        "src/data/skills-assessment/aims-fees.json:fees[aims_exam_pathology_collector]",
+        "lib/skills-assessment/authorities/aims.ts (pathway fees via aimsRegistryFees)"
+      ]
+    },
+    {
+      "id": "aims_membership_exam_multi_fee",
+      "description": "AIMS: Membership Examination - Multi discipline -- AUD 800 applying from outside Australia (value) / AUD 880 within Australia incl. GST",
+      "value": 800,
+      "currency": "AUD",
+      "effective_from": null,
+      "last_verified": "2026-09-26",
+      "source": "data/knowledge/Skill Assessments/Australian Institute of Medical Scientists/Australian Institute of Medical Scientists.pdf p.19 -- \"Membership Examination - Multi discipline 800.00 AUD 880.00 AUD\"",
+      "locations": [
+        "src/data/skills-assessment/aims-fees.json:fees[aims_membership_exam_multi]",
+        "lib/skills-assessment/authorities/aims.ts (pathway fees via aimsRegistryFees)"
+      ]
+    },
+    {
+      "id": "aims_membership_exam_discipline_fee",
+      "description": "AIMS: Membership Examination - Discipline specific -- no outside-Australia figure (n/a) / AUD 880 within Australia incl. GST",
+      "value": 880,
+      "currency": "AUD",
+      "effective_from": null,
+      "last_verified": "2026-09-26",
+      "source": "data/knowledge/Skill Assessments/Australian Institute of Medical Scientists/Australian Institute of Medical Scientists.pdf p.19 -- \"Membership Examination - Discipline specific n/a 880.00 AUD\"",
+      "locations": [
+        "src/data/skills-assessment/aims-fees.json:fees[aims_membership_exam_discipline]",
+        "lib/skills-assessment/authorities/aims.ts (pathway fees via aimsRegistryFees)"
+      ]
+    },
+    {
+      "id": "aims_membership_exam_remark_fee",
+      "description": "AIMS: Membership Examination remark (single discipline only) -- AUD 150 applying from outside Australia (value) / AUD 165 within Australia incl. GST",
+      "value": 150,
+      "currency": "AUD",
+      "effective_from": null,
+      "last_verified": "2026-09-26",
+      "source": "data/knowledge/Skill Assessments/Australian Institute of Medical Scientists/Australian Institute of Medical Scientists.pdf p.19 -- \"Membership Examination remark (single discipline only) 150.00 AUD 165.00 AUD\"",
+      "locations": [
+        "src/data/skills-assessment/aims-fees.json:fees[aims_membership_exam_remark]",
+        "lib/skills-assessment/authorities/aims.ts (pathway fees via aimsRegistryFees)"
+      ]
+    },
+    {
+      "id": "aims_exam_deferral_fee",
+      "description": "AIMS: Professional Examination deferral (until closing day) -- AUD 100 applying from outside Australia (value) / AUD 110 within Australia incl. GST",
+      "value": 100,
+      "currency": "AUD",
+      "effective_from": null,
+      "last_verified": "2026-09-26",
+      "source": "data/knowledge/Skill Assessments/Australian Institute of Medical Scientists/Australian Institute of Medical Scientists.pdf p.19 -- \".Professional Examination deferral (until closing day) 100.00 AUD 110.00 AUD\"",
+      "locations": [
+        "src/data/skills-assessment/aims-fees.json:fees[aims_exam_deferral]",
+        "lib/skills-assessment/authorities/aims.ts (pathway fees via aimsRegistryFees)"
+      ]
+    },
+    {
+      "id": "adc_skills_assessment_after_dpa_fee",
+      "description": "ADC: Skills assessment requested after the dental practitioner assessment process",
+      "value": 0,
+      "currency": "AUD",
+      "effective_from": null,
+      "last_verified": "2026-09-26",
+      "source": "data/knowledge/Skill Assessments/Australian Dental Council Limited/Australian Dental Council Limited.pdf p.1 -- \"If you require a skills assessment for migration purposes after you finish the dental practitioner assessment process, you will be given the opportunity to request one then. There is no additional charge for this service.\"",
+      "locations": [
+        "src/data/skills-assessment/adc-fees.json:fees[adc_skills_assessment_after_dpa]",
+        "lib/skills-assessment/authorities/adc.ts:pathways[REGISTRATION_AND_SKILLS].fees[1].amountAUD"
+      ]
+    },
+    {
+      "id": "adc_skills_assessment_fee",
+      "description": "ADC: Skills assessment fee (skills assessment only, or registration and skills assessment)",
+      "value": null,
+      "currency": "AUD",
+      "effective_from": null,
+      "last_verified": null,
+      "source": "needs human verification -- document names it but states no amount: data/knowledge/Skill Assessments/Australian Dental Council Limited/Australian Dental Council Limited.pdf (p.2: \"Complete your skills application and make payment as instructed.\")",
+      "locations": [
+        "src/data/skills-assessment/adc-fees.json:notStated[adc_skills_assessment_fee]",
+        "lib/skills-assessment/authorities/adc.ts"
+      ]
+    },
+    {
+      "id": "adc_reissue_fee",
+      "description": "ADC: Administrative fee to reissue a lapsed skills assessment letter",
+      "value": null,
+      "currency": "AUD",
+      "effective_from": null,
+      "last_verified": null,
+      "source": "needs human verification -- document names it but states no amount: data/knowledge/Skill Assessments/Australian Dental Council Limited/Australian Dental Council Limited.pdf (p.3: \"Contact us if your assessment lapses and you wish to have your letter reissued. An administrative fee will apply.\")",
+      "locations": [
+        "src/data/skills-assessment/adc-fees.json:notStated[adc_reissue_fee]",
+        "lib/skills-assessment/authorities/adc.ts"
+      ]
+    },
+    {
+      "id": "authority_conflict_121211",
+      "description": "ANZSCO 121211 (Cotton Grower): the codebase names more than one assessing authority -- VETASSESS (registry) vs VETASSESS (dataset authority field) vs ACS (dataset critical_warning). The report resolves ONE authority from the registry (lib/skills-assessment/authorities/*.ts) and suppresses the dataset warning text that names another; which body is correct is not decided here.",
+      "value": null,
+      "currency": null,
+      "effective_from": null,
+      "last_verified": null,
+      "source": "needs human verification -- authority named inconsistently; not checkable against an official source from inside this environment",
+      "locations": [
+        "lib/skills-assessment/authorities/*.ts",
+        "src/data/occupations.json"
+      ]
+    },
+    {
+      "id": "authority_conflict_121213",
+      "description": "ANZSCO 121213 (Fruit or Nut Grower): the codebase names more than one assessing authority -- VETASSESS (registry) vs VETASSESS (dataset authority field) vs ACS (dataset critical_warning). The report resolves ONE authority from the registry (lib/skills-assessment/authorities/*.ts) and suppresses the dataset warning text that names another; which body is correct is not decided here.",
+      "value": null,
+      "currency": null,
+      "effective_from": null,
+      "last_verified": null,
+      "source": "needs human verification -- authority named inconsistently; not checkable against an official source from inside this environment",
+      "locations": [
+        "lib/skills-assessment/authorities/*.ts",
+        "src/data/occupations.json"
+      ]
+    },
+    {
+      "id": "authority_conflict_132211",
+      "description": "ANZSCO 132211 (Finance Manager): the codebase names more than one assessing authority -- CPA (registry) vs CA-ANZ (registry) vs IPA (registry) vs CA-ANZ (dataset authority field) vs CPA (dataset authority field) vs IPA (dataset authority field) vs VETASSESS (dataset critical_warning). The report resolves ONE authority from the registry (lib/skills-assessment/authorities/*.ts) and suppresses the dataset warning text that names another; which body is correct is not decided here.",
+      "value": null,
+      "currency": null,
+      "effective_from": null,
+      "last_verified": null,
+      "source": "needs human verification -- authority named inconsistently; not checkable against an official source from inside this environment",
+      "locations": [
+        "lib/skills-assessment/authorities/*.ts",
+        "src/data/occupations.json"
+      ]
+    },
+    {
+      "id": "authority_conflict_134211",
+      "description": "ANZSCO 134211 (Medical Administrator): the codebase names more than one assessing authority -- AHPRA (registry) vs AHPRA (dataset authority field) vs VETASSESS (dataset critical_warning). The report resolves ONE authority from the registry (lib/skills-assessment/authorities/*.ts) and suppresses the dataset warning text that names another; which body is correct is not decided here.",
+      "value": null,
+      "currency": null,
+      "effective_from": null,
+      "last_verified": null,
+      "source": "needs human verification -- authority named inconsistently; not checkable against an official source from inside this environment",
+      "locations": [
+        "lib/skills-assessment/authorities/*.ts",
+        "src/data/occupations.json"
+      ]
+    },
+    {
+      "id": "authority_conflict_221213",
+      "description": "ANZSCO 221213 (External Auditor): the codebase names more than one assessing authority -- CPA (registry) vs CA-ANZ (registry) vs IPA (registry) vs CA-ANZ (dataset authority field) vs CPA (dataset authority field) vs IPA (dataset authority field) vs VETASSESS (dataset critical_warning). The report resolves ONE authority from the registry (lib/skills-assessment/authorities/*.ts) and suppresses the dataset warning text that names another; which body is correct is not decided here.",
+      "value": null,
+      "currency": null,
+      "effective_from": null,
+      "last_verified": null,
+      "source": "needs human verification -- authority named inconsistently; not checkable against an official source from inside this environment",
+      "locations": [
+        "lib/skills-assessment/authorities/*.ts",
+        "src/data/occupations.json"
+      ]
+    },
+    {
+      "id": "authority_conflict_225211",
+      "description": "ANZSCO 225211 (ICT Account Manager): the codebase names more than one assessing authority -- ACS (registry) vs ACS (dataset authority field) vs VETASSESS (dataset critical_warning). The report resolves ONE authority from the registry (lib/skills-assessment/authorities/*.ts) and suppresses the dataset warning text that names another; which body is correct is not decided here.",
+      "value": null,
+      "currency": null,
+      "effective_from": null,
+      "last_verified": null,
+      "source": "needs human verification -- authority named inconsistently; not checkable against an official source from inside this environment",
+      "locations": [
+        "lib/skills-assessment/authorities/*.ts",
+        "src/data/occupations.json"
+      ]
+    },
+    {
+      "id": "authority_conflict_225212",
+      "description": "ANZSCO 225212 (ICT Business Development Manager): the codebase names more than one assessing authority -- ACS (registry) vs ACS (dataset authority field) vs VETASSESS (dataset critical_warning). The report resolves ONE authority from the registry (lib/skills-assessment/authorities/*.ts) and suppresses the dataset warning text that names another; which body is correct is not decided here.",
+      "value": null,
+      "currency": null,
+      "effective_from": null,
+      "last_verified": null,
+      "source": "needs human verification -- authority named inconsistently; not checkable against an official source from inside this environment",
+      "locations": [
+        "lib/skills-assessment/authorities/*.ts",
+        "src/data/occupations.json"
+      ]
+    },
+    {
+      "id": "authority_conflict_232111",
+      "description": "ANZSCO 232111 (Architect): the codebase names more than one assessing authority -- AACA (registry) vs VETASSESS (registry) vs VETASSESS (dataset authority field) vs AACA (dataset critical_warning). The report resolves ONE authority from the registry (lib/skills-assessment/authorities/*.ts) and suppresses the dataset warning text that names another; which body is correct is not decided here.",
+      "value": null,
+      "currency": null,
+      "effective_from": null,
+      "last_verified": null,
+      "source": "needs human verification -- authority named inconsistently; not checkable against an official source from inside this environment",
+      "locations": [
+        "lib/skills-assessment/authorities/*.ts",
+        "src/data/occupations.json"
+      ]
+    },
+    {
+      "id": "authority_conflict_233916",
+      "description": "ANZSCO 233916 (Naval Architect): the codebase names more than one assessing authority -- EA (registry) vs EA (dataset authority field) vs ACS (dataset critical_warning). The report resolves ONE authority from the registry (lib/skills-assessment/authorities/*.ts) and suppresses the dataset warning text that names another; which body is correct is not decided here.",
+      "value": null,
+      "currency": null,
+      "effective_from": null,
+      "last_verified": null,
+      "source": "needs human verification -- authority named inconsistently; not checkable against an official source from inside this environment",
+      "locations": [
+        "lib/skills-assessment/authorities/*.ts",
+        "src/data/occupations.json"
+      ]
+    },
+    {
+      "id": "authority_conflict_234611",
+      "description": "ANZSCO 234611 (Medical Laboratory Scientist): the codebase names more than one assessing authority -- AIMS (registry) vs AIMS (dataset authority field) vs VETASSESS (dataset critical_warning). The report resolves ONE authority from the registry (lib/skills-assessment/authorities/*.ts) and suppresses the dataset warning text that names another; which body is correct is not decided here.",
+      "value": null,
+      "currency": null,
+      "effective_from": null,
+      "last_verified": null,
+      "source": "needs human verification -- authority named inconsistently; not checkable against an official source from inside this environment",
+      "locations": [
+        "lib/skills-assessment/authorities/*.ts",
+        "src/data/occupations.json"
+      ]
+    },
+    {
+      "id": "authority_conflict_242211",
+      "description": "ANZSCO 242211 (Vocational Education Teacher): the codebase names more than one assessing authority -- TRA (registry) vs TRA (dataset authority field) vs ANMAC (dataset critical_warning) vs AHPRA (dataset critical_warning). The report resolves ONE authority from the registry (lib/skills-assessment/authorities/*.ts) and suppresses the dataset warning text that names another; which body is correct is not decided here.",
+      "value": null,
+      "currency": null,
+      "effective_from": null,
+      "last_verified": null,
+      "source": "needs human verification -- authority named inconsistently; not checkable against an official source from inside this environment",
+      "locations": [
+        "lib/skills-assessment/authorities/*.ts",
+        "src/data/occupations.json"
+      ]
+    },
+    {
+      "id": "authority_conflict_252311",
+      "description": "ANZSCO 252311 (Dental Specialist): the codebase names more than one assessing authority -- ADC (registry) vs ADC (dataset authority field) vs VETASSESS (dataset critical_warning). The report resolves ONE authority from the registry (lib/skills-assessment/authorities/*.ts) and suppresses the dataset warning text that names another; which body is correct is not decided here.",
+      "value": null,
+      "currency": null,
+      "effective_from": null,
+      "last_verified": null,
+      "source": "needs human verification -- authority named inconsistently; not checkable against an official source from inside this environment",
+      "locations": [
+        "lib/skills-assessment/authorities/*.ts",
+        "src/data/occupations.json"
+      ]
+    },
+    {
+      "id": "authority_conflict_252312",
+      "description": "ANZSCO 252312 (Dentist): the codebase names more than one assessing authority -- ADC (registry) vs ADC (dataset authority field) vs VETASSESS (dataset critical_warning). The report resolves ONE authority from the registry (lib/skills-assessment/authorities/*.ts) and suppresses the dataset warning text that names another; which body is correct is not decided here.",
+      "value": null,
+      "currency": null,
+      "effective_from": null,
+      "last_verified": null,
+      "source": "needs human verification -- authority named inconsistently; not checkable against an official source from inside this environment",
+      "locations": [
+        "lib/skills-assessment/authorities/*.ts",
+        "src/data/occupations.json"
+      ]
+    },
+    {
+      "id": "authority_conflict_253111",
+      "description": "ANZSCO 253111 (General Practitioner): the codebase names more than one assessing authority -- AHPRA (registry) vs AHPRA (dataset authority field) vs AMC (dataset critical_warning). The report resolves ONE authority from the registry (lib/skills-assessment/authorities/*.ts) and suppresses the dataset warning text that names another; which body is correct is not decided here.",
+      "value": null,
+      "currency": null,
+      "effective_from": null,
+      "last_verified": null,
+      "source": "needs human verification -- authority named inconsistently; not checkable against an official source from inside this environment",
+      "locations": [
+        "lib/skills-assessment/authorities/*.ts",
+        "src/data/occupations.json"
+      ]
+    },
+    {
+      "id": "authority_conflict_254211",
+      "description": "ANZSCO 254211 (Nurse Educator): the codebase names more than one assessing authority -- ANMAC (registry) vs ANMAC (dataset authority field) vs ANMAC (dataset critical_warning) vs AHPRA (dataset critical_warning). The report resolves ONE authority from the registry (lib/skills-assessment/authorities/*.ts) and suppresses the dataset warning text that names another; which body is correct is not decided here.",
+      "value": null,
+      "currency": null,
+      "effective_from": null,
+      "last_verified": null,
+      "source": "needs human verification -- authority named inconsistently; not checkable against an official source from inside this environment",
+      "locations": [
+        "lib/skills-assessment/authorities/*.ts",
+        "src/data/occupations.json"
+      ]
+    },
+    {
+      "id": "authority_conflict_254212",
+      "description": "ANZSCO 254212 (Nurse Researcher): the codebase names more than one assessing authority -- ANMAC (registry) vs ANMAC (dataset authority field) vs ANMAC (dataset critical_warning) vs AHPRA (dataset critical_warning). The report resolves ONE authority from the registry (lib/skills-assessment/authorities/*.ts) and suppresses the dataset warning text that names another; which body is correct is not decided here.",
+      "value": null,
+      "currency": null,
+      "effective_from": null,
+      "last_verified": null,
+      "source": "needs human verification -- authority named inconsistently; not checkable against an official source from inside this environment",
+      "locations": [
+        "lib/skills-assessment/authorities/*.ts",
+        "src/data/occupations.json"
+      ]
+    },
+    {
+      "id": "authority_conflict_254311",
+      "description": "ANZSCO 254311 (Nurse Manager): the codebase names more than one assessing authority -- ANMAC (registry) vs ANMAC (dataset authority field) vs ANMAC (dataset critical_warning) vs AHPRA (dataset critical_warning). The report resolves ONE authority from the registry (lib/skills-assessment/authorities/*.ts) and suppresses the dataset warning text that names another; which body is correct is not decided here.",
+      "value": null,
+      "currency": null,
+      "effective_from": null,
+      "last_verified": null,
+      "source": "needs human verification -- authority named inconsistently; not checkable against an official source from inside this environment",
+      "locations": [
+        "lib/skills-assessment/authorities/*.ts",
+        "src/data/occupations.json"
+      ]
+    },
+    {
+      "id": "authority_conflict_254411",
+      "description": "ANZSCO 254411 (Nurse Practitioner): the codebase names more than one assessing authority -- ANMAC (registry) vs ANMAC (dataset authority field) vs ANMAC (dataset critical_warning) vs AHPRA (dataset critical_warning). The report resolves ONE authority from the registry (lib/skills-assessment/authorities/*.ts) and suppresses the dataset warning text that names another; which body is correct is not decided here.",
+      "value": null,
+      "currency": null,
+      "effective_from": null,
+      "last_verified": null,
+      "source": "needs human verification -- authority named inconsistently; not checkable against an official source from inside this environment",
+      "locations": [
+        "lib/skills-assessment/authorities/*.ts",
+        "src/data/occupations.json"
+      ]
+    },
+    {
+      "id": "authority_conflict_254412",
+      "description": "ANZSCO 254412 (Registered Nurse (Aged Care)): the codebase names more than one assessing authority -- ANMAC (registry) vs ANMAC (dataset authority field) vs ANMAC (dataset critical_warning) vs AHPRA (dataset critical_warning). The report resolves ONE authority from the registry (lib/skills-assessment/authorities/*.ts) and suppresses the dataset warning text that names another; which body is correct is not decided here.",
+      "value": null,
+      "currency": null,
+      "effective_from": null,
+      "last_verified": null,
+      "source": "needs human verification -- authority named inconsistently; not checkable against an official source from inside this environment",
+      "locations": [
+        "lib/skills-assessment/authorities/*.ts",
+        "src/data/occupations.json"
+      ]
+    },
+    {
+      "id": "authority_conflict_254413",
+      "description": "ANZSCO 254413 (Registered Nurse (Child and Family Health)): the codebase names more than one assessing authority -- ANMAC (registry) vs ANMAC (dataset authority field) vs ANMAC (dataset critical_warning) vs AHPRA (dataset critical_warning). The report resolves ONE authority from the registry (lib/skills-assessment/authorities/*.ts) and suppresses the dataset warning text that names another; which body is correct is not decided here.",
+      "value": null,
+      "currency": null,
+      "effective_from": null,
+      "last_verified": null,
+      "source": "needs human verification -- authority named inconsistently; not checkable against an official source from inside this environment",
+      "locations": [
+        "lib/skills-assessment/authorities/*.ts",
+        "src/data/occupations.json"
+      ]
+    },
+    {
+      "id": "authority_conflict_254414",
+      "description": "ANZSCO 254414 (Registered Nurse (Community Health)): the codebase names more than one assessing authority -- ANMAC (registry) vs ANMAC (dataset authority field) vs ANMAC (dataset critical_warning) vs AHPRA (dataset critical_warning). The report resolves ONE authority from the registry (lib/skills-assessment/authorities/*.ts) and suppresses the dataset warning text that names another; which body is correct is not decided here.",
+      "value": null,
+      "currency": null,
+      "effective_from": null,
+      "last_verified": null,
+      "source": "needs human verification -- authority named inconsistently; not checkable against an official source from inside this environment",
+      "locations": [
+        "lib/skills-assessment/authorities/*.ts",
+        "src/data/occupations.json"
+      ]
+    },
+    {
+      "id": "authority_conflict_254415",
+      "description": "ANZSCO 254415 (Registered Nurse (Critical Care and Emergency)): the codebase names more than one assessing authority -- ANMAC (registry) vs ANMAC (dataset authority field) vs ANMAC (dataset critical_warning) vs AHPRA (dataset critical_warning). The report resolves ONE authority from the registry (lib/skills-assessment/authorities/*.ts) and suppresses the dataset warning text that names another; which body is correct is not decided here.",
+      "value": null,
+      "currency": null,
+      "effective_from": null,
+      "last_verified": null,
+      "source": "needs human verification -- authority named inconsistently; not checkable against an official source from inside this environment",
+      "locations": [
+        "lib/skills-assessment/authorities/*.ts",
+        "src/data/occupations.json"
+      ]
+    },
+    {
+      "id": "authority_conflict_254418",
+      "description": "ANZSCO 254418 (Registered Nurse (Medical)): the codebase names more than one assessing authority -- ANMAC (registry) vs ANMAC (dataset authority field) vs ANMAC (dataset critical_warning) vs AHPRA (dataset critical_warning). The report resolves ONE authority from the registry (lib/skills-assessment/authorities/*.ts) and suppresses the dataset warning text that names another; which body is correct is not decided here.",
+      "value": null,
+      "currency": null,
+      "effective_from": null,
+      "last_verified": null,
+      "source": "needs human verification -- authority named inconsistently; not checkable against an official source from inside this environment",
+      "locations": [
+        "lib/skills-assessment/authorities/*.ts",
+        "src/data/occupations.json"
+      ]
+    },
+    {
+      "id": "authority_conflict_254422",
+      "description": "ANZSCO 254422 (Registered Nurse (Mental Health)): the codebase names more than one assessing authority -- ANMAC (registry) vs ANMAC (dataset authority field) vs ANMAC (dataset critical_warning) vs AHPRA (dataset critical_warning). The report resolves ONE authority from the registry (lib/skills-assessment/authorities/*.ts) and suppresses the dataset warning text that names another; which body is correct is not decided here.",
+      "value": null,
+      "currency": null,
+      "effective_from": null,
+      "last_verified": null,
+      "source": "needs human verification -- authority named inconsistently; not checkable against an official source from inside this environment",
+      "locations": [
+        "lib/skills-assessment/authorities/*.ts",
+        "src/data/occupations.json"
+      ]
+    },
+    {
+      "id": "authority_conflict_254423",
+      "description": "ANZSCO 254423 (Registered Nurse (Perioperative)): the codebase names more than one assessing authority -- ANMAC (registry) vs ANMAC (dataset authority field) vs ANMAC (dataset critical_warning) vs AHPRA (dataset critical_warning). The report resolves ONE authority from the registry (lib/skills-assessment/authorities/*.ts) and suppresses the dataset warning text that names another; which body is correct is not decided here.",
+      "value": null,
+      "currency": null,
+      "effective_from": null,
+      "last_verified": null,
+      "source": "needs human verification -- authority named inconsistently; not checkable against an official source from inside this environment",
+      "locations": [
+        "lib/skills-assessment/authorities/*.ts",
+        "src/data/occupations.json"
+      ]
+    },
+    {
+      "id": "authority_conflict_254425",
+      "description": "ANZSCO 254425 (Registered Nurse (Paediatrics)): the codebase names more than one assessing authority -- ANMAC (registry) vs ANMAC (dataset authority field) vs ANMAC (dataset critical_warning) vs AHPRA (dataset critical_warning). The report resolves ONE authority from the registry (lib/skills-assessment/authorities/*.ts) and suppresses the dataset warning text that names another; which body is correct is not decided here.",
+      "value": null,
+      "currency": null,
+      "effective_from": null,
+      "last_verified": null,
+      "source": "needs human verification -- authority named inconsistently; not checkable against an official source from inside this environment",
+      "locations": [
+        "lib/skills-assessment/authorities/*.ts",
+        "src/data/occupations.json"
+      ]
+    },
+    {
+      "id": "authority_conflict_254499",
+      "description": "ANZSCO 254499 (Registered Nurses nec): the codebase names more than one assessing authority -- ANMAC (registry) vs ANMAC (dataset authority field) vs ANMAC (dataset critical_warning) vs AHPRA (dataset critical_warning). The report resolves ONE authority from the registry (lib/skills-assessment/authorities/*.ts) and suppresses the dataset warning text that names another; which body is correct is not decided here.",
+      "value": null,
+      "currency": null,
+      "effective_from": null,
+      "last_verified": null,
+      "source": "needs human verification -- authority named inconsistently; not checkable against an official source from inside this environment",
+      "locations": [
+        "lib/skills-assessment/authorities/*.ts",
+        "src/data/occupations.json"
+      ]
+    },
+    {
+      "id": "authority_conflict_311213",
+      "description": "ANZSCO 311213 (Medical Laboratory Technician): the codebase names more than one assessing authority -- VETASSESS (registry) vs AIMS (registry) vs AIMS (dataset authority field) vs VETASSESS (dataset critical_warning). The report resolves ONE authority from the registry (lib/skills-assessment/authorities/*.ts) and suppresses the dataset warning text that names another; which body is correct is not decided here.",
+      "value": null,
+      "currency": null,
+      "effective_from": null,
+      "last_verified": null,
+      "source": "needs human verification -- authority named inconsistently; not checkable against an official source from inside this environment",
+      "locations": [
+        "lib/skills-assessment/authorities/*.ts",
+        "src/data/occupations.json"
+      ]
+    },
+    {
+      "id": "authority_conflict_312211",
+      "description": "ANZSCO 312211 (Civil Engineering Draftsperson): the codebase names more than one assessing authority -- EA (registry) vs EA (dataset authority field) vs VETASSESS (dataset critical_warning). The report resolves ONE authority from the registry (lib/skills-assessment/authorities/*.ts) and suppresses the dataset warning text that names another; which body is correct is not decided here.",
+      "value": null,
+      "currency": null,
+      "effective_from": null,
+      "last_verified": null,
+      "source": "needs human verification -- authority named inconsistently; not checkable against an official source from inside this environment",
+      "locations": [
+        "lib/skills-assessment/authorities/*.ts",
+        "src/data/occupations.json"
+      ]
+    },
+    {
+      "id": "authority_conflict_312311",
+      "description": "ANZSCO 312311 (Electrical Engineering Draftsperson): the codebase names more than one assessing authority -- EA (registry) vs EA (dataset authority field) vs VETASSESS (dataset critical_warning). The report resolves ONE authority from the registry (lib/skills-assessment/authorities/*.ts) and suppresses the dataset warning text that names another; which body is correct is not decided here.",
+      "value": null,
+      "currency": null,
+      "effective_from": null,
+      "last_verified": null,
+      "source": "needs human verification -- authority named inconsistently; not checkable against an official source from inside this environment",
+      "locations": [
+        "lib/skills-assessment/authorities/*.ts",
+        "src/data/occupations.json"
+      ]
+    },
+    {
+      "id": "authority_conflict_312312",
+      "description": "ANZSCO 312312 (Electrical Engineering Technician): the codebase names more than one assessing authority -- TRA (registry) vs TRA (dataset authority field) vs VETASSESS (dataset critical_warning). The report resolves ONE authority from the registry (lib/skills-assessment/authorities/*.ts) and suppresses the dataset warning text that names another; which body is correct is not decided here.",
+      "value": null,
+      "currency": null,
+      "effective_from": null,
+      "last_verified": null,
+      "source": "needs human verification -- authority named inconsistently; not checkable against an official source from inside this environment",
+      "locations": [
+        "lib/skills-assessment/authorities/*.ts",
+        "src/data/occupations.json"
+      ]
+    },
+    {
+      "id": "authority_conflict_312411",
+      "description": "ANZSCO 312411 (Electronic Engineering Draftsperson): the codebase names more than one assessing authority -- EA (registry) vs EA (dataset authority field) vs VETASSESS (dataset critical_warning). The report resolves ONE authority from the registry (lib/skills-assessment/authorities/*.ts) and suppresses the dataset warning text that names another; which body is correct is not decided here.",
+      "value": null,
+      "currency": null,
+      "effective_from": null,
+      "last_verified": null,
+      "source": "needs human verification -- authority named inconsistently; not checkable against an official source from inside this environment",
+      "locations": [
+        "lib/skills-assessment/authorities/*.ts",
+        "src/data/occupations.json"
+      ]
+    },
+    {
+      "id": "authority_conflict_312412",
+      "description": "ANZSCO 312412 (Electronic Engineering Technician): the codebase names more than one assessing authority -- TRA (registry) vs TRA (dataset authority field) vs VETASSESS (dataset critical_warning). The report resolves ONE authority from the registry (lib/skills-assessment/authorities/*.ts) and suppresses the dataset warning text that names another; which body is correct is not decided here.",
+      "value": null,
+      "currency": null,
+      "effective_from": null,
+      "last_verified": null,
+      "source": "needs human verification -- authority named inconsistently; not checkable against an official source from inside this environment",
+      "locations": [
+        "lib/skills-assessment/authorities/*.ts",
+        "src/data/occupations.json"
+      ]
+    },
+    {
+      "id": "authority_conflict_312511",
+      "description": "ANZSCO 312511 (Mechanical Engineering Draftsperson): the codebase names more than one assessing authority -- EA (registry) vs EA (dataset authority field) vs VETASSESS (dataset critical_warning). The report resolves ONE authority from the registry (lib/skills-assessment/authorities/*.ts) and suppresses the dataset warning text that names another; which body is correct is not decided here.",
+      "value": null,
+      "currency": null,
+      "effective_from": null,
+      "last_verified": null,
+      "source": "needs human verification -- authority named inconsistently; not checkable against an official source from inside this environment",
+      "locations": [
+        "lib/skills-assessment/authorities/*.ts",
+        "src/data/occupations.json"
+      ]
+    },
+    {
+      "id": "authority_conflict_312512",
+      "description": "ANZSCO 312512 (Mechanical Engineering Technician): the codebase names more than one assessing authority -- TRA (registry) vs TRA (dataset authority field) vs VETASSESS (dataset critical_warning). The report resolves ONE authority from the registry (lib/skills-assessment/authorities/*.ts) and suppresses the dataset warning text that names another; which body is correct is not decided here.",
+      "value": null,
+      "currency": null,
+      "effective_from": null,
+      "last_verified": null,
+      "source": "needs human verification -- authority named inconsistently; not checkable against an official source from inside this environment",
+      "locations": [
+        "lib/skills-assessment/authorities/*.ts",
+        "src/data/occupations.json"
+      ]
+    },
+    {
+      "id": "authority_conflict_312999",
+      "description": "ANZSCO 312999 (Building and Engineering Technicians nec): the codebase names more than one assessing authority -- EA (registry) vs VETASSESS (registry) vs VETASSESS (dataset authority field) vs VETASSESS (dataset critical_warning). The report resolves ONE authority from the registry (lib/skills-assessment/authorities/*.ts) and suppresses the dataset warning text that names another; which body is correct is not decided here.",
+      "value": null,
+      "currency": null,
+      "effective_from": null,
+      "last_verified": null,
+      "source": "needs human verification -- authority named inconsistently; not checkable against an official source from inside this environment",
+      "locations": [
+        "lib/skills-assessment/authorities/*.ts",
+        "src/data/occupations.json"
+      ]
+    },
+    {
+      "id": "authority_conflict_313213",
+      "description": "ANZSCO 313213 (Telecommunications Network Planner): the codebase names more than one assessing authority -- EA (registry) vs TRA (dataset authority field) vs ACS (dataset critical_warning). The report resolves ONE authority from the registry (lib/skills-assessment/authorities/*.ts) and suppresses the dataset warning text that names another; which body is correct is not decided here.",
+      "value": null,
+      "currency": null,
+      "effective_from": null,
+      "last_verified": null,
+      "source": "needs human verification -- authority named inconsistently; not checkable against an official source from inside this environment",
+      "locations": [
+        "lib/skills-assessment/authorities/*.ts",
+        "src/data/occupations.json"
+      ]
+    },
+    {
+      "id": "authority_conflict_313214",
+      "description": "ANZSCO 313214 (Telecommunications Technical Officer or Technologist): the codebase names more than one assessing authority -- EA (registry) vs TRA (dataset authority field). The report resolves ONE authority from the registry (lib/skills-assessment/authorities/*.ts) and suppresses the dataset warning text that names another; which body is correct is not decided here.",
+      "value": null,
+      "currency": null,
+      "effective_from": null,
+      "last_verified": null,
+      "source": "needs human verification -- authority named inconsistently; not checkable against an official source from inside this environment",
+      "locations": [
+        "lib/skills-assessment/authorities/*.ts",
+        "src/data/occupations.json"
+      ]
+    },
+    {
+      "id": "authority_conflict_399111",
+      "description": "ANZSCO 399111 (Boat Builder and Repairer): the codebase names more than one assessing authority -- TRA (registry) vs TRA (dataset authority field) vs VETASSESS (dataset critical_warning). The report resolves ONE authority from the registry (lib/skills-assessment/authorities/*.ts) and suppresses the dataset warning text that names another; which body is correct is not decided here.",
+      "value": null,
+      "currency": null,
+      "effective_from": null,
+      "last_verified": null,
+      "source": "needs human verification -- authority named inconsistently; not checkable against an official source from inside this environment",
+      "locations": [
+        "lib/skills-assessment/authorities/*.ts",
+        "src/data/occupations.json"
+      ]
+    },
+    {
+      "id": "authority_conflict_399511",
+      "description": "ANZSCO 399511 (Broadcast Transmitter Operator): the codebase names more than one assessing authority -- VETASSESS (registry) vs VETASSESS (dataset authority field) vs TRA (dataset authority field). The report resolves ONE authority from the registry (lib/skills-assessment/authorities/*.ts) and suppresses the dataset warning text that names another; which body is correct is not decided here.",
+      "value": null,
+      "currency": null,
+      "effective_from": null,
+      "last_verified": null,
+      "source": "needs human verification -- authority named inconsistently; not checkable against an official source from inside this environment",
+      "locations": [
+        "lib/skills-assessment/authorities/*.ts",
+        "src/data/occupations.json"
+      ]
+    },
+    {
+      "id": "authority_conflict_411411",
+      "description": "ANZSCO 411411 (Enrolled Nurse): the codebase names more than one assessing authority -- ANMAC (registry) vs ANMAC (dataset authority field) vs VETASSESS (dataset critical_warning). The report resolves ONE authority from the registry (lib/skills-assessment/authorities/*.ts) and suppresses the dataset warning text that names another; which body is correct is not decided here.",
+      "value": null,
+      "currency": null,
+      "effective_from": null,
+      "last_verified": null,
+      "source": "needs human verification -- authority named inconsistently; not checkable against an official source from inside this environment",
+      "locations": [
+        "lib/skills-assessment/authorities/*.ts",
+        "src/data/occupations.json"
       ]
     }
   ]

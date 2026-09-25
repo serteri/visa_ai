@@ -7,7 +7,9 @@ import type { SkillsAssessmentAuthority, LocalizedString } from "../types";
  *
  * Multilanguage support: EN, TR, ZH-Hans
  * NOTE: Fee schedule, processing times, and English requirements are NOT listed
- * in the source document — marked as null. Do not fabricate values.
+ * in the source document — marked as null. Do not fabricate values. What the document does say about fees is
+ * extracted, with quotes, into src/data/skills-assessment/adc-fees.json (scripts/generate-adc-fees.ts).
+ * Scope: "We only conduct skills assessments for dentists and dental specialists" (p.2) -- 252311, 252312.
  */
 export const adcAuthority: SkillsAssessmentAuthority = {
   authorityId: "ADC",
@@ -28,7 +30,6 @@ export const adcAuthority: SkillsAssessmentAuthority = {
     occupations: [
     { anzscoCode: "252311", title: "Dental Specialist" },
     { anzscoCode: "252312", title: "Dentist" },
-    { anzscoCode: "411215", title: "Oral Health Therapist" },
   ],
   pathways: [
     // ── Pathway 1: Skills Assessment Only ──────────────────────────────
@@ -45,7 +46,7 @@ export const adcAuthority: SkillsAssessmentAuthority = {
         {
           label: { en: "Skills assessment application fee", tr: "Beceri değerlendirmesi başvuru ücreti", "zh-Hans": "技能评估申请费" },
           amountAUD: undefined,
-          note: "Not stated in source document; confirm current fee via ADC Connect portal at time of application.",
+          note: "needs human verification -- the ADC document states no amount (\"make payment as instructed\", p.2; src/data/skills-assessment/adc-fees.json).",
         },
       ],
       documentRequirements: [

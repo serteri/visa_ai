@@ -20,7 +20,6 @@ export const casaAustraliaAuthority: SkillsAssessmentAuthority = {
   role: "Skills assessment only — CASA does not provide migration advice.",
     occupations: [
     { anzscoCode: "231111", title: "Aeroplane Pilot" },
-    { anzscoCode: "231113", title: "Flying Instructor" },
     { anzscoCode: "231114", title: "Helicopter Pilot" },
   ],
   lastVerified: "2026-08-05",
@@ -103,11 +102,12 @@ export const casaAustraliaAuthority: SkillsAssessmentAuthority = {
         },
       ],
       processingTimeWeeks: {
-        standard: 3,
+        standard: 2,
+        label: { en: "around 14 days", tr: "yaklaşık 14 gün", "zh-Hans": "约 14 天" },
         note: {
-          en: "Usually takes around 14 business days to process applications. Incomplete forms are sent back and not processed.",
-          tr: "Başvuruların işlenmesi genellikle yaklaşık 14 iş günü sürer. Eksik formlar geri gönderilir ve işlenmez.",
-          "zh-Hans": "通常需要约14个工作日处理申请。不完整的表格将被退回且不予处理。",
+          en: "\"It usually takes around 14 days for us to process applications.\" Incomplete forms are sent back and not processed (CASA p.2).",
+          tr: "Başvuruların işlenmesi genellikle yaklaşık 14 gün sürer. Eksik formlar geri gönderilir ve işlenmez (CASA s.2).",
+          "zh-Hans": "处理申请通常需要约 14 天。不完整的表格将被退回且不予处理（CASA 第 2 页）。",
         },
       },
       documentRequirements: [

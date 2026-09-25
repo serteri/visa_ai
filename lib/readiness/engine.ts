@@ -32,6 +32,7 @@ import {
 import { resolveAssessingAuthority } from "@/lib/skills-assessment/resolve-authority";
 import type { ApplicantLocation } from "@/lib/skills-assessment/types";
 import { OSAP_FEES, resolveTraProgram, type TraProgram } from "@/lib/skills-assessment/tra-osap";
+import { eaAmountLabel, eaNote, resolveEngineersAustraliaAssessment } from "@/lib/skills-assessment/engineers-australia-fees";
 import {
   anzscoCodeFromOccupation,
   deferredFeesLine,
@@ -5138,6 +5139,21 @@ function buildFinancialRoadmap(
       primaryPathway = authority.pathways.find((p) => p.pathwayId === "OSAP") ?? primaryPathway;
     }
 
+    // Engineers Australia: fees by pathway, excl./incl. GST (engineers-australia-fees.json). The intake cannot tell
+    // whether a qualification is accredited, so the report quotes the CDR pathway and names the accredited ones.
+    const eaAssessment = authority?.authorityId === "EA"
+      ? resolveEngineersAustraliaAssessment({ anzscoCode: anzscoCodeFromOccupation(input.occupation, authority.occupations) })
+      : undefined;
+    if (authority && eaAssessment) {
+      primaryPathway = authority.pathways.find((p) => p.pathwayId === eaAssessment.pathwayId) ?? primaryPathway;
+    }
+
+    // AIMS: the pathway for the applicant's occupation (234611 / 311213 / 311216), not the registry's first one.
+    if (authority?.authorityId === "AIMS") {
+      const code = anzscoCodeFromOccupation(input.occupation, authority.occupations);
+      primaryPathway = (code && authority.pathways.find((p) => p.occupation?.includes(code))) || primaryPathway;
+    }
+
     if (authority?.authorityId === "AHPRA") {
       // Doctors: the cost is Medical Board of Australia registration, not a desktop skills assessment. The
       // pathway (and so the registration type and its two fees, paid together at application) depends on the
@@ -5211,11 +5227,15 @@ function buildFinancialRoadmap(
       const osap = traProgram?.program === "OSAP" ? traProgram : undefined;
       const feeLabel = osap
         ? traOsapAmountLabel(osap, locale)
-        : (primaryFee?.amountAUD !== undefined
+        : eaAssessment
+          ? eaAmountLabel(eaAssessment, locale as "en" | "tr" | "zh-Hans")
+          : (primaryFee?.amountAUD !== undefined
           ? `AUD ${primaryFee.amountAUD.toLocaleString("en-AU")} ${feeQualifiers ? `(${feeQualifiers})` : ""}`
           : (primaryFee?.label ? resolveLocalized(primaryFee.label, locale) : "")).trim() + (feeIsEstimate ? ` (${estimateQualifier(locale)})` : "");
-      const traNote = traProgram ? traProgramNote(traProgram, locale) : "";
-      const processing = primaryPathway.processingTimeWeeks
+      const traNote = traProgram ? traProgramNote(traProgram, locale) : eaAssessment ? eaNote(eaAssessment, locale as "en" | "tr" | "zh-Hans") : "";
+      const processing = primaryPathway.processingTimeWeeks?.label
+        ? resolveLocalized(primaryPathway.processingTimeWeeks.label, locale)
+        : primaryPathway.processingTimeWeeks
         ? `${primaryPathway.processingTimeWeeks.standard} wk${primaryPathway.processingTimeWeeks.ifIncomplete ? ` (${primaryPathway.processingTimeWeeks.ifIncomplete} wk if incomplete)` : ""}`
         : "";
       // primaryPathway.notes is LocalizedString[] ({ en, tr, "zh-Hans" } |
@@ -5242,8 +5262,8 @@ function buildFinancialRoadmap(
           ? `Otorite: ${authority.authorityName}. Varsayılan yol: ${pathwayName}.${primaryPathway.processingTimeWeeks ? ` İşlem süresi: ${processing}.` : ""}${primaryPathway.minWorkExperienceMonths ? ` Minimum iş deneyimi: ${primaryPathway.minWorkExperienceMonths} ay.` : primaryPathway.minWorkExperienceYears ? ` Minimum iş deneyimi: ${primaryPathway.minWorkExperienceYears} yıl.` : ""} ${notesText ? "Notlar: " + notesText : ""}${traNote ? ` ${traNote}` : ""} Kaynak: ${authority.sourceDocument} (last verified ${authority.lastVerified}).`
           : `Assessing authority: ${authority.authorityName}. Default pathway: ${pathwayName}.${primaryPathway.processingTimeWeeks ? ` Processing time: ${processing}.` : ""}${primaryPathway.minWorkExperienceMonths ? ` Min work experience: ${primaryPathway.minWorkExperienceMonths} months.` : primaryPathway.minWorkExperienceYears ? ` Min work experience: ${primaryPathway.minWorkExperienceYears} years.` : ""} ${notesText ? "Notes: " + notesText : ""}${traNote ? ` ${traNote}` : ""} Source: ${authority.sourceDocument} (last verified ${authority.lastVerified}).`,
         kind: "skills_assessment",
-        amountMin: osap ? osap.amountMin : primaryFee?.amountAUD,
-        amountMax: osap ? osap.amountMax : primaryFee?.amountAUD,
+        amountMin: osap ? osap.amountMin : eaAssessment ? eaAssessment.amountMin : primaryFee?.amountAUD,
+        amountMax: osap ? osap.amountMax : eaAssessment ? eaAssessment.amountMax : primaryFee?.amountAUD,
         estimated: feeIsEstimate || undefined,
       });
     } else {

@@ -1,0 +1,49 @@
+{
+  "sourceDocument": "data/knowledge/Skill Assessments/Australian Dental Council Limited/Australian Dental Council Limited.pdf",
+  "sourceTitle": "Australian Dental Council — Skills assessment",
+  "sourcePageCount": 3,
+  "extractedDate": "2026-09-26",
+  "generatedBy": "scripts/generate-adc-fees.ts",
+  "amountsStated": false,
+  "scope": {
+    "page": 2,
+    "quote": "We only conduct skills assessments for dentists and dental specialists.",
+    "occupations": [
+      "dentists",
+      "dental specialists"
+    ]
+  },
+  "fees": [
+    {
+      "id": "adc_skills_assessment_after_dpa",
+      "item": "Skills assessment requested after the dental practitioner assessment process",
+      "amountAud": 0,
+      "page": 1,
+      "quote": "If you require a skills assessment for migration purposes after you finish the dental practitioner assessment process, you will be given the opportunity to request one then. There is no additional charge for this service."
+    }
+  ],
+  "notStated": [
+    {
+      "id": "adc_skills_assessment_fee",
+      "item": "Skills assessment fee (skills assessment only, or registration and skills assessment)",
+      "page": 2,
+      "quote": "Complete your skills application and make payment as instructed.",
+      "status": "needs human verification",
+      "reason": "The document names or implies this fee but states no amount."
+    },
+    {
+      "id": "adc_reissue_fee",
+      "item": "Administrative fee to reissue a lapsed skills assessment letter",
+      "page": 3,
+      "quote": "Contact us if your assessment lapses and you wish to have your letter reissued. An administrative fee will apply.",
+      "status": "needs human verification",
+      "reason": "The document names or implies this fee but states no amount."
+    }
+  ],
+  "processingTimeStated": false,
+  "validity": {
+    "years": 3,
+    "page": 3,
+    "quote": "your skills assessment is valid for three years from the date of issue."
+  }
+}

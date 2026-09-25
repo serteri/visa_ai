@@ -1,13 +1,17 @@
 import type { SkillsAssessmentAuthority, LocalizedString } from "../types";
+import { EA_FEES_SOURCE, eaRegistryFees } from "../engineers-australia-fees";
 
 /**
  * Engineers Australia (The Institution of Engineers Australia)
  * Source: Engineers Australia — Prepare your Migration Skills Assessment application
  *         (official guide) + EA web content
- * Verified: 2026-08-04
+ * Fees: src/data/skills-assessment/engineers-australia-fees.json (scripts/generate-engineers-australia-fees.ts), from
+ *       Engineers Australia's 2026–2027 migration skills assessment fee tables ("The Institution of Engineers Australia
+ *       (1).pdf", p.7-10): by pathway and add-on, excl. and incl. GST -- not by occupational category.
+ * Verified: 2026-09-26
  *
- * NOTE: The source PDF (175 pages) is mostly the accredited-program list.
- * Fees and processing times are NOT listed — marked as null.
+ * Occupations: the Home Affairs skilled occupation list (data/knowledge/Skilled Occupation List.md) names Engineers
+ * Australia for every code below.
  * English requirements changed for tests taken on/after 7 August 2025.
  *
  * Multilanguage support: EN, TR, ZH-Hans
@@ -16,9 +20,8 @@ export const engineersAustraliaAuthority: SkillsAssessmentAuthority = {
   authorityId: "EA",
   authorityName: "Engineers Australia (The Institution of Engineers Australia)",
   country: "AU",
-  lastVerified: "2026-08-04",
-  sourceDocument:
-    "Engineers Australia — Prepare your Migration Skills Assessment application (official guide) + EA web content",
+  lastVerified: "2026-09-26",
+  sourceDocument: `Engineers Australia — Prepare your Migration Skills Assessment application (official guide) + EA web content; fees: ${EA_FEES_SOURCE.title}`,
   notes: [
     {
       en: "Engineers Australia is the largest Australian assessing authority by occupation count (27+ engineering occupations across 4 categories).",
@@ -102,8 +105,6 @@ export const engineersAustraliaAuthority: SkillsAssessmentAuthority = {
     { anzscoCode: "312211", title: "Civil Engineering Draftsperson" },
     { anzscoCode: "233311", title: "Electrical Engineer" },
     { anzscoCode: "312311", title: "Electrical Engineering Draftsperson" },
-    { anzscoCode: "312312", title: "Electrical Engineering Technician" },
-    { anzscoCode: "312412", title: "Electronic Engineering Technician" },
     { anzscoCode: "233411", title: "Electronics Engineer" },
     { anzscoCode: "312411", title: "Electronic Engineering Draftsperson" },
     { anzscoCode: "133211", title: "Engineering Manager" },
@@ -115,12 +116,19 @@ export const engineersAustraliaAuthority: SkillsAssessmentAuthority = {
     { anzscoCode: "233112", title: "Materials Engineer" },
     { anzscoCode: "233512", title: "Mechanical Engineer" },
     { anzscoCode: "312511", title: "Mechanical Engineering Draftsperson" },
-    { anzscoCode: "312512", title: "Mechanical Engineering Technician" },
     { anzscoCode: "233612", title: "Petroleum Engineer" },
     { anzscoCode: "233916", title: "Naval Architect" },
     { anzscoCode: "233214", title: "Structural Engineer" },
     { anzscoCode: "263311", title: "Telecommunications Engineer" },
     { anzscoCode: "263312", title: "Telecommunications Network Engineer" },
+    // Home Affairs skilled occupation list names Engineers Australia for these (previously missing, or under TRA).
+    { anzscoCode: "233215", title: "Transport Engineer" },
+    { anzscoCode: "233513", title: "Production or Plant Engineer" },
+    { anzscoCode: "233611", title: "Mining Engineer (excluding Petroleum)" },
+    { anzscoCode: "312999", title: "Building and Engineering Technicians nec" },
+    { anzscoCode: "313212", title: "Telecommunications Field Engineer" },
+    { anzscoCode: "313213", title: "Telecommunications Network Planner" },
+    { anzscoCode: "313214", title: "Telecommunications Technical Officer or Technologist" },
   ],
   // ── Occupational Categories ──────────────────────────────────────────
   occupationalCategories: [
@@ -192,17 +200,7 @@ export const engineersAustraliaAuthority: SkillsAssessmentAuthority = {
         },
       ],
       requiresPriorAssessment: false,
-      fees: [
-        {
-          label: { en: "Application fee", tr: "Başvuru ücreti", "zh-Hans": "申请费" },
-          amountAUD: undefined,
-          note: {
-            en: "Not stated in source document; confirm current fee schedule on Engineers Australia website.",
-            tr: "Kaynak belgede belirtilmemiş; güncel ücret tarifesini Engineers Australia web sitesinden doğrulayın.",
-            "zh-Hans": "源文件未注明；请在Engineers Australia网站确认当前费用表。",
-          },
-        },
-      ],
+      fees: eaRegistryFees("australian"),
       documentRequirements: [
         {
           en: "High-resolution colour scan of valid passport bio data page.",
@@ -279,17 +277,7 @@ export const engineersAustraliaAuthority: SkillsAssessmentAuthority = {
         },
       ],
       requiresPriorAssessment: false,
-      fees: [
-        {
-          label: { en: "Application fee", tr: "Başvuru ücreti", "zh-Hans": "申请费" },
-          amountAUD: undefined,
-          note: {
-            en: "Not stated in source document.",
-            tr: "Kaynak belgede belirtilmemiş.",
-            "zh-Hans": "源文件未注明。",
-          },
-        },
-      ],
+      fees: eaRegistryFees("accord"),
       documentRequirements: [
         {
           en: "Same as Australian Qualification Pathway document list.",
@@ -314,17 +302,7 @@ export const engineersAustraliaAuthority: SkillsAssessmentAuthority = {
         },
       ],
       requiresPriorAssessment: false,
-      fees: [
-        {
-          label: { en: "Application fee", tr: "Başvuru ücreti", "zh-Hans": "申请费" },
-          amountAUD: undefined,
-          note: {
-            en: "Not stated in source document.",
-            tr: "Kaynak belgede belirtilmemiş.",
-            "zh-Hans": "源文件未注明。",
-          },
-        },
-      ],
+      fees: eaRegistryFees("accord"),
       documentRequirements: [
         {
           en: "Same as Australian Qualification Pathway document list.",
@@ -349,17 +327,7 @@ export const engineersAustraliaAuthority: SkillsAssessmentAuthority = {
         },
       ],
       requiresPriorAssessment: false,
-      fees: [
-        {
-          label: { en: "Application fee", tr: "Başvuru ücreti", "zh-Hans": "申请费" },
-          amountAUD: undefined,
-          note: {
-            en: "Not stated in source document.",
-            tr: "Kaynak belgede belirtilmemiş.",
-            "zh-Hans": "源文件未注明。",
-          },
-        },
-      ],
+      fees: eaRegistryFees("accord"),
       documentRequirements: [
         {
           en: "Same as Australian Qualification Pathway document list.",
@@ -405,17 +373,7 @@ export const engineersAustraliaAuthority: SkillsAssessmentAuthority = {
       ],
       requiresPriorAssessment: false,
       minAcademicLevel: "AQF Level 6 (Advanced Diploma / Associate Degree) minimum",
-      fees: [
-        {
-          label: { en: "Application fee", tr: "Başvuru ücreti", "zh-Hans": "申请费" },
-          amountAUD: undefined,
-          note: {
-            en: "Not stated in source document.",
-            tr: "Kaynak belgede belirtilmemiş.",
-            "zh-Hans": "源文件未注明。",
-          },
-        },
-      ],
+      fees: eaRegistryFees("cdr"),
       documentRequirements: [
         {
           en: "High-resolution colour scan of valid passport bio data page.",

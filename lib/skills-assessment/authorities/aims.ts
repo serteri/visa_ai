@@ -1,14 +1,17 @@
 import type { SkillsAssessmentAuthority, LocalizedString } from "../types";
+import { AIMS_FEES_SOURCE, AIMS_PROCESSING, AIMS_PROCESSING_LABEL, aimsFee, aimsRegistryFees } from "../aims-fees";
 
 /**
  * Australian Institute of Medical Scientists (AIMS)
- * Source: "Guide to Employer Assisted Professional and Skills Qualifications"
- * (GEAPSQ v7.0, 10/2023) + AIMS Migration Skills Assessment web page
- * (English requirements updated 12 March 2026)
- * Verified: 2026-08-04
+ * Source: AIMS "Qualification and Skills Assessments for Migration" -- web pages, the current individual guidelines
+ * (GAPSQ v18.4 03/2026 for 234611/311213, GAPSQP v12.4 03/2026 for 311216), the employer-requested guidelines
+ * (GEAPSQ v7.0) and the application forms, in data/knowledge/Skill Assessments/Australian Institute of Medical Scientists/.
+ * Fees: src/data/skills-assessment/aims-fees.json (scripts/generate-aims-fees.ts; fee table p.18-19): outside Australia
+ * excl. GST / within Australia incl. GST, tagged applicantLocation so the report quotes the applicant's.
+ * Occupations: the Home Affairs skilled occupation list names AIMS for 234611, 311213 and 311216.
+ * Verified: 2026-09-26
  *
  * Multilanguage support: EN, TR, ZH-Hans
- * IMPORTANT: Source document is employer-assisted — individual MSA may differ.
  */
 export const aimsAuthority: SkillsAssessmentAuthority = {
   authorityId: "AIMS",
@@ -18,15 +21,15 @@ export const aimsAuthority: SkillsAssessmentAuthority = {
     occupations: [
     { anzscoCode: "234611", title: "Medical Laboratory Scientist" },
     { anzscoCode: "311213", title: "Medical Laboratory Technician" },
+    { anzscoCode: "311216", title: "Pathology Collector" },
   ],
   assessmentContext: {
-    en: "Source document (GEAPSQ v7.0) is titled 'Guide to Employer Assisted Professional and Skills Qualifications' — an employer-assisted skills and qualifications assessment. AIMS explicitly states this specific assessment is NOT valid for individual immigration purposes on its own; verify with AIMS / Department of Home Affairs whether a separate individual Migration Skills Assessment application is required.",
-    tr: "Kaynak belge (GEAPSQ v7.0) 'İşveren Destekli Profesyonel ve Beceri Nitelikleri Kılavuzu' başlıklıdır — işveren destekli bir beceri ve nitelik değerlendirmesidir. AIMS bu değerlendirmenin tek başına bireysel göçmenlik amaçları için geçerli olmadığını açıkça belirtir; AIMS / Göçmenlik Departmanı ile bireysel Göçmenlik Beceri Değerlendirmesi başvurusunun gerekli olup olmadığını doğrulayın.",
-    "zh-Hans": "源文件(GEPSQ v7.0)标题为'雇主协助专业和技能资格指南' ——这是一个雇主协助的技能和资格评估。AIMS明确表示，这种评估本身不适用于个人移民目的；请与AIMS/内政部核实是否需要单独的个人移民技能评估申请。",
+    en: "AIMS assesses individual applicants (skills and qualifications assessment for migration) and, separately, employer-requested assessments -- the latter 'not for individuals'. The report quotes the individual assessment.",
+    tr: "AIMS bireysel başvuru sahiplerini (göç için beceri ve nitelik değerlendirmesi) ve ayrıca işveren talepli değerlendirmeleri yapar -- ikincisi 'bireyler için değil'. Rapor bireysel değerlendirmeyi gösterir.",
+    "zh-Hans": "AIMS 为个人申请人进行（移民技能和资格）评估，另有雇主申请的评估——后者“不适用于个人”。报告显示的是个人评估。",
   },
-  lastVerified: "2026-08-04",
-  sourceDocument:
-    "AIMS — Guide to Employer Assisted Professional and Skills Qualifications (GEAPSQ v7.0, 10/2023) + AIMS Qualification and Skills Assessments for Migration web page (English requirements updated 12 March 2026)",
+  lastVerified: "2026-09-26",
+  sourceDocument: AIMS_FEES_SOURCE.title,
   fraudPolicy: {
     en: "Application rejected and applicant banned from submitting further AIMS applications for 2 years from the date of notification of suspected fraudulent documents.",
     tr: "Başvuru reddedilir ve başvuru sahibi, şüpheli sahte belgelerin bildirim tarihinden itibaren 2 yıl boyunca başka AIMS başvurusu yapmaktan yasaklanır.",
@@ -41,12 +44,11 @@ export const aimsAuthority: SkillsAssessmentAuthority = {
     },
   },
   processingTime: {
-    standardWeeks: 16,
-    maxWeeksIfVerificationDelayed: 26,
+    standardWeeks: AIMS_PROCESSING.employerRequested.weeks,
     note: {
-      en: "AIMS aims to complete assessments within 16 weeks; document verification may extend this to up to 6 months (~26 weeks). No express/priority service is offered. Pending applications held for up to 1 year from receipt to allow issue rectification.",
-      tr: "AIMS değerlendirmeleri 16 hafta içinde tamamlamayı hedefler; belge doğrulama bunu 6 aya (~26 hafta) kadar uzatabilir. Hızlı/öncelikli hizmet sunulmaz. Bekleyen başvurular, sorunların düzeltilmesi için alındıktan sonra 1 yıla kadar tutulur.",
-      "zh-Hans": "AIMS旨在16周内完成评估；文件验证可能将此延长至6个月（约26周）。不提供加急/优先服务。待处理申请自收到之日起保留最多1年以便纠正问题。",
+      en: `Individual applicants: AIMS aims to complete assessments within ${AIMS_PROCESSING.individual.months} months of receipt; document verification may extend it (pp.${AIMS_PROCESSING.individual.pages.join(", ")}). Employer-requested assessments: up to ${AIMS_PROCESSING.employerRequested.weeks} weeks (p.${AIMS_PROCESSING.employerRequested.page}).`,
+      tr: `Bireysel başvurular: AIMS değerlendirmeleri alındıktan sonra ${AIMS_PROCESSING.individual.months} ay içinde tamamlamayı hedefler; belge doğrulaması uzatabilir (s.${AIMS_PROCESSING.individual.pages.join(", ")}). İşveren talepli değerlendirmeler: ${AIMS_PROCESSING.employerRequested.weeks} haftaya kadar (s.${AIMS_PROCESSING.employerRequested.page}).`,
+      "zh-Hans": `个人申请：AIMS 力争在收到后 ${AIMS_PROCESSING.individual.months} 个月内完成评估，文件核实可能延长（第 ${AIMS_PROCESSING.individual.pages.join("、")} 页）。雇主申请的评估：最长 ${AIMS_PROCESSING.employerRequested.weeks} 周（第 ${AIMS_PROCESSING.employerRequested.page} 页）。`,
     },
   },
   reviewAndAppeal: {
@@ -62,27 +64,13 @@ export const aimsAuthority: SkillsAssessmentAuthority = {
     appeal: {
       windowMonths: 1,
       note: {
-        en: "Written request within 1 month of receiving the Stage 1 AIMS Review Results Letter. Conducted by a different committee than the original assessment. Fee applies — refer to AIMS website for current amount.",
-        tr: "Aşama 1 AIMS İnceleme Sonuç Mektubunu aldıktan sonra 1 ay içinde yazılı talep. Orijinal değerlendirmeden farklı bir komite tarafından yürütülür. Ücretlidir — güncel tutar için AIMS web sitesine bakın.",
-        "zh-Hans": "在收到第一阶段AIMS审查结果信后1个月内提出书面请求。由与原始评估不同的委员会进行。需付费——当前金额请参阅AIMS网站。",
+        en: `Written request within 1 month of receiving the Stage 1 AIMS Review Results Letter. Conducted by a different committee than the original assessment. Fee: AUD ${aimsFee("aims_appeal").outsideAustraliaExclGstAud} outside Australia / AUD ${aimsFee("aims_appeal").withinAustraliaInclGstAud} within Australia incl. GST (p.${aimsFee("aims_appeal").page}).`,
+        tr: `Aşama 1 AIMS İnceleme Sonuç Mektubunu aldıktan sonra 1 ay içinde yazılı talep. Orijinal değerlendirmeden farklı bir komite tarafından yürütülür. Ücret: Avustralya dışında AUD ${aimsFee("aims_appeal").outsideAustraliaExclGstAud} / Avustralya içinde KDV dahil AUD ${aimsFee("aims_appeal").withinAustraliaInclGstAud} (s.${aimsFee("aims_appeal").page}).`,
+        "zh-Hans": `在收到第一阶段AIMS审查结果信后1个月内提出书面请求。由与原始评估不同的委员会进行。费用：澳洲境外 AUD ${aimsFee("aims_appeal").outsideAustraliaExclGstAud} / 澳洲境内含 GST AUD ${aimsFee("aims_appeal").withinAustraliaInclGstAud}（第 ${aimsFee("aims_appeal").page} 页）。`,
       },
     },
   },
-  fees: [
-    {
-      label: {
-        en: "All AIMS assessment fees",
-        tr: "Tüm AIMS değerlendirme ücretleri",
-        "zh-Hans": "所有AIMS评估费用",
-      },
-      amountAUD: undefined,
-      note: {
-        en: "Fees not published in the guide — refer to the AIMS website for current fees. All fees are non-refundable once preliminary work has commenced.",
-        tr: "Ücretler kılavuzda yayınlanmamıştır — güncel ücretler için AIMS web sitesine bakın. Ön çalışma başladıktan sonra tüm ücretler iade edilemez.",
-        "zh-Hans": "费用未在指南中公布——请参阅AIMS网站了解当前费用。初步工作开始后，所有费用均不可退还。",
-      },
-    },
-  ],
+  fees: aimsRegistryFees("aims_assessment_mls_mlt", { en: "Skills and qualifications assessment", tr: "Beceri ve nitelik değerlendirmesi", "zh-Hans": "技能和资格评估" }),
   englishRequirements: [
     {
       test: "IELTS (Academic or General Training)",
@@ -131,12 +119,8 @@ export const aimsAuthority: SkillsAssessmentAuthority = {
         },
       ],
       examRequired: false,
-      fees: [
-        {
-          label: { en: "Assessment fee", tr: "Değerlendirme ücreti", "zh-Hans": "评估费" },
-          amountAUD: undefined,
-        },
-      ],
+      fees: aimsRegistryFees("aims_assessment_mls_mlt", { en: "Assessment fee", tr: "Değerlendirme ücreti", "zh-Hans": "评估费" }),
+      processingTimeWeeks: { standard: AIMS_PROCESSING.individual.months * 4, label: AIMS_PROCESSING_LABEL },
       documentRequirements: [],
       notes: [
         {
@@ -204,16 +188,8 @@ export const aimsAuthority: SkillsAssessmentAuthority = {
         tr: "Sınava giremeyen veya başarısız olan başvurular, Tıbbi Laboratuvar Teknisyeni (ANZSCO 311213) için uygun değerlendirilebilir.",
         "zh-Hans": "不符合考试资格或考试未通过的申请人，可作为医学实验室技术员（ANZSCO 311213）被评估。",
       },
-      fees: [
-        {
-          label: {
-            en: "Assessment + examination fee",
-            tr: "Değerlendirme + sınav ücreti",
-            "zh-Hans": "评估+考试费用",
-          },
-          amountAUD: undefined,
-        },
-      ],
+      fees: [...aimsRegistryFees("aims_assessment_mls_mlt", { en: "Assessment fee", tr: "Değerlendirme ücreti", "zh-Hans": "评估费" }), ...aimsRegistryFees("aims_exam_mls", { en: "Professional Examination", tr: "Mesleki Sınav", "zh-Hans": "专业考试" })],
+      processingTimeWeeks: { standard: AIMS_PROCESSING.individual.months * 4, label: AIMS_PROCESSING_LABEL },
       documentRequirements: [],
       notes: [
         {
@@ -271,15 +247,14 @@ export const aimsAuthority: SkillsAssessmentAuthority = {
         },
       },
       fees: [
+        ...aimsRegistryFees("aims_assessment_mls_mlt", { en: "Assessment fee", tr: "Değerlendirme ücreti", "zh-Hans": "评估费" }),
         {
-          label: {
-            en: "Assessment + special examination fee",
-            tr: "Değerlendirme + özel sınav ücreti",
-            "zh-Hans": "评估+特殊考试费用",
-          },
+          label: { en: "Special Professional Examination", tr: "Özel Mesleki Sınav", "zh-Hans": "特别专业考试" },
           amountAUD: undefined,
+          note: { en: "needs human verification -- not in the AIMS fee table (p.18-19)", tr: "insan doğrulaması gerekir -- AIMS ücret tablosunda yok (s.18-19)", "zh-Hans": "需人工核实——不在 AIMS 费用表中（第 18-19 页）" },
         },
       ],
+      processingTimeWeeks: { standard: AIMS_PROCESSING.individual.months * 4, label: AIMS_PROCESSING_LABEL },
       documentRequirements: [],
     },
     // ── MLT Option 1: Diploma + Work Experience ─────────────────────────
@@ -304,12 +279,8 @@ export const aimsAuthority: SkillsAssessmentAuthority = {
         },
       ],
       examRequired: false,
-      fees: [
-        {
-          label: { en: "Assessment fee", tr: "Değerlendirme ücreti", "zh-Hans": "评估费" },
-          amountAUD: undefined,
-        },
-      ],
+      fees: aimsRegistryFees("aims_assessment_mls_mlt", { en: "Assessment fee", tr: "Değerlendirme ücreti", "zh-Hans": "评估费" }),
+      processingTimeWeeks: { standard: AIMS_PROCESSING.individual.months * 4, label: AIMS_PROCESSING_LABEL },
       documentRequirements: [],
       notes: [
         {
@@ -336,12 +307,29 @@ export const aimsAuthority: SkillsAssessmentAuthority = {
         },
       ],
       examRequired: false,
-      fees: [
+      fees: aimsRegistryFees("aims_assessment_mls_mlt", { en: "Assessment fee", tr: "Değerlendirme ücreti", "zh-Hans": "评估费" }),
+      processingTimeWeeks: { standard: AIMS_PROCESSING.individual.months * 4, label: AIMS_PROCESSING_LABEL },
+      documentRequirements: [],
+    },
+    // ── Pathology Collector / Phlebotomist (311216) ────────────────────
+    {
+      pathwayId: "PC_ASSESSMENT",
+      occupation: "Pathology Collector — ANZSCO 311216",
+      name: {
+        en: "Pathology Collector / Phlebotomist — skills and qualifications assessment",
+        tr: "Patoloji Numune Toplayıcı / Flebotomist — beceri ve nitelik değerlendirmesi",
+        "zh-Hans": "病理采样员 / 抽血员——技能和资格评估",
+      },
+      eligibleFor: [
         {
-          label: { en: "Assessment fee", tr: "Değerlendirme ücreti", "zh-Hans": "评估费" },
-          amountAUD: undefined,
+          en: "As set out in AIMS's Pathology Collector / Phlebotomist guidelines (GAPSQP v12.4); in Australia the minimum primary qualification is a Certificate III in Pathology Collection (HLT37215) and current first aid certification (p.81).",
+          tr: "AIMS'in Patoloji Numune Toplayıcı / Flebotomist kılavuzunda (GAPSQP v12.4) belirtildiği gibi; Avustralya'da asgari temel nitelik Certificate III in Pathology Collection (HLT37215) ve geçerli ilk yardım sertifikasıdır (s.81).",
+          "zh-Hans": "按 AIMS 病理采样员 / 抽血员指南（GAPSQP v12.4）；在澳洲，最低基本资格为 Certificate III in Pathology Collection（HLT37215）及有效的急救证书（第 81 页）。",
         },
       ],
+      examRequired: false,
+      fees: aimsRegistryFees("aims_assessment_pathology_collector", { en: "Assessment fee", tr: "Değerlendirme ücreti", "zh-Hans": "评估费" }),
+      processingTimeWeeks: { standard: AIMS_PROCESSING.individual.months * 4, label: AIMS_PROCESSING_LABEL },
       documentRequirements: [],
     },
   ],

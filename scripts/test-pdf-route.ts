@@ -1896,6 +1896,80 @@ async function runRoadmapLabelAndOsapChecks(
   }
 }
 
+/**
+ * Engineers Australia and AIMS fees from their extracted fee tables (engineers-australia-fees.json, aims-fees.json),
+ * read from the PDF bytes in en/tr/zh-Hans; and the authority fixes from the Home Affairs skilled occupation list
+ * (311213 / 311216 -> AIMS, 231113 -> VETASSESS, CASA "around 14 days").
+ */
+async function runExtractedAuthorityChecks(
+  GET: (req: Request, ctx: { params: Promise<{ reportId: string }> }) => Promise<Response>,
+  rows: Map<string, Record<string, unknown>>,
+  outDir: string,
+  fail: (msg: string) => void
+) {
+  const render = async (reportId: string, input: ReadinessInput, locale: Locale) => {
+    const report = runReadinessEngine(input);
+    rows.set(reportId, {
+      id: reportId, email: "qa@example.com", locale, report_json: JSON.parse(JSON.stringify(report)), input_json: JSON.parse(JSON.stringify(input)),
+      agent_id: null, is_unlocked: true, full_name: "Test Persona", preview_data: null,
+    });
+    const res = await GET(new Request(`http://localhost/api/reports/${reportId}/pdf`), { params: Promise.resolve({ reportId }) });
+    if (res.status !== 200) return { report, flat: null as string | null };
+    const raw = (await extractPdfPages(new Uint8Array(await res.arrayBuffer()))).join("\n");
+    await writeFile(path.join(outDir, `${reportId}.txt`), raw);
+    return { report, flat: locale === "zh-Hans" ? squashAll(raw) : flatten(raw) };
+  };
+  const amount = (a: string) => new RegExp(`(AUD|澳元)\\s*${a.replace(/[–-]/g, "[–-]").replace(/\./g, "\\.")}(?![\\d,])`);
+  const cases: Array<{ name: string; occupation: string; country: string; id: string; amount: string; not: string[]; min: number; max: number; also?: RegExp }> = [
+    { name: "ea-233211", occupation: "Civil Engineer 233211", country: "IN", id: "EA", amount: "940–1,034", not: ["835"], min: 940, max: 1034, also: /p\.9|s\.9|第9页/ },
+    { name: "ea-133211", occupation: "Engineering Manager 133211", country: "IN", id: "EA", amount: "1,375–1,512.50", not: ["835"], min: 1375, max: 1512.5 },
+    { name: "aims-234611-IN", occupation: "Medical Laboratory Scientist 234611", country: "IN", id: "AIMS", amount: "900", not: ["990"], min: 900, max: 900 },
+    { name: "aims-234611-AU", occupation: "Medical Laboratory Scientist 234611", country: "AU", id: "AIMS", amount: "990", not: ["900"], min: 990, max: 990 },
+    { name: "aims-311216-IN", occupation: "Pathology Collector 311216", country: "IN", id: "AIMS", amount: "900", not: ["990"], min: 900, max: 900 },
+  ];
+  for (const c of cases) {
+    for (const locale of LOCALES) {
+      const label = `extracted ${c.name}/${locale}`;
+      console.log(`\n=== ${label} ===`);
+      let caseFailed = false;
+      const f = (m: string) => { caseFailed = true; fail(`${label}: ${m}`); };
+      const input: ReadinessInput = { ...base, occupation: c.occupation, occupationConfirmed: "yes", sponsorOrFamily: undefined, currentCountry: c.country, qualificationLevel: "Bachelor's Degree", offshoreExperienceYears: 5, locale };
+      const { report, flat } = await render(`extracted-${c.name}-${locale}`, input, locale);
+      const row = report.financialRoadmap.find((i) => i.kind === "skills_assessment");
+      if (!row?.category.includes(`(${c.id})`)) f(`roadmap skills row "${row?.category}", expected ${c.id}`);
+      else if (row.amountMin !== c.min || row.amountMax !== c.max) f(`roadmap amount ${row.amountMin}-${row.amountMax}, expected ${c.min}-${c.max}`);
+      if (flat === null) { f("route did not return the PDF"); continue; }
+      if (!amount(c.amount).test(flat)) f(`PDF does not show AUD ${c.amount}`);
+      for (const n of c.not) if (amount(n).test(flat)) f(`PDF shows AUD ${n}`);
+      if (c.also && !c.also.test(flat)) f(`PDF does not cite ${c.also.source}`);
+      if (!caseFailed) console.log(`  ✅ ok (${c.id} AUD ${c.amount})`);
+    }
+  }
+
+  // Authority fixes (engine + PDF, en).
+  const authorityCases: Array<{ occupation: string; id: string; name: string; text?: RegExp }> = [
+    { occupation: "Medical Laboratory Technician 311213", id: "AIMS", name: "Australian Institute of Medical Scientists" },
+    { occupation: "Pathology Collector 311216", id: "AIMS", name: "Australian Institute of Medical Scientists", text: /Pathology Collector \/ Phlebotomist/ },
+    { occupation: "Flying Instructor 231113", id: "VETASSESS", name: "Vocational Education and Training Assessment Services" },
+    { occupation: "Aeroplane Pilot 231111", id: "CASA", name: "Civil Aviation Safety Authority", text: /around 14 days/ },
+  ];
+  for (const c of authorityCases) {
+    const label = `authority-fix ${c.occupation}/en`;
+    console.log(`\n=== ${label} ===`);
+    let caseFailed = false;
+    const f = (m: string) => { caseFailed = true; fail(`${label}: ${m}`); };
+    const input: ReadinessInput = { ...base, occupation: c.occupation, occupationConfirmed: "yes", sponsorOrFamily: undefined, locale: "en" };
+    const { report, flat } = await render(`authfix-${c.occupation.slice(-6)}-en`, input, "en");
+    const row = report.financialRoadmap.find((i) => i.kind === "skills_assessment");
+    if (!row?.category.includes(`(${c.id})`)) f(`roadmap skills row "${row?.category}", expected ${c.id}`);
+    if (flat === null) { f("route did not return the PDF"); continue; }
+    if (!flat.includes(c.name)) f(`PDF does not name ${c.name}`);
+    if (c.text && !c.text.test(flat)) f(`PDF does not contain ${c.text.source}`);
+    if (/\b14 business days\b/.test(flat) && c.id === "CASA") f('PDF still says "14 business days"');
+    if (!caseFailed) console.log(`  ✅ ok (${c.id})`);
+  }
+}
+
 async function main() {
   let failed = false;
   const outDir = path.join(process.cwd(), "temp_tests");
@@ -2015,6 +2089,12 @@ async function main() {
 
   // Roadmap skills-assessment label (no "((...))" / "技能评估（技能评估 — ...）"); TRA OSAP fee where TRA requires it
   await runRoadmapLabelAndOsapChecks(GET, rows, outDir, (m) => {
+    failed = true;
+    console.error("  ❌ " + m);
+  });
+
+  // Engineers Australia / AIMS fees from their extracted tables; Home Affairs authority fixes (AIMS, VETASSESS, CASA)
+  await runExtractedAuthorityChecks(GET, rows, outDir, (m) => {
     failed = true;
     console.error("  ❌ " + m);
   });

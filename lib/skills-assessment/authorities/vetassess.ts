@@ -50,6 +50,8 @@ export const vetassessAuthority: SkillsAssessmentAuthority = {
     // VETASSESS guide p.13 (design occupations: portfolio evidence) and the Home Affairs skilled occupation list
     // (data/knowledge/Skilled Occupation List.md) name VETASSESS; AACA assesses Architect 232111 only.
     { anzscoCode: "232112", title: "Landscape Architect" },
+    // Home Affairs skilled occupation list names VETASSESS (previously listed under CASA, which assesses pilots).
+    { anzscoCode: "231113", title: "Flying Instructor" },
     { anzscoCode: "312111", title: "Architectural Draftsperson" },
     { anzscoCode: "312199", title: "Architectural, Building and Surveying Technicians nec" },
     { anzscoCode: "249211", title: "Art Teacher (Private Tuition)" },

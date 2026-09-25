@@ -1,0 +1,304 @@
+{
+  "sourceDocument": "data/knowledge/Skill Assessments/The Institution of Engineers Australia/The Institution of Engineers Australia (1).pdf",
+  "sourceTitle": "Engineers Australia — Migration skills assessment (fees and additional services, 2026–2027)",
+  "sourcePageCount": 16,
+  "extractedDate": "2026-09-26",
+  "generatedBy": "scripts/generate-engineers-australia-fees.ts",
+  "feePeriod": {
+    "from": 2026,
+    "to": 2027,
+    "page": 7,
+    "quote": "Our migration skills assessment fees for the 2026 to 2027 period are set out below."
+  },
+  "currency": "AUD",
+  "occupationalCategories": {
+    "page": 5,
+    "quote": "Engineers Australia recognises four occupational categories for skilled migration: ● Professional engineer ● Engineering technologist ● Engineering associate ● Engineering manager.",
+    "varyFees": false,
+    "note": "The fee tables do not vary by occupational category."
+  },
+  "pathways": {
+    "australian": {
+      "pages": [
+        7
+      ],
+      "quote": "You can apply via the Australian qualification pathway if: ● your program is accredited by Engineers Australia, and ● you started your program during or after the year of accreditation commencement."
+    },
+    "cdr": {
+      "pages": [
+        7
+      ],
+      "quote": "You should apply via the competency demonstration report (CDR) assessment pathway if you: ● have a provisionally-accredited Australian qualification ● have an engineering qualification that is not accredited ● are seeking to be assessed for an engineering occupation that differs from your accredited qualification title ● have a qualification or a combination of qualifications that demonstrate underpinning knowledge aligned with the nominated occupation. Under the CDR pathway"
+    },
+    "engineeringManager": {
+      "cdrQuote": "Candidates may seek Migration Skills Assessment (MSA) via Competency Demonstration Report (CDR) pathway.",
+      "cdrPage": 6,
+      "skilledEmploymentMandatoryQuote": "This option is available for all engineering occupation categories except engineering manager, where it’s a mandatory part of the CDR assessment.",
+      "skilledEmploymentMandatoryPage": 10
+    },
+    "overseasPhd": {
+      "page": 9,
+      "quote": "You don’t need this service if you completed your PhD in Australia."
+    }
+  },
+  "fees": [
+    {
+      "id": "ea_accord",
+      "item": "Washington/Sydney/Dublin Accord qualification assessment",
+      "kind": "assessment",
+      "pathway": "accord",
+      "addOns": [],
+      "feeExclGstAud": 505,
+      "feeInclGstAud": 555.5,
+      "page": 8,
+      "quote": "Washington/Sydney/Dublin Accord qualification assessment $505 $555.50"
+    },
+    {
+      "id": "ea_accord_rse",
+      "item": "Washington/Sydney/Dublin Accord qualification assessment plus relevant skilled employment assessment",
+      "kind": "assessment",
+      "pathway": "accord",
+      "addOns": [
+        "relevant_skilled_employment"
+      ],
+      "feeExclGstAud": 940,
+      "feeInclGstAud": 1034,
+      "page": 8,
+      "quote": "Washington/Sydney/Dublin Accord qualification assessment plus relevant skilled employment assessment $940 $1034"
+    },
+    {
+      "id": "ea_accord_phd",
+      "item": "Washington/Sydney/Dublin Accord qualification assessment plus overseas PhD assessment",
+      "kind": "assessment",
+      "pathway": "accord",
+      "addOns": [
+        "overseas_phd"
+      ],
+      "feeExclGstAud": 780,
+      "feeInclGstAud": 858,
+      "page": 8,
+      "quote": "Washington/Sydney/Dublin Accord qualification assessment plus overseas PhD assessment $780 $858"
+    },
+    {
+      "id": "ea_accord_rse_phd",
+      "item": "Washington/Sydney/Dublin Accord qualification assessment plus relevant skilled employment assessment plus overseas engineering PhD assessment",
+      "kind": "assessment",
+      "pathway": "accord",
+      "addOns": [
+        "relevant_skilled_employment",
+        "overseas_phd"
+      ],
+      "feeExclGstAud": 1215,
+      "feeInclGstAud": 1336.5,
+      "page": 8,
+      "quote": "Washington/Sydney/Dublin Accord qualification assessment plus relevant skilled employment assessment plus overseas engineering PhD assessment $1215 $1336.50"
+    },
+    {
+      "id": "ea_australian",
+      "item": "Australian engineering qualification assessment",
+      "kind": "assessment",
+      "pathway": "australian",
+      "addOns": [],
+      "feeExclGstAud": 315,
+      "feeInclGstAud": 346.5,
+      "page": 8,
+      "quote": "Australian engineering qualification assessment $315 $346.50"
+    },
+    {
+      "id": "ea_australian_rse",
+      "item": "Australian engineering qualification assessment plus relevant skilled employment assessment",
+      "kind": "assessment",
+      "pathway": "australian",
+      "addOns": [
+        "relevant_skilled_employment"
+      ],
+      "feeExclGstAud": 750,
+      "feeInclGstAud": 825,
+      "page": 8,
+      "quote": "Australian engineering qualification assessment plus relevant skilled employment assessment $750 $825"
+    },
+    {
+      "id": "ea_australian_phd",
+      "item": "Australian engineering qualification assessment plus overseas engineering PhD assessment",
+      "kind": "assessment",
+      "pathway": "australian",
+      "addOns": [
+        "overseas_phd"
+      ],
+      "feeExclGstAud": 590,
+      "feeInclGstAud": 649,
+      "page": 8,
+      "quote": "Australian engineering qualification assessment plus overseas engineering PhD assessment $590 $649"
+    },
+    {
+      "id": "ea_australian_rse_phd",
+      "item": "Australian engineering qualification assessment plus relevant skilled employment assessment plus overseas engineering PhD assessment",
+      "kind": "assessment",
+      "pathway": "australian",
+      "addOns": [
+        "relevant_skilled_employment",
+        "overseas_phd"
+      ],
+      "feeExclGstAud": 1025,
+      "feeInclGstAud": 1127.5,
+      "page": 8,
+      "quote": "Australian engineering qualification assessment plus relevant skilled employment assessment plus overseas engineering PhD assessment $1025 $1127.50"
+    },
+    {
+      "id": "ea_cdr",
+      "item": "Standard competency demonstration report",
+      "kind": "assessment",
+      "pathway": "cdr",
+      "addOns": [],
+      "feeExclGstAud": 940,
+      "feeInclGstAud": 1034,
+      "page": 9,
+      "quote": "Standard competency demonstration report $940 $1034"
+    },
+    {
+      "id": "ea_cdr_rse",
+      "item": "Competency demonstration report plus relevant skilled employment assessment",
+      "kind": "assessment",
+      "pathway": "cdr",
+      "addOns": [
+        "relevant_skilled_employment"
+      ],
+      "feeExclGstAud": 1375,
+      "feeInclGstAud": 1512.5,
+      "page": 9,
+      "quote": "Competency demonstration report plus relevant skilled employment assessment $1375 $1512.50"
+    },
+    {
+      "id": "ea_cdr_phd",
+      "item": "Competency demonstration report plus overseas engineering PhD assessment",
+      "kind": "assessment",
+      "pathway": "cdr",
+      "addOns": [
+        "overseas_phd"
+      ],
+      "feeExclGstAud": 1215,
+      "feeInclGstAud": 1336.5,
+      "page": 9,
+      "quote": "Competency demonstration report plus overseas engineering PhD assessment $1215 $1336.50"
+    },
+    {
+      "id": "ea_cdr_rse_phd",
+      "item": "Competency demonstration report plus relevant skilled employment assessment plus overseas engineering PhD assessment",
+      "kind": "assessment",
+      "pathway": "cdr",
+      "addOns": [
+        "relevant_skilled_employment",
+        "overseas_phd"
+      ],
+      "feeExclGstAud": 1650,
+      "feeInclGstAud": 1815,
+      "page": 9,
+      "quote": "Competency demonstration report plus relevant skilled employment assessment plus overseas engineering PhD assessment $1650 $1815"
+    },
+    {
+      "id": "ea_fast_track",
+      "item": "Fast-track assessment fee (additional to MSA assessment fee)",
+      "kind": "additional_service",
+      "pathway": null,
+      "addOns": [],
+      "feeExclGstAud": 360,
+      "feeInclGstAud": 396,
+      "page": 10,
+      "quote": "Fast-track assessment fee (additional to MSA assessment fee) $360 $396"
+    },
+    {
+      "id": "ea_separate_rse",
+      "item": "Separate relevant skilled employment assessment",
+      "kind": "additional_service",
+      "pathway": null,
+      "addOns": [],
+      "feeExclGstAud": 485,
+      "feeInclGstAud": 533.5,
+      "page": 10,
+      "quote": "Separate relevant skilled employment assessment $485 $533.50"
+    },
+    {
+      "id": "ea_separate_phd",
+      "item": "Separate overseas engineering PhD assessment",
+      "kind": "additional_service",
+      "pathway": null,
+      "addOns": [],
+      "feeExclGstAud": 325,
+      "feeInclGstAud": 357.5,
+      "page": 10,
+      "quote": "Separate overseas engineering PhD assessment $325 $357.50"
+    },
+    {
+      "id": "ea_separate_rse_phd",
+      "item": "Separate relevant skilled employment assessment plus overseas engineering PhD assessment",
+      "kind": "additional_service",
+      "pathway": null,
+      "addOns": [],
+      "feeExclGstAud": 760,
+      "feeInclGstAud": 836,
+      "page": 10,
+      "quote": "Separate relevant skilled employment assessment plus overseas engineering PhD assessment $760 $836"
+    },
+    {
+      "id": "ea_review",
+      "item": "Review fee",
+      "kind": "additional_service",
+      "pathway": null,
+      "addOns": [],
+      "feeExclGstAud": 335,
+      "feeInclGstAud": 368.5,
+      "page": 10,
+      "quote": "Review fee $335 $368.50"
+    },
+    {
+      "id": "ea_appeal",
+      "item": "Appeal fee",
+      "kind": "additional_service",
+      "pathway": null,
+      "addOns": [],
+      "feeExclGstAud": 640,
+      "feeInclGstAud": 704,
+      "page": 10,
+      "quote": "Appeal fee $640 $704"
+    },
+    {
+      "id": "ea_updated_outcome_letter",
+      "item": "Updated outcome letter",
+      "kind": "additional_service",
+      "pathway": null,
+      "addOns": [],
+      "feeExclGstAud": 165,
+      "feeInclGstAud": 181.5,
+      "page": 10,
+      "quote": "Updated outcome letter $165 $181.50"
+    },
+    {
+      "id": "ea_administration",
+      "item": "Standard administration fee",
+      "kind": "additional_service",
+      "pathway": null,
+      "addOns": [],
+      "feeExclGstAud": 130,
+      "feeInclGstAud": 143,
+      "page": 10,
+      "quote": "Standard administration fee $130 $143"
+    }
+  ],
+  "processing": {
+    "standardWeeksToAssessor": 15,
+    "standardPage": 13,
+    "standardQuote": "Migration skills assessment applications submitted for standard assessment generally take 15 weeks to be assigned to an assessor. This doesn’t mean you’ll receive an outcome in this timeframe.",
+    "fastTrackBusinessDaysToAssessor": 20,
+    "fastTrackPage": 9,
+    "fastTrackQuote": "This option carries a fee but your application can be assigned to an assessor within 20 business days. This doesn’t mean you’ll receive an outcome in this timeframe.",
+    "note": "Time to be assigned to an assessor; the document states no time to an outcome."
+  },
+  "notStated": [
+    {
+      "id": "ea_gst_applicability",
+      "item": "Which applicants pay the GST-inclusive figure",
+      "status": "needs human verification",
+      "reason": "Every fee is given excluding and including GST; the document does not say who pays which."
+    }
+  ]
+}

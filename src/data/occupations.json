@@ -1248,7 +1248,7 @@
     {
       "anzsco_code": "311216",
       "occupation_name": "Pathology Collector",
-      "authority": "Unknown",
+      "authority": "AIMS",
       "min_qualification": "AQF Diploma/Bachelor degree",
       "post_qual_experience_years": 1,
       "english_requirement": "Refer to Department of Home Affairs for specific subclass requirements",
@@ -6362,7 +6362,7 @@
     {
       "anzsco_code": "312312",
       "occupation_name": "Electrical Engineering Technician",
-      "authority": "Engineers Australia",
+      "authority": "TRA",
       "min_qualification": "AQF Diploma",
       "post_qual_experience_years": 1,
       "english_requirement": "Not required for assessment",
@@ -6448,7 +6448,7 @@
     {
       "anzsco_code": "312412",
       "occupation_name": "Electronic Engineering Technician",
-      "authority": "Engineers Australia",
+      "authority": "TRA",
       "min_qualification": "AQF Diploma/Bachelor degree",
       "post_qual_experience_years": 1,
       "english_requirement": "Refer to Department of Home Affairs for specific subclass requirements",
@@ -8520,7 +8520,7 @@
     {
       "anzsco_code": "231113",
       "occupation_name": "Flying Instructor",
-      "authority": "CASA",
+      "authority": "VETASSESS",
       "min_qualification": "Not specified in ANZSCO source",
       "post_qual_experience_years": 0,
       "english_requirement": "Refer to Department of Home Affairs for specific subclass requirements",
@@ -10167,7 +10167,7 @@
     {
       "anzsco_code": "311213",
       "occupation_name": "Medical Laboratory Technician",
-      "authority": "VETASSESS",
+      "authority": "AIMS",
       "min_qualification": "AQF Diploma/Bachelor degree",
       "post_qual_experience_years": 1,
       "english_requirement": "Refer to Department of Home Affairs for specific subclass requirements",
@@ -10896,7 +10896,7 @@
     {
       "anzsco_code": "313212",
       "occupation_name": "Telecommunications Field Engineer",
-      "authority": "Unknown",
+      "authority": "Engineers Australia",
       "min_qualification": "AQF Bachelor degree",
       "post_qual_experience_years": 2,
       "english_requirement": "Refer to Department of Home Affairs for specific subclass requirements",
@@ -13228,7 +13228,7 @@
     {
       "anzsco_code": "312512",
       "occupation_name": "Mechanical Engineering Technician",
-      "authority": "Engineers Australia",
+      "authority": "TRA",
       "min_qualification": "AQF Diploma/Bachelor degree",
       "post_qual_experience_years": 1,
       "english_requirement": "Refer to Department of Home Affairs for specific subclass requirements",
@@ -13730,7 +13730,7 @@
     {
       "anzsco_code": "233611",
       "occupation_name": "Mining Engineer (excluding Petroleum)",
-      "authority": "Unknown",
+      "authority": "Engineers Australia",
       "min_qualification": "AQF Bachelor degree (Engineering)",
       "post_qual_experience_years": 0,
       "english_requirement": "IELTS 6 each band or PTE Academic 50 each",
@@ -17610,7 +17610,7 @@
     {
       "anzsco_code": "233513",
       "occupation_name": "Production or Plant Engineer",
-      "authority": "Unknown",
+      "authority": "Engineers Australia",
       "min_qualification": "AQF Bachelor degree (Engineering)",
       "post_qual_experience_years": 0,
       "english_requirement": "IELTS 6 each band or PTE Academic 50 each",
@@ -23569,7 +23569,7 @@
     {
       "anzsco_code": "233215",
       "occupation_name": "Transport Engineer",
-      "authority": "Unknown",
+      "authority": "Engineers Australia",
       "min_qualification": "AQF Bachelor degree (Engineering)",
       "post_qual_experience_years": 0,
       "english_requirement": "IELTS 6 each band or PTE Academic 50 each",

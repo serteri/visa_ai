@@ -35,6 +35,12 @@ import { acsAuthority } from "../lib/skills-assessment/authorities/acs";
 import { anmacAuthority } from "../lib/skills-assessment/authorities/anmac";
 import anmacFeesData from "../src/data/health-registration/anmac-fees.json";
 import caanzFeesData from "../src/data/skills-assessment/caanz-fees.json";
+import eaFeesData from "../src/data/skills-assessment/engineers-australia-fees.json";
+import aimsFeesData from "../src/data/skills-assessment/aims-fees.json";
+import adcFeesData from "../src/data/skills-assessment/adc-fees.json";
+import { engineersAustraliaAuthority } from "../lib/skills-assessment/authorities/engineers-australia";
+import { aimsAuthority } from "../lib/skills-assessment/authorities/aims";
+import { adcAuthority } from "../lib/skills-assessment/authorities/adc";
 import { caanzAuthority } from "../lib/skills-assessment/authorities/caanz";
 import { listAuthorities } from "../lib/skills-assessment";
 import { findAuthorityConflicts } from "../lib/skills-assessment/resolve-authority";
@@ -245,6 +251,34 @@ checkSecondInstalment("491", "second_instalment_491");
   if (stray.length) fail(`caanz.ts pathway fees not in caanz-fees.json: ${stray.join(", ")}`);
   if (/PDF, 22 pages/.test(caanzAuthority.sourceDocument)) fail("caanz.ts still cites the \"22 pages\" document");
   if (failures === before) ok(`CA ANZ: ${caanzFeesData.fees.length} fee-table rows (from 1 July 2026): manifest = caanz-fees.json = caanz.ts, each quoted with its page`);
+}
+
+// Engineers Australia / AIMS / ADC: manifest vs extraction vs registry. Every stated fee is dated and quotes its page;
+// the registry carries only extracted figures; ADC's unpriced fees stay null / "needs human verification".
+{
+  const before = failures;
+  const quoted = (factId: string, value: number | null, doc: string, page: number, quote: string) => {
+    const fact = findFact(factId);
+    if (fact.value !== value) fail(`${factId}: manifest ${fact.value} != extraction ${value}`);
+    if (!fact.last_verified) fail(`${factId}: stated in the document but last_verified is null`);
+    if (!fact.source?.includes(doc) || !fact.source.includes(quote) || !fact.source.includes(`p.${page}`)) fail(`${factId}: source must cite ${doc} p.${page} and quote "${quote}"`);
+  };
+  for (const f of eaFeesData.fees) quoted(`${f.id}_fee`, f.feeExclGstAud, eaFeesData.sourceDocument, f.page, f.quote);
+  for (const f of aimsFeesData.fees) quoted(`${f.id}_fee`, f.outsideAustraliaExclGstAud ?? f.withinAustraliaInclGstAud ?? f.singleAmountAud ?? null, aimsFeesData.sourceDocument, f.page, f.quote);
+  for (const f of adcFeesData.fees) quoted(`${f.id}_fee`, f.amountAud, adcFeesData.sourceDocument, f.page, f.quote);
+  for (const n of adcFeesData.notStated) {
+    const fact = findFact(n.id);
+    if (fact.value !== null || fact.last_verified !== null || !fact.source?.startsWith("needs human verification -- document names it but states no amount")) fail(`${n.id}: must be value null, last_verified null, "needs human verification"`);
+  }
+  const registryFigures = (a: { pathways: Array<{ fees: Array<{ amountAUD?: number }> }> }) => a.pathways.flatMap((p) => p.fees.map((f) => f.amountAUD)).filter((v): v is number => v !== undefined);
+  const eaExtracted = new Set(eaFeesData.fees.map((f) => f.feeExclGstAud));
+  const aimsExtracted = new Set(aimsFeesData.fees.flatMap((f) => [f.outsideAustraliaExclGstAud, f.withinAustraliaInclGstAud]));
+  const eaStray = registryFigures(engineersAustraliaAuthority).filter((v) => !eaExtracted.has(v));
+  const aimsStray = registryFigures(aimsAuthority).filter((v) => !aimsExtracted.has(v));
+  if (eaStray.length) fail(`engineers-australia.ts fees not in engineers-australia-fees.json: ${eaStray.join(", ")}`);
+  if (aimsStray.length) fail(`aims.ts fees not in aims-fees.json: ${aimsStray.join(", ")}`);
+  if (registryFigures(adcAuthority).some((v) => v !== 0)) fail("adc.ts carries a fee amount the ADC document does not state");
+  if (failures === before) ok(`Engineers Australia ${eaFeesData.fees.length} / AIMS ${aimsFeesData.fees.length} fee rows: manifest = extraction = registry, each quoted; ADC: no amount stated, 2 fees "needs human verification"`);
 }
 
 // Confirm the known gap is still honestly a gap, not silently "fixed" by

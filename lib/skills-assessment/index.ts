@@ -59,6 +59,15 @@ export function getAuthorityById(authorityId: string): SkillsAssessmentAuthority
 }
 
 /**
+ * Codes listed by more than one registry authority, where registry order would pick the wrong one. The Home Affairs
+ * skilled occupation list (data/knowledge/Skilled Occupation List.md) decides: 311213 Medical Laboratory Technician ->
+ * AIMS (vetassess.ts also lists it, and comes first). A targeted override, not a reorder of AUTHORITIES.
+ */
+const PREFERRED_AUTHORITY: Readonly<Record<string, string>> = {
+  "311213": "AIMS",
+};
+
+/**
  * Looks up the assessing authority for a given occupation code.
  *
  * Accepts AU (ANZSCO/OSCA) and CA (NOC) codes in any of these forms:
@@ -74,6 +83,12 @@ export function getSkillsAssessmentAuthority(
 ): SkillsAssessmentAuthority | null {
   const code = normalizeOccupationCode(occupationCode);
   if (!code) return null;
+
+  const preferred = PREFERRED_AUTHORITY[code];
+  if (preferred) {
+    const authority = AUTHORITIES.find((a) => a.authorityId === preferred && a.occupations.some((o) => o.anzscoCode === code));
+    if (authority) return authority;
+  }
 
   for (const authority of AUTHORITIES) {
     for (const occupation of authority.occupations) {

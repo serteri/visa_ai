@@ -53,6 +53,8 @@ jobs:
       # Therapist's PDF names the Occupational Therapy Council of Australia, not Occupational Therapy Australia.
       # The 5 occupations the page and report used to disagree on (221213, 222211, 232112, 322311, 342111) name
       # the Home Affairs-listed authority in the PDF.
+      # Engineers Australia and AIMS fees from their extracted tables appear in the PDF (en/tr/zh-Hans); 311213 / 311216
+      # name AIMS, 231113 VETASSESS, and a CASA pilot's PDF says "around 14 days".
       # The roadmap's skills-assessment sentence reads as one clean label (no "((by Assessing Authority))" or
       # "技能评估（技能评估 — ...）"), and TRA occupations its guidelines put on OSAP are quoted the OSAP fee, not AUD 795.
       - name: PDF route-handler tests (banned strings, banner clipping, Roadmap total row; en/tr/zh-Hans)
@@ -89,6 +91,20 @@ jobs:
       # occupations, and caanz.ts carrying only these figures -- none of the CPA figures it used to copy) always run.
       - name: CA ANZ skills assessment fees (drift + invariants)
         run: npm run test:caanz-fees
+
+      # Engineers Australia (2026-2027 fee tables, by pathway and add-on, excl./incl. GST), AIMS (fee table p.18-19,
+      # outside/within Australia) and ADC (the document states no amount -- recorded as "needs human verification").
+      # The regenerate-and-diff drift checks need the gitignored source PDFs and are SKIPPED here; the committed-file
+      # invariants (rows with pages and quotes, the registry carrying only extracted figures, the Home Affairs
+      # occupation moves, 311213/311216 -> AIMS, CASA "around 14 days" and 231113 -> VETASSESS) always run.
+      - name: Engineers Australia skills assessment fees (drift + invariants)
+        run: npm run test:engineers-australia-fees
+
+      - name: AIMS skills assessment fees (drift + invariants)
+        run: npm run test:aims-fees
+
+      - name: ADC skills assessment (drift + invariants; no amount stated) and CASA scope
+        run: npm run test:adc-fees
 
       # The free Skills Assessment Finder page reads src/data/assessing-bodies.json, not the report's data. Its
       # ANMAC and Medical Board (doctor) fees must equal the report's sourced figures, compared against the report's

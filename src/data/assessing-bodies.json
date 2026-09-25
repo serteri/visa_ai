@@ -28,10 +28,36 @@
       "name": "Engineers Australia",
       "shortName": "EA",
       "website": "https://www.engineersaustralia.org.au/skills-assessment",
-      "fee": "AUD 835",
-      "processingTime": "12–16 weeks",
+      "fee": "AUD 315 / AUD 505 / AUD 940",
+      "feeNote": {
+        "en": "By pathway, excluding GST: Australian accredited qualification AUD 315, Washington/Sydney/Dublin Accord AUD 505, competency demonstration report (CDR, for qualifications that are not accredited) AUD 940. Including GST: AUD 346.50 / 555.50 / 1,034. Skilled employment and overseas PhD assessments cost extra; fast track is AUD 360 more.",
+        "tr": "Yola göre, KDV hariç: Avustralya akredite nitelik AUD 315, Washington/Sydney/Dublin Accord AUD 505, yetkinlik gösterim raporu (CDR, akredite olmayan nitelikler için) AUD 940. KDV dahil: AUD 346.50 / 555.50 / 1,034. Nitelikli istihdam ve yurt dışı doktora değerlendirmeleri ek ücretlidir; hızlı işlem AUD 360 ek.",
+        "zh-Hans": "按途径（不含 GST）：澳洲认证学历 AUD 315，华盛顿/悉尼/都柏林协议 AUD 505，能力展示报告（CDR，适用于未认证学历）AUD 940。含 GST：AUD 346.50 / 555.50 / 1,034。技术工作和海外博士评估另收费；加急另加 AUD 360。"
+      },
+      "processingTime": {
+        "en": "Not stated",
+        "tr": "Belirtilmemiş",
+        "zh-Hans": "未注明"
+      },
+      "processingNote": {
+        "en": "No time to an outcome is stated. Standard applications are generally assigned to an assessor within 15 weeks; fast track within 20 business days.",
+        "tr": "Sonuç süresi belirtilmemiş. Standart başvurular genellikle 15 hafta içinde bir değerlendiriciye atanır; hızlı işlem 20 iş günü içinde.",
+        "zh-Hans": "未注明出结果时间。标准申请通常在 15 周内分配给评估员；加急在 20 个工作日内。"
+      },
+      "source": "Engineers Australia — Migration skills assessment fees 2026–2027, pp.8–9, 9, 13",
       "description": "Assesses engineering qualifications and experience for migration purposes.",
-      "color": "indigo"
+      "color": "indigo",
+      "occupationOverrides": {
+        "133211": {
+          "fee": "AUD 1,375–1,512.50",
+          "feeNote": {
+            "en": "Competency demonstration report plus relevant skilled employment assessment, excluding–including GST: for Engineering Manager, skilled employment is a mandatory part of the CDR assessment.",
+            "tr": "Yetkinlik gösterim raporu artı ilgili nitelikli istihdam değerlendirmesi, KDV hariç–dahil: Engineering Manager için nitelikli istihdam CDR değerlendirmesinin zorunlu parçasıdır.",
+            "zh-Hans": "能力展示报告加相关技术工作评估，不含–含 GST：工程经理的 CDR 评估必须包含技术工作评估。"
+          },
+          "source": "Engineers Australia — Migration skills assessment fees 2026–2027, pp.9–10"
+        }
+      }
     },
     "ANMAC": {
       "name": "Australian Nursing and Midwifery Accreditation Council",
@@ -412,6 +438,30 @@
       "description": "Assesses management professionals for Australian skilled migration.",
       "color": "purple"
     },
+    "AIMS-MS": {
+      "name": "Australian Institute of Medical Scientists",
+      "shortName": "AIMS",
+      "website": "https://www.aims.org.au",
+      "fee": "AUD 900 / AUD 990",
+      "feeNote": {
+        "en": "AUD 900 if your address is outside Australia (no GST); AUD 990 if it is in Australia (incl. GST). The Medical Laboratory Scientist professional examination, where required, is AUD 800 / 880.",
+        "tr": "Adresiniz Avustralya dışındaysa AUD 900 (KDV yok); Avustralya'daysa AUD 990 (KDV dahil). Gerekirse Medical Laboratory Scientist mesleki sınavı AUD 800 / 880.",
+        "zh-Hans": "地址在澳洲境外 AUD 900（不含 GST）；在澳洲境内 AUD 990（含 GST）。如需参加医学实验室科学家专业考试，费用为 AUD 800 / 880。"
+      },
+      "processingTime": {
+        "en": "Within 6 months",
+        "tr": "6 ay içinde",
+        "zh-Hans": "6 个月内"
+      },
+      "processingNote": {
+        "en": "AIMS's stated aim for individual applicants; verifying documents may take longer.",
+        "tr": "AIMS'in bireysel başvurular için belirttiği hedef; belge doğrulaması daha uzun sürebilir.",
+        "zh-Hans": "AIMS 对个人申请的目标时间；文件核实可能需要更久。"
+      },
+      "source": "Australian Institute of Medical Scientists — Qualification and Skills Assessments for Migration, pp.18–19, 57, 81",
+      "description": "Assesses medical laboratory scientists, medical laboratory technicians and pathology collectors for Australian migration.",
+      "color": "rose"
+    },
     "SpeechPathAus": {
       "name": "Speech Pathology Australia",
       "shortName": "Speech Pathology Aus",
@@ -499,6 +549,8 @@
     "133211": "Engineers Australia",
     "312211": "Engineers Australia",
     "312212": "Engineers Australia",
+    "311213": "AIMS-MS",
+    "311216": "AIMS-MS",
     "254412": "ANMAC",
     "254415": "ANMAC",
     "254418": "ANMAC",
@@ -516,7 +568,7 @@
     "252312": "AHPRA",
     "252511": "AHPRA",
     "272311": "AHPRA",
-    "234611": "AHPRA",
+    "234611": "AIMS-MS",
     "251411": "AHPRA",
     "251211": "AHPRA",
     "251214": "AHPRA",
