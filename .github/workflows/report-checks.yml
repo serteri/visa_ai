@@ -60,6 +60,13 @@ jobs:
       - name: PDF route-handler tests (banned strings, banner clipping, Roadmap total row; en/tr/zh-Hans)
         run: npm run test:pdf-route
 
+      # Report access control, through the real unlock server action, PDF route and result page (request context,
+      # Prisma and /api/checkout stubbed): a TYPED admin email without a session never unlocks; an admin session
+      # does; the PDF and the full result view need the report's access token, an admin session or the owner's
+      # own session -- the report id alone is refused.
+      - name: Report access control (admin unlock needs a session; PDF / result page need authorization)
+        run: npm run test:report-access
+
       # Free admin orders (ADMINFREE promotion code, or an ADMIN_EMAILS / KNOWN_TEST_EMAILS address) must send
       # no report email, internal or customer; normal and other-discount orders send both as before. Runs the
       # real Stripe webhook handler with Resend, Stripe and Prisma stubbed (fake keys, no network, no DB).

@@ -250,7 +250,7 @@ export function FullCheckWaitlistForm({
   const [analysisProgressId, setAnalysisProgressId] = useState(() => typeof crypto !== "undefined" && "randomUUID" in crypto ? crypto.randomUUID() : `progress-${Date.now()}`);
   const wasPendingRef = useRef(false);
   const trackedReportIdRef = useRef<string | null>(null);
-  const [unlockedReportState, setUnlockedReportState] = useState<{ reportId?: string; report: ReadinessReport; name?: string; email?: string; isUnlocked?: boolean } | null>(null);
+  const [unlockedReportState, setUnlockedReportState] = useState<{ reportId?: string; report: ReadinessReport; name?: string; email?: string; isUnlocked?: boolean; accessToken?: string } | null>(null);
   const reportSectionRef = useRef<HTMLDivElement | null>(null);
   const [pdfError, setPdfError] = useState<string | null>(null);
   const pdfErrorMessage = txt(
@@ -403,7 +403,7 @@ export function FullCheckWaitlistForm({
       const downloadPdf = async () => {
         try {
           setPdfError(null);
-          await downloadReportPdf(reportId ?? "", "LogiVisa_Assessment_Report.pdf");
+          await downloadReportPdf(reportId ?? "", "LogiVisa_Assessment_Report.pdf", unlockedReportState.accessToken);
         } catch (error) {
           console.error("Auto PDF download failed:", error);
           setPdfError(pdfErrorMessage);
@@ -433,7 +433,7 @@ export function FullCheckWaitlistForm({
     trackGaEvent("pdf_download", { reportId: unlockedReportState.reportId });
     setPdfError(null);
     try {
-      await downloadReportPdf(unlockedReportState.reportId ?? "", `logivisa-readiness-report-${Date.now()}.pdf`);
+      await downloadReportPdf(unlockedReportState.reportId ?? "", `logivisa-readiness-report-${Date.now()}.pdf`, unlockedReportState.accessToken);
     } catch (error) {
       console.error("PDF download failed:", error);
       setPdfError(pdfErrorMessage);
@@ -449,8 +449,8 @@ export function FullCheckWaitlistForm({
         preview={state.preview}
         defaultEmail={state.userInput?.email}
         defaultName={state.userInput?.name}
-        onUnlocked={({ report: unlocked, email, name }) => {
-          setUnlockedReportState({ reportId: state.reportId, report: unlocked, name, email, isUnlocked: !!unlocked });
+        onUnlocked={({ report: unlocked, email, name, accessToken }) => {
+          setUnlockedReportState({ reportId: state.reportId, report: unlocked, name, email, isUnlocked: !!unlocked, accessToken });
           setReport(unlocked);
           if (unlocked) {
             setAssistantReportData({

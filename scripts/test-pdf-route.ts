@@ -30,6 +30,8 @@
  *
  * Usage: npx tsx scripts/test-pdf-route.ts
  */
+// Must load before any app module: stubs the Next.js request context (server-only, next/headers, NextAuth).
+import "./lib/stub-request-context";
 import { readdirSync, readFileSync, statSync } from "node:fs";
 import { mkdir, writeFile } from "node:fs/promises";
 import path from "node:path";
@@ -2005,7 +2007,16 @@ async function main() {
     roundCutoff: emptyModel,
   };
 
-  const { GET } = await import("../app/api/reports/[reportId]/pdf/route");
+  const { GET: routeGET } = await import("../app/api/reports/[reportId]/pdf/route");
+  const { reportAccessToken } = await import("../lib/reports/report-access");
+  // The route serves a PDF only to an authorized requester; these checks act as the report's owner, with the
+  // report's own access token (the ?t= of its emailed / checkout-success link). test-report-access.ts covers refusals.
+  const GET = async (req: Request, ctx: { params: Promise<{ reportId: string }> }) => {
+    const { reportId } = await ctx.params;
+    const url = new URL(req.url);
+    url.searchParams.set("t", reportAccessToken(reportId) ?? "");
+    return routeGET(new Request(url), { params: Promise.resolve({ reportId }) });
+  };
 
   for (const persona of PERSONAS) {
     for (const locale of LOCALES) {

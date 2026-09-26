@@ -1,4 +1,5 @@
 import { Resend } from "resend";
+import { reportResultUrl } from "@/lib/reports/report-access";
 
 import { prisma } from "@/lib/prisma";
 import { shouldSuppressReportEmails } from "@/lib/email/suppression";
@@ -331,7 +332,8 @@ export async function generateAndSendReport(
     }
 
     const locale = record.locale === "tr" ? "tr" : record.locale === "zh-Hans" ? "zh-Hans" : "en";
-    const reportLink = `${getBaseUrl()}/${locale}/full-check/result?reportId=${reportId}`;
+    // Carries the report's access token -- this email goes to the report's own address (lib/reports/report-access.ts).
+    const reportLink = reportResultUrl(getBaseUrl(), locale, reportId);
 
     try {
       console.log(`[report-service] Müşteriye onay e-postası gönderiliyor -- report ${reportId} → ${recipientEmail}`);
@@ -353,5 +355,30 @@ export async function generateAndSendReport(
   } catch (err) {
     console.error(`[report-service] generateAndSendReport failed for report ${reportId}:`, err);
     return { pdfSent: false };
+  }
+}
+
+/**
+ * Re-sends the "your report is ready" email -- with the tokenized result link -- to the address stored ON THE REPORT
+ * (never an address the visitor supplies), for someone who opened an older link without an access token. Unlocked
+ * reports only. Suppressed for admin/test addresses like every report email. Never throws.
+ */
+export async function sendReportAccessLink(reportId: string): Promise<{ sent: boolean }> {
+  try {
+    const record = await getUserReportById(reportId);
+    if (!record || !record.isUnlocked) return { sent: false };
+    if (shouldSuppressReportEmails({ email: record.email }, "report_service_access_link")) return { sent: false };
+    if (!isEmailDeliveryEnabled()) return { sent: false };
+    const locale = record.locale === "tr" ? "tr" : record.locale === "zh-Hans" ? "zh-Hans" : "en";
+    await sendPremiumReportReadyEmail({
+      email: record.email,
+      fullName: record.fullName ?? "",
+      locale,
+      reportLink: reportResultUrl(getBaseUrl(), locale, reportId),
+    });
+    return { sent: true };
+  } catch (err) {
+    console.error(`[report-service] sendReportAccessLink failed for report ${reportId}:`, err);
+    return { sent: false };
   }
 }

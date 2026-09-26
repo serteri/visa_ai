@@ -75,12 +75,42 @@ The report IDs are printed at the end of a run and appear in the PDF file names 
 
 Neither sends email, and neither counts towards usage because the email is in `KNOWN_TEST_EMAILS`.
 
-## Security note: the admin-email unlock
+## Fully automated run: `--admin`
 
-`unlockPremiumReport` (`app/[locale]/(main)/full-check/actions.ts`) unlocks a report **without Stripe** when the
-*typed* email is in `ADMIN_EMAILS`.
-- It checks neither a login nor that the email belongs to the report.
-- So anyone who knows or guesses an admin address can unlock any report and download it from `/api/reports/<id>/pdf`.
+This mode is for the fee checks after a deploy. It does not test the Stripe path.
 
-The smoke test deliberately does not use that path. It should require an authenticated admin session. That is
-tracked separately.
+```bash
+SMOKE_EMAIL=you+smoke@yourdomain SMOKE_ADMIN_PASSWORD='<admin dashboard password>' npm run smoke:prod -- --admin
+```
+
+- **Sign-in:** it signs in on `/en/admin/leads/access` with `SMOKE_ADMIN_PASSWORD` (the `ADMIN_DASHBOARD_PASSWORD` value). That
+  sets the signed, httpOnly admin session cookie.
+- **Unlock:** it fills the form and presses **Unlock report**. With a verified admin session the report is unlocked in place,
+  with no Stripe.
+- **PDF:** it downloads the PDF with that session and runs the same assertions.
+- **Browser:** runs headless, no interaction needed.
+- **Smoke email:** keep `SMOKE_EMAIL` in `KNOWN_TEST_EMAILS` so no report email is sent.
+- **Credentials:** come only from environment variables. Never put the password in a file in the repo.
+
+To re-check existing reports, pass `persona=reportId:token`, where the token is the `t=` value of the report's
+link. Or set `SMOKE_ADMIN_PASSWORD` to fetch them with an admin session:
+
+```bash
+npm run smoke:prod -- --verify civil-offshore=<reportId>:<t> mlt-offshore=<reportId>:<t>
+SMOKE_ADMIN_PASSWORD='...' npm run smoke:prod -- --verify civil-offshore=<reportId> civil-onshore=<reportId>
+```
+
+## Access control (how a report is protected)
+
+- **Admin unlock:** a free unlock without Stripe happens only for a **verified admin session**. That means the signed admin
+  cookie from `lib/admin-auth.ts`, or a NextAuth session with role `ADMIN`. A typed email address is never a credential.
+  Until 2026-09-26, typing an `ADMIN_EMAILS` address in the unlock form unlocked any report; that path is removed.
+- **PDF and result page:** `/api/reports/<id>/pdf` and the full result page require one of:
+  - an admin session;
+  - the report's **access token** (`?t=`, an HMAC of the report ID keyed by `REPORT_ACCESS_SECRET`, or `AUTH_SECRET` if that
+    is unset);
+  - a signed-in user whose email is the report's own.
+- **Where owners get the token:** only on the checkout success page, after the server confirms with Stripe that the session
+  paid for that report, and in the emails sent to the report's own address.
+- **Unauthorized requests:** get the same 404 whether the report doesn't exist, is locked, or they lack access. The result
+  page sends them no report data; it offers to email the secure link to the address stored on the report.

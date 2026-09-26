@@ -43,7 +43,7 @@ export function PremiumFeatureGate({
   preview: FullCheckQuickPreview;
   defaultEmail?: string;
   defaultName?: string;
-  onUnlocked: (payload: { report: ReadinessReport; email?: string; name?: string; isUnlocked?: boolean }) => void;
+  onUnlocked: (payload: { report: ReadinessReport; email?: string; name?: string; isUnlocked?: boolean; accessToken?: string }) => void;
 }) {
   const isTr = locale === "tr";
   const isZh = locale === "zh-Hans";
@@ -99,6 +99,7 @@ export function PremiumFeatureGate({
         email: unlockState.userInput?.email,
         name: unlockState.userInput?.name,
         isUnlocked: true,
+        accessToken: unlockState.accessToken,
       });
     }
 

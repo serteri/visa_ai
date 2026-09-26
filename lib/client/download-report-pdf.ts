@@ -3,14 +3,16 @@
  * route the checkout success page's "Download Report" button opens. The PDF is generated on the server
  * from the stored report, so every download carries the stored profile (age, family status, ...) and the
  * same totals; there is deliberately no client-side PDF generator any more. The route keeps its own
- * authorisation: it only serves a report that is unlocked.
+ * authorisation: it only serves a report that is unlocked, to an admin session or with the report's access token
+ * (lib/reports/report-access.ts) -- pass it when the page has one.
  *
  * Throws when the server does not answer with a PDF, so the caller can show a visible error.
  */
-export async function downloadReportPdf(reportId: string, fileName: string): Promise<void> {
+export async function downloadReportPdf(reportId: string, fileName: string, accessToken?: string): Promise<void> {
   if (!reportId) throw new Error("Missing report id");
 
-  const response = await fetch(`/api/reports/${encodeURIComponent(reportId)}/pdf`, {
+  const query = accessToken ? `?t=${encodeURIComponent(accessToken)}` : "";
+  const response = await fetch(`/api/reports/${encodeURIComponent(reportId)}/pdf${query}`, {
     credentials: "same-origin",
     cache: "no-store",
   });

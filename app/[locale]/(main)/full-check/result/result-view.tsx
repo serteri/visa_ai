@@ -14,6 +14,8 @@ type ResultViewProps = {
   reportId: string;
   isUnlocked: boolean;
   isAdminBypass: boolean;
+  /** The PDF route link with the report's access token (issued by the server page); null while locked. */
+  downloadHref: string | null;
   report: ReadinessReport;
   previewData: FullCheckQuickPreview | null;
   fullName?: string;
@@ -25,6 +27,7 @@ export function ResultView({
   reportId,
   isUnlocked,
   isAdminBypass,
+  downloadHref,
   report,
   previewData,
   fullName,
@@ -91,9 +94,9 @@ export function ResultView({
               </div>
             </div>
 
-            {isUnlocked ? (
+            {isUnlocked && downloadHref ? (
               <a
-                href={`/api/reports/${reportId}/pdf`}
+                href={downloadHref}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="inline-flex items-center gap-2 rounded-xl bg-[#53917E] px-6 py-3 text-sm font-bold text-white shadow-md transition-all hover:opacity-90"

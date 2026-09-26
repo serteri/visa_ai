@@ -14,7 +14,12 @@
  *   civil-onshore    Civil Engineer 233211, living in Australia  -> EA, "AUD 1,034 (CDR; applying from within Australia"
  *   mlt-offshore     Medical Laboratory Technician 311213, India -> AIMS, "AUD 900 (applying from outside Australia"
  *
+ * --admin: fully automated, no Stripe. Signs in on /en/admin/leads/access with SMOKE_ADMIN_PASSWORD (the admin
+ * dashboard password), so "Unlock report" takes the admin-session path (a verified server-side session -- a typed email
+ * is never enough), and downloads the PDF with that session.
+ *
  * Usage (credentials only via environment variables; nothing is written to the repo):
+ *   SMOKE_EMAIL=... SMOKE_ADMIN_PASSWORD=... npx tsx scripts/smoke-prod-report.ts --admin   automated, headless
  *   SMOKE_EMAIL=you+smoke@example.com npx tsx scripts/smoke-prod-report.ts            full run, headed browser
  *   SMOKE_EMAIL=... npx tsx scripts/smoke-prod-report.ts --dry-run                    fill the form, stop before submit
  *   npx tsx scripts/smoke-prod-report.ts --verify civil-offshore=<id> civil-onshore=<id> mlt-offshore=<id>
@@ -25,7 +30,7 @@
 import { mkdirSync, writeFileSync } from "node:fs";
 import path from "node:path";
 
-import { chromium, type Page } from "playwright";
+import { chromium, type APIRequestContext, type Page } from "playwright";
 import { PDFParse } from "pdf-parse";
 
 const BASE_URL = (process.env.SMOKE_BASE_URL ?? "https://www.logivisa.com").replace(/\/$/, "");
@@ -82,18 +87,28 @@ const PERSONAS: Persona[] = [
 
 const flat = (s: string) => s.replace(/\s+/g, " ");
 
-async function pdfText(reportId: string): Promise<string> {
-  const res = await fetch(`${BASE_URL}/api/reports/${encodeURIComponent(reportId)}/pdf`);
-  if (!res.ok) throw new Error(`GET /api/reports/${reportId}/pdf -> HTTP ${res.status} (${(await res.text()).slice(0, 120)})`);
-  const parser = new PDFParse({ data: new Uint8Array(await res.arrayBuffer()) });
+/** The PDF, fetched with the browser session (admin mode: its admin cookie) or with the report's access token. */
+async function pdfText(reportId: string, via: { request?: APIRequestContext; token?: string }): Promise<string> {
+  const url = `${BASE_URL}/api/reports/${encodeURIComponent(reportId)}/pdf${via.token ? `?t=${encodeURIComponent(via.token)}` : ""}`;
+  let bytes: Uint8Array;
+  if (via.request) {
+    const res = await via.request.get(url);
+    if (!res.ok()) throw new Error(`GET /api/reports/${reportId}/pdf -> HTTP ${res.status()} (${(await res.text()).slice(0, 120)})`);
+    bytes = new Uint8Array(await res.body());
+  } else {
+    const res = await fetch(url);
+    if (!res.ok) throw new Error(`GET /api/reports/${reportId}/pdf -> HTTP ${res.status} (${(await res.text()).slice(0, 120)})`);
+    bytes = new Uint8Array(await res.arrayBuffer());
+  }
+  const parser = new PDFParse({ data: bytes });
   const parsed = await parser.getText();
   await parser.destroy();
   return parsed.pages.map((p: { text: string }) => p.text).join("\n");
 }
 
 /** Checks one report's PDF; returns failure messages (empty = pass) and prints the matching lines. */
-async function verify(persona: Persona, reportId: string): Promise<string[]> {
-  const raw = await pdfText(reportId);
+async function verify(persona: Persona, reportId: string, via: { request?: APIRequestContext; token?: string }): Promise<string[]> {
+  const raw = await pdfText(reportId, via);
   mkdirSync(OUT_DIR, { recursive: true });
   writeFileSync(path.join(OUT_DIR, `${persona.id}-${reportId}.txt`), raw);
   const text = flat(raw);
@@ -150,7 +165,18 @@ async function hiddenValues(page: Page): Promise<Record<string, string>> {
   return out;
 }
 
-async function runPersona(page: Page, persona: Persona, email: string, dryRun: boolean): Promise<string | null> {
+/** Signs in as admin (server-side session cookie in this browser context). */
+async function adminLogin(page: Page, password: string) {
+  await page.goto(`${BASE_URL}/en/admin/leads/access`, { waitUntil: "networkidle" });
+  await page.fill('input[name="password"]', password);
+  await page.getByRole("button", { name: /Access Dashboard/ }).click();
+  await page.waitForURL((url) => !url.pathname.endsWith("/admin/leads/access"), { timeout: 30_000 });
+  if (/auth=invalid|auth=setup/.test(page.url())) throw new Error("admin sign-in failed (check SMOKE_ADMIN_PASSWORD)");
+}
+
+type RunResult = { reportId: string; token?: string } | null;
+
+async function runPersona(page: Page, persona: Persona, email: string, dryRun: boolean, admin: boolean): Promise<RunResult> {
   console.log(`\n=== ${persona.id}: filling the form on ${BASE_URL} ===`);
   await fillForm(page, persona, email);
   const values = await hiddenValues(page);
@@ -165,6 +191,20 @@ async function runPersona(page: Page, persona: Persona, email: string, dryRun: b
   await page.getByRole("button", { name: /Unlock Your Full Readiness Report/ }).click({ timeout: 180_000 });
   await page.fill("#unlock-email", email);
   await page.fill("#unlock-full-name", "Smoke Test");
+  if (admin) {
+    const reportId = await page.locator('input[name="reportId"]').first().inputValue();
+    if (!reportId) throw new Error(`${persona.id}: no reportId in the unlock form`);
+    await page.getByRole("button", { name: /^Unlock report$/ }).click();
+    // Admin session: unlocked in place, no Stripe. A redirect to Stripe means the session was not recognised.
+    await Promise.race([
+      page.locator("#full-report-section").waitFor({ timeout: 180_000 }),
+      page.waitForURL(/checkout\.stripe\.com/, { timeout: 180_000 }).then(() => {
+        throw new Error(`${persona.id}: redirected to Stripe -- the admin session was not accepted`);
+      }),
+    ]);
+    console.log(`  report ${reportId} unlocked with the admin session`);
+    return { reportId };
+  }
   await page.getByRole("button", { name: /^Unlock report$/ }).click();
   await page.waitForURL(/checkout\.stripe\.com/, { timeout: 60_000 });
   console.log("  ➜ Stripe Checkout is open in the browser window: apply the promotion code, enter the billing address, press Pay.");
@@ -172,10 +212,14 @@ async function runPersona(page: Page, persona: Persona, email: string, dryRun: b
   await page.waitForURL(/\/checkout\/success\?.*reportId=/, { timeout: CHECKOUT_TIMEOUT_MS });
   const reportId = new URL(page.url()).searchParams.get("reportId");
   if (!reportId) throw new Error(`${persona.id}: success page URL has no reportId`);
+  // The success page's download link carries the access token, issued after the server verified the Stripe session.
+  const href = await page.locator('a[href*="/api/reports/"]').first().getAttribute("href", { timeout: 30_000 });
+  const token = href ? new URL(href, BASE_URL).searchParams.get("t") ?? undefined : undefined;
+  if (!token) throw new Error(`${persona.id}: the success page offered no tokenized download link`);
   console.log(`  report ${reportId} paid; waiting for the webhook to unlock it...`);
   for (let i = 0; i < 30; i++) {
-    const res = await fetch(`${BASE_URL}/api/reports/${reportId}/pdf`, { method: "GET" });
-    if (res.ok) return reportId;
+    const res = await fetch(`${BASE_URL}/api/reports/${reportId}/pdf?t=${encodeURIComponent(token)}`, { method: "GET" });
+    if (res.ok) return { reportId, token };
     await new Promise((r) => setTimeout(r, 5000));
   }
   throw new Error(`${persona.id}: report ${reportId} was not unlocked within 150 s of payment`);
@@ -184,27 +228,42 @@ async function runPersona(page: Page, persona: Persona, email: string, dryRun: b
 async function main() {
   const args = process.argv.slice(2);
   const dryRun = args.includes("--dry-run");
+  const admin = args.includes("--admin");
   const selected = (process.env.SMOKE_PERSONAS ?? "").split(",").map((s) => s.trim()).filter(Boolean);
   const personas = selected.length ? PERSONAS.filter((p) => selected.includes(p.id)) : PERSONAS;
   const failures: string[] = [];
 
   if (args.includes("--verify")) {
+    // persona=reportId[:token] -- the token is the ?t= of the report's emailed / success-page link.
     const pairs = args.filter((a) => a.includes("=")).map((a) => a.split("=") as [string, string]);
-    if (!pairs.length) throw new Error("--verify needs persona=reportId pairs, e.g. civil-offshore=<uuid>");
-    for (const [id, reportId] of pairs) {
-      const persona = PERSONAS.find((p) => p.id === id);
-      if (!persona) throw new Error(`unknown persona "${id}" (${PERSONAS.map((p) => p.id).join(", ")})`);
-      failures.push(...(await verify(persona, reportId)).map((f) => `${id}: ${f}`));
+    if (!pairs.length) throw new Error("--verify needs persona=reportId[:token] pairs, e.g. civil-offshore=<uuid>:<t>");
+    const password = process.env.SMOKE_ADMIN_PASSWORD;
+    const browser = password ? await chromium.launch() : null;
+    try {
+      const page = browser ? await browser.newPage() : null;
+      if (page && password) await adminLogin(page, password);
+      for (const [id, value] of pairs) {
+        const persona = PERSONAS.find((p) => p.id === id);
+        if (!persona) throw new Error(`unknown persona "${id}" (${PERSONAS.map((p) => p.id).join(", ")})`);
+        const [reportId, token] = value.split(":");
+        failures.push(...(await verify(persona, reportId, { request: page?.request, token })).map((f) => `${id}: ${f}`));
+      }
+    } finally {
+      await browser?.close();
     }
   } else {
     const email = process.env.SMOKE_EMAIL?.trim();
-    if (!email) throw new Error("SMOKE_EMAIL is not set (an address in KNOWN_TEST_EMAILS, not in ADMIN_EMAILS) -- see docs/smoke-prod-report.md");
-    const browser = await chromium.launch({ headless: dryRun });
+    if (!email) throw new Error("SMOKE_EMAIL is not set (an address in KNOWN_TEST_EMAILS) -- see docs/smoke-prod-report.md");
+    const password = process.env.SMOKE_ADMIN_PASSWORD;
+    if (admin && !password) throw new Error("--admin needs SMOKE_ADMIN_PASSWORD (the admin dashboard password)");
+    const browser = await chromium.launch({ headless: dryRun || admin });
     try {
+      const context = await browser.newContext();
+      if (admin && password) await adminLogin(await context.newPage(), password);
       for (const persona of personas) {
-        const page = await browser.newPage();
-        const reportId = await runPersona(page, persona, email, dryRun);
-        if (reportId) failures.push(...(await verify(persona, reportId)).map((f) => `${persona.id}: ${f}`));
+        const page = await context.newPage();
+        const result = await runPersona(page, persona, email, dryRun, admin);
+        if (result) failures.push(...(await verify(persona, result.reportId, admin ? { request: page.request } : { token: result.token })).map((f) => `${persona.id}: ${f}`));
         await page.close();
       }
     } finally {

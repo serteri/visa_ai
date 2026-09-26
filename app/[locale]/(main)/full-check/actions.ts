@@ -1,5 +1,7 @@
 "use server";
 
+import { reportAccessToken, reportResultUrl } from "@/lib/reports/report-access";
+import { isAdminSession } from "@/lib/reports/report-access-server";
 import { eq, sql } from "drizzle-orm";
 import { cookies, headers } from "next/headers";
 import { revalidateTag } from "next/cache";
@@ -103,6 +105,8 @@ export type PremiumUnlockState = {
   message?: string;
   errors?: Record<string, string>;
   redirectUrl?: string;
+  /** The report's access token (admin unlock only) -- lets the in-page PDF download pass the route's authorization. */
+  accessToken?: string;
   report?: ReadinessReport;
   userInput?: {
     name?: string;
@@ -364,12 +368,6 @@ async function countFallbackConsumedFreeUsers(excludedEmails: Set<string>): Prom
   }
 
   return consumedUsers.size;
-}
-
-function isAdminWhitelistedEmail(email: string): boolean {
-  const normalized = email.trim().toLowerCase();
-  if (!normalized) return false;
-  return getAdminEmailSet().has(normalized);
 }
 
 function isEmailDeliveryEnabled(): boolean {
@@ -931,7 +929,8 @@ export async function submitFullCheckWaitlist(
     visaInterest,
     mainGoal,
   });
-  const isAdmin = isAdminWhitelistedEmail(email);
+  // Admin = a verified admin session (signed admin cookie or NextAuth ADMIN), never the typed email.
+  const isAdmin = await isAdminSession();
 
   const isPartner = isPartnerFamilySponsorship(visaInterest);
 
@@ -1434,7 +1433,7 @@ export async function submitFullCheckWaitlist(
   // this whole block is deliberately not awaited before the response below,
   // so email delivery never blocks the user-facing response time.
   const baseUrl = process.env.NEXT_PUBLIC_BASE_URL?.trim() || "https://logivisa.com";
-  const reportLink = `${baseUrl}/${resolvedLocale}/full-check/result?reportId=${reportRecord.id}`;
+  const reportLink = reportResultUrl(baseUrl, resolvedLocale, reportRecord.id);
 
   // Free admin order (the submitter's address is on the admin allow-list): neither the customer "report
   // ready" email nor the internal lead-tier notification is sent. The lead and report are saved as usual.
@@ -1569,7 +1568,9 @@ async function unlockPremiumReportInternal(
   }
   console.log("Adım 1 tamam: DB okundu", { reportId, email: record.email, locale: record.locale });
 
-  const isAdmin = isAdminWhitelistedEmail(email);
+  // Free unlock ONLY for a verified admin session (lib/reports/report-access-server.ts). The typed email is never a
+  // credential: before this, typing an ADMIN_EMAILS address unlocked any report without Stripe or a login.
+  const isAdmin = await isAdminSession();
   console.log("Adım 2: Checkout gate değerlendiriliyor", { isAdmin, unlockMethod });
 
   // ── Checkout gate ─────────────────────────────────────────────────────────
@@ -1637,7 +1638,7 @@ async function unlockPremiumReportInternal(
   // the on-screen report regardless of whether the emailed PDF went out).
   let pdfSent = false;
   try {
-    const result = await generateAndSendReport(reportId, email, fullName || undefined);
+    const result = await generateAndSendReport(reportId, record.email, fullName || undefined);
     pdfSent = result.pdfSent;
     if (!pdfSent && !result.suppressed && isEmailDeliveryEnabled()) {
       console.error(`unlockPremiumReport: generateAndSendReport reported failure for report ${reportId}`);
@@ -1649,7 +1650,7 @@ async function unlockPremiumReportInternal(
 
   await markUserReportUnlocked({
     reportId,
-    email,
+    email: record.email,
     phone: phone || undefined,
     unlockMethod: effectiveUnlockMethod,
     pdfSent,
@@ -1658,6 +1659,7 @@ async function unlockPremiumReportInternal(
   return {
     status: "success",
     message: "Full report unlocked. PDF sent to your email.",
+    accessToken: reportAccessToken(reportId) ?? undefined,
     report: record.report,
     userInput: {
       name: fullName || undefined,
