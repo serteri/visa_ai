@@ -1,4 +1,5 @@
 import type { Locale, PointsActionPlan } from "../types";
+import { benchmarkGapSentence, type InvitationBenchmark } from "./benchmark-gap";
 
 interface PointCategory {
   label: string;
@@ -37,6 +38,8 @@ export function getPersonalizedPointsBreakdown(
    * it existed, in which case no points tips are shown rather than guessed ones.
    */
   actionPlan?: PointsActionPlan,
+  /** AU: recent invitation benchmarks per subclass -- stated wherever the score is said to reach 65. */
+  invitationBenchmarks?: InvitationBenchmark[],
 ): {
   title: string;
   userName: string;
@@ -62,6 +65,8 @@ export function getPersonalizedPointsBreakdown(
   // CA: isEoiEligible IS the whole story (language-test gate). AU: the
   // specific skills-assessment signal, same as before.
   const requirementMet = isCA ? (isEoiEligible ?? true) : isAssessmentDone;
+  const benchmarkSentence = isCA ? "" : benchmarkGapSentence(locale, estimatedPoints, invitationBenchmarks);
+  const withBenchmarks = (text: string) => (benchmarkSentence ? `${text}${isZh ? "" : " "}${benchmarkSentence}` : text);
 
   // ── Title ─────────────────────────────────────────────────────────────
   const title = isTr
@@ -95,23 +100,23 @@ export function getPersonalizedPointsBreakdown(
             gap > 0
               ? `${gap} puana ihtiyacınız var.`
               : isAssessmentDone
-                ? gap === 0 ? "Puan barajını karşıladınız!" : "Puan barajını aştınız!"
-                : "Potansiyel baraj aşıldı. Zorunlu Beceri Değerlendirmesi gereklidir."
+                ? withBenchmarks(`${threshold} puanlık yasal asgari karşılanıyor.`)
+                : withBenchmarks(`${threshold} puanlık yasal asgari karşılanıyor; ancak zorunlu Beceri Değerlendirmesi gereklidir.`)
           }`
         : isZh
           ? `${userName}，您的预估总分为${estimatedPoints}分。目标：${threshold}分。${
               gap > 0
                 ? `您还需要${gap}分。`
                 : isAssessmentDone
-                  ? gap === 0 ? "您已达到积分门槛！" : "您已超过积分门槛！"
-                  : "已达到潜在门槛。必须完成强制性技能评估。"
+                  ? withBenchmarks(`已达到 ${threshold} 分的法定最低分。`)
+                  : withBenchmarks(`已达到 ${threshold} 分的法定最低分，但必须完成强制性技能评估。`)
             }`
           : `${userName}, your estimated total is ${estimatedPoints} points. Target: ${threshold} points. ${
               gap > 0
                 ? `You need ${gap} more points.`
                 : isAssessmentDone
-                  ? gap === 0 ? "You have met the points threshold!" : "You have exceeded the points threshold!"
-                  : "Potential threshold reached. Mandatory Skills Assessment required."
+                  ? withBenchmarks(`This meets the ${threshold}-point legal minimum.`)
+                  : withBenchmarks(`This meets the ${threshold}-point legal minimum, but a Skills Assessment is mandatory.`)
             }`);
 
   // ── Categories ────────────────────────────────────────────────────────
@@ -210,15 +215,15 @@ export function getPersonalizedPointsBreakdown(
         // false here.
         : !isAssessmentDone
           ? (isTr
-              ? `${userName}, potansiyel puanınız barajı ${gap === 0 ? "karşılıyor" : "aşıyor"}. Ancak bu puanları resmi olarak talep edip başvuru yapabilmek için olumlu bir Beceri Değerlendirmesi zorunludur.`
+              ? withBenchmarks(`${userName}, tahmini puanınız ${threshold} puanlık yasal asgariyi karşılıyor. Ancak bu puanları resmi olarak talep edip başvuru yapabilmek için olumlu bir Beceri Değerlendirmesi zorunludur.`)
               : isZh
-                ? `${userName}，您的潜在积分已${gap === 0 ? "达到" : "超过"}门槛。但是，要正式主张这些积分并提交申请，必须获得积极的技能评估结果。`
-                : `${userName}, your potential score ${gap === 0 ? "meets" : "exceeds"} the threshold. However, a positive Skills Assessment is mandatory to officially claim these points and lodge an application.`)
+                ? withBenchmarks(`${userName}，您的预估积分已达到 ${threshold} 分的法定最低分。但是，要正式主张这些积分并提交申请，必须获得积极的技能评估结果。`)
+                : withBenchmarks(`${userName}, your estimated score meets the ${threshold}-point legal minimum. However, a positive Skills Assessment is mandatory to officially claim these points and lodge an application.`))
           : (isTr
-              ? `${userName}, puan barajını ${gap === 0 ? "karşıladınız" : "aştınız"}! Şimdi başvuru sürecine odaklanabilirsiniz.`
+              ? withBenchmarks(`${userName}, ${threshold} puanlık yasal asgariyi karşılıyorsunuz ve EOI verebilirsiniz.`)
               : isZh
-                ? `${userName}，您已${gap === 0 ? "达到" : "超过"}积分门槛！现在可以专注于申请流程。`
-                : `${userName}, you have ${gap === 0 ? "met" : "exceeded"} the points threshold! You can now focus on the application process.`));
+                ? withBenchmarks(`${userName}，您已达到 ${threshold} 分的法定最低分，可以递交 EOI。`)
+                : withBenchmarks(`${userName}, you meet the ${threshold}-point legal minimum and can lodge an EOI.`)));
 
   // ── Improvement Tips ──────────────────────────────────────────────────
   const improvementTips: string[] = [];

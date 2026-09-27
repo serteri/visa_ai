@@ -3,6 +3,7 @@ import { fastestWaysPhrase, getPointsLevers } from "../points-action-text";
 import type { PointsActionPlan } from "../types";
 import type { Locale } from "../types";
 import { CURRENT_CSIT } from "../constants";
+import { benchmarkGapSentence, closestBenchmarkGap, type InvitationBenchmark } from "./benchmark-gap";
 
 type Country = "AU" | "CA";
 
@@ -64,6 +65,11 @@ export function getPersonalizedOverview(
   isEoiEligible?: boolean,
   /** AU: the engine's action plan -- English/nomination/experience are only suggested when it lists them. */
   pointsActionPlan?: PointsActionPlan,
+  /**
+   * AU: recent invitation benchmarks per subclass (pathwayScores). 65 is only the legal minimum to lodge an EOI; a
+   * score at or above 65 is never described as meeting "the threshold" without these gaps.
+   */
+  invitationBenchmarks?: InvitationBenchmark[],
 ): {
   title: string;
   userName: string;
@@ -93,6 +99,10 @@ export function getPersonalizedOverview(
   // directly rather than the AU-only skillsAssessmentDone signal (which is
   // always false for CA, since occupationConfirmed isn't a CA form field).
   const requirementMet = isCA ? (isEoiEligible ?? true) : skillsAssessmentDone;
+  // AU: points still needed to reach the closest recent invitation benchmark (0 when at/above; undefined without one).
+  const benchmarkGap = isCA ? undefined : closestBenchmarkGap(estimatedPoints, invitationBenchmarks);
+  const benchmarkSentence = isCA ? "" : benchmarkGapSentence(locale, estimatedPoints, invitationBenchmarks);
+  const benchmarkClause = benchmarkSentence ? (isZh ? benchmarkSentence : ` ${benchmarkSentence}`) : "";
 
   // ── Title ─────────────────────────────────────────────────────────────
   const title = isTr
@@ -153,16 +163,18 @@ export function getPersonalizedOverview(
           ? `您的预估 CRS 分数为 ${estimatedPoints} 分。创建 Express Entry 档案没有固定的最低分数要求——邀请门槛因每轮抽签而异；近期门槛请参阅本报告的历史邀请趋势部分。`
           : `Your estimated CRS score is ${estimatedPoints}. There is no fixed minimum score required to create an Express Entry profile -- invitation cutoffs vary by draw; see this report's Historical Invitation Trends section for recent cutoffs.`)
     : (isTr
-        ? `Tahmini puanınız ${estimatedPoints} puandır. ${targetVisa} vizesi için gereken minimum baraj ${threshold} puandır.`
+        ? `Tahmini puanınız ${estimatedPoints} puandır. ${targetVisa} için EOI verebilmenin yasal asgari puanı ${threshold}'tir; davet almak için genellikle daha yüksek puan gerekir.`
         : isZh
-          ? `您的预估积分为${estimatedPoints}分。${targetVisa}签证的最低门槛为${threshold}分。`
-          : `Your estimated score is ${estimatedPoints} points. The minimum threshold for ${targetVisa} is ${threshold} points.`);
+          ? `您的预估积分为${estimatedPoints}分。${targetVisa}递交 EOI 的法定最低分为${threshold}分；获得邀请通常需要更高分数。`
+          : `Your estimated score is ${estimatedPoints} points. The legal minimum to lodge an EOI for ${targetVisa} is ${threshold} points; invitations usually need more.`);
 
+  // Not a "potential" score: the estimate already equals the current score -- say which minimum it meets and how far
+  // it is from the invitation benchmark.
   const requirementSentence = isTr
-    ? `Potansiyel puanınız ${estimatedPoints}. ${claimText} Öncelikli adımınız, bu gereksinimi karşılamaktır.`
+    ? `Tahmini puanınız ${estimatedPoints}, ${threshold} puanlık yasal asgariyi karşılıyor.${benchmarkClause} ${claimText} Öncelikli adımınız, bu gereksinimi karşılamaktır.`
     : isZh
-      ? `您的潜在积分为${estimatedPoints}。${claimText}您当前的首要任务是满足该要求。`
-      : `Your potential score is ${estimatedPoints}. ${claimText} Your immediate priority is meeting this requirement.`;
+      ? `您的预估积分为${estimatedPoints}分，达到 ${threshold} 分的法定最低分。${benchmarkClause}${claimText}您当前的首要任务是满足该要求。`
+      : `Your estimated score of ${estimatedPoints} meets the ${threshold}-point legal minimum.${benchmarkClause} ${claimText} Your immediate priority is meeting this requirement.`;
 
   const executiveSummary: string[] = isCA
     ? [
@@ -200,15 +212,15 @@ export function getPersonalizedOverview(
             // is mathematically wrong for that case (65/65 is met, not exceeded).
             : gap === 0
               ? (isTr
-                  ? `Minimum puan barajını karşıladınız! Şimdi başvuru sürecine odaklanabilirsiniz.`
+                  ? `${threshold} puanlık yasal asgariyi karşıladınız.${benchmarkClause}`
                   : isZh
-                    ? `您已达到最低积分门槛！现在可以专注于申请流程。`
-                    : `You have met the minimum points threshold! You can now focus on the application process.`)
+                    ? `您已达到 ${threshold} 分的法定最低分。${benchmarkClause}`
+                    : `You meet the ${threshold}-point legal minimum.${benchmarkClause}`)
               : (isTr
-                  ? `Puan barajını aştınız! Şimdi başvuru sürecine odaklanabilirsiniz.`
+                  ? `${threshold} puanlık yasal asgarinin üzerindesiniz.${benchmarkClause}`
                   : isZh
-                    ? `您已超过积分门槛！现在可以专注于申请流程。`
-                    : `You have exceeded the threshold! You can now focus on the application process.`),
+                    ? `您已超过 ${threshold} 分的法定最低分。${benchmarkClause}`
+                    : `You are above the ${threshold}-point legal minimum.${benchmarkClause}`),
       ];
 
   // ── Key Findings ──────────────────────────────────────────────────────
@@ -314,15 +326,21 @@ export function getPersonalizedOverview(
               : `${name}, your top priority is closing the ${gap}-point gap. ${fastestWays ? `Fastest path: ${fastestWays}.` : "See the points sections of this report for the actions that can still raise your score."}`)
         : !requirementMet
           ? (isTr
-              ? `${name}, potansiyel puanınız yeterli. ${claimText} Öncelikli adımınız bu gereksinimi tamamlamaktır.`
+              ? `${name}, tahmini puanınız ${threshold} puanlık yasal asgariyi karşılıyor.${benchmarkClause} ${claimText} Öncelikli adımınız bu gereksinimi tamamlamaktır.`
               : isZh
-                ? `${name}，您的潜在积分已足够。${claimText}您当前的首要任务是完成该要求。`
-                : `${name}, your potential score meets the threshold. ${claimText} Your immediate priority is completing this requirement.`)
-          : (isTr
-              ? `${name}, profiliniz güçlü! Hemen başvuru sürecine geçebilirsiniz. Belgelerinizi toplamaya başlayın.`
-              : isZh
-                ? `${name}，您的档案较强！可以立即开始申请流程。请开始准备文件。`
-                : `${name}, your profile is strong! You can proceed directly to the application process. Start gathering your documents.`));
+                ? `${name}，您的预估积分达到 ${threshold} 分的法定最低分。${benchmarkClause}${claimText}您当前的首要任务是完成该要求。`
+                : `${name}, your estimated score meets the ${threshold}-point legal minimum.${benchmarkClause} ${claimText} Your immediate priority is completing this requirement.`)
+          : (benchmarkGap ?? 0) > 0
+            ? (isTr
+                ? `${name}, EOI verebilirsiniz; ancak davet almak için puanınızı yükseltmeniz gerekecek.${benchmarkClause} ${fastestWays ? `En hızlı yol: ${fastestWays}.` : ""}`.trim()
+                : isZh
+                  ? `${name}，您可以递交 EOI，但要获得邀请仍需提高分数。${benchmarkClause}${fastestWays ? `最快的方法：${fastestWays}。` : ""}`
+                  : `${name}, you can lodge an EOI, but you will need a higher score to be invited.${benchmarkClause} ${fastestWays ? `Fastest path: ${fastestWays}.` : ""}`.trim())
+            : (isTr
+                ? `${name}, profiliniz güçlü! Hemen başvuru sürecine geçebilirsiniz. Belgelerinizi toplamaya başlayın.`
+                : isZh
+                  ? `${name}，您的档案较强！可以立即开始申请流程。请开始准备文件。`
+                  : `${name}, your profile is strong! You can proceed directly to the application process. Start gathering your documents.`));
 
   // ── Confidence Note ───────────────────────────────────────────────────
   const confidenceNote = isTr

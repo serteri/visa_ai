@@ -151,6 +151,15 @@ const textMap: Record<string, { tr?: string; zh?: string }> = {
     zh: "该季度通常反映申请递交后的递交完整性和响应准备度变量。",
   },
   "Profile Foundation & English": { tr: "Profil Temeli ve Dil", zh: "档案基础与英语" },
+  "Profile Foundation & Documents": { tr: "Profil Temeli ve Belgeler", zh: "档案基础与材料" },
+  "Establish baseline points and gather core identity documents. Your Superior English result already earns the maximum English points -- keep the test result valid until you are invited.": {
+    tr: "Temel puan düzeyini belirleyin ve temel kimlik belgelerini toplayın. Superior English sonucunuz zaten en yüksek İngilizce puanını kazandırıyor -- davet alana kadar test sonucunuzun geçerliliğini koruyun.",
+    zh: "建立基础分数水平并准备核心身份证明材料。您的 Superior English 成绩已获得英语最高分——请确保在获邀前成绩仍然有效。",
+  },
+  "Lodge formal skills assessment for {occupation} with the relevant Australian assessing authority.": {
+    tr: "{occupation} için ilgili Avustralya inceleme kurumuna resmi beceri incelemesi başvurusu yapın.",
+    zh: "为 {occupation} 向对应的澳大利亚评估机构提交正式职业评估。",
+  },
   "Skills Validation": { tr: "Yetenek Doğrulama", zh: "技能核验" },
   "EOI Strategy": { tr: "EOI Stratejisi", zh: "EOI 策略" },
   "Visa Lodgement & Processing": { tr: "Vize Başvurusu ve İşlem", zh: "签证递交与审理" },
@@ -556,10 +565,10 @@ export function occupationMatchLine(locale: Locale, results: readonly Occupation
   const anyInferred = results.some((r) => r.type === "MATCH" && r.inferred);
   const inferredCaveat = anyInferred
     ? locale === "tr"
-      ? " (Bu meslek kaynak belgede isaretlenmemis; her iki vize alt sinifina da uygulandigi, ACT'nin programin siralama sekliyle aciklanmasindan cikarilmistir, dogrudan belirtilmemistir.)"
+      ? " (ACT'nin yayimladigi liste bu meslegi belirli bir vize alt sinifi icin isaretlemiyor; her iki alt sinif icin de gecerli kabul edilmistir -- basvurmadan once ACT ile teyit edin.)"
       : locale === "zh-Hans"
-        ? "（该职业在原始文件中未特别标注；其同时适用于两个签证类别是根据ACT项目排序方式推断得出，并非文件直接说明。）"
-        : " (This occupation is unmarked in the source document; that it applies to both subclasses is inferred from how the ACT program's ranking is described, not stated directly.)"
+        ? "（ACT 公布的清单未将该职业标注为特定签证类别；此处视为两个类别均适用——申请前请向 ACT 确认。）"
+        : " (The ACT's published list doesn't mark this occupation for a specific subclass; it is treated here as open to both -- confirm with the ACT before applying.)"
     : "";
 
   if (locale === "tr") {

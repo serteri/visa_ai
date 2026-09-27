@@ -29,7 +29,8 @@ console.log("==================== Software Engineer (261313) across all 8 states
     ACT: [{ subclass: "190", type: "MATCH" }, { subclass: "491", type: "MATCH" }],
     NT: [{ subclass: "491", type: "NOT_ON_LIST" }],
     QLD: [{ subclass: "190", type: "MATCH" }, { subclass: "491", type: "MATCH" }],
-    WA: [{ subclass: "190", type: "NOT_ON_LIST" }, { subclass: "491", type: "NOT_ON_LIST" }],
+    // WA 2025-26 eligible occupations list: Software Engineer is on WASMOL Schedule 2 and the Graduate list (p.44).
+    WA: [{ subclass: "190", type: "MATCH" }, { subclass: "491", type: "MATCH" }],
     NSW: [{ subclass: "190", type: "UNIT_GROUP_ONLY" }, { subclass: "491", type: "UNIT_GROUP_ONLY" }],
     SA: [{ subclass: "190", type: "NO_DATA" }, { subclass: "491", type: "NO_DATA" }],
     TAS: [{ subclass: "190", type: "NOT_APPLICABLE" }, { subclass: "491", type: "NOT_APPLICABLE" }],
@@ -154,19 +155,18 @@ console.log("\n==================== localized lines (occupationMatchLine): one p
   // explicit 491-only case.
   const inferredLine = occupationMatchLine("en", matchOccupationToStateAllSubclasses(SOFTWARE_ENGINEER, "ACT", ["190", "491"]));
   const explicitLine = occupationMatchLine("en", matchOccupationToStateAllSubclasses("133112", "ACT", ["190", "491"]));
-  if (!/inferred/i.test(inferredLine)) fail(`ACT inferred-row line should mention the inference caveat: "${inferredLine}"`);
+  const caveat = /doesn't mark this occupation for a specific subclass/;
+  if (!caveat.test(inferredLine)) fail(`ACT inferred-row line should mention the inference caveat: "${inferredLine}"`);
   else ok("ACT inferred-row line carries the inference caveat");
-  if (/inferred/i.test(explicitLine)) fail(`ACT explicit (491 Only) line should NOT carry the inference caveat: "${explicitLine}"`);
+  if (caveat.test(explicitLine)) fail(`ACT explicit (491 Only) line should NOT carry the inference caveat: "${explicitLine}"`);
   else ok("ACT explicit (491 Only) line does not carry the inference caveat");
 }
 
-console.log("\n==================== regression: state-match SCORE is occupation-match-independent (Phase 3b) ====================");
+console.log("\n==================== state ranking follows the occupation lists ====================");
 {
-  // Same profile in every respect except occupation. Software Engineer 261313 is MATCH on ACT's list;
-  // Business Machine Mechanic 342311 is NOT_ON_LIST on ACT's list (it's NT-only -- see the "NT only"
-  // section above). Before Phase 3b this swap would have moved every state's score (the keyword heuristic
-  // and, if StateOccupationListEntry had data, the DB-backed rules both fed directly into the score); after
-  // Phase 3b it must not move the score for ANY state, only the additive occupationMatchNote text.
+  // Same profile except occupation. Software Engineer 261313 is on ACT's and WA's lists; Business Machine Mechanic
+  // 342311 is on the NT's list only. A state whose list excludes the occupation (190 and 491) must score 0% and never
+  // be recommended; a state whose list can't be confirmed must never rank above one where the occupation is confirmed.
   const baseProfile: ReadinessInput = {
     locale: "en",
     country: "AU",
@@ -181,51 +181,79 @@ console.log("\n==================== regression: state-match SCORE is occupation-
     migrationGoals: ["direct_pr"],
     sponsorOrFamily: "Single / No Dependants",
   };
-
-  const reportMatch = runReadinessEngine({ ...baseProfile, occupation: "Software Engineer 261313" });
-  const reportNotOnList = runReadinessEngine({ ...baseProfile, occupation: "Business Machine Mechanic 342311" });
-
-  const statesMatch = reportMatch.stateNominationTracker?.states ?? [];
-  const statesNotOnList = reportNotOnList.stateNominationTracker?.states ?? [];
-
-  if (statesMatch.length === 0 || statesNotOnList.length === 0) {
-    fail("state nomination tracker returned no states for one or both occupations -- can't run the regression check");
-  } else {
-    let scoreMismatch = 0;
-    for (const stateMatch of statesMatch) {
-      const stateOther = statesNotOnList.find((s) => s.code === stateMatch.code);
-      if (!stateOther) { fail(`${stateMatch.code}: missing from the second run's states`); continue; }
-      if (stateMatch.score !== stateOther.score) {
-        scoreMismatch++;
-        fail(`${stateMatch.code}: score depends on occupation match -- MATCH-occupation run scored ${stateMatch.score}, NOT_ON_LIST-occupation run scored ${stateOther.score}`);
+  const RANK = { confirmed: 0, unconfirmed: 1, not_listed: 2 } as const;
+  const runs: Array<[string, ReadinessInput]> = [
+    ["Software Engineer, offshore", { ...baseProfile, occupation: "Software Engineer 261313" }],
+    ["Software Engineer, onshore", { ...baseProfile, occupation: "Software Engineer 261313", currentCountry: "AU" }],
+    ["Business Machine Mechanic, offshore", { ...baseProfile, occupation: "Business Machine Mechanic 342311" }],
+    ["Civil Engineer, onshore", { ...baseProfile, occupation: "Civil Engineer 233211", currentCountry: "AU" }],
+  ];
+  const trackers = new Map<string, NonNullable<ReturnType<typeof runReadinessEngine>["stateNominationTracker"]>>();
+  for (const [label, input] of runs) {
+    const tracker = runReadinessEngine(input).stateNominationTracker;
+    if (!tracker || tracker.states.length === 0) {
+      fail(`${label}: no states in the tracker`);
+      continue;
+    }
+    trackers.set(label, tracker);
+    const top = tracker.topRecommendedStates.map((st) => st.code);
+    let bad = 0;
+    for (const st of tracker.states) {
+      if (!st.occupationListStatus) { bad++; fail(`${label}: ${st.code} has no occupationListStatus`); }
+      if (st.occupationListStatus === "not_listed") {
+        if (st.score !== 0 || st.matchLevel !== "low") { bad++; fail(`${label}: ${st.code} is not_listed but scores ${st.score}% (${st.matchLevel})`); }
+        if (top.includes(st.code)) { bad++; fail(`${label}: ${st.code} is not_listed but is a Top Recommended State`); }
+        if (!st.requirements.some((r) => /is not on .*occupation list for subclass 190 or 491/.test(r))) { bad++; fail(`${label}: ${st.code} not_listed without the "not on the list" note`); }
       }
-      if (stateMatch.matchLevel !== stateOther.matchLevel) {
-        fail(`${stateMatch.code}: matchLevel depends on occupation match (${stateMatch.matchLevel} vs ${stateOther.matchLevel})`);
+      if (st.occupationListStatus === "unconfirmed" && !st.requirements.some((r) => /^Occupation list not confirmed/.test(r))) {
+        bad++;
+        fail(`${label}: ${st.code} unconfirmed without the "Occupation list not confirmed" note`);
       }
     }
-    if (scoreMismatch === 0) ok(`all ${statesMatch.length} states scored identically regardless of occupation (Software Engineer vs Business Machine Mechanic)`);
-
-    // topRecommendedStates (the ranking) must also be identical, since it's derived purely from score/matchLevel/isOpen.
-    const rankingMatch = (reportMatch.stateNominationTracker?.topRecommendedStates ?? []).map((s) => s.code);
-    const rankingOther = (reportNotOnList.stateNominationTracker?.topRecommendedStates ?? []).map((s) => s.code);
-    if (JSON.stringify(rankingMatch) !== JSON.stringify(rankingOther)) {
-      fail(`topRecommendedStates ranking depends on occupation match: [${rankingMatch}] vs [${rankingOther}]`);
-    } else {
-      ok(`topRecommendedStates ranking is identical regardless of occupation: [${rankingMatch}]`);
+    for (let k = 1; k < tracker.states.length; k++) {
+      const prev = tracker.states[k - 1];
+      const cur = tracker.states[k];
+      if (RANK[prev.occupationListStatus ?? "unconfirmed"] > RANK[cur.occupationListStatus ?? "unconfirmed"]) {
+        bad++;
+        fail(`${label}: ${prev.code} (${prev.occupationListStatus}) ranks above ${cur.code} (${cur.occupationListStatus})`);
+      }
     }
+    for (const code of top) {
+      const st = tracker.states.find((x) => x.code === code)!;
+      const betterUnranked = tracker.states.some((x) => RANK[x.occupationListStatus ?? "unconfirmed"] < RANK[st.occupationListStatus ?? "unconfirmed"] && x.isOpen && x.matchLevel !== "low" && !top.includes(x.code));
+      if (betterUnranked) { bad++; fail(`${label}: Top Recommended ${code} (${st.occupationListStatus}) outranks an eligible confirmed state`); }
+    }
+    if (bad === 0) {
+      ok(`${label}: ${tracker.states.map((st) => `${st.code} ${st.score}% ${st.occupationListStatus}`).join(", ")}; top [${top.join(", ")}]`);
+    }
+  }
 
-    // ACT specifically: MATCH for Software Engineer, NOT_ON_LIST for Business Machine Mechanic -- confirm
-    // the display line genuinely differs there, so this isn't passing merely because ACT has no data.
-    const actMatch = statesMatch.find((s) => s.code === "ACT");
-    const actOther = statesNotOnList.find((s) => s.code === "ACT");
-    if (!actMatch?.occupationMatchNote || !actOther?.occupationMatchNote) {
-      fail("ACT: expected an occupationMatchNote on both runs to compare");
-    } else if (actMatch.occupationMatchNote === actOther.occupationMatchNote) {
-      fail(`ACT: occupationMatchNote should differ (MATCH vs NOT_ON_LIST) but is identical: "${actMatch.occupationMatchNote}"`);
-    } else if (!/on the ACT's list/.test(actMatch.occupationMatchNote) || !/not on the ACT's list/.test(actOther.occupationMatchNote)) {
-      fail(`ACT: occupationMatchNote text doesn't read as MATCH/NOT_ON_LIST as expected: "${actMatch.occupationMatchNote}" / "${actOther.occupationMatchNote}"`);
-    } else {
-      ok(`ACT: occupationMatchNote correctly differs while score (${actMatch.score}) and matchLevel (${actMatch.matchLevel}) stay identical between the two occupations`);
+  const se = trackers.get("Software Engineer, offshore");
+  const bmm = trackers.get("Business Machine Mechanic, offshore");
+  const actSe = se?.states.find((x) => x.code === "ACT");
+  const actBmm = bmm?.states.find((x) => x.code === "ACT");
+  if (actSe?.occupationListStatus === "confirmed" && actBmm?.occupationListStatus === "not_listed" && actBmm.score === 0) {
+    ok(`ACT: Software Engineer confirmed (${actSe.score}%), Business Machine Mechanic not on the list (0%)`);
+  } else fail(`ACT: ${actSe?.occupationListStatus}/${actSe?.score} vs ${actBmm?.occupationListStatus}/${actBmm?.score}`);
+
+  // WA follows its 2025-26 lists: Software Engineer and Civil Engineer are on them.
+  for (const label of ["Software Engineer, onshore", "Civil Engineer, onshore"]) {
+    const wa = trackers.get(label)?.states.find((x) => x.code === "WA");
+    if (wa?.occupationListStatus === "confirmed" && wa.score > 0) ok(`${label}: WA confirmed on the 2025-26 list (${wa.score}%)`);
+    else fail(`${label}: WA ${wa?.occupationListStatus} ${wa?.score}`);
+  }
+
+  // TAS: the general offshore 491 pathway is paused, so the status is onshore-only and an offshore applicant is blocked.
+  const tasOff = se?.states.find((x) => x.code === "TAS");
+  const tasOn = trackers.get("Software Engineer, onshore")?.states.find((x) => x.code === "TAS");
+  if (tasOff?.status === "Open (Onshore Only)" && tasOff.score === 0 && tasOff.isOpen === false && tasOn?.isOpen === true) {
+    ok("TAS: status Open (Onshore Only) agrees with its note; offshore applicant 0% and not open, onshore applicant open");
+  } else fail(`TAS: offshore ${tasOff?.status} ${tasOff?.score} ${tasOff?.isOpen}; onshore ${tasOn?.isOpen}`);
+  for (const [label, tracker] of trackers) {
+    for (const st of tracker.states) {
+      if (st.status === "Open (Onshore & Offshore)" && st.requirements.some((r) => /offshore[^.]*(paused|not open|not issuing)/i.test(r))) {
+        fail(`${label}: ${st.code} shows "Open (Onshore & Offshore)" while its note says offshore is paused`);
+      }
     }
   }
 }

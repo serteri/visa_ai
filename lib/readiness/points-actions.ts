@@ -40,6 +40,8 @@ export type PointsActionInputs = {
   assessmentDone: boolean;
   isResearchOrDoctorate: boolean;
   isAustralianQualification: boolean;
+  /** Where the qualification was earned was not answered (neither yes nor no). */
+  australianQualificationUnknown?: boolean;
   specialistStemResponse?: "yes" | "no" | "not_sure";
   professionalYearRelevant: boolean;
   /** The family/partner question was answered (an unanswered one gives no basis for a partner action). */
@@ -55,6 +57,7 @@ export const POINTS_ACTION_DIFFICULTY: Readonly<Record<PointsActionId, PointsAct
   english_upgrade: "Medium",
   professional_year: "Medium",
   partner_skills: "Medium",
+  partner_english: "Low",
   state_nomination_190: "Medium",
   regional_nomination_491: "Medium",
   overseas_employment: "High",
@@ -75,6 +78,7 @@ const ID_ORDER: readonly PointsActionId[] = [
   "professional_year",
   "regional_study",
   "partner_skills",
+  "partner_english",
   "state_nomination_190",
   "regional_nomination_491",
 ];
@@ -235,6 +239,19 @@ function wording(id: PointsActionId, locale: Locale, ctx: { years?: number; educ
           zh: "偏远地区学习加分仅适用于在指定偏远地区校区完成的学习。",
         }
       );
+    case "partner_english":
+      return w(
+        {
+          en: "Partner English: your partner obtains Competent English (no skills assessment needed)",
+          tr: "Partner İngilizcesi: partneriniz Competent English elde etsin (beceri değerlendirmesi gerekmez)",
+          zh: "伴侣英语：伴侣取得 Competent English（无需技能评估）",
+        },
+        {
+          en: "A partner with Competent English alone earns 5 partner points; with a positive skills assessment as well, 10.",
+          tr: "Yalnızca Competent English'e sahip bir partner 5 partner puanı kazandırır; olumlu beceri değerlendirmesiyle birlikte 10.",
+          zh: "伴侣仅具备 Competent English 即可获得 5 分伴侣加分；再加上正面技能评估则为 10 分。",
+        }
+      );
     case "partner_skills":
       return w(
         {
@@ -318,8 +335,13 @@ export function buildPointsActionPlan(inputs: PointsActionInputs): PointsActionP
   const actions: PointsAction[] = [];
   const factors: PointsActionPlan["factors"] = [];
   const setFactor = (factor: string, status: PointsActionFactorStatus) => factors.push({ factor, status });
-  const add = (id: PointsActionId, gain: number, ctx: { years?: number; educationTarget?: "doctorate" | "bachelor" } = {}) => {
-    const wd = wording(id, locale, ctx);
+  const add = (
+    id: PointsActionId,
+    gain: number,
+    ctx: { years?: number; educationTarget?: "doctorate" | "bachelor" } = {},
+    opts: Pick<PointsAction, "onlyForSubclass" | "exclusiveGroup" | "conditional"> & { wording?: Wording } = {}
+  ) => {
+    const wd = opts.wording ?? wording(id, locale, ctx);
     const difficulty = POINTS_ACTION_DIFFICULTY[id];
     actions.push({
       id,
@@ -329,8 +351,12 @@ export function buildPointsActionPlan(inputs: PointsActionInputs): PointsActionP
       reason: wd.reason,
       difficultyNote: pick(locale, DIFFICULTY_NOTE[difficulty]),
       requiresSkillsAssessment: id === "overseas_employment" || id === "australian_employment",
+      ...(opts.onlyForSubclass ? { onlyForSubclass: opts.onlyForSubclass } : {}),
+      ...(opts.exclusiveGroup ? { exclusiveGroup: opts.exclusiveGroup } : {}),
+      ...(opts.conditional ? { conditional: true } : {}),
     });
   };
+  const conditional = (label: L3, reason: L3): Wording => ({ label: pick(locale, label), reason: pick(locale, reason) });
 
   // Age: never an action -- the applicant cannot improve it.
   setFactor("age", base.age === "25_32" ? "at_maximum" : "not_applicable");
@@ -377,9 +403,28 @@ export function buildPointsActionPlan(inputs: PointsActionInputs): PointsActionP
     setFactor("education", "at_maximum");
   }
 
-  // Australian study requirement
+  // Australian study requirement. For a research degree / doctorate earned at an institution the intake does not name,
+  // it may ALREADY apply -- shown as a conditional line, not as a step to take.
+  const researchInstitutionUnknown = inputs.isResearchOrDoctorate && inputs.australianQualificationUnknown === true;
   if (base.australianStudyRequirement) {
     setFactor("australian_study", "already_claimed");
+  } else if (researchInstitutionUnknown) {
+    add("australian_study", gainOf({ australianStudyRequirement: true }), {}, {
+      conditional: true,
+      wording: conditional(
+        {
+          en: "If your degree was earned in Australia with at least 2 academic years of study: Australian study requirement points (conditional)",
+          tr: "Dereceniz Avustralya'da en az 2 akademik yıl eğitimle alındıysa: Avustralya öğrenim koşulu puanı (koşullu)",
+          zh: "若您的学位在澳大利亚取得且学习至少 2 个学年：澳大利亚学习要求加分（有条件）",
+        },
+        {
+          en: "Not confirmed: the institution where you earned your degree was not provided.",
+          tr: "Doğrulanmadı: derecenizi aldığınız kurum belirtilmedi.",
+          zh: "尚未确认：未提供您取得学位的院校。",
+        }
+      ),
+    });
+    setFactor("australian_study", "action");
   } else {
     add("australian_study", gainOf({ australianStudyRequirement: true }));
     setFactor("australian_study", "action");
@@ -394,6 +439,23 @@ export function buildPointsActionPlan(inputs: PointsActionInputs): PointsActionP
     (inputs.specialistStemResponse === undefined || inputs.specialistStemResponse === "not_sure")
   ) {
     add("specialist_education", gainOf({ specialistEducation: true }));
+    setFactor("specialist_education", "action");
+  } else if (researchInstitutionUnknown && inputs.specialistStemResponse !== "no") {
+    add("specialist_education", gainOf({ specialistEducation: true }), {}, {
+      conditional: true,
+      wording: conditional(
+        {
+          en: "If your doctorate or research masters is from an Australian institution, in a STEM field, with at least 2 academic years of study: specialist education points (conditional)",
+          tr: "Doktora veya araştırma yüksek lisansınız bir Avustralya kurumundan, STEM alanında ve en az 2 akademik yıl eğitimle alındıysa: uzmanlık eğitimi puanı (koşullu)",
+          zh: "若您的博士或研究型硕士学位来自澳大利亚院校、属于 STEM 领域且学习至少 2 个学年：专业型学位加分（有条件）",
+        },
+        {
+          en: "Not confirmed: the institution and field of your research degree were not provided.",
+          tr: "Doğrulanmadı: araştırma derecenizin kurumu ve alanı belirtilmedi.",
+          zh: "尚未确认：未提供您研究型学位的院校和领域。",
+        }
+      ),
+    });
     setFactor("specialist_education", "action");
   } else {
     setFactor("specialist_education", "not_applicable");
@@ -432,8 +494,11 @@ export function buildPointsActionPlan(inputs: PointsActionInputs): PointsActionP
   if (!inputs.partnerStatusProvided) {
     setFactor("partner_skills", "not_applicable");
   } else if (partnerGain > 0) {
-    add("partner_skills", partnerGain);
+    add("partner_skills", partnerGain, {}, { exclusiveGroup: "partner" });
     setFactor("partner_skills", "action");
+    // A partner earning no partner points yet can also gain 5 with Competent English alone (no skills assessment).
+    const partnerEnglishGain = gainOf({ partner: "partner_competent_english" });
+    if (base.partner === "none_or_unsure" && partnerEnglishGain > 0) add("partner_english", partnerEnglishGain, {}, { exclusiveGroup: "partner" });
   } else {
     // Single applicants (and partners already at the top tier) are at the maximum.
     setFactor("partner_skills", "at_maximum");
@@ -441,13 +506,13 @@ export function buildPointsActionPlan(inputs: PointsActionInputs): PointsActionP
 
   // Nominations
   if (inputs.subclasses.includes("190")) {
-    add("state_nomination_190", gainOf({ hasStateNomination190: true }, "total190"));
+    add("state_nomination_190", gainOf({ hasStateNomination190: true }, "total190"), {}, { onlyForSubclass: "190", exclusiveGroup: "nomination" });
     setFactor("state_nomination_190", "action");
   } else {
     setFactor("state_nomination_190", "not_applicable");
   }
   if (inputs.subclasses.includes("491")) {
-    add("regional_nomination_491", gainOf({ hasNominationOrSponsorship491: true }, "total491"));
+    add("regional_nomination_491", gainOf({ hasNominationOrSponsorship491: true }, "total491"), {}, { onlyForSubclass: "491", exclusiveGroup: "nomination" });
     setFactor("regional_nomination_491", "action");
   } else {
     setFactor("regional_nomination_491", "not_applicable");

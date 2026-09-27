@@ -46,7 +46,7 @@ const FACTOR_PATTERNS: Array<{ factor: string; ids: PointsActionId[]; pattern: R
   },
   {
     factor: "partner",
-    ids: ["partner_skills"],
+    ids: ["partner_skills", "partner_english"],
     pattern: /\bpartner\b|\bspouse\b|\bde facto\b|\bwife\b|\bhusband\b|(?<![a-zçğıöşü])eş(?![a-zçğıöşü])|eşiniz|配偶|伴侣|妻子|丈夫/i,
   },
   {

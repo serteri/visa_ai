@@ -279,12 +279,14 @@ function getLocalizedText(locale: "en" | "tr" | "zh-Hans") {
       pathwayTableIntro: "Aşağıdaki karşılaştırma, olası vize yollarını güven, rekabet ve pratik uygunluk sinyalleriyle birlikte gösterir.",
       pathwayStrengthIntro: "Yol gücü öncelikle bağlayıcı düzenleyici eşiklere göre değerlendirilir; herhangi bir Zorunlu Eşik (Hard Gate) ihlali, altta yatan sinyali geçersiz kılarak yolu Uygun Değil durumuna zorlar.",
       riskBoxIntro: "Bunlar isteğe bağlı notlar değil, zorunlu uyumluluk uyarılarıdır. Her uyarı, 1 Temmuz 2026 tarihli bağlayıcı bir kural eşiğini yansıtır ve bir yola güvenilmeden önce çözülmeli veya doğrulanmalıdır.",
+      riskAlertsHeading: "Risk Uyarıları",
+      riskAlertsIntro: "Her uyarı risk seviyesini gösterir (Yüksek / Orta / Düşük). Bir yola güvenmeden önce her birini çözün veya doğrulayın.",
       nextStepBoxIntro: "Aşağıdaki noktalar, başvuru hazırlığı düşünülürken dikkate alınabilecek eğitsel önceliklerdir.",
       sparseDataDisclaimerLabel: "Eksik Veri Uyarısı",
       nocEcaSection: "NOC / TEER Kodu & ECA İnceleme Stratejisi",
       pnpAdvantageSection: "Eyalet Adaylığı (PNP) Avantaj Haritası",
       auditReadyChecklist: "Denetim Hazırlığı Kanıt Kontrol Listesi",
-      auditReadyChecklistIntro: "IMM portal yüklemeleri, fon doğrulama kuralları ve test geçerlilik kısıtlamaları dahil olmak üzere hazırlanması gereken belgeler.",
+      auditReadyChecklistIntro: "Başvuru için hazırlanması gereken belgeler (Avustralya vizelerinde ImmiAccount üzerinden yüklenir), belge çevirileri ve dil testi geçerlilik süreleri.",
       livingCostSingle: "Tekil Yetişkin (aylık tahmini)",
       livingCostFamily: "3 Kişilik Aile (aylık tahmini)",
       livingCostBothNote: "CAD cinsinden göstergeler: kira, market ve toplu taşıma dahil. Bölgeye ve yaşam tarzına göre önemli farklılıklar görülebilir.",
@@ -446,12 +448,14 @@ function getLocalizedText(locale: "en" | "tr" | "zh-Hans") {
       pathwayTableIntro: "\u4e0b\u8868\u5c06\u53ef\u80fd\u7684\u7b7e\u8bc1\u8def\u5f84\u4e0e\u7f6e\u4fe1\u5ea6\u3001\u7ade\u4e89\u5f3a\u5ea6\u548c\u5b9e\u9645\u5339\u914d\u4fe1\u53f7\u5bf9\u7167\u3002",
       pathwayStrengthIntro: "\u8def\u5f84\u5f3a\u5ea6\u9996\u5148\u4f9d\u636e\u5177\u6709\u7ea6\u675f\u529b\u7684\u76d1\u7ba1\u95e8\u69db\u8fdb\u884c\u8bc4\u4f30\uff1b\u4efb\u4f55\u5f3a\u5236\u6027\u95e8\u69db\uff08Hard Gate\uff09\u8fdd\u89c4\u90fd\u5c06\u8986\u76d6\u5e95\u5c42\u4fe1\u53f7\uff0c\u5f3a\u5236\u5c06\u8be5\u8def\u5f84\u5224\u5b9a\u4e3a\u4e0d\u7b26\u5408\u8d44\u683c\u3002",
       riskBoxIntro: "\u4ee5\u4e0b\u5e76\u975e\u53ef\u9009\u63d0\u793a\uff0c\u800c\u662f\u5f3a\u5236\u6027\u5408\u89c4\u8b66\u62a5\u3002\u6bcf\u4e00\u9879\u8b66\u62a5\u5747\u53cd\u66202026\u5e747\u67081\u65e5\u8d77\u5177\u6709\u7ea6\u675f\u529b\u7684\u89c4\u5219\u95e8\u69db\uff0c\u5fc5\u987b\u5728\u4f9d\u8d56\u8be5\u8def\u5f84\u4e4b\u524d\u4e88\u4ee5\u89e3\u51b3\u6216\u6838\u5b9e\u3002",
+      riskAlertsHeading: "风险提示",
+      riskAlertsIntro: "每项提示均标明风险等级（高 / 中 / 低）。在依赖某一路径之前，请逐项解决或核实。",
       nextStepBoxIntro: "\u4ee5\u4e0b\u5185\u5bb9\u662f\u8003\u8651\u7533\u8bf7\u51c6\u5907\u65f6\u53ef\u53c2\u8003\u7684\u6559\u80b2\u6027\u4f18\u5148\u9879\u3002",
       sparseDataDisclaimerLabel: "\u6570\u636e\u7f3a\u5931\u8bf4\u660e",
       nocEcaSection: "NOC / TEER \u4ee3\u7801\u53ca ECA \u8bc4\u4f30\u7b56\u7565",
       pnpAdvantageSection: "\u7701\u63d0\u540d\u8ba1\u5212\uff08PNP\uff09\u4f18\u52bf\u5206\u6790",
       auditReadyChecklist: "\u5ba1\u8ba1\u5c31\u7eea\u6750\u6599\u6838\u67e5\u6e05\u5355",
-      auditReadyChecklistIntro: "\u5305\u62ec IMM \u95e8\u6237\u4e0a\u4f20\u8981\u6c42\u3001\u8d44\u91d1\u9a8c\u8bc1\u89c4\u5219\u53ca\u8bed\u8a00\u8003\u8bd5\u6709\u6548\u671f\u9650\u5236\u5728\u5185\u7684\u6587\u4ef6\u6e05\u5355\u3002",
+      auditReadyChecklistIntro: "申请需准备的文件清单（澳大利亚签证通过 ImmiAccount 上传），包括文件翻译及语言考试有效期要求。",
       livingCostSingle: "\u5355\u8eab\u6210\u4eba\uff08\u6bcf\u6708\u4f30\u7b97\uff09",
       livingCostFamily: "\u4e09\u53e3\u4e4b\u5bb6\uff08\u6bcf\u6708\u4f30\u7b97\uff09",
       livingCostBothNote: "\u4ee5 CAD \u4e3a\u5355\u4f4d\u7684\u53c2\u8003\u6307\u6807\uff0c\u542b\u79df\u91d1\u3001\u98df\u54c1\u6742\u8d27\u53ca\u4ea4\u901a\u8d39\u7528\u3002\u5b9e\u9645\u8d39\u7528\u56e0\u793e\u533a\u53ca\u751f\u6d3b\u65b9\u5f0f\u5dee\u5f02\u8f83\u5927\u3002",
@@ -612,12 +616,14 @@ function getLocalizedText(locale: "en" | "tr" | "zh-Hans") {
     pathwayTableIntro: "The following comparison places each possible pathway beside its confidence, friction, and practical readiness signals.",
     pathwayStrengthIntro: "Pathway strength is assessed against binding regulatory thresholds first; any Hard Gate violation overrides the underlying signal and forces the pathway to Ineligible.",
     riskBoxIntro: "These are mandatory compliance flags, not optional notes. Each alert reflects a binding 1 July 2026 rule threshold and must be resolved or verified before a pathway can be relied upon.",
+    riskAlertsHeading: "Risk Alerts",
+    riskAlertsIntro: "Each alert shows its risk level (High / Medium / Low). Resolve or verify each one before relying on a pathway.",
     nextStepBoxIntro: "The following items are educational priorities to consider while assessing application readiness.",
     sparseDataDisclaimerLabel: "Sparse Data Disclaimer",
     nocEcaSection: "NOC / TEER Code Mapping & ECA Valuation Strategy",
     pnpAdvantageSection: "Provincial Nominee Program (PNP) Advantage Mapping",
     auditReadyChecklist: "Audit-Ready Proof Checklist",
-    auditReadyChecklistIntro: "Documents required for submission including IMM digital portal uploads, proof-of-funds validation rules, and language test timeline constraints.",
+    auditReadyChecklistIntro: "Documents to prepare for your application (uploaded through ImmiAccount for Australian visas), including translations and language test validity dates.",
     livingCostSingle: "Single Adult (monthly estimate)",
     livingCostFamily: "Family of 3 (monthly estimate)",
     livingCostBothNote: "CAD indicative figures: rent, groceries, and transit included. Costs vary significantly by neighbourhood and lifestyle.",
@@ -5029,7 +5035,14 @@ export async function generateReadinessPDF(input: PDFGeneratorInput): Promise<Ui
         level: "high" as const,
       }));
 
+    // Genuine hard-gate breaches (not a below-65 score) are the only CRITICAL items; the heading follows the most
+    // severe item actually listed, so a "Critical" heading never sits over High/Medium-only alerts, and a CRITICAL
+    // pathway alert elsewhere in the report is repeated here rather than contradicted.
+    const hardGateAlerts = (report.pathwayFriction ?? [])
+      .filter((f) => f.isHardIneligible && !f.isPointsThresholdOnly)
+      .map((f) => ({ label: `${text.criticalComplianceAlertLabel}: ${f.pathway}`, body: f.explanation, level: "high" as const }));
     const criticalComplianceAlerts = [
+      ...hardGateAlerts,
       ...report.riskIndicators.map((r) => ({
         label: `${r.level === "high" ? text.highRisk : r.level === "medium" ? text.mediumRisk : text.lowRisk} - ${r.title}`,
         body: r.explanation,
@@ -5039,7 +5052,13 @@ export async function generateReadinessPDF(input: PDFGeneratorInput): Promise<Ui
     ];
 
     if (criticalComplianceAlerts.length > 0) {
-      drawAlertCollection(text.riskIndicators, text.riskBoxIntro, criticalComplianceAlerts, "risk");
+      const hasCritical = hardGateAlerts.length > 0;
+      drawAlertCollection(
+        hasCritical ? text.riskIndicators : text.riskAlertsHeading,
+        hasCritical ? text.riskBoxIntro : text.riskAlertsIntro,
+        criticalComplianceAlerts,
+        "risk"
+      );
     }
   }
 

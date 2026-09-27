@@ -216,6 +216,7 @@ export type PointsActionId =
   | "professional_year"
   | "regional_study"
   | "partner_skills"
+  | "partner_english"
   | "state_nomination_190"
   | "regional_nomination_491";
 
@@ -237,6 +238,15 @@ export type PointsAction = {
   difficultyNote: string;
   /** Employment actions only count once a positive skills assessment covers the work. */
   requiresSkillsAssessment: boolean;
+  /**
+   * Set for a points factor that exists for ONE subclass only: 190 state nomination (+5) counts only for 190, 491
+   * regional nomination / sponsorship (+15) only for 491; neither counts for 189.
+   */
+  onlyForSubclass?: "190" | "491";
+  /** Actions in the same group are alternatives (190 vs 491 nomination; the two partner options) -- never summed. */
+  exclusiveGroup?: "nomination" | "partner";
+  /** A factor that may ALREADY apply but cannot be confirmed from the intake (e.g. where a PhD was earned). */
+  conditional?: boolean;
 };
 
 export type PointsActionPlan = {
@@ -326,6 +336,10 @@ export type PointsBoosterScenario = {
   explanation: string;
   /** True for the single combined scenario that sums the top individual scenarios' point changes -- a real cumulative calculation, not a display artifact. */
   isCombined?: boolean;
+  /** See PointsAction: the one subclass a nomination factor applies to. Combined: the subclass every item allows. */
+  onlyForSubclass?: "190" | "491";
+  exclusiveGroup?: "nomination" | "partner";
+  conditional?: boolean;
 };
 
 export type PointsBoosterSimulator = {
@@ -613,6 +627,8 @@ export type StateNominationState = {
   /** The state's program is open to THIS applicant (status not closed/suspended, and the on/offshore requirement is met). Only open states may be recommended. */
   isOpen?: boolean;
   score: number;
+  /** Whether the occupation is on this state's list: confirmed / not_listed (score 0, never recommended) / unconfirmed. */
+  occupationListStatus?: "confirmed" | "not_listed" | "unconfirmed";
   summary: string;
   requirements: string[];
   /**

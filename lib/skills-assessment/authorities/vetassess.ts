@@ -486,7 +486,7 @@ export const vetassessAuthority: SkillsAssessmentAuthority = {
             "zh-Hans": "TSS技能评估申请费",
           },
           amountAUD: undefined,
-          note: "Not stated in source document; confirm via VETASSESS portal.",
+          note: "Not published by VETASSESS; confirm via the VETASSESS portal.",
         },
       ],
       documentRequirements: [

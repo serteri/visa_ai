@@ -17,10 +17,12 @@ export type EligibilityBadgeState = {
 };
 
 const LABELS: Record<"exceeded" | "belowPoints" | "blocked", Record<Locale, string>> = {
+  // "Minimum met", not "threshold exceeded": 65 is only the legal minimum to lodge an EOI, and the cover line under
+  // the badge states the invitation benchmarks.
   exceeded: {
-    en: "Points threshold exceeded",
-    tr: "Puan barajını aştınız",
-    "zh-Hans": "已超过积分门槛",
+    en: "65-point minimum met",
+    tr: "65 puanlık asgari karşılandı",
+    "zh-Hans": "已达到 65 分最低要求",
   },
   belowPoints: {
     en: "Below points threshold",

@@ -2767,6 +2767,15 @@ function buildPathwayEntry(
   if (forcedIneligibleByRule) {
     confidenceLevel = "low";
   }
+  // No positive skills assessment: an EOI for 189/190/491 cannot be lodged at all, so the pathway is shown as blocked
+  // (low confidence, "blocked" position) in every section -- never as a "moderate signal" / "Confidence: Medium".
+  const blockedBySkillsAssessment =
+    ["189", "190", "491"].includes(subclass) &&
+    !forcedIneligibleByRule &&
+    (input.occupationConfirmed ?? "").trim().toLowerCase() !== "yes";
+  if (blockedBySkillsAssessment) {
+    confidenceLevel = "low";
+  }
 
   let confidenceExplanation = getConfidenceExplanation(
     subclass,
@@ -2780,16 +2789,25 @@ function buildPathwayEntry(
     confidenceExplanation = isTr
       ? "Bu değerlendirme sinyali 1 Temmuz 2026 kural eşiği ihlali nedeniyle düşük güvene çekildi."
       : "This pathway signal is forced to low confidence due to a direct 1 July 2026 rule-threshold failure.";
+  } else if (blockedBySkillsAssessment) {
+    confidenceExplanation = isTr
+      ? "Engellendi: olumlu bir beceri değerlendirmesi olmadan bu vize için EOI verilemez."
+      : locale === "zh-Hans"
+        ? "受阻：没有正面的技能评估结果，无法为该签证递交 EOI。"
+        : "Blocked: an EOI for this visa cannot be lodged without a positive skills assessment.";
   }
   const difficulty = getDifficultyForPathway({ subclass });
   const requirementType = getRequirementType(
     { subclass },
     locale
   );
-  const userRelativePosition = getUserRelativePosition(
-    { relevance, confidenceLevel },
-    locale
-  );
+  const userRelativePosition = blockedBySkillsAssessment
+    ? isTr
+      ? "Olumlu beceri değerlendirmesine kadar engelli"
+      : locale === "zh-Hans"
+        ? "在取得正面技能评估之前受阻"
+        : "Blocked until a positive skills assessment"
+    : getUserRelativePosition({ relevance, confidenceLevel }, locale);
   const keyRequirements = getPathwayKeyRequirements(subclass, locale);
   const pathwaySpecificRisks = getPathwaySpecificRisks(
     subclass,
@@ -3546,6 +3564,7 @@ function buildAuPointsActionPlan(input: ReadinessInput, subclasses: readonly str
     assessmentDone: (input.occupationConfirmed ?? "").trim().toLowerCase() === "yes",
     isResearchOrDoctorate: isResearchOrDoctorateQualification(input.qualificationLevel),
     isAustralianQualification: isAustralianQualification(input),
+    australianQualificationUnknown: input.qualificationAwardedInAustralia === undefined || input.qualificationAwardedInAustralia === null,
     specialistStemResponse: input.specialistEducationStemResponse,
     professionalYearRelevant: isProfessionalYearRelevantOccupation(input),
     partnerStatusProvided: Boolean((input.sponsorOrFamily ?? "").trim()),
@@ -4588,6 +4607,9 @@ function buildPointsBoosterSimulator(
         estimatedChange: a.gain,
         resultingEstimate: currentEstimate === undefined ? undefined : currentEstimate + a.gain,
         explanation: a.reason,
+        ...(a.onlyForSubclass ? { onlyForSubclass: a.onlyForSubclass } : {}),
+        ...(a.exclusiveGroup ? { exclusiveGroup: a.exclusiveGroup } : {}),
+        ...(a.conditional ? { conditional: true } : {}),
       });
     }
   }
@@ -4700,6 +4722,8 @@ function buildPointsBoosterSimulator(
         : isZh
           ? "获得州或领地政府提名。"
           : "Mandatory state/territory nomination.",
+      onlyForSubclass: "190",
+      exclusiveGroup: "nomination",
     });
   }
 
@@ -4718,6 +4742,8 @@ function buildPointsBoosterSimulator(
         : isZh
           ? "打分表中数额最大的单项加分。"
           : "The largest single bonus in the points test.",
+      onlyForSubclass: "491",
+      exclusiveGroup: "nomination",
     });
   }
 
@@ -4766,35 +4792,42 @@ function buildPointsBoosterSimulator(
   // occupation-matched recent invitation benchmark exists (never a guessed
   // number) -- the smallest combination that reaches that benchmark.
   // Only the largest single gains are combined (the list is ordered by gain).
-  const combinable = scenarios.filter((s) => s.estimatedChange > 0).slice(0, 6);
-  type Combo = { items: typeof combinable; total: number };
+  // Nomination points are subclass-specific (190 +5 only for 190, 491 +15 only for 491, neither for 189), and
+  // alternatives (the two nominations, the two partner options) are never summed; a combination's subclass is the
+  // one its nomination item (if any) belongs to. Conditional "may already apply" lines are not combined.
+  const combinable = scenarios.filter((s) => s.estimatedChange > 0 && !s.conditional).slice(0, 6);
+  type Combo = { items: typeof combinable; total: number; onlyForSubclass?: "190" | "491" };
   const combos: Combo[] = [];
+  const compatible = (items: typeof combinable) => {
+    const groups = items.map((s) => s.exclusiveGroup).filter(Boolean);
+    return new Set(groups).size === groups.length;
+  };
+  const addCombo = (items: typeof combinable) => {
+    if (!compatible(items)) return;
+    const scope = items.find((s) => s.onlyForSubclass)?.onlyForSubclass;
+    combos.push({ items, total: items.reduce((n, s) => n + s.estimatedChange, 0), ...(scope ? { onlyForSubclass: scope } : {}) });
+  };
   for (let i = 0; i < combinable.length; i++) {
     for (let j = i + 1; j < combinable.length; j++) {
-      combos.push({
-        items: [combinable[i], combinable[j]],
-        total: combinable[i].estimatedChange + combinable[j].estimatedChange,
-      });
-      for (let k = j + 1; k < combinable.length; k++) {
-        combos.push({
-          items: [combinable[i], combinable[j], combinable[k]],
-          total: combinable[i].estimatedChange + combinable[j].estimatedChange + combinable[k].estimatedChange,
-        });
-      }
+      addCombo([combinable[i], combinable[j]]);
+      for (let k = j + 1; k < combinable.length; k++) addCombo([combinable[i], combinable[j], combinable[k]]);
     }
   }
+  const scopeSuffix = (scope?: "190" | "491") =>
+    !scope ? "" : isTr ? ` (yalnızca Subclass ${scope})` : isZh ? `（仅限 Subclass ${scope}）` : ` (subclass ${scope} only)`;
 
   function comboLabel(items: typeof combinable): string {
     return items.map((s) => s.label).join(isTr ? " + " : isZh ? " + " : " + ");
   }
 
-  function pushComboScenario(items: typeof combinable, total: number, explanation: string, labelSuffix?: string) {
+  function pushComboScenario(items: typeof combinable, total: number, explanation: string, labelSuffix: string, scope?: "190" | "491") {
     scenarios.push({
-      label: comboLabel(items) + (labelSuffix ?? ""),
+      label: comboLabel(items) + labelSuffix,
       estimatedChange: total,
       resultingEstimate: currentEstimate === undefined ? undefined : currentEstimate + total,
       explanation,
       isCombined: true,
+      ...(scope ? { onlyForSubclass: scope } : {}),
     });
   }
 
@@ -4822,7 +4855,9 @@ function buildPointsBoosterSimulator(
             ? `${target} puan hedefine ulaşır (Toplam: ${resulting} puan).`
             : isZh
               ? `达到 ${target} 分目标（总分：${resulting} 分）。`
-              : `Reaches the ${target}-point target (Total: ${resulting} points).`
+              : `Reaches the ${target}-point target (Total: ${resulting} points).`,
+          scopeSuffix(bestCombo.onlyForSubclass),
+          bestCombo.onlyForSubclass
         );
         break; // Add only the single best distinct combo for this target threshold
       }
@@ -4841,8 +4876,9 @@ function buildPointsBoosterSimulator(
 
     for (const target of relevantTrendEstimates) {
       const targetGap = target.estimatedPoints - currentEstimate;
+      // Only factors valid for THIS subclass: no nomination for 189, only its own nomination for 190 / 491.
       const reaching = combos
-        .filter((c) => c.total >= targetGap)
+        .filter((c) => c.total >= targetGap && (c.onlyForSubclass === undefined || c.onlyForSubclass === target.subclass))
         .sort((a, b) => a.items.length - b.items.length || a.total - b.total);
 
       for (const chosen of reaching) {
@@ -4863,7 +4899,8 @@ function buildPointsBoosterSimulator(
             ? ` (Subclass ${target.subclass} son davet referansı: ${target.estimatedPoints} puan)`
             : isZh
               ? `（Subclass ${target.subclass} 近期邀请参考分：${target.estimatedPoints} 分）`
-              : ` (recent Subclass ${target.subclass} invitation benchmark: ${target.estimatedPoints} pts)`
+              : ` (recent Subclass ${target.subclass} invitation benchmark: ${target.estimatedPoints} pts)`,
+          chosen.onlyForSubclass
         );
         break; // Only push one combo for this subclass benchmark
       }
@@ -5035,11 +5072,25 @@ function buildFinancialRoadmap(
   // this) -- resolveSecondInstalmentAud() picks the value(s) that actually
   // apply to this report's detected subclass(es) instead of one flat number
   // applied to all three (Phase 1 report consistency fix, item D6).
+  // One figure everywhere: the sourced charge for the same subclass the cost totals use (feeSubclass), so the alert
+  // and the "Possible additional charge" line never disagree; 491's different figure is named separately.
   const secondInstalmentValue = resolveSecondInstalmentAud(subclasses);
+  const instalmentSubclass = feeSubclass && SECOND_INSTALMENT_AUD[feeSubclass] ? feeSubclass : undefined;
+  const primaryInstalment = instalmentSubclass
+    ? SECOND_INSTALMENT_AUD[instalmentSubclass]
+    : typeof secondInstalmentValue === "number" ? secondInstalmentValue : secondInstalmentValue.min;
+  const other491 =
+    instalmentSubclass && instalmentSubclass !== "491" && subclasses.includes("491") && SECOND_INSTALMENT_AUD["491"] !== primaryInstalment
+      ? SECOND_INSTALMENT_AUD["491"]
+      : undefined;
   const secondInstalmentLabel =
-    typeof secondInstalmentValue === "number"
-      ? secondInstalmentValue.toLocaleString("en-AU")
-      : `${secondInstalmentValue.min.toLocaleString("en-AU")}–${secondInstalmentValue.max.toLocaleString("en-AU")}`;
+    primaryInstalment.toLocaleString("en-AU") +
+    (instalmentSubclass
+      ? isTr ? ` (alt sınıf ${instalmentSubclass})` : isZh ? `（子类 ${instalmentSubclass}）` : ` (subclass ${instalmentSubclass})`
+      : "") +
+    (other491 !== undefined
+      ? isTr ? `; alt sınıf 491 için AUD ${other491.toLocaleString("en-AU")}` : isZh ? `；子类 491 为 AUD ${other491.toLocaleString("en-AU")}` : `; AUD ${other491.toLocaleString("en-AU")} for subclass 491`
+      : "");
   if (!hasFamilyStatusProvided) {
     items.push({
       category: isTr
@@ -5058,17 +5109,21 @@ function buildFinancialRoadmap(
   } else if (hasNoFunctionalEnglishDependants) {
     items.push({
       category: isTr
-        ? `🚨 KRİTİK UYUMLULUK UYARISI: 18+ bağımlılar için olası ikinci taksit ücreti ~AUD ${secondInstalmentLabel}`
+        ? "Yüksek - İkinci taksit ücreti (18+ bağımlılar)"
         : isZh
-          ? `🚨 关键合规警报：18岁及以上受抚养人可能产生约 AUD ${secondInstalmentLabel} 的第二期费用`
-          : `🚨 CRITICAL COMPLIANCE ALERT: Potential second-instalment charge of ~${secondInstalmentLabel} AUD`,
+          ? "高 - 第二期费用（18岁及以上受抚养人）"
+          : "High - Second-instalment charge (dependants aged 18+)",
       estimateType: "official_fee",
       amountLabel: isTr
-        ? `Bağımlı başına yaklaşık AUD ${secondInstalmentLabel}`
-        : `About AUD ${secondInstalmentLabel} per dependant`,
+        ? `Bağımlı başına AUD ${primaryInstalment.toLocaleString("en-AU")}`
+        : isZh
+          ? `每位受抚养人 AUD ${primaryInstalment.toLocaleString("en-AU")}`
+          : `AUD ${primaryInstalment.toLocaleString("en-AU")} per dependant`,
       explanation: isTr
-        ? `Seçilen aile durumunda (18+ bağımlılarda Functional English yok), ikinci taksit riski aktif görünüyor: bağımlı başına yaklaşık AUD ${secondInstalmentLabel}.`
-        : `Your selected family status indicates no functional English for dependants aged 18+, so the second-instalment risk appears active at about AUD ${secondInstalmentLabel} per dependant.`,
+        ? `Seçilen aile durumunda (18+ bağımlılarda Functional English yok) ikinci taksit uygulanır: bağımlı başına AUD ${secondInstalmentLabel}. Bağımlı Functional English kanıtlarsa bu ücret ödenmez.`
+        : isZh
+          ? `根据您选择的家庭情况（18岁及以上受抚养人没有功能性英语），将产生第二期费用：每人 AUD ${secondInstalmentLabel}。若受抚养人能证明功能性英语，则无需缴纳。`
+          : `Your selected family status indicates no functional English for dependants aged 18+, so a second instalment applies per dependant: AUD ${secondInstalmentLabel}. It is not payable if the dependant can show functional English.`,
     });
   } else {
     items.push({
@@ -5079,8 +5134,10 @@ function buildFinancialRoadmap(
           : "Second-instalment risk (dependant English status)",
       estimateType: "variable",
       amountLabel: isTr
-        ? `Bağımlı başına yaklaşık AUD ${secondInstalmentLabel} (belirtilen aile durumunda görünmüyor)`
-        : `About AUD ${secondInstalmentLabel} per dependant (not indicated by your provided family status)`,
+        ? `Bağımlı başına AUD ${primaryInstalment.toLocaleString("en-AU")} (belirtilen aile durumunda görünmüyor)`
+        : isZh
+          ? `每位受抚养人 AUD ${primaryInstalment.toLocaleString("en-AU")}（您提供的家庭情况未显示此风险）`
+          : `AUD ${primaryInstalment.toLocaleString("en-AU")} per dependant (not indicated by your provided family status)`,
       explanation: isTr
         ? "18 yaş ve üzeri bağımlılar Functional English kanıtı sunamazsa kişi başı ikinci taksit ücreti uygulanabilir. Sağladığınız aile durumu bu riski işaret etmiyor, ancak koşullar değişirse yeniden değerlendirilmelidir."
         : "Where a dependant aged 18+ cannot show functional English, a second instalment can apply per dependant. Your provided family status does not indicate this risk, but it should be reassessed if circumstances change.",
@@ -6983,6 +7040,7 @@ function runReadinessEngineInternal(input: ReadinessInput): ReadinessReport {
     biggestConcern: input.biggestConcern,
     estimatedPoints: pointsEstimate?.estimatedPoints,
     englishLevel: input.englishLevel,
+    experienceNotProvided: input.offshoreExperienceYears === undefined && input.onshoreExperienceYears === undefined,
     country: "AU",
     pathwayComparison,
     assessmentState,

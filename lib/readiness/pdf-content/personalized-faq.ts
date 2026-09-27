@@ -308,10 +308,16 @@ export function getPersonalizedFaq(
         ? "工作经验如何验证？"
         : "How is my work experience verified?",
     answer: isTr
-      ? `İşvereninizden imzalı mektup gerekir. Mektup ${isCA ? "NOC" : "ANZSCO"} kodu, görev tanımlarını, çalışma süresini ve maaşı içermelidir.`
+      ? isCA
+        ? "İşvereninizden imzalı mektup gerekir. Mektup NOC kodu, görev tanımlarını, çalışma süresini ve maaşı içermelidir."
+        : "İşvereninizden imzalı bir referans mektubu gerekir: iş unvanınızı, görevlerinizi, çalışma tarihlerini, haftalık çalışma saatlerini ve maaşınızı belirtmelidir. Mektubun bir ANZSCO kodu içermesi gerekmez; görevlerin aday gösterilen mesleğinizle örtüşmesi önemlidir."
       : isZh
-        ? `需要雇主签署的证明信。信中需包含${isCA ? "NOC" : "ANZSCO"}代码、职责描述、工作时间和薪资。`
-        : `You need a signed letter from your employer. It must include ${isCA ? "NOC" : "ANZSCO"} code, duty descriptions, duration, and salary.`,
+        ? isCA
+          ? "需要雇主签署的证明信。信中需包含NOC代码、职责描述、工作时间和薪资。"
+          : "需要雇主签署的推荐信：写明您的职位、职责、任职起止日期、每周工作时长和薪资。推荐信无需注明 ANZSCO 代码；关键是所列职责与您的提名职业相符。"
+        : isCA
+          ? "You need a signed letter from your employer. It must include NOC code, duty descriptions, duration, and salary."
+          : "You need a signed reference letter from your employer stating your job title, duties, dates of employment, weekly hours and salary. It does not need to quote an ANZSCO code; what matters is that the duties match your nominated occupation.",
   });
 
   // ── Points Booster Question (AU only -- CA's equivalent "How can I
@@ -339,11 +345,13 @@ export function getPersonalizedFaq(
         : isZh
           ? "我可以获得过桥签证吗？"
           : "Can I get a bridging visa?",
+      // Home Affairs subclass 189 page (23 Sep 2026) p.6 (holding a substantive visa or a bridging visa when applying in
+      // Australia) and p.18 (the BVA granted with the application takes effect when the current visa expires).
       answer: isTr
-        ? "Evet, Avustralya'dayken başvurursanız Bridging Visa A alırsınız. Bu, mevcut vizeniz bittikten sonra çalışmaya devam etmenizi sağlar."
+        ? "Otomatik değildir. Avustralya'da, geçerli bir asıl (substantive) vizeniz varken başvurursanız genellikle bir Bridging Visa A verilir; bu vize, mevcut vizeniz sona erdiğinde yürürlüğe girer ve karar verilene kadar yasal olarak kalmanızı sağlar. Çalışma hakları vize koşullarına bağlıdır. Avustralya dışından başvurursanız bridging visa verilmez; EOI tek başına bridging visa sağlamaz."
         : isZh
-          ? "可以，如果您在澳大利亚境内申请，可以获得过桥签证A。这可以让您在当前签证到期后继续工作。"
-          : "Yes, if you apply while in Australia, you get a Bridging Visa A. This allows you to continue working after your current visa expires.",
+          ? "并非自动获得。如果您在澳大利亚境内、持有有效的实质性签证时递交申请，通常会获得过桥签证A（BVA）；它在您当前签证到期后生效，使您在审理期间合法留在澳大利亚。工作权利取决于签证条件。在澳大利亚境外申请不会获得过桥签证；仅提交 EOI 也不会获得过桥签证。"
+          : "Not automatically. If you apply in Australia while holding a substantive visa, you will generally be granted a Bridging visa A (BVA), which takes effect when your current visa expires and keeps you lawful while your application is decided. Work rights depend on its conditions. There is no bridging visa if you apply from outside Australia, and submitting an EOI alone does not give you one.",
     });
   }
 
@@ -371,10 +379,16 @@ export function getPersonalizedFaq(
         ? "如果申请被拒，我该怎么办？"
         : "What if my application is refused?",
     answer: isTr
-      ? "Reddetme mektubundaki nedenlere göre hareket edin. Temyiz (merit review) veya idari inceleme yolları mevcuttur. Profesyonel yardım almanız önerilir."
+      ? isCA
+        ? "Reddetme mektubundaki nedenlere göre hareket edin. Temyiz (merit review) veya idari inceleme yolları mevcuttur. Profesyonel yardım almanız önerilir."
+        : "Ret mektubu, retin nedenlerini ve karara karşı inceleme hakkınız olup olmadığını belirtir. Esasa ilişkin inceleme (merits review) hakkı genellikle başvurunun Avustralya içinden mi dışından mı yapıldığına bağlıdır; son başvuru tarihleri kısadır. Profesyonel yardım almanız önerilir."
       : isZh
-        ? "请根据拒签信中的原因采取行动。有行政复审或司法审查途径。建议寻求专业帮助。"
-        : "Act on the reasons stated in your refusal letter. Merit review and judicial review options are available. Professional help is recommended.",
+        ? isCA
+          ? "请根据拒签信中的原因采取行动。有行政复审或司法审查途径。建议寻求专业帮助。"
+          : "拒签信会说明拒签原因以及您是否有权申请复审。能否申请实质复审（merits review）通常取决于申请是在澳大利亚境内还是境外递交的；申请期限很短。建议寻求专业帮助。"
+        : isCA
+          ? "Act on the reasons stated in your refusal letter. Merit review and judicial review options are available. Professional help is recommended."
+          : "Your refusal letter states why the visa was refused and whether you have a right to a review of the decision. Whether merits review is available generally depends on whether the application was made in or outside Australia, and the deadlines are short. Professional help is recommended.",
   });
 
   // ── Processing Time Question ──────────────────────────────────────────

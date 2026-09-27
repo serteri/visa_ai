@@ -230,7 +230,10 @@ function buildFrictionItem(input: ReadinessInput, base: ReadinessReport, subclas
     }
   }
 
-  if (["189", "190", "491"].includes(subclassKey) && resolveAssessingAuthority(input.occupation).authorityId === "ACS" && (input.offshoreExperienceYears ?? 0) < 2) {
+  const experienceNotProvided = input.offshoreExperienceYears === undefined && input.onshoreExperienceYears === undefined;
+  if (["189", "190", "491"].includes(subclassKey) && experienceNotProvided) {
+    reality.push(t3(locale, "Work experience not provided.", "Is deneyimi girilmedi.", "未提供工作经验。"));
+  } else if (["189", "190", "491"].includes(subclassKey) && resolveAssessingAuthority(input.occupation).authorityId === "ACS" && (input.offshoreExperienceYears ?? 0) < 2) {
     // (The deduction risk is stated in the text; it does not change the friction LEVEL, which is the score gap only.)
     reality.push(t3(locale, "ACS experience deduction risk is high because declared experience is below 2 years.", "Beyan edilen deneyim 2 yilin altinda oldugu icin ACS deneyim kesintisi riski yuksektir.", "因申报经验不足 2 年，ACS 经验扣减风险较高。"));
   }
@@ -242,9 +245,11 @@ function buildFrictionItem(input: ReadinessInput, base: ReadinessReport, subclas
   // verbatim under each subclass row.
   // The dataset's warning text can name a different assessing body than the registry resolves (e.g. "AMC pathway"
   // for a code the registry gives to AHPRA); such a warning is dropped so ONE authority is named per occupation.
+  // An experience-deduction warning says nothing useful when no experience was entered.
+  const occupationWarningText = occupationWarningFor(occupation?.critical_warning, resolveAssessingAuthority(input.occupation));
   const localizedOccupationWarning = localizeOccupationWarning(
     locale,
-    occupationWarningFor(occupation?.critical_warning, resolveAssessingAuthority(input.occupation))
+    experienceNotProvided && occupationWarningText && /deduct/i.test(occupationWarningText) ? undefined : occupationWarningText
   );
 
   if (subclassKey === "820/801") {

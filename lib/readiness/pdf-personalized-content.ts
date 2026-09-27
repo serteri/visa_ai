@@ -1,5 +1,5 @@
 import type { PDFContext } from "./pdf-types";
-import type { Locale } from "./types";
+import type { Locale, ReadinessReport } from "./types";
 import { getPersonalizedPointsBreakdown } from "./pdf-content/personalized-points";
 import { skillsAssessmentClaimText } from "./pdf-content/skills-assessment-claim";
 import { getPersonalizedOverview } from "./pdf-content/personalized-overview";
@@ -283,6 +283,7 @@ export function renderPersonalizedContent(ctx: PDFContext): void {
     hasSalary ? String(annualSalary) : undefined,
     report.assessmentState.isEoiEligible,
     report.pointsEstimate?.actionPlan,
+    invitationBenchmarks(report),
   );
 
   ctx.ensurePageSpace(50);
@@ -354,6 +355,7 @@ export function renderPersonalizedContent(ctx: PDFContext): void {
       skillsAssessmentDone,
       report.assessmentState.isEoiEligible,
       report.pointsEstimate.actionPlan,
+      invitationBenchmarks(report),
     );
 
     // Section Header
@@ -1076,4 +1078,14 @@ export function renderPersonalizedContent(ctx: PDFContext): void {
     ctx.yPosition += 1;
   });
   ctx.yPosition += 3;
+}
+
+/** AU: the recent invitation benchmark of each evaluated subclass (189/190/491) that has one. */
+function invitationBenchmarks(report: ReadinessReport): Array<{ subclass: string; points: number }> | undefined {
+  if (report.country === "CA" || !report.pathwayScores) return undefined;
+  const evaluated = new Set(report.detectedSubclasses ?? ["189", "190", "491"]);
+  const known = Object.values(report.pathwayScores as NonNullable<ReadinessReport["pathwayScores"]>)
+    .filter((p) => typeof p.benchmark === "number" && evaluated.has(p.subclass))
+    .map((p) => ({ subclass: p.subclass, points: p.benchmark as number }));
+  return known.length ? known : undefined;
 }

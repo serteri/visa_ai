@@ -542,10 +542,13 @@ const PARTNER_RE = /partner|spouse|(?<![a-zçğıöşü])eş(?![a-zçğıöşü]
 
 /** Every "+N" token, sorted. */
 /** Removes the engine's partner-action strings: they legitimately mention the PARTNER's English, which is not an English improvement for the applicant. */
+// Partner actions talk about the PARTNER's English, and conditional lines ("If your doctorate ... was earned in
+// Australia") about where a degree was earned -- neither advises the applicant to improve English or education.
 const withoutPartnerWording = (t: string, plan: PointsActionPlan, sq: (x: string) => string): string => {
   let out = t;
-  for (const a of plan.actions.filter((x) => x.id === "partner_skills")) {
-    for (const piece of [a.label, a.reason]) out = out.split(sq(piece)).join(" ");
+  for (const a of plan.actions.filter((x) => x.id === "partner_skills" || x.id === "partner_english" || x.conditional)) {
+    // (also the stub model's TESTWORD-/TESTDIFF-<id> placeholders -- "partner_english" itself contains "english")
+    for (const piece of [a.label, a.reason, `TESTWORD-${a.id}`, `TESTDIFF-${a.id}`]) out = out.split(sq(piece)).join(" ");
   }
   return out;
 };
@@ -694,7 +697,7 @@ async function runPointsActionChecks(
           if (!roadmap.includes(sq(a.label).slice(0, 40))) f(`roadmap is missing engine action ${a.id}`);
         }
         if (!profile.expectEnglishAction && ENGLISH_RE.test(withoutPartnerWording(roadmap, plan, sq))) f("roadmap mentions English although English is at the maximum");
-        if (!profile.expectEducationAction && EDUCATION_RE.test(roadmap)) f("roadmap mentions education although it is at the maximum");
+        if (!profile.expectEducationAction && EDUCATION_RE.test(withoutPartnerWording(roadmap, plan, sq))) f("roadmap mentions education although it is at the maximum");
         if (!profile.expectPartnerAction && PARTNER_RE.test(roadmap)) f("roadmap mentions a partner for a single applicant");
 
         // Enabling step: separate, no points value.
@@ -753,7 +756,7 @@ async function runPointsActionChecks(
         const gapAnalysis = sliceBetween(flat, locale === "en" ? "TOTAL:" : locale === "tr" ? "TOPLAM:" : "总分：", [sq(TIPS_HEADING[locale])], 1500);
         if (!profile.expectEnglishAction && ENGLISH_RE.test(withoutPartnerWording(gapAnalysis, plan, sq))) f(`gap analysis mentions English although it is at the maximum: "${gapAnalysis.slice(0, 200)}"`);
         if (!profile.expectEnglishAction && ENGLISH_RE.test(withoutPartnerWording(tips, plan, sq))) f("tips mention English although it is at the maximum");
-        if (!profile.expectEducationAction && EDUCATION_RE.test(tips)) f("tips mention education although it is at the maximum");
+        if (!profile.expectEducationAction && EDUCATION_RE.test(withoutPartnerWording(tips, plan, sq))) f("tips mention education although it is at the maximum");
         if (!profile.expectPartnerAction && PARTNER_RE.test(tips)) f("tips mention a partner for a single applicant");
 
         // ── Whole-PDF: no English improvement advice at the maximum ──

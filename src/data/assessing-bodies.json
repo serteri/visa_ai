@@ -16,9 +16,9 @@
         "zh-Hans": "未注明"
       },
       "processingNote": {
-        "en": "The ACS source document states no processing time; confirm with ACS.",
-        "tr": "ACS kaynak belgesi işlem süresi belirtmiyor; ACS ile teyit edin.",
-        "zh-Hans": "ACS 来源文件未注明处理时间；请向 ACS 确认。"
+        "en": "ACS does not publish a processing time; confirm with ACS.",
+        "tr": "ACS bir işlem süresi yayımlamıyor; ACS ile teyit edin.",
+        "zh-Hans": "ACS 未公布处理时间；请向 ACS 确认。"
       },
       "source": "ACS Migration Skills Assessment — official guide, fee increase effective 3 November 2025, pp.15, 19, 21–22",
       "description": "Assesses ICT professionals for skilled migration visa applications.",
@@ -82,9 +82,9 @@
         "411411": {
           "fee": "AUD 395",
           "feeNote": {
-            "en": "AUD 395: Modified skills assessment, if you are already registered with NMBA/Ahpra or in New Zealand. For an enrolled nurse registered only overseas, the source document does not clearly state which assessment or fee applies -- confirm with Anmac.",
-            "tr": "AUD 395: Modified beceri değerlendirmesi, zaten NMBA/Ahpra'ya veya Yeni Zelanda'da kayıtlıysanız. Yalnızca yurt dışında kayıtlı bir enrolled nurse için kaynak belge hangi değerlendirmenin veya ücretin geçerli olduğunu açıkça belirtmiyor -- Anmac ile teyit edin.",
-            "zh-Hans": "AUD 395：修改版技能评估，适用于已在 NMBA/Ahpra 或新西兰注册者。仅在海外注册的 enrolled nurse 适用哪项评估或费用，来源文件未明确说明——请向 Anmac 确认。"
+            "en": "AUD 395: Modified skills assessment, if you are already registered with NMBA/Ahpra or in New Zealand. For an enrolled nurse registered only overseas, Anmac's published information does not clearly state which assessment or fee applies -- confirm with Anmac.",
+            "tr": "AUD 395: Modified beceri değerlendirmesi, zaten NMBA/Ahpra'ya veya Yeni Zelanda'da kayıtlıysanız. Yalnızca yurt dışında kayıtlı bir enrolled nurse için Anmac'ın yayımladığı bilgiler hangi değerlendirmenin veya ücretin geçerli olduğunu açıkça belirtmiyor -- Anmac ile teyit edin.",
+            "zh-Hans": "AUD 395：修改版技能评估，适用于已在 NMBA/Ahpra 或新西兰注册者。仅在海外注册的 enrolled nurse 适用哪项评估或费用，Anmac 公布的信息未明确说明——请向 Anmac 确认。"
           }
         }
       }
@@ -346,9 +346,9 @@
           },
           "processingTime": { "en": "Not stated", "tr": "Belirtilmemiş", "zh-Hans": "未注明" },
           "processingNote": {
-            "en": "The source document states no processing time; about six months of supervised practice follows.",
-            "tr": "Kaynak belge işlem süresi belirtmiyor; ardından yaklaşık altı ay denetimli uygulama gelir.",
-            "zh-Hans": "来源文件未注明处理时间；之后需约六个月的督导执业。"
+            "en": "No processing time is published; about six months of supervised practice follows.",
+            "tr": "Yayımlanmış bir işlem süresi yok; ardından yaklaşık altı ay denetimli uygulama gelir.",
+            "zh-Hans": "未公布处理时间；之后需约六个月的督导执业。"
           },
           "source": "Medical Board of Australia / Ahpra, Pathways to registration for international medical graduates: schedule of fees effective 1 August 2026"
         },
@@ -361,9 +361,9 @@
           },
           "processingTime": { "en": "Not stated", "tr": "Belirtilmemiş", "zh-Hans": "未注明" },
           "processingNote": {
-            "en": "The source documents state no processing time; 12 months of supervised practice follows.",
-            "tr": "Kaynak belgeler işlem süresi belirtmiyor; ardından 12 ay denetimli uygulama gelir.",
-            "zh-Hans": "来源文件未注明处理时间；之后需 12 个月督导执业。"
+            "en": "No processing time is published; 12 months of supervised practice follows.",
+            "tr": "Yayımlanmış bir işlem süresi yok; ardından 12 ay denetimli uygulama gelir.",
+            "zh-Hans": "未公布处理时间；之后需 12 个月督导执业。"
           },
           "source": "Medical Board of Australia / Ahpra, Pathways to registration for international medical graduates: schedule of fees effective 1 August 2026; Australian Medical Council, p.33 (AMC clinical examination)"
         }
@@ -487,9 +487,9 @@
         "zh-Hans": "未注明"
       },
       "processingNote": {
-        "en": "The OTC source document states no processing time; confirm with OTC.",
-        "tr": "OTC kaynak belgesi işlem süresi belirtmiyor; OTC ile teyit edin.",
-        "zh-Hans": "OTC 来源文件未注明处理时间；请向 OTC 确认。"
+        "en": "OTC does not publish a processing time; confirm with OTC.",
+        "tr": "OTC bir işlem süresi yayımlamıyor; OTC ile teyit edin.",
+        "zh-Hans": "OTC 未公布处理时间；请向 OTC 确认。"
       },
       "source": "OTC Assessment for Migration & Pathways to Evidence English Language Proficiency (June/April 2026), p.1",
       "description": "Assesses occupational therapists for Australian skilled migration.",

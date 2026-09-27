@@ -1,6 +1,10 @@
 import stateNominationData from "@/src/data/state-nomination-status.json";
 import { getStateRule } from "@/lib/state-nomination/state-rules-config";
-import { matchOccupationToStateAllSubclasses, type StateOccupationSubclass } from "@/lib/state-nomination/occupation-match";
+import {
+  matchOccupationToStateAllSubclasses,
+  type OccupationMatchResult,
+  type StateOccupationSubclass,
+} from "@/lib/state-nomination/occupation-match";
 import { findOccupationRecord } from "@/lib/readiness/occupation-eligibility";
 import { occupationMatchLine } from "@/src/lib/readiness/localization";
 import type {
@@ -105,6 +109,26 @@ function isOnshoreOnlyStatus(status: string | undefined): boolean {
 function isOffshoreOnlyStatus(status: string | undefined): boolean {
   return status === "Open (Offshore Only)";
 }
+
+/**
+ * Whether the applicant's occupation is on this state's list for any subclass the state offers:
+ *   confirmed   -- on the state's own list (or, for states without one, on the national list) for 190 or 491;
+ *   not_listed  -- checked and on neither list: the state cannot nominate this occupation (match 0%, never recommended);
+ *   unconfirmed -- no list data, a unit-group-only list, or an occupation without an ANZSCO code.
+ */
+export type OccupationListStatus = "confirmed" | "not_listed" | "unconfirmed";
+
+export function occupationListStatus(results: readonly OccupationMatchResult[] | undefined): OccupationListStatus {
+  if (!results || results.length === 0) return "unconfirmed";
+  if (results.some((r) => r.type === "MATCH" || (r.type === "NOT_APPLICABLE" && r.onNationalList))) return "confirmed";
+  const notListed = (r: OccupationMatchResult) =>
+    r.type === "NOT_ON_LIST" ||
+    (r.type === "NOT_APPLICABLE" && !r.onNationalList) ||
+    (r.type === "UNIT_GROUP_ONLY" && Boolean(r.unitGroupName) && !r.onUnitGroupList);
+  return results.every(notListed) ? "not_listed" : "unconfirmed";
+}
+
+const LIST_STATUS_RANK: Record<OccupationListStatus, number> = { confirmed: 0, unconfirmed: 1, not_listed: 2 };
 
 function normalize(value?: string): string {
   return (value ?? "").trim().toLowerCase();
@@ -418,9 +442,9 @@ export function calculateStateNominationTracker(
   // free-text main goal, which matched the subclass numbers ("189, 190 or 491") instead of any score.
   const pointsEstimate = assessmentState.estimatedPoints;
   const englishScore = englishBand(input.englishLevel);
-  // Real occupation <-> state occupation-list check (lib/state-nomination/occupation-match.ts), additive to
-  // the existing note only -- never affects score/status/matchLevel above. Undefined (no line shown) when
-  // the applicant's occupation can't be resolved to an ANZSCO code at all -- never fabricated.
+  // Real occupation <-> state occupation-list check (lib/state-nomination/occupation-match.ts): a state whose
+  // list excludes the occupation scores 0 and is never recommended; an unconfirmed list ranks below confirmed
+  // ones (see occupationListStatus). No ANZSCO code -> every state is "unconfirmed" -- never fabricated.
   const occupationAnzscoCode = findOccupationRecord(input.occupation)?.anzsco_code;
 
   const states = STATE_ROWS.map((row): StateNominationState => {
@@ -504,8 +528,7 @@ export function calculateStateNominationTracker(
     // (it compared NSW's 4-digit ANZSCO unit-group codes to the applicant's 6-digit code with exact
     // equality, always reporting "not on list" and applying the harshest penalty even when the applicant's
     // occupation was genuinely on NSW's list). The real, git-committed occupation-match data
-    // (lib/state-nomination/occupation-match.ts) now only ever affects the additive PDF line below
-    // (occupationMatchNote), never the score.
+    // (lib/state-nomination/occupation-match.ts) drives the list check further down (occupationListStatus).
     let ruleOverrideNote: string | undefined;
 
     // Onshore-only state and the applicant isn't currently in Australia -- hard block.
@@ -527,6 +550,31 @@ export function calculateStateNominationTracker(
         "Requires an offshore profile.",
         "Avustralya disinda bulunma sarti gerektirir.",
         "需要在境外申请资料。"
+      );
+    }
+
+    // Occupation list: a state whose list (190 and 491) does not include the occupation cannot nominate it --
+    // match 0%, and it is never recommended. A state whose list can't be confirmed is labelled so and ranked below
+    // every state where the occupation is confirmed.
+    const occupationResults = occupationAnzscoCode
+      ? matchOccupationToStateAllSubclasses(occupationAnzscoCode, row.code, row.preferredVisaTypes as StateOccupationSubclass[])
+      : undefined;
+    const listStatus = occupationListStatus(occupationResults);
+    let listNote: string | undefined;
+    if (listStatus === "not_listed") {
+      score = 0;
+      listNote = t(
+        input.locale,
+        `Your occupation is not on ${row.name}'s occupation list for subclass 190 or 491, so this state cannot nominate it.`,
+        `Mesleginiz ${row.name} meslek listesinde 190 veya 491 icin yer almiyor; bu nedenle bu eyalet sizi aday gosteremez.`,
+        `您的职业不在${row.name}的 190 或 491 类别职业清单中，因此该州无法为其提名。`
+      );
+    } else if (listStatus === "unconfirmed") {
+      listNote = t(
+        input.locale,
+        "Occupation list not confirmed: check the state's own website before relying on this state.",
+        "Meslek listesi teyit edilmedi: bu eyalete guvenmeden once eyaletin kendi web sitesini kontrol edin.",
+        "职业清单未确认：在依赖该州之前，请先查看该州官网。"
       );
     }
 
@@ -563,6 +611,7 @@ export function calculateStateNominationTracker(
       matchLevel,
       isOpen,
       score,
+      occupationListStatus: listStatus,
       summary: buildSummary({
         locale: input.locale,
         row: effectiveRow,
@@ -579,24 +628,25 @@ export function calculateStateNominationTracker(
       // lib/readiness/generate-pdf.ts). Order: admin-set customAiNote (top
       // priority, see StateNominationConfig), then the hand-verified
       // state-rules-config note, then the onshore/offshore rule override.
-      requirements: [adminConfig?.customAiNote, rule?.note, ruleOverrideNote, ...requirements].filter(
+      requirements: [adminConfig?.customAiNote, listNote, rule?.note, ruleOverrideNote, ...requirements].filter(
         (item): item is string => Boolean(item)
       ),
       officialNote: intel?.officialNote,
       sourceUrl: intel?.sourceUrl,
       lastVerifiedAt: intel?.lastVerifiedAt,
-      occupationMatchNote: occupationAnzscoCode
-        ? occupationMatchLine(
-            input.locale,
-            matchOccupationToStateAllSubclasses(occupationAnzscoCode, row.code, row.preferredVisaTypes as StateOccupationSubclass[])
-          )
-        : undefined,
+      occupationMatchNote: occupationResults ? occupationMatchLine(input.locale, occupationResults) : undefined,
     };
-  }).sort((a, b) => b.score - a.score);
+  }).sort(
+    (a, b) =>
+      LIST_STATUS_RANK[a.occupationListStatus ?? "unconfirmed"] - LIST_STATUS_RANK[b.occupationListStatus ?? "unconfirmed"] ||
+      b.score - a.score
+  );
 
   return {
     states,
-    topRecommendedStates: states.filter((item) => item.matchLevel !== "low" && item.isOpen).slice(0, 2),
+    topRecommendedStates: states
+      .filter((item) => item.matchLevel !== "low" && item.isOpen && item.occupationListStatus !== "not_listed")
+      .slice(0, 2),
     eligibilityBlocked: false,
     note: t(
       input.locale,

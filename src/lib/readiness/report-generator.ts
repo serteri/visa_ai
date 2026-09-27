@@ -388,11 +388,20 @@ export function getTrendBenchmarks(occupation?: string): { asOf?: string; values
   return { asOf: TREND_DATA.generated_on, values };
 }
 
+/** Profile facts that change the AU 12+ month plan's wording (never its structure). */
+type GanttProfile = {
+  /** Superior English already earns the maximum English points -- Step 1 then does not push more English testing. */
+  englishAlreadySuperior?: boolean;
+  /** No work experience was entered -- Step 2 does not talk about deducted years of experience. */
+  experienceNotProvided?: boolean;
+};
+
 function buildRawGanttSteps(
   timeline?: string,
   occupation?: string,
   country: "AU" | "CA" = "AU",
-  hasGraduateVisaPathwayIntent = false
+  hasGraduateVisaPathwayIntent = false,
+  profile: GanttProfile = {}
 ): GanttSection {
   const raw = normalize(timeline);
 
@@ -462,18 +471,27 @@ function buildRawGanttSteps(
 
   if (country === "AU") {
     const steps = [
-      {
-        step: 1,
-        title: "Profile Foundation & English",
-        window: "Quarter 1",
-        description: "Establish baseline points, finalize highest possible English language testing, and gather core identity documents.",
-      },
+      profile.englishAlreadySuperior
+        ? {
+            step: 1,
+            title: "Profile Foundation & Documents",
+            window: "Quarter 1",
+            description:
+              "Establish baseline points and gather core identity documents. Your Superior English result already earns the maximum English points -- keep the test result valid until you are invited.",
+          }
+        : {
+            step: 1,
+            title: "Profile Foundation & English",
+            window: "Quarter 1",
+            description: "Establish baseline points, finalize highest possible English language testing, and gather core identity documents.",
+          },
       {
         step: 2,
         title: "Skills Validation",
         window: "Quarter 2",
-          description:
-            "Lodge formal skills assessment for {occupation} with the relevant Australian assessing authority, accounting for potential deducted years of experience.",
+          description: profile.experienceNotProvided
+            ? "Lodge formal skills assessment for {occupation} with the relevant Australian assessing authority."
+            : "Lodge formal skills assessment for {occupation} with the relevant Australian assessing authority, accounting for potential deducted years of experience.",
       },
       {
         step: 3,
@@ -643,9 +661,10 @@ function buildGanttByTimeline(
   country: "AU" | "CA" = "AU",
   hasGraduateVisaPathwayIntent = false,
   blockReason?: string,
-  remediationSteps?: Array<{ title: string; description: string }>
+  remediationSteps?: Array<{ title: string; description: string }>,
+  profile: GanttProfile = {}
 ): GanttSection {
-  const section = buildRawGanttSteps(timeline, occupation, country, hasGraduateVisaPathwayIntent);
+  const section = buildRawGanttSteps(timeline, occupation, country, hasGraduateVisaPathwayIntent, profile);
   // Prefer an actionable remediation path over a bare "BLOCKED" dead end.
   if (remediationSteps && remediationSteps.length > 0) {
     return { ...section, steps: applyRemediationToSteps(section.steps, remediationSteps) };
@@ -707,6 +726,8 @@ export function generatePremiumSections(input: {
   biggestConcern?: string;
   estimatedPoints?: number;
   englishLevel?: string;
+  /** True when neither offshore nor Australian work experience was entered. */
+  experienceNotProvided?: boolean;
   country?: "AU" | "CA";
   /** Required so this section can never disagree with the main engine's eligibility verdict — see assessment-state.ts. */
   pathwayComparison: PathwayComparison[];
@@ -796,6 +817,10 @@ export function generatePremiumSections(input: {
     mainGoal: input.mainGoal,
     biggestConcern: input.biggestConcern,
   });
+  // No city chosen (none selected or named): the fallback city is only an example, and the label says so.
+  const cityIsDefault =
+    !(input.selectedCity?.trim() && SUPPORTED_CITIES.includes(input.selectedCity.trim())) &&
+    !SUPPORTED_CITIES.some((c) => `${input.mainGoal ?? ""} ${input.biggestConcern ?? ""}`.toLowerCase().includes(c.toLowerCase()));
   const familyProfile = inferFamilyProfile(input.familyStatus);
   const cityCosts = LIVING_DATA.cities[city] ?? LIVING_DATA.cities[LIVING_DATA.fallback_city];
   const monthly = cityCosts[familyProfile] ?? cityCosts[LIVING_DATA.fallback_profile];
@@ -813,7 +838,11 @@ export function generatePremiumSections(input: {
     "AU",
     input.hasGraduateVisaPathwayIntent === true,
     blockReason,
-    remediationSteps
+    remediationSteps,
+    {
+      englishAlreadySuperior: /superior/i.test(input.englishLevel ?? ""),
+      experienceNotProvided: input.experienceNotProvided === true,
+    }
   );
   const methodologyNote = localizeTrendDescription(
     locale,
@@ -874,7 +903,9 @@ export function generatePremiumSections(input: {
   return {
     historicalInvitationTrends,
     livingCostProjection: {
-      city: getLocalizedCity(locale, city),
+      city: cityIsDefault
+        ? `${getLocalizedCity(locale, city)} ${t3(locale, "(example city -- no city selected)", "(örnek şehir -- şehir seçilmedi)", "（示例城市——未选择城市）")}`
+        : getLocalizedCity(locale, city),
       familyProfile: getLocalizedFamilyProfile(locale, familyProfile),
       currency: LIVING_DATA.currency,
       monthly,

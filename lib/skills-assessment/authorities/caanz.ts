@@ -263,9 +263,9 @@ export const caanzAuthority: SkillsAssessmentAuthority = {
     "zh-Hans": "自考试之日起3年。在线/居家考试版本不接受。",
   },
   assessmentContext: {
-    en: "CA ANZ is one of three authorised accounting assessing authorities (alongside CPA Australia and IPA). The source document covers migration skills assessment only — CA ANZ does not provide migration advice.",
-    tr: "CA ANZ, üç yetkili muhasebe değerlendirme kurumundan biridir (CPA Australia ve IPA ile birlikte). Kaynak belge yalnızca göçmenlik beceri değerlendirmesini kapsar — CA ANZ göçmenlik danışmanlığı sağlamaz.",
-    "zh-Hans": "CA ANZ是三个授权会计评估机构之一（与CPA Australia和IPA并列）。源文件仅涵盖移民技能评估——CA ANZ不提供移民建议。",
+    en: "CA ANZ is one of three authorised accounting assessing authorities (alongside CPA Australia and IPA). CA ANZ's migration assessment covers the skills assessment only — CA ANZ does not provide migration advice.",
+    tr: "CA ANZ, üç yetkili muhasebe değerlendirme kurumundan biridir (CPA Australia ve IPA ile birlikte). CA ANZ'nin göçmenlik değerlendirmesi yalnızca beceri değerlendirmesini kapsar — CA ANZ göçmenlik danışmanlığı sağlamaz.",
+    "zh-Hans": "CA ANZ是三个授权会计评估机构之一（与CPA Australia和IPA并列）。CA ANZ 的移民评估仅涵盖技能评估——CA ANZ不提供移民建议。",
   },
   competencyMatrix: {
     columns: ["221111", "221112", "132211", "221212", "221113", "221213"],

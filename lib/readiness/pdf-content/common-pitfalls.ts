@@ -64,34 +64,34 @@ export function getCommonPitfalls(locale: Locale, country: Country): {
       : (isTr
           ? [
               { category: "Beceri Değerlendirmesi", title: "Yanlış ANZSCO Kodu Seçimi", body: "Meslek tanımınızla uyuşmayan bir ANZSCO kodu seçmek reddetmeye yol açar. Her kodun ' ana görevleri ' (lead activities) listesini dikkatlice okuyun." },
-              { category: "Beceri Değerlendirmesi", title: "Eksik İş Deneyimi Kanıtı", body: "İş mektupları ANZSCO kodu, görev tanımlarını, çalışma süresini ve maaşı içermelidir. ' Genel ifadeler ' yetersiz kabul edilir." },
-              { category: "Dil Testi", title: "Skor Geçerliliği Sorunu", body: `Avustralya skilled migration için dil testi sonuçları vize verilme tarihinde ${ENGLISH_TEST_VALIDITY_YEARS.AU} yıldan eski olamaz. Süresi dolmuş skorla başvuru yapmak otomatik ret nedenidir.` },
+              { category: "Beceri Değerlendirmesi", title: "Eksik İş Deneyimi Kanıtı", body: "Referans mektupları iş unvanınızı, görev tanımlarını, çalışma tarihlerini, haftalık saatleri ve maaşı içermelidir; ANZSCO kodu gerekmez. Görevler aday gösterilen meslekle örtüşmelidir; genel ifadeler yetersiz kabul edilir." },
+              { category: "Dil Testi", title: "Skor Geçerliliği Sorunu", body: `Davet tarihinde en az Competent English seviyesine sahip olmalısınız; test sonucu davet tarihinden önceki ${ENGLISH_TEST_VALIDITY_YEARS.AU} yıl içinde alınmış olmalıdır. Süresi dolmuş bir skor bu puanı ve İngilizce şartını karşılamaz; davetten önce geçerliliğini kontrol edin.` },
               { category: "Dil Testi", title: "Yanlış Test Seçimi", body: "IELTS Academic ve General Training, PTE Academic ve TOEFL iBT, Avustralya Genel Beceri Göçü (GSM) puan tablosu için kabul edilen testlerdir; OET yalnızca sağlık meslekleri için geçerlidir. Meslek koduna ve vize alt sınıfına göre hangi testin size uygun olduğunu kontrol edin." },
               { category: "Başvuru", title: "60 Gün Kuralı", body: "Davet aldıktan sonra 60 gün içinde başvuru sunulmalıdır. Bu süre uzatılamaz. Başvurunuzu davet öncesi hazırlayın." },
-              { category: "Finansal", title: "Yetersiz Settlement Funds", body: "Aile büyüklüğüne göre yeterli fon gösterilmelidir. Eksik fon kanıtı başvuru reddedilmesinin yaygın nedenlerinden biridir." },
+              { category: "Finansal", title: "Eyalet Adaylığında Fon Kanıtı", body: "189, 190 ve 491 vizeleri için federal bir yerleşim fonu (settlement funds) şartı yoktur. Ancak bazı eyalet adaylık programları fon kanıtı ister; başvurmadan önce seçtiğiniz eyaletin koşullarını kontrol edin." },
               { category: "Sağlık", title: "Geçersiz Sağlık Raporu", body: "Sağlık muayenesi sadecepanel onaylı doktorlar tarafından yapılmalıdır. Yanlış klinikte yaptırılan muayene geçersiz sayılır." },
-              { category: "Yasal", title: "Sahte veya Yanıltıcı Bilgi", body: "Başvuruda kasıtlı yalan veya yanıltıcı bilgi vermek 10 yıl men cezasına yol açar. Her zaman doğru bilgi verin." },
+              { category: "Yasal", title: "Sahte veya Yanıltıcı Bilgi", body: "Yanlış veya yanıltıcı bilgi ya da belge vermek retle sonuçlanabilir ve PIC 4020 kapsamında genellikle 3 yıllık bir yasak getirir; kimliğinizi kanıtlayamamanız gibi kimlikle ilgili durumlarda bu süre 10 yıldır. Her zaman doğru bilgi verin." },
             ]
           : isZh
             ? [
                 { category: "技能评估", title: "选择了错误的ANZSCO代码", body: "选择与职业描述不匹配的ANZSCO代码会导致拒签。请仔细阅读每个代码的主要职责列表。" },
-                { category: "技能评估", title: "工作经验证明不全", body: "工作推荐信需包含ANZSCO代码、职责描述、工作时间和薪资。笼统的表述会被视为不合格。" },
-                { category: "语言考试", title: "成绩过期问题", body: `澳大利亚技术移民要求语言考试成绩在签证批准时不得超过 ${ENGLISH_TEST_VALIDITY_YEARS.AU} 年。使用过期成绩申请会自动被拒。` },
+                { category: "技能评估", title: "工作经验证明不全", body: "工作推荐信需写明职位、职责描述、任职起止日期、每周工作时长和薪资；无需注明ANZSCO代码。所列职责应与提名职业相符，笼统的表述会被视为不合格。" },
+                { category: "语言考试", title: "成绩过期问题", body: `获邀时您必须至少具备 Competent English；考试成绩须在获邀日期前 ${ENGLISH_TEST_VALIDITY_YEARS.AU} 年内取得。过期成绩不能满足英语要求或相应加分；请在获邀前确认成绩仍在有效期内。` },
                 { category: "语言考试", title: "选择了错误的考试", body: "IELTS Academic 和 General Training、PTE Academic 以及 TOEFL iBT 均被澳大利亚技术移民（GSM）积分测试接受；OET 仅适用于医疗相关职业。请根据您的职业代码和签证子类确认适用的考试。" },
                 { category: "申请流程", title: "60天期限", body: "收到邀请后须在60天内提交申请，此期限不可延长。请在收到邀请前就准备好申请材料。" },
-                { category: "财务", title: "定居资金不足", body: "需要根据家庭人数提供足够的资金证明。资金不足是申请被拒的常见原因之一。" },
+                { category: "财务", title: "州担保的资金证明", body: "189、190 和 491 签证没有联邦层面的定居资金要求。但部分州担保项目会要求提供资金证明；申请前请查看所选州的要求。" },
                 { category: "健康", title: "体检报告无效", body: "体检只能由指定诊所的医生进行。在非指定机构做的体检无效。" },
-                { category: "法律", title: "提供虚假或误导性信息", body: "在申请中故意提供虚假信息将导致10年禁止申请处罚。请始终提供真实信息。" },
+                { category: "法律", title: "提供虚假或误导性信息", body: "提供虚假或误导性信息或文件可能导致拒签，并通常依据 PIC 4020 被禁止申请 3 年；若涉及身份问题（例如无法证明身份），禁止期为 10 年。请始终提供真实信息。" },
               ]
             : [
                 { category: "Skills Assessment", title: "Wrong ANZSCO Code Selection", body: "Choosing an occupation code that doesn't match your actual duties leads to rejection. Carefully read the 'lead activities' list for each code." },
-                { category: "Skills Assessment", title: "Insufficient Work Evidence", body: "Employment letters must include ANZSCO code, duty descriptions, duration, and salary. Generic statements are rejected." },
-                { category: "Language Test", title: "Score Validity Issues", body: `For Australian skilled migration, language test results must be no more than ${ENGLISH_TEST_VALIDITY_YEARS.AU} years old at the time the visa is granted. Applying with an expired score results in automatic rejection.` },
+                { category: "Skills Assessment", title: "Insufficient Work Evidence", body: "Employment references should state your job title, duties, dates of employment, weekly hours and salary; they do not need an ANZSCO code. The duties must match your nominated occupation, and generic statements are rejected." },
+                { category: "Language Test", title: "Score Validity Issues", body: `You must have at least Competent English at the time of invitation, from a test taken within the ${ENGLISH_TEST_VALIDITY_YEARS.AU} years before the date of invitation. An expired score cannot meet the English requirement or earn English points, so check its date before you are invited.` },
                 { category: "Language Test", title: "Wrong Test Selection", body: "IELTS Academic and General Training, PTE Academic, and TOEFL iBT are all accepted for the Australian General Skilled Migration (GSM) points test; OET is specific to healthcare occupations. Check which test suits your occupation code and visa subclass." },
                 { category: "Application", title: "The 60-Day Rule", body: "You must lodge your application within 60 days of invitation. This deadline cannot be extended. Prepare before you receive the invitation." },
-                { category: "Financial", title: "Insufficient Settlement Funds", body: "You must demonstrate adequate funds for your family size. Insufficient financial evidence is a common rejection reason." },
+                { category: "Financial", title: "State Nomination Funds Evidence", body: "Subclasses 189, 190 and 491 have no federal settlement-funds requirement. Some state nomination programs do ask for evidence of funds, so check your chosen state's requirements before you apply." },
                 { category: "Health", title: "Invalid Health Examination", body: "Health examinations must be conducted by panel-approved doctors only. Examinations at non-approved clinics are invalid." },
-                { category: "Legal", title: "False or Misleading Information", body: "Intentionally providing false information in your application results in a 10-year ban. Always provide truthful information." },
+                { category: "Legal", title: "False or Misleading Information", body: "Providing false or misleading information or documents can lead to refusal and, under public interest criterion 4020, generally a 3-year exclusion from further visas; the exclusion is 10 years in identity-related cases. Always provide truthful information." },
               ]),
   };
 }

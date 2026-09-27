@@ -78,6 +78,22 @@ jobs:
       - name: Occupation <-> state occupation-list match tests
         run: npm run test:occupation-match
 
+      # WA's 2025-26 eligible occupation lists (src/data/state-occupation-lists/wa.json, generate-wa-occupations.ts):
+      # drift against the source PDF (SKIPPED here -- data/knowledge is gitignored) + committed-file invariants
+      # (program year, stream counts, sourced rules with pages, 261313 / 233211 / 234611 / 351311 entries, matcher).
+      - name: WA occupation lists (drift + invariants)
+        run: npm run test:wa-occupations
+
+      # Points Booster Simulator: nomination points are subclass-specific -- no 189 scenario contains a nomination,
+      # no 190/491 scenario contains the other subclass's nomination, alternatives are never summed.
+      - name: Points Booster subclass invariants (en/tr/zh-Hans)
+        run: npm run test:points-booster-subclass
+
+      # Real PDF text (production PDF route, en/tr/zh-Hans) for the review personas: no internal pipeline phrases,
+      # none of the corrected factual claims, experience/TAS/ranking/booster consistency.
+      - name: Report text -- banned internal phrases and corrected claims (en/tr/zh-Hans)
+        run: npm run test:report-banned-phrases
+
       # Medical registration data (src/data/health-registration/*.json, extracted from the Medical Board / Ahpra
       # "Pathways to registration for international medical graduates" document). The regenerate-and-diff drift
       # check needs the gitignored source PDF and is SKIPPED here; the committed-file invariants (fee schedule
