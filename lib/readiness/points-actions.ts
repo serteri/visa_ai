@@ -268,27 +268,27 @@ function wording(id: PointsActionId, locale: Locale, ctx: { years?: number; educ
     case "state_nomination_190":
       return w(
         {
-          en: "Obtain state or territory nomination (subclass 190)",
-          tr: "Eyalet veya bölge adaylığı alın (Subclass 190)",
-          zh: "获得州或领地提名（190 子类）",
+          en: "State or territory nomination -- required for subclass 190",
+          tr: "Eyalet veya bölge adaylığı -- Subclass 190 için zorunlu",
+          zh: "州或领地提名——190 子类的必要条件",
         },
         {
-          en: "Nomination is a points factor only for subclass 190 and depends on the state's own criteria.",
-          tr: "Adaylık yalnızca Subclass 190 için bir puan faktörüdür ve eyaletin kendi kriterlerine bağlıdır.",
-          zh: "提名仅对 190 子类计分，且取决于各州自身的标准。",
+          en: "Subclass 190 cannot be granted without it; its points count only for 190, and it depends on the state's own criteria.",
+          tr: "Subclass 190 adaylık olmadan verilemez; puanı yalnızca 190 için geçerlidir ve eyaletin kendi kriterlerine bağlıdır.",
+          zh: "没有提名无法获得 190 子类签证；该分数仅对 190 子类有效，并取决于各州自身的标准。",
         }
       );
     case "regional_nomination_491":
       return w(
         {
-          en: "Obtain regional nomination or eligible relative sponsorship (subclass 491)",
-          tr: "Bölgesel adaylık veya uygun akraba sponsorluğu alın (Subclass 491)",
-          zh: "获得偏远地区提名或符合条件的亲属担保（491 子类）",
+          en: "Regional nomination or eligible relative sponsorship -- required for subclass 491",
+          tr: "Bölgesel adaylık veya uygun akraba sponsorluğu -- Subclass 491 için zorunlu",
+          zh: "偏远地区提名或符合条件的亲属担保——491 子类的必要条件",
         },
         {
-          en: "Nomination or sponsorship is a points factor only for subclass 491 and depends on the nominating body's criteria.",
-          tr: "Adaylık veya sponsorluk yalnızca Subclass 491 için bir puan faktörüdür ve adaylık veren kurumun kriterlerine bağlıdır.",
-          zh: "提名或担保仅对 491 子类计分，且取决于提名机构的标准。",
+          en: "Subclass 491 cannot be granted without it; its points count only for 491, and it depends on the nominating body's criteria.",
+          tr: "Subclass 491 adaylık veya sponsorluk olmadan verilemez; puanı yalnızca 491 için geçerlidir ve adaylık veren kurumun kriterlerine bağlıdır.",
+          zh: "没有提名或担保无法获得 491 子类签证；该分数仅对 491 子类有效，并取决于提名机构的标准。",
         }
       );
   }

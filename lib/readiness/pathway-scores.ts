@@ -36,6 +36,13 @@ export type PathwayScore = {
   benchmarkAsOf?: string;
   gapBase: number | null;
   gapIfNominated: number | null;
+  /**
+   * The score to compare with the subclass's invitation benchmark. For 190 and 491 the nomination (+5 / +15) is a
+   * precondition of the visa, not an optional booster, so it is included; 189 has none (= baseScore).
+   */
+  comparisonScore?: number;
+  /** benchmark - comparisonScore (<= 0: at or above the benchmark); null without a benchmark. */
+  comparisonGap?: number | null;
   isBlocked: boolean;
   blockReason: PathwayBlockReason | null;
 };
@@ -106,6 +113,8 @@ export function computePathwayScores(args: {
       benchmarkAsOf: benchmarks?.asOf,
       gapBase: benchmark === null ? null : benchmark - estimatedPoints,
       gapIfNominated: benchmark === null ? null : benchmark - (estimatedPoints + bonus),
+      comparisonScore: estimatedPoints + bonus,
+      comparisonGap: benchmark === null ? null : benchmark - (estimatedPoints + bonus),
       isBlocked: blockReason !== null,
       blockReason,
     };
@@ -137,15 +146,36 @@ function nominationKind(subclass: PathwaySubclass, locale: Locale): string {
     : T(locale, "a regional nomination", "bölgesel adaylık", "偏远地区提名");
 }
 
+/** comparisonScore / comparisonGap, derived for scores saved before those fields existed (stored reports). */
+export function comparisonOf(score: PathwayScore): { comparisonScore: number; comparisonGap: number | null } {
+  const comparisonScore = score.comparisonScore ?? score.baseScore + score.nominationBonus;
+  const comparisonGap = score.comparisonGap !== undefined ? score.comparisonGap : score.benchmark === null ? null : score.benchmark - comparisonScore;
+  return { comparisonScore, comparisonGap };
+}
+
+function requiredNomination(subclass: PathwaySubclass, locale: Locale): string {
+  return subclass === "190"
+    ? T(locale, "the state nomination required for 190", "190 için zorunlu eyalet adaylığıyla", "加上 190 必需的州提名后")
+    : T(
+        locale,
+        "the regional nomination or sponsorship required for 491",
+        "491 için zorunlu bölgesel adaylık veya sponsorlukla",
+        "加上 491 必需的偏远地区提名或担保后"
+      );
+}
+
 /**
- * The one sentence every section uses to state a pathway's score against the
- * benchmark. Shows BOTH numbers wherever a nomination bonus applies, and always
- * marks the higher one conditional ("only if ... is secured (not secured)").
+ * The one sentence every section uses to state a pathway's score against the benchmark. For 190 and 491 the
+ * comparison uses the score WITH the nomination that visa requires (comparisonScore) and says so: "Score now 70;
+ * with the regional nomination or sponsorship required for 491, your score is 85 -- above the recent 491 benchmark
+ * of 75 (2026-04-30)." 189 compares the current score.
  */
 export function describePathwayScore(score: PathwayScore, locale: Locale): string {
-  const { subclass, baseScore, scoreIfNominated, benchmark, gapBase, gapIfNominated, benchmarkAsOf } = score;
-  const bench = (() => {
-    if (benchmark === null || gapBase === null) {
+  const { subclass, baseScore, benchmark, benchmarkAsOf } = score;
+  const { comparisonScore, comparisonGap } = comparisonOf(score);
+  const asOf = benchmarkAsOf ? ` (${benchmarkAsOf})` : "";
+  const versus = (() => {
+    if (benchmark === null || comparisonGap === null) {
       return T(
         locale,
         "no recent invitation benchmark is available for this occupation",
@@ -153,49 +183,38 @@ export function describePathwayScore(score: PathwayScore, locale: Locale): strin
         "该职业暂无近期邀请参考分"
       );
     }
-    const asOf = benchmarkAsOf ? ` (${benchmarkAsOf})` : "";
-    const short = (n: number) =>
-      n > 0
-        ? T(locale, `${n} points below`, `${n} puan altında`, `低 ${n} 分`)
-        : T(locale, "at or above", "eşit veya üzerinde", "已达到或高于");
-    if (score.nominationBonus === 0) {
+    if (comparisonGap < 0) {
       return T(
         locale,
-        `recent ${subclass} benchmark ${benchmark}${asOf}: ${short(gapBase)}`,
-        `yakın dönem ${subclass} referansı ${benchmark}${asOf}: ${short(gapBase)}`,
-        `近期 ${subclass} 参考分 ${benchmark}${asOf}：${short(gapBase)}`
+        `above the recent ${subclass} benchmark of ${benchmark}${asOf}`,
+        `yakın dönem ${subclass} referansı ${benchmark}${asOf} üzerinde`,
+        `高于近期 ${subclass} 参考分 ${benchmark}${asOf}`
       );
     }
-    // Already at/above the benchmark on the current score: nothing conditional left to add.
-    if (gapBase <= 0) {
+    if (comparisonGap === 0) {
       return T(
         locale,
-        `recent ${subclass} benchmark ${benchmark}${asOf}: base ${short(gapBase)}`,
-        `yakın dönem ${subclass} referansı ${benchmark}${asOf}: temel puan ${short(gapBase)}`,
-        `近期 ${subclass} 参考分 ${benchmark}${asOf}：基础分${short(gapBase)}`
+        `equal to the recent ${subclass} benchmark of ${benchmark}${asOf}`,
+        `yakın dönem ${subclass} referansı ${benchmark}${asOf} ile eşit`,
+        `等于近期 ${subclass} 参考分 ${benchmark}${asOf}`
       );
     }
     return T(
       locale,
-      `recent ${subclass} benchmark ${benchmark}${asOf}: base ${short(gapBase)}; ${short(gapIfNominated ?? gapBase)} only if nominated`,
-      `yakın dönem ${subclass} referansı ${benchmark}${asOf}: temel puan ${short(gapBase)}; yalnızca aday gösterilirseniz ${short(gapIfNominated ?? gapBase)}`,
-      `近期 ${subclass} 参考分 ${benchmark}${asOf}：基础分${short(gapBase)}；仅在获得提名时${short(gapIfNominated ?? gapBase)}`
+      `${comparisonGap} points below the recent ${subclass} benchmark of ${benchmark}${asOf}`,
+      `yakın dönem ${subclass} referansı ${benchmark}${asOf} değerinin ${comparisonGap} puan altında`,
+      `比近期 ${subclass} 参考分 ${benchmark}${asOf} 低 ${comparisonGap} 分`
     );
   })();
 
   if (score.nominationBonus === 0) {
-    return T(
-      locale,
-      `Score now ${baseScore}; ${bench}.`,
-      `Şu anki puan ${baseScore}; ${bench}.`,
-      `当前分数 ${baseScore}；${bench}。`
-    );
+    return T(locale, `Score now ${baseScore} -- ${versus}.`, `Şu anki puan ${baseScore} -- ${versus}.`, `当前分数 ${baseScore}——${versus}。`);
   }
   return T(
     locale,
-    `Score now ${baseScore}; ${scoreIfNominated} only if ${nominationKind(subclass, locale)} is secured (not secured); ${bench}.`,
-    `Şu anki puan ${baseScore}; ${scoreIfNominated} yalnızca ${nominationKind(subclass, locale)} alınırsa geçerlidir (henüz alınmadı); ${bench}.`,
-    `当前分数 ${baseScore}；仅在获得${nominationKind(subclass, locale)}后为 ${scoreIfNominated}（尚未获得）；${bench}。`
+    `Score now ${baseScore}; with ${requiredNomination(subclass, locale)}, your score is ${comparisonScore} -- ${versus}.`,
+    `Şu anki puan ${baseScore}; ${requiredNomination(subclass, locale)} puanınız ${comparisonScore} -- ${versus}.`,
+    `当前分数 ${baseScore}；${requiredNomination(subclass, locale)}为 ${comparisonScore} 分——${versus}。`
   );
 }
 
@@ -217,7 +236,8 @@ export function blockedReasonPhrase(reason: PathwayBlockReason, locale: Locale):
 
 /**
  * THE friction thresholds -- the only place they are defined. Friction is measured on the points the
- * applicant is SHORT of the recent invitation benchmark on their CURRENT (base) score (gapBase):
+ * applicant is SHORT of the recent invitation benchmark on the pathway's comparison score (comparisonGap: the
+ * current score, plus the nomination 190 / 491 require):
  *
  *   gapBase <= 0        LOW       at or above the benchmark
  *   1  ..  15           MEDIUM    moderate gap
@@ -225,8 +245,7 @@ export function blockedReasonPhrase(reason: PathwayBlockReason, locale: Locale):
  *   more than 25        EXTREME   substantial gap
  *
  * (MEDIUM covers the whole "small to moderate" range: with four levels there is no separate "low-medium",
- * and LOW is reserved for "meets the benchmark" as its definition says.) A pathway that reaches the
- * benchmark only if nominated is labelled by its gapBase, never higher, and never lower either.
+ * and LOW is reserved for "meets the benchmark" as its definition says.)
  */
 export const FRICTION_MAX_GAP = { LOW: 0, MEDIUM: 15, HIGH: 25 } as const;
 
@@ -237,8 +256,9 @@ export type FrictionLevel = "LOW" | "MEDIUM" | "HIGH" | "EXTREME" | "NOT_ASSESSE
  * (never a default). Nothing else -- no static per-pathway table, no experience-deduction bump -- changes it.
  */
 export function frictionFromScore(score: PathwayScore | undefined): FrictionLevel {
-  if (!score || score.benchmark === null || score.gapBase === null) return "NOT_ASSESSED";
-  const gap = score.gapBase; // points short of the benchmark (<= 0: at or above)
+  const gap = score ? comparisonOf(score).comparisonGap : null;
+  // Points short of the benchmark on the pathway's comparison score (190/491 include their required nomination).
+  if (!score || score.benchmark === null || gap === null) return "NOT_ASSESSED";
   if (gap <= FRICTION_MAX_GAP.LOW) return "LOW";
   if (gap <= FRICTION_MAX_GAP.MEDIUM) return "MEDIUM";
   if (gap <= FRICTION_MAX_GAP.HIGH) return "HIGH";

@@ -1,6 +1,8 @@
 import { CURRENT_CSIT } from "./constants";
 import { assembleBoosterRows } from "./points-booster";
-import { blockedLabel, describePathwayScore } from "./pathway-scores";
+import { blockedLabel, comparisonOf, describePathwayScore } from "./pathway-scores";
+import { reportDateStamp } from "@/lib/reports/report-date-stamp";
+import { boosterRows } from "@/lib/reports/report-view-model";
 import { deterministicRecommendations, findRecommendationViolations } from "./pathway-recommendations";
 import { orderBySkilledRanking } from "./pathway-ranking";
 import {
@@ -1748,10 +1750,21 @@ export async function generateReadinessPDF(input: PDFGeneratorInput): Promise<Ui
     const scores = report.pathwayScores;
     const est = report.pointsEstimate?.estimatedPoints;
     if (est === undefined || report.country === "CA") return null;
+    // 190 / 491 are compared with the score including the nomination those visas require (comparisonOf).
+    const withNom = (score: number) =>
+      effectiveLocale === "tr"
+        ? `zorunlu adaylıkla puanınız ${score}`
+        : effectiveLocale === "zh-Hans"
+          ? `计入必需提名后您的分数为 ${score}`
+          : `your score with its required nomination: ${score}`;
     const benchmarks = scores
-      ? (["189", "190", "491"] as const).filter((s) => scores[s].benchmark !== null).map((s) => `${s}: ${scores[s].benchmark}`)
+      ? (["189", "190", "491"] as const)
+          .filter((s) => scores[s].benchmark !== null)
+          .map((s) => (s === "189" ? `${s}: ${scores[s].benchmark}` : `${s}: ${scores[s].benchmark} (${withNom(comparisonOf(scores[s]).comparisonScore)})`))
       : [];
-    const higher = scores ? (["189", "190", "491"] as const).some((s) => (scores[s].benchmark ?? 0) > est) : false;
+    const higher = scores
+      ? (["189", "190", "491"] as const).some((s) => scores[s].benchmark !== null && (scores[s].benchmark as number) > comparisonOf(scores[s]).comparisonScore)
+      : false;
     const ref = page ? page : "--";
     if (effectiveLocale === "tr") {
       return `Tahmini puan ${est}; puan testli vize için asgari puan ${POINTS_THRESHOLD}. ${benchmarks.length > 0 ? `Mesleğiniz için yakın dönem davet referansları ${higher ? "daha yüksektir" : "karşılanmaktadır"} (${benchmarks.join(", ")}; bkz. sayfa ${ref}).` : ""}`.trim();
@@ -1861,9 +1874,12 @@ export async function generateReadinessPDF(input: PDFGeneratorInput): Promise<Ui
 
     const labelX = margin + 10;
     const valueX = margin + 58;
+    // "Last updated <date>" when the content was recomputed with the current engine, the original generation date
+    // otherwise -- the same stamp the result page shows (lib/reports/report-date-stamp.ts).
+    const stamp = reportDateStamp(effectiveLocale, report.contentStamp);
     const metaRows: Array<[string, string]> = [
       [text.preparedFor, subjectName],
-      [text.reportDate, reportDate],
+      stamp ? [stamp.label, stamp.date] : [text.reportDate, reportDate],
       [text.reportId, reportId],
     ];
     if (userInputSummary.occupation) metaRows.push([text.occupationLabel ?? "Occupation", userInputSummary.occupation]);
@@ -2148,8 +2164,9 @@ export async function generateReadinessPDF(input: PDFGeneratorInput): Promise<Ui
       ? text.notProvided
       : rawEng;
 
+    const overviewStamp = reportDateStamp(effectiveLocale, report.contentStamp);
     const rawLeftRows: Array<[string, string | undefined]> = [
-      [text.generatedDate, reportDate],
+      overviewStamp ? [overviewStamp.label, overviewStamp.date] : [text.generatedDate, reportDate],
       [text.nameLabel, userInputSummary.name],
       [text.occupationLabel, userInputSummary.occupation],
       [text.ageLabel, userInputSummary.age],
@@ -4681,10 +4698,7 @@ export async function generateReadinessPDF(input: PDFGeneratorInput): Promise<Ui
       // scenario, it's missing data, and shouldn't render as an empty table
       // row (undefined/NaN both stringify to something visibly broken:
       // "undefined" or "NaN", not a clean placeholder).
-      const renderableScenarios = report.pointsBoosterSimulator.scenarios.filter(
-        (scenario) =>
-          Number.isFinite(scenario.estimatedChange) || Number.isFinite(scenario.resultingEstimate)
-      );
+      const renderableScenarios = boosterRows(report); // the same rows the result page shows
       drawTable(
         [text.scenarioTable, text.pointsChange, text.newTotal],
         renderableScenarios.map((scenario) => [

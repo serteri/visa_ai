@@ -274,23 +274,23 @@ export function frictionBandDefinition(locale: Locale, score: "LOW" | "MEDIUM" |
   const mid = FRICTION_MAX_GAP.MEDIUM;
   const hi = FRICTION_MAX_GAP.HIGH;
   if (locale === "zh-Hans") {
-    if (score === "EXTREME") return `您的当前分数比近期邀请参考分低 ${hi} 分以上——差距很大，多个不利因素叠加影响该路径。`;
-    if (score === "HIGH") return `您的当前分数比近期邀请参考分低 ${mid + 1}–${hi} 分——差距明显，很可能需要大量补充材料或显著提升档案。`;
-    if (score === "MEDIUM") return `您的当前分数比近期邀请参考分低 ${lo}–${mid} 分——差距中等，可能需要补充材料或适度提升。`;
-    return "您的当前分数已达到或超过近期邀请参考分——无需弥补分数差距。";
+    if (score === "EXTREME") return `您在该路径的分数（190/491 含其必需的提名）比近期邀请参考分低 ${hi} 分以上——差距很大，多个不利因素叠加影响该路径。`;
+    if (score === "HIGH") return `您在该路径的分数（190/491 含其必需的提名）比近期邀请参考分低 ${mid + 1}–${hi} 分——差距明显，很可能需要大量补充材料或显著提升档案。`;
+    if (score === "MEDIUM") return `您在该路径的分数（190/491 含其必需的提名）比近期邀请参考分低 ${lo}–${mid} 分——差距中等，可能需要补充材料或适度提升。`;
+    return "您在该路径的分数（190/491 含其必需的提名）已达到或超过近期邀请参考分——无需弥补分数差距。";
   }
 
   if (locale === "tr") {
-    if (score === "EXTREME") return `Güncel puanınız yakın dönem davet referansının ${hi} puandan fazla altında — fark çok büyük; bu yolu olumsuz etkileyen birden fazla faktör bir araya geliyor.`;
-    if (score === "HIGH") return `Güncel puanınız yakın dönem davet referansının ${mid + 1}–${hi} puan altında — belirgin bir fark; önemli ek kanıt veya profil iyileştirmesi muhtemelen gerekli.`;
-    if (score === "MEDIUM") return `Güncel puanınız yakın dönem davet referansının ${lo}–${mid} puan altında — orta düzey bir fark; ek kanıt veya ölçülü bir iyileştirme gerekebilir.`;
-    return "Güncel puanınız yakın dönem davet referansına eşit veya üzerinde — kapatılması gereken bir puan açığı yok.";
+    if (score === "EXTREME") return `Bu yoldaki puanınız (190/491 için zorunlu adaylık dahil) yakın dönem davet referansının ${hi} puandan fazla altında — fark çok büyük; bu yolu olumsuz etkileyen birden fazla faktör bir araya geliyor.`;
+    if (score === "HIGH") return `Bu yoldaki puanınız (190/491 için zorunlu adaylık dahil) yakın dönem davet referansının ${mid + 1}–${hi} puan altında — belirgin bir fark; önemli ek kanıt veya profil iyileştirmesi muhtemelen gerekli.`;
+    if (score === "MEDIUM") return `Bu yoldaki puanınız (190/491 için zorunlu adaylık dahil) yakın dönem davet referansının ${lo}–${mid} puan altında — orta düzey bir fark; ek kanıt veya ölçülü bir iyileştirme gerekebilir.`;
+    return "Bu yoldaki puanınız (190/491 için zorunlu adaylık dahil) yakın dönem davet referansına eşit veya üzerinde — kapatılması gereken bir puan açığı yok.";
   }
 
-  if (score === "EXTREME") return `Your current score is more than ${hi} points below the recent invitation benchmark -- a substantial gap; multiple compounding factors work against this pathway.`;
-  if (score === "HIGH") return `Your current score is ${mid + 1}-${hi} points below the recent invitation benchmark -- a meaningful gap; significant additional evidence or profile improvement is likely required.`;
-  if (score === "MEDIUM") return `Your current score is ${lo}-${mid} points below the recent invitation benchmark -- a moderate gap; additional evidence or a modest improvement may be needed.`;
-  return "Your current score is at or above the recent invitation benchmark -- no points gap to close.";
+  if (score === "EXTREME") return `Your score for this pathway (for 190/491, including the nomination the visa requires) is more than ${hi} points below the recent invitation benchmark -- a substantial gap; multiple compounding factors work against this pathway.`;
+  if (score === "HIGH") return `Your score for this pathway (for 190/491, including the nomination the visa requires) is ${mid + 1}-${hi} points below the recent invitation benchmark -- a meaningful gap; significant additional evidence or profile improvement is likely required.`;
+  if (score === "MEDIUM") return `Your score for this pathway (for 190/491, including the nomination the visa requires) is ${lo}-${mid} points below the recent invitation benchmark -- a moderate gap; additional evidence or a modest improvement may be needed.`;
+  return "Your score for this pathway (for 190/491, including the nomination the visa requires) is at or above the recent invitation benchmark -- no points gap to close.";
 }
 
 export function t3(locale: Locale, en: string, tr: string, zh: string): string {
@@ -341,12 +341,12 @@ export function confidenceDefinitionGeneric(locale: Locale): string {
 /** General glossary-level definition of what "Friction Level" measures, independent of any single LOW/MEDIUM/HIGH/EXTREME band (see frictionBandDefinition for the per-band text shown inline next to a specific rating). */
 export function frictionLevelDefinitionGeneric(locale: Locale): string {
   if (locale === "tr") {
-    return "Rekabet Düzeyi (Friction Level), profilinizin puanı ile bu yol için güncel davet referansları arasındaki farkı gösterir -- Düşük/Orta/Yüksek/Çok Yüksek olarak derecelendirilir. Yalnızca güncel bir davet referansı ve bir puan farkı varsa gösterilir; aksi halde yol \"Değerlendirilmedi\" olarak işaretlenir.";
+    return "Rekabet Düzeyi (Friction Level), bu yoldaki puanınız (190 ve 491 için bu vizelerin gerektirdiği adaylık dahil) ile güncel davet referansları arasındaki farkı gösterir -- Düşük/Orta/Yüksek/Çok Yüksek olarak derecelendirilir. Yalnızca güncel bir davet referansı ve bir puan farkı varsa gösterilir; aksi halde yol \"Değerlendirilmedi\" olarak işaretlenir.";
   }
   if (locale === "zh-Hans") {
-    return "竞争激烈度（Friction Level）表示您的档案分数与该路径当前获邀参考分数之间的差距——分为低/中/高/极高四档。仅当同时存在近期邀请参考分和分数差距时才显示；否则标记为“未评估”。";
+    return "竞争激烈度（Friction Level）表示您在该路径的分数（190 和 491 含其必需的提名）与当前获邀参考分数之间的差距——分为低/中/高/极高四档。仅当同时存在近期邀请参考分和分数差距时才显示；否则标记为“未评估”。";
   }
-  return "Friction Level indicates the gap between your profile's points and the current invitation benchmark for this pathway -- rated Low, Medium, High, or Extreme. It is shown only when a recent invitation benchmark and a score gap both exist; otherwise the pathway is marked \"Not assessed\".";
+  return "Friction Level indicates the gap between your points for this pathway (for 190 and 491, including the nomination those visas require) and the current invitation benchmark -- rated Low, Medium, High, or Extreme. It is shown only when a recent invitation benchmark and a score gap both exist; otherwise the pathway is marked \"Not assessed\".";
 }
 
 export function strengthLabel(locale: Locale, level: "limited" | "moderate" | "strong"): string {

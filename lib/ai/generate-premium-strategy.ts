@@ -7,6 +7,7 @@ import type { RetrievedStateContext } from "@/lib/ai/retrieve-state-context";
 import { premiumStrategySchema, type PremiumStrategyResult } from "@/lib/ai/strategy-schema";
 import { textMatchesBlockedLanguage } from "@/lib/readiness/report-invariants";
 import type { Locale, PointsActionPlan, PointsEstimate } from "@/lib/readiness/types";
+import { describePathwayScore } from "@/lib/readiness/pathway-scores";
 import {
   deterministicRecommendations,
   findRecommendationViolations,
@@ -244,8 +245,11 @@ type PointsViolation = { path: string; message: string };
 function findPointsPlanViolations(
   result: PremiumStrategyResult,
   plan: PointsActionPlan,
-  estimate: PointsEstimate | undefined
+  estimate: PointsEstimate | undefined,
+  /** The engine's own pathway statements (describePathwayScore) -- correct by construction, so not scanned. */
+  engineSentences: readonly string[] = []
 ): PointsViolation[] {
+  const withoutEngineSentences = (t: string) => engineSentences.reduce((acc, sentence) => acc.split(sentence).join(" "), t);
   const violations: PointsViolation[] = [];
 
   // Roadmap rows: every action must map to an engine action id and every number must equal the engine value.
@@ -260,7 +264,7 @@ function findPointsPlanViolations(
     ...result.topRecommendedPathways.map((p, i): [string, string] => [`topRecommendedPathways[${i}].reason`, p.reason]),
   ];
   for (const [path, text] of numbersOnly) {
-    for (const message of findPointsClaimViolations(text, plan, { checkFactors: false, estimate })) {
+    for (const message of findPointsClaimViolations(withoutEngineSentences(text), plan, { checkFactors: false, estimate })) {
       violations.push({ path, message: `${message}: "${text}"` });
     }
   }
@@ -285,12 +289,13 @@ function finalizeAuPoints(
   result: PremiumStrategyResult,
   plan: PointsActionPlan,
   estimate: PointsEstimate | undefined,
-  useLlm: boolean
+  useLlm: boolean,
+  engineSentences: readonly string[] = []
 ): PremiumStrategyResult {
   const { rows } = assembleBoosterRows(plan, result.pointsBoosterStrategy, { useLlm });
 
   const badPaths = new Set(
-    findPointsPlanViolations(result, plan, estimate)
+    findPointsPlanViolations(result, plan, estimate, engineSentences)
       .map((v) => v.path)
       .filter((p) => p !== "pointsBoosterStrategy")
   );
@@ -342,17 +347,23 @@ async function generatePremiumStrategyInternal(
   // of EOI status; and (AU) anything that departs from the engine's points
   // action list -- an unmapped action, a different number, a factor that is
   // already at its maximum.
+  // The engine's own pathway statements (the deterministic recommendation reasons) are never a violation.
+  const sentenceLocale = (locale === "tr" ? "tr" : locale === "zh-Hans" ? "zh-Hans" : "en") as Locale;
+  const scoresForSentences = deterministicReport.pathwayScores;
+  const engineSentences = scoresForSentences
+    ? (["189", "190", "491"] as const).map((sub) => describePathwayScore(scoresForSentences[sub], sentenceLocale))
+    : [];
   const check = (r: PremiumStrategyResult) => ({
     blocked: isEoiEligible ? [] : findBlockedLanguageViolations(r, country),
     country: findCountryMismatchViolations(r, country),
-    points: plan ? findPointsPlanViolations(r, plan, estimate) : [],
+    points: plan ? findPointsPlanViolations(r, plan, estimate, engineSentences) : [],
     recs: plan ? findRecommendationViolations(r, deterministicReport) : [],
   });
   const clean = (v: ReturnType<typeof check>) => v.blocked.length === 0 && v.country.length === 0 && v.points.length === 0 && v.recs.length === 0;
   const loc = (locale === "tr" ? "tr" : locale === "zh-Hans" ? "zh-Hans" : "en") as Locale;
   const done = (r: PremiumStrategyResult, useLlm: boolean) => {
     if (!plan) return r;
-    const pointsDone = finalizeAuPoints(r, plan, estimate, useLlm);
+    const pointsDone = finalizeAuPoints(r, plan, estimate, useLlm, engineSentences);
     // Recommendations: the model's list survives only if it passes every check; otherwise the
     // deterministic list (ranking + open states + the engine's score sentence) replaces it.
     const recViolations = findRecommendationViolations(pointsDone, deterministicReport);

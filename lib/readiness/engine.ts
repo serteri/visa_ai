@@ -4711,10 +4711,10 @@ function buildPointsBoosterSimulator(
   if (subclasses.includes("190")) {
     scenarios.push({
       label: isTr
-        ? "190 Eyalet/Bölge Adaylığı"
+        ? "Eyalet veya bölge adaylığı -- Subclass 190 için zorunlu"
         : isZh
-          ? "190 州/领地担保提名"
-          : "190 State or Territory Nomination",
+          ? "州或领地提名——190 子类的必要条件"
+          : "State or territory nomination -- required for subclass 190",
       estimatedChange: 5,
       resultingEstimate: currentEstimate === undefined ? undefined : currentEstimate + 5,
       explanation: isTr
@@ -4731,10 +4731,10 @@ function buildPointsBoosterSimulator(
   if (subclasses.includes("491")) {
     scenarios.push({
       label: isTr
-        ? "491 Bölgesel Adaylık veya Sponsorluk"
+        ? "Bölgesel adaylık veya uygun akraba sponsorluğu -- Subclass 491 için zorunlu"
         : isZh
-          ? "491 偏远地区州提名或亲属担保"
-          : "491 Regional Nomination or Eligible Relative Sponsorship",
+          ? "偏远地区提名或符合条件的亲属担保——491 子类的必要条件"
+          : "Regional nomination or eligible relative sponsorship -- required for subclass 491",
       estimatedChange: 15,
       resultingEstimate: currentEstimate === undefined ? undefined : currentEstimate + 15,
       explanation: isTr
@@ -4863,47 +4863,82 @@ function buildPointsBoosterSimulator(
       }
     }
 
-    // Try the real, occupation-matched benchmarks from highest to lowest and
-    // use the highest one that's actually reachable with the available
-    // boosters -- an ambitious target the profile can't realistically reach
-    // is skipped in favor of the next real target down.
-    // Benchmarks come from the single PathwayScoreSet (never a second trend lookup).
-    const relevantTrendEstimates = (["189", "190", "491"] as const)
-      .map((subclass) => ({ subclass, estimatedPoints: pathwayScores?.[subclass].benchmark ?? null }))
-      .filter((e): e is { subclass: "189" | "190" | "491"; estimatedPoints: number } =>
-        e.estimatedPoints !== null && subclasses.includes(e.subclass) && e.estimatedPoints > currentEstimate)
-      .sort((a, b) => b.estimatedPoints - a.estimatedPoints);
+    // Benchmark rows. A 190 / 491 benchmark is compared with the score INCLUDING the nomination that visa requires
+    // (state nomination +5 / regional nomination or sponsorship +15 -- a precondition, not an optional booster); 189
+    // with the current score. When the required nomination alone reaches the benchmark, one row says so; otherwise
+    // the row is "required nomination + the fewest optional factors" that reach it. No row ever compares a 190 / 491
+    // benchmark with a score that lacks its nomination. Benchmarks come from the single PathwayScoreSet.
+    const optionalOnly = [
+      ...combinable.filter((c) => !c.exclusiveGroup || c.exclusiveGroup !== "nomination").map((c) => ({ items: [c], total: c.estimatedChange })),
+      ...combos.filter((c) => c.onlyForSubclass === undefined),
+    ];
+    for (const subclass of ["189", "190", "491"] as const) {
+      const score = pathwayScores?.[subclass];
+      const benchmark = score?.benchmark ?? null;
+      if (!score || benchmark === null || !subclasses.includes(subclass)) continue;
+      const mandatory = score.nominationBonus;
+      const withRequired = currentEstimate + mandatory;
+      const nominated = subclass === "189" ? undefined : subclass;
+      if (mandatory === 0 && benchmark <= currentEstimate) continue; // 189 already at/above: nothing to add
+      const nominationItem = combinable.find((c) => c.onlyForSubclass === subclass) ?? scenarios.find((c) => !c.isCombined && c.onlyForSubclass === subclass);
+      const suffix = isTr
+        ? ` (Subclass ${subclass} son davet referansı: ${benchmark} puan)`
+        : isZh
+          ? `（Subclass ${subclass} 近期邀请参考分：${benchmark} 分）`
+          : ` (recent Subclass ${subclass} invitation benchmark: ${benchmark} pts)`;
 
-    for (const target of relevantTrendEstimates) {
-      const targetGap = target.estimatedPoints - currentEstimate;
-      // Only factors valid for THIS subclass: no nomination for 189, only its own nomination for 190 / 491.
-      const reaching = combos
-        .filter((c) => c.total >= targetGap && (c.onlyForSubclass === undefined || c.onlyForSubclass === target.subclass))
-        .sort((a, b) => a.items.length - b.items.length || a.total - b.total);
-
-      for (const chosen of reaching) {
-        const key = chosen.items.map((s) => s.label).sort().join("|");
-        if (seenComboKeys.has(key)) continue;
-        seenComboKeys.add(key);
-
-        const resulting = currentEstimate + chosen.total;
-        pushComboScenario(
-          chosen.items,
-          chosen.total,
-          isTr
-            ? `Subclass ${target.subclass} için son davet turlarındaki referans puanına ulaşır (${target.estimatedPoints} puan; sonucunuz: ${resulting}).`
+      if (mandatory > 0 && withRequired >= benchmark) {
+        const relation = withRequired > benchmark
+          ? isTr ? "üzerinde" : isZh ? "高于" : "above"
+          : isTr ? "eşit" : isZh ? "等于" : "equal to";
+        scenarios.push({
+          label: isTr
+            ? `${subclass} için zorunlu adaylıkla (${mandatory} puan) puanınız ${withRequired} -- yakın dönem ${benchmark} referansının ${relation}`
             : isZh
-              ? `达到 Subclass ${target.subclass} 近期邀请轮次的参考分数（${target.estimatedPoints} 分；您的结果：${resulting} 分）。`
-              : `Reaches the recent invitation benchmark for Subclass ${target.subclass} (${target.estimatedPoints} points; your result: ${resulting}).`,
-          isTr
-            ? ` (Subclass ${target.subclass} son davet referansı: ${target.estimatedPoints} puan)`
+              ? `加上 ${subclass} 必需的提名（${mandatory} 分）后，您的分数为 ${withRequired}——${relation}近期参考分 ${benchmark}`
+              : `With the nomination required for ${subclass} (${mandatory} points), your score is ${withRequired} -- ${relation} the recent benchmark of ${benchmark}`,
+          estimatedChange: mandatory,
+          resultingEstimate: withRequired,
+          explanation: isTr
+            ? `Subclass ${subclass} adaylık olmadan verilemez; bu nedenle karşılaştırma zorunlu adaylık puanlarını içerir.`
             : isZh
-              ? `（Subclass ${target.subclass} 近期邀请参考分：${target.estimatedPoints} 分）`
-              : ` (recent Subclass ${target.subclass} invitation benchmark: ${target.estimatedPoints} pts)`,
-          chosen.onlyForSubclass
-        );
-        break; // Only push one combo for this subclass benchmark
+              ? `Subclass ${subclass} 必须获得提名才能申请，因此比较时计入必需的提名分数。`
+              : `Subclass ${subclass} cannot be granted without the nomination, so the comparison includes its points.`,
+          isCombined: true,
+          onlyForSubclass: nominated,
+          requiredNominationFor: nominated,
+        });
+        continue;
       }
+
+      const need = benchmark - withRequired;
+      const chosen = optionalOnly
+        .filter((c) => c.total >= need && c.items.length <= (mandatory > 0 ? 2 : 3))
+        .sort((x, y) => x.items.length - y.items.length || x.total - y.total)
+        .find((c) => !seenComboKeys.has([...(mandatory > 0 && nominationItem ? [nominationItem.label] : []), ...c.items.map((i) => i.label)].sort().join("|")));
+      if (!chosen) continue;
+      const items = mandatory > 0 && nominationItem ? [nominationItem, ...chosen.items] : chosen.items;
+      seenComboKeys.add(items.map((i) => i.label).sort().join("|"));
+      const total = mandatory + chosen.total;
+      const resulting = currentEstimate + total;
+      pushComboScenario(
+        items,
+        total,
+        mandatory > 0
+          ? isTr
+            ? `${subclass} için zorunlu adaylık dahil sonucunuz ${resulting}; Subclass ${subclass} için son davet referansı ${benchmark} puan.`
+            : isZh
+              ? `计入 ${subclass} 必需的提名后，您的结果为 ${resulting} 分；Subclass ${subclass} 近期邀请参考分为 ${benchmark} 分。`
+              : `Including the nomination required for ${subclass}, your result is ${resulting}; the recent invitation benchmark for Subclass ${subclass} is ${benchmark} points.`
+          : isTr
+            ? `Subclass ${subclass} için son davet turlarındaki referans puanına ulaşır (${benchmark} puan; sonucunuz: ${resulting}).`
+            : isZh
+              ? `达到 Subclass ${subclass} 近期邀请轮次的参考分数（${benchmark} 分；您的结果：${resulting} 分）。`
+              : `Reaches the recent invitation benchmark for Subclass ${subclass} (${benchmark} points; your result: ${resulting}).`,
+        suffix,
+        nominated
+      );
+      if (nominated) scenarios[scenarios.length - 1].requiredNominationFor = nominated;
     }
   }
 

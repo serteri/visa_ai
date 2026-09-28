@@ -3,6 +3,8 @@ import { notFound, redirect } from "next/navigation";
 import { getUserReportById } from "@/src/lib/user-reports";
 import { canAccessReport, reportAccessToken, reportPdfPath } from "@/lib/reports/report-access";
 import { getReportRequester } from "@/lib/reports/report-access-server";
+import { refreshStoredReport } from "@/lib/reports/refresh-report";
+import { reportDateStamp } from "@/lib/reports/report-date-stamp";
 import type { FullCheckQuickPreview } from "../actions";
 import { ReportAccessRequired } from "./report-access-required";
 import { ResultView } from "./result-view";
@@ -44,6 +46,9 @@ export default async function FullCheckResultPage({
   }
 
   const accessToken = token || reportAccessToken(record.id);
+  // The same current-engine refresh and fallback as the PDF (lib/reports/refresh-report.ts), so the page and the
+  // downloaded PDF always show the same content and the same "Last updated" / "Generated" stamp.
+  const refreshed = await refreshStoredReport(record.report, record.input, { generatedAt: record.createdAt });
   return (
     <ResultView
       locale={locale}
@@ -51,7 +56,8 @@ export default async function FullCheckResultPage({
       isUnlocked={record.isUnlocked}
       isAdminBypass={requester.isAdmin && !record.isUnlocked}
       downloadHref={record.isUnlocked ? reportPdfPath(record.id, accessToken) : null}
-      report={record.report}
+      report={refreshed.report}
+      dateStamp={reportDateStamp(locale, refreshed.stamp)?.text ?? null}
       previewData={(record.previewData as FullCheckQuickPreview | null) ?? null}
       fullName={record.fullName ?? undefined}
       email={record.email}

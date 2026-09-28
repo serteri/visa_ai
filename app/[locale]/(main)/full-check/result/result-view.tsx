@@ -8,6 +8,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { PremiumFeatureGate } from "@/components/premium-feature-gate";
 import type { FullCheckQuickPreview } from "../actions";
 import type { ReadinessReport } from "@/lib/readiness/types";
+import { boosterRows, stateRows } from "@/lib/reports/report-view-model";
 
 type ResultViewProps = {
   locale: string;
@@ -20,6 +21,8 @@ type ResultViewProps = {
   previewData: FullCheckQuickPreview | null;
   fullName?: string;
   email: string;
+  /** "Last updated <date>" when the content was recomputed, otherwise "Generated <date>" (same text as the PDF). */
+  dateStamp?: string | null;
 };
 
 export function ResultView({
@@ -32,6 +35,7 @@ export function ResultView({
   previewData,
   fullName,
   email,
+  dateStamp,
 }: ResultViewProps) {
   const isTr = locale === "tr";
   const isZh = locale === "zh-Hans";
@@ -40,6 +44,8 @@ export function ResultView({
   const estimatedPoints =
     report.pointsBoosterSimulator?.currentEstimate ?? report.pointsEstimate?.estimatedPoints;
   const pathways = report.pathwayComparison?.slice(0, 5) ?? [];
+  const states = stateRows(report);
+  const booster = boosterRows(report);
 
   if (showFullView) {
     return (
@@ -71,6 +77,11 @@ export function ResultView({
                 {isTr ? "Premium" : isZh ? "高级版" : "Premium"}
               </Badge>
             </div>
+            {dateStamp ? (
+              <p className="text-xs text-muted-foreground" data-report-date-stamp>
+                {dateStamp}
+              </p>
+            ) : null}
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="rounded-md border border-slate-200 bg-white shadow-sm px-4 py-3">
@@ -94,6 +105,68 @@ export function ResultView({
               </div>
             </div>
 
+            {states.length > 0 && (
+              <div className="space-y-2">
+                <p className="text-sm font-medium">
+                  {isTr ? "Eyalet adaylığı takibi" : isZh ? "州担保追踪" : "State nomination tracker"}
+                </p>
+                <div className="overflow-hidden rounded-md border border-slate-200">
+                  <table className="w-full text-sm">
+                    <thead className="bg-slate-50 text-left text-xs text-muted-foreground">
+                      <tr>
+                        <th className="px-3 py-2">{isTr ? "Eyalet" : isZh ? "州" : "State"}</th>
+                        <th className="px-3 py-2">{isTr ? "Durum" : isZh ? "状态" : "Status"}</th>
+                        <th className="px-3 py-2 text-right">{isTr ? "Uyum" : isZh ? "匹配度" : "Match"}</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {states.map((st) => (
+                        <tr key={st.code} className="border-t border-slate-100" data-state-code={st.code} data-state-status={st.status} data-state-score={st.score}>
+                          <td className="px-3 py-2">{st.code} -- {st.name}</td>
+                          <td className="px-3 py-2">{st.status}</td>
+                          <td className="px-3 py-2 text-right">{st.score}%</td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            )}
+            {booster.length > 0 && (
+              <div className="space-y-2">
+                <p className="text-sm font-medium">
+                  {isTr ? "Puan Artırma Simülatörü" : isZh ? "积分提升模拟器" : "Points Booster Simulator"}
+                </p>
+                <div className="overflow-hidden rounded-md border border-slate-200">
+                  <table className="w-full text-sm">
+                    <thead className="bg-slate-50 text-left text-xs text-muted-foreground">
+                      <tr>
+                        <th className="px-3 py-2">{isTr ? "Senaryo" : isZh ? "情景" : "Scenario"}</th>
+                        <th className="px-3 py-2 text-right">{isTr ? "Puan değişimi" : isZh ? "分数变化" : "Points change"}</th>
+                        <th className="px-3 py-2 text-right">{isTr ? "Yeni toplam" : isZh ? "新总分" : "New total"}</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {booster.map((row, i) => (
+                        <tr
+                          key={`${i}-${row.label}`}
+                          className={`border-t border-slate-100 ${row.isCombined ? "bg-emerald-50/40" : ""}`}
+                          data-booster-label={row.label}
+                          data-booster-change={Number.isFinite(row.estimatedChange) ? row.estimatedChange : ""}
+                          data-booster-total={Number.isFinite(row.resultingEstimate) ? row.resultingEstimate : ""}
+                        >
+                          <td className="px-3 py-2">{row.label}{row.isCombined ? " ★" : ""}</td>
+                          <td className="px-3 py-2 text-right">
+                            {Number.isFinite(row.estimatedChange) ? (row.estimatedChange >= 0 ? `+${row.estimatedChange}` : `${row.estimatedChange}`) : "—"}
+                          </td>
+                          <td className="px-3 py-2 text-right">{Number.isFinite(row.resultingEstimate) ? row.resultingEstimate : "—"}</td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            )}
             {isUnlocked && downloadHref ? (
               <a
                 href={downloadHref}

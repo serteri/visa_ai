@@ -30,7 +30,9 @@ export async function GET(_req: Request, ctx: { params: Promise<{ id: string }> 
 
   const input = (lead.inputJson as unknown as ReadinessInput) ?? ({} as ReadinessInput);
   // Same current-engine refresh as the customer's download (lib/reports/refresh-report.ts).
-  const { report } = await refreshStoredReport(lead.reportJson as unknown as ReadinessReport, lead.inputJson as unknown as ReadinessInput);
+  const { report } = await refreshStoredReport(lead.reportJson as unknown as ReadinessReport, lead.inputJson as unknown as ReadinessInput, {
+    generatedAt: lead.createdAt ? new Date(lead.createdAt).toISOString() : undefined,
+  });
   const locale =
     lead.locale === "tr" || lead.locale === "zh-Hans" ? lead.locale : "en";
 

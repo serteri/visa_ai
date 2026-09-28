@@ -236,7 +236,7 @@ async function buildReportPdf(record: UserReportRecord, fullName?: string): Prom
   });
 
   // Deterministic sections are recomputed with the current engine (lib/reports/refresh-report.ts).
-  const { report } = await refreshStoredReport(record.report, record.input);
+  const { report } = await refreshStoredReport(record.report, record.input, { generatedAt: record.createdAt });
 
   return generateReadinessPDF({
     report,

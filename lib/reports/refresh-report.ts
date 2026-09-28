@@ -2,12 +2,15 @@ import { ensureCountrySpecificReportSchema } from "@/lib/readiness/country-scope
 import type { ReadinessInput, ReadinessReport } from "@/lib/readiness/types";
 import { getStateIntelligenceMap, getStateNominationConfigMap } from "@/lib/state-intelligence";
 import { runReadinessEngine } from "@/src/lib/readiness-engine";
+import type { ReportContentStamp } from "./report-date-stamp";
 
 export type RefreshedReport = {
   report: ReadinessReport;
   /** "recomputed": the current engine's deterministic sections; "stored": the report as saved at submission. */
   source: "recomputed" | "stored";
   reason?: string;
+  /** Also set on report.contentStamp: "Last updated" only when recomputing changed the stored content. */
+  stamp: ReportContentStamp;
 };
 
 /**
@@ -21,8 +24,19 @@ export type RefreshedReport = {
  * a different country, estimated points or set of evaluated subclasses (older rows did not save migrationGoals /
  * preferredState, which feed the subclass selection) -- or when recomputing fails. Nothing is written back.
  */
-export async function refreshStoredReport(stored: ReadinessReport, input: ReadinessInput | null | undefined): Promise<RefreshedReport> {
-  if (!input || typeof input !== "object") return { report: stored, source: "stored", reason: "no stored input" };
+export async function refreshStoredReport(
+  stored: ReadinessReport,
+  input: ReadinessInput | null | undefined,
+  meta: { generatedAt?: string; now?: Date } = {}
+): Promise<RefreshedReport> {
+  const storedStamp: ReportContentStamp = { recomputed: false, generatedAt: meta.generatedAt };
+  const keep = (reason: string): RefreshedReport => ({
+    report: { ...stored, contentStamp: storedStamp },
+    source: "stored",
+    reason,
+    stamp: storedStamp,
+  });
+  if (!input || typeof input !== "object") return keep("no stored input");
   try {
     const country = stored.country === "CA" ? "CA" : "AU";
     const [stateIntelligence, stateNominationConfig] = await Promise.all([getStateIntelligenceMap(), getStateNominationConfigMap()]);
@@ -31,11 +45,18 @@ export async function refreshStoredReport(stored: ReadinessReport, input: Readin
       country
     );
     const mismatch = coreVerdictMismatch(stored, fresh);
-    if (mismatch) return { report: stored, source: "stored", reason: mismatch };
-    return { report: { ...fresh, aiStrategy: stored.aiStrategy }, source: "recomputed" };
+    if (mismatch) return keep(mismatch);
+    // "Last updated" only when the recomputed content differs from what was stored (ignoring the AI text and the
+    // stamp itself); identical content keeps its original generation date.
+    const comparable = (r: ReadinessReport) => JSON.stringify({ ...JSON.parse(JSON.stringify(r)), aiStrategy: undefined, contentStamp: undefined });
+    const changed = comparable(fresh) !== comparable(stored);
+    const stamp: ReportContentStamp = changed
+      ? { recomputed: true, generatedAt: meta.generatedAt, updatedAt: (meta.now ?? new Date()).toISOString() }
+      : storedStamp;
+    return { report: { ...fresh, aiStrategy: stored.aiStrategy, contentStamp: stamp }, source: "recomputed", stamp };
   } catch (error) {
     console.error("[refresh-report] recompute failed; using the stored report:", error);
-    return { report: stored, source: "stored", reason: "recompute failed" };
+    return keep("recompute failed");
   }
 }
 

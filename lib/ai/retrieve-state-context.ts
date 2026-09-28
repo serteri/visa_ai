@@ -1,22 +1,8 @@
 import { STATE_RULES, type StateRuleConfig, type StateRuleStatus } from "@/lib/state-nomination/state-rules-config";
-import { getStateNominationConfigMap } from "@/lib/state-intelligence";
+import { getStateIntelligenceMap, getStateNominationConfigMap } from "@/lib/state-intelligence";
+import { resolveDisplayStatus } from "@/lib/state-nomination/state-status";
 
 export type RetrievedStateContext = StateRuleConfig[];
-
-const KNOWN_STATUSES: readonly StateRuleStatus[] = [
-  "Open for Offshore",
-  "High Demand",
-  "Closed",
-  "Onshore Only",
-  "Open (Onshore & Offshore)",
-  "Open (Onshore Only)",
-  "Open (Offshore Only)",
-  "Suspended / Closed",
-];
-
-function asKnownStatus(value: string | undefined): StateRuleStatus | undefined {
-  return KNOWN_STATUSES.find((known) => known === value);
-}
 
 /**
  * Merges the admin-managed StateNominationConfig table (top priority --
@@ -30,18 +16,22 @@ function asKnownStatus(value: string | undefined): StateRuleStatus | undefined {
 function applyAdminOverride(
   code: string,
   base: StateRuleConfig | undefined,
-  admin: { status?: string; customAiNote?: string | null } | undefined
+  admin: { status?: string; customAiNote?: string | null; updatedAt?: string } | undefined,
+  intelStatus?: string
 ): StateRuleConfig | undefined {
-  if (!admin) return base;
+  if (!admin && !intelStatus) return base;
 
-  const status = asKnownStatus(admin.status) ?? base?.status;
+  // The same precedence as the report (lib/state-nomination/state-status.ts): an admin status saved before the rule
+  // was last verified gives way to the rule; the scraper's status comes next.
+  const status = resolveDisplayStatus({ admin, rule: base, intelStatus });
   if (!status) return base;
+  if (base && status === base.status && !admin?.customAiNote?.trim()) return base;
 
   return {
     code,
     name: base?.name ?? code,
     status,
-    note: admin.customAiNote?.trim() || base?.note || `${code} status was manually set by an admin.`,
+    note: admin?.customAiNote?.trim() || base?.note || `${code} status was manually set by an admin.`,
     offshoreQuotaPressure:
       status === "Closed" || status === "Suspended / Closed" ? "closed" : (base?.offshoreQuotaPressure ?? "medium"),
     aiSummary: base?.aiSummary ?? `${code} nomination status: ${status} (admin-set).`,
@@ -139,7 +129,7 @@ export async function retrieveStateContext(message: string): Promise<RetrievedSt
 
   if (detectedCodes.length === 0 && !asksGeneralStateNomination) return [];
 
-  const adminConfig = await getStateNominationConfigMap();
+  const [adminConfig, intelligence] = await Promise.all([getStateNominationConfigMap(), getStateIntelligenceMap()]);
 
   const codes =
     detectedCodes.length > 0
@@ -147,6 +137,6 @@ export async function retrieveStateContext(message: string): Promise<RetrievedSt
       : Array.from(new Set([...Object.keys(STATE_RULES), ...Object.keys(adminConfig)]));
 
   return codes
-    .map((code) => applyAdminOverride(code, STATE_RULES[code], adminConfig[code]))
+    .map((code) => applyAdminOverride(code, STATE_RULES[code], adminConfig[code], intelligence[code]?.status))
     .filter((rule): rule is StateRuleConfig => Boolean(rule));
 }

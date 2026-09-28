@@ -66,6 +66,11 @@ export const BANNED_CLAIMS: RegExp[] = [
   /before the date of invitation/i,
   /davet tarihinden önceki/i,
   /获邀日期前/,
+  // 190 / 491 benchmarks compared with a score WITHOUT the nomination those visas require (old wording).
+  /only if nominated/i,
+  /only if a (?:regional|state) nomination is secured/i,
+  /yalnızca aday gösterilirseniz/i,
+  /仅在获得提名时/,
   // "Meets/exceeds the threshold" without the benchmark gap (65 is only the legal minimum).
   /threshold exceeded/i,
   /exceeded the (points )?threshold/i,
@@ -147,10 +152,17 @@ async function main() {
     for (const s of report.pointsBoosterSimulator?.scenarios ?? []) {
       const bench = s.label.match(/Subclass (189|190|491) (?:invitation benchmark|son davet referansı|近期邀请参考分)/)?.[1];
       if (!s.isCombined || !bench) continue;
-      const noms = [...s.label.matchAll(/\((?:subclass|Subclass) (190|491)\)|（(190|491) 子类）/g)].map((m) => m[1] ?? m[2]);
+      // Old labels "(subclass 491)" / "（491 子类）" and the current "required for subclass 491" forms.
+      const noms = [
+        ...s.label.matchAll(/\((?:subclass|Subclass) (190|491)\)|（(190|491) 子类）|required for subclass (190|491)|Subclass (190|491) için zorunlu|(190|491) 子类的必要条件/g),
+      ].map((m) => m[1] ?? m[2] ?? m[3] ?? m[4] ?? m[5]);
       const scope = s.onlyForSubclass ?? noms[0];
       if ((bench === "189" && (scope || noms.length)) || (bench !== "189" && noms.some((n) => n !== bench)) || (scope && bench !== "189" && scope !== bench)) {
         fail(`${tag}: "${s.label}" mixes subclasses (benchmark ${bench}, nomination ${noms.join("/") || scope})`);
+      }
+      // 190 / 491 benchmark rows must include the nomination that visa requires.
+      if ((bench === "190" || bench === "491") && !noms.includes(bench)) {
+        fail(`${tag}: "${s.label}" compares the ${bench} benchmark with a score without its required nomination`);
       }
     }
   }

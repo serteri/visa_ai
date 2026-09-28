@@ -862,6 +862,9 @@ async function runPathwayChecks(
         if (p.scoreIfNominated !== p.baseScore + p.nominationBonus) f(`${s}: scoreIfNominated is not base + bonus`);
         if (p.benchmark !== null && p.gapBase !== p.benchmark - p.baseScore) f(`${s}: gapBase is not benchmark - base`);
         if (p.benchmark !== null && p.gapIfNominated !== p.benchmark - p.scoreIfNominated) f(`${s}: gapIfNominated is not benchmark - scoreIfNominated`);
+        // 190 / 491 compare the benchmark with the score including the nomination the visa requires; 189 with base.
+        if (p.comparisonScore !== (s === "189" ? p.baseScore : p.scoreIfNominated)) f(`${s}: comparisonScore ${p.comparisonScore} is not the score with the required nomination`);
+        if (p.benchmark !== null && p.comparisonGap !== p.benchmark - (p.comparisonScore ?? 0)) f(`${s}: comparisonGap is not benchmark - comparisonScore`);
         if (p.benchmark !== null && p.benchmark !== (visaTrendsBenchmark(input.occupation, s) ?? -1)) f(`${s}: benchmark ${p.benchmark} is not the visa-trends.json snapshot`);
       }
 
@@ -949,12 +952,14 @@ async function runPathwayChecks(
       if (/nomination bonus|adaylık bonusu|提名加分|\(base \d+ \+/i.test(flat)) f("old '(base N + nomination bonus M)' wording is still shown");
       for (const s of ["190", "491"] as const) {
         const p = scores[s];
-        const conditional = sq(describePathwayScore(p, locale));
-        // Every sentence that states "<bonus score> only if ..." is inside the shared, conditional statement
-        const re = new RegExp(`(?:${p.scoreIfNominated} (?:only if|yalnızca)|仅在获得[^；]{0,12}后为 ?${p.scoreIfNominated})`, "g");
-        const conditionalMentions = (flat.match(re) ?? []).length;
-        if (!flat.includes(conditional)) f(`${s}: the conditional statement is missing`);
-        if (conditionalMentions < 2) f(`${s}: bonus score ${p.scoreIfNominated} is not shown as conditional in at least two sections (${conditionalMentions})`);
+        const statement = sq(describePathwayScore(p, locale));
+        // The nomination is a precondition of 190 / 491: every benchmark comparison states the score WITH it, and
+        // names it as required ("with the ... required for 491, your score is 85"), in at least two sections.
+        const re = new RegExp(`(?:required for ${s}, your score is ${p.scoreIfNominated}|${s} için zorunlu[^;]{0,60}puanınız ${p.scoreIfNominated}|${s} ?必需的[^为]{0,20}为 ?${p.scoreIfNominated})`, "g");
+        const mentions = (flat.match(re) ?? []).length;
+        if (!flat.includes(statement)) f(`${s}: the benchmark statement is missing`);
+        if (mentions < 2) f(`${s}: the score with the required nomination (${p.scoreIfNominated}) is not stated in at least two sections (${mentions})`);
+        if (/only if nominated|yalnızca aday gösterilirseniz|仅在获得提名时/.test(flat)) f(`${s}: a benchmark is still compared with the score without the required nomination`);
       }
       // 3. Gap numbers in Reality Check == gap numbers in Trends
       for (const s of PATHWAY_SUBCLASSES) {
@@ -962,11 +967,12 @@ async function runPathwayChecks(
         const reality = flat.match(new RegExp(`${s}\\)? ?- ?(?:Reality Check|Gerçeklik Kontrolü|实际难度评估): ?(.{0,400})`));
         const trends = flat.match(new RegExp(`Subclass ?${s}: ?(.{0,400})`, "g")) ?? [];
         const gapNums = (t: string) => [...t.matchAll(/(\d+)(?: points below| puan altında|分)/g)].map((m) => Number(m[1]));
-        const expected = [p.gapBase, p.gapIfNominated].filter((n): n is number => n !== null && n > 0);
+        const expected = [p.comparisonGap ?? null].filter((n): n is number => n !== null && n > 0);
         if (reality && expected.length > 0 && !expected.every((n) => gapNums(reality[1]).includes(n))) f(`${s}: Reality Check gap numbers ${gapNums(reality[1])} != engine ${expected}`);
         const trendLine = trends.find((t) => /Score now|Şu anki puan|当前分数/.test(t));
         if (trendLine && expected.length > 0 && !expected.every((n) => gapNums(trendLine).includes(n))) f(`${s}: Trends gap numbers ${gapNums(trendLine)} != engine ${expected}`);
-        if (reality && trendLine && p.gapBase !== null && !gapNums(reality[1]).includes(p.gapBase) && p.gapBase > 0) f(`${s}: Reality Check and Trends disagree on the gap`);
+        const cg = p.comparisonGap ?? null;
+        if (reality && trendLine && cg !== null && cg > 0 && !(gapNums(reality[1]).includes(cg) && gapNums(trendLine).includes(cg))) f(`${s}: Reality Check and Trends disagree on the gap`);
       }
       // 4. Ranking order identical across sections
       const sections: Array<[string, string[]]> = [];
@@ -1232,7 +1238,8 @@ async function runAuthorityChecks(
 // ─────────────────────────────────────────────────────────────────────────────
 // Friction level from the actual score gap (Phase 2e)
 //
-// Friction is derived ONLY from gapBase (benchmark - current score). Independent copy of the threshold
+// Friction is derived ONLY from comparisonGap (benchmark - the pathway's comparison score: the current score, plus
+// the nomination 190 / 491 require). Independent copy of the threshold
 // table, on purpose: <= 0 LOW, 1-15 MEDIUM, 16-25 HIGH, > 25 EXTREME; no benchmark = NOT_ASSESSED.
 // The table, the Pathway Strength section, the LLM input (the report) and the explanatory sentences under
 // the table must all agree with it.
@@ -1249,9 +1256,9 @@ function expectedFriction(gapBase: number | null): FrictionName {
 }
 
 const FRICTION_PROFILES: Array<{ name: string; input: ReadinessInput; expected?: Record<string, FrictionName> }> = [
-  // Score 70; benchmarks 95/85/75 -> gaps 25/15/5
-  { name: "f-se-261313-gaps-25-15-5", input: { ...base }, expected: { "189": "HIGH", "190": "MEDIUM", "491": "MEDIUM" } },
-  // Civil 233211 with Superior English: score 70 is AT the 491 benchmark (gap 0) -> LOW; 190 gap 10, 189 gap 20
+  // Score 70; benchmarks 95/85/75 -> 189 gap 25; 190 85 - (70+5) = 10; 491 75 - (70+15) = -10
+  { name: "f-se-261313-gaps-25-10-minus10", input: { ...base }, expected: { "189": "HIGH", "190": "MEDIUM", "491": "LOW" } },
+  // Civil 233211 with Superior English: score 70; 491 70 - 85 -> LOW; 190 80 - 75 = 5; 189 gap 20
   {
     name: "f-civil-233211-at-benchmark",
     input: { ...base, currentCountry: "Turkey", age: "35", occupation: "Civil Engineer 233211", occupationConfirmed: "yes", englishLevel: "superior", qualificationLevel: "Bachelor's Degree", sponsorOrFamily: undefined, offshoreExperienceYears: 5 },
@@ -1259,8 +1266,8 @@ const FRICTION_PROFILES: Array<{ name: string; input: ReadinessInput; expected?:
   },
   // GP 253111: no benchmark for the occupation
   { name: "f-gp-253111-no-benchmark", input: { ...base, currentCountry: "Turkey", age: "34", occupation: "General Practitioner 253111", sponsorOrFamily: undefined }, expected: { "189": "NOT_ASSESSED", "190": "NOT_ASSESSED", "491": "NOT_ASSESSED" } },
-  // Large gaps: score 50 -> 491 gap 20 HIGH, 190 gap 30 EXTREME, 189 EXTREME
-  { name: "f-civil-233211-large-gaps", expected: { "189": "EXTREME", "190": "EXTREME", "491": "HIGH" }, input: { ...base, currentCountry: "Turkey", age: "35", occupation: "Civil Engineer 233211", occupationConfirmed: "yes", englishLevel: "competent", qualificationLevel: "Bachelor's Degree", sponsorOrFamily: undefined, offshoreExperienceYears: 5 } },
+  // Large gaps: score 50 -> 491 70 - 65 = 5 MEDIUM, 190 80 - 55 = 25 HIGH, 189 90 - 50 = 40 EXTREME
+  { name: "f-civil-233211-large-gaps", expected: { "189": "EXTREME", "190": "HIGH", "491": "MEDIUM" }, input: { ...base, currentCountry: "Turkey", age: "35", occupation: "Civil Engineer 233211", occupationConfirmed: "yes", englishLevel: "competent", qualificationLevel: "Bachelor's Degree", sponsorOrFamily: undefined, offshoreExperienceYears: 5 } },
 ];
 
 const FRICTION_NAMES: FrictionName[] = ["LOW", "MEDIUM", "HIGH", "EXTREME", "NOT_ASSESSED"];
@@ -1282,16 +1289,16 @@ async function runFrictionChecks(
       const report = runReadinessEngine(input);
       const scores = report.pathwayScores!;
       const expected = {} as Record<string, FrictionName>;
-      for (const s of PATHWAY_SUBCLASSES) expected[s] = expectedFriction(scores[s].gapBase);
+      for (const s of PATHWAY_SUBCLASSES) expected[s] = expectedFriction(scores[s].comparisonGap ?? null);
       if (profile.expected) {
-        for (const s of PATHWAY_SUBCLASSES) if (expected[s] !== profile.expected[s]) f(`${s}: gap ${scores[s].gapBase} gives ${expected[s]}, the profile was designed for ${profile.expected[s]}`);
+        for (const s of PATHWAY_SUBCLASSES) if (expected[s] !== profile.expected[s]) f(`${s}: gap ${scores[s].comparisonGap} gives ${expected[s]}, the profile was designed for ${profile.expected[s]}`);
       }
 
       // Data: frictionAnalysis, pathwayStrengthComparison and the LLM input (this report) carry the same level
       for (const s of PATHWAY_SUBCLASSES) {
         const fa = report.frictionAnalysis.find((x) => x.pathway === s)?.frictionScore;
         const ps = report.pathwayStrengthComparison.find((x) => x.subclass === s)?.friction;
-        if (fa !== expected[s]) f(`${s}: frictionAnalysis ${fa} != ${expected[s]} (gap ${scores[s].gapBase})`);
+        if (fa !== expected[s]) f(`${s}: frictionAnalysis ${fa} != ${expected[s]} (gap ${scores[s].comparisonGap})`);
         if (ps !== expected[s].toLowerCase()) f(`${s}: pathwayStrengthComparison ${ps} != ${expected[s].toLowerCase()}`);
       }
       const llmInput = JSON.stringify(report);
@@ -1327,7 +1334,7 @@ async function runFrictionChecks(
         if (!lv) f(`${s}: no friction label found in the comparison table`);
         else {
           shown[s] = lv;
-          if (lv !== expected[s]) f(`${s}: table shows ${lv} but the gap ${scores[s].gapBase} means ${expected[s]}`);
+          if (lv !== expected[s]) f(`${s}: table shows ${lv} but the gap ${scores[s].comparisonGap} means ${expected[s]}`);
         }
       }
 

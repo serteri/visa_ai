@@ -9,6 +9,7 @@ import { findOccupationRecord } from "@/lib/readiness/occupation-eligibility";
 import { occupationMatchLine } from "@/src/lib/readiness/localization";
 import { waStreamRequirementNotes } from "@/lib/state-nomination/wa-streams";
 import { localizeStateNote } from "@/lib/state-nomination/state-note-translations";
+import { currentAdminStatus, resolveDisplayStatus } from "@/lib/state-nomination/state-status";
 import type {
   AssessmentState,
   Locale,
@@ -69,31 +70,6 @@ type StateDatasetRow = {
 
 const STATE_ROWS = (stateNominationData as { states: StateDatasetRow[] }).states;
 
-const KNOWN_STATE_NOMINATION_STATUSES: readonly StateNominationStatus[] = [
-  // Legacy values -- still present in static baseline data (see the doc
-  // comment on StateNominationStatus in ./types.ts).
-  "Open for Offshore",
-  "High Demand",
-  "Closed",
-  "Onshore Only",
-  // Current admin-panel vocabulary.
-  "Open (Onshore & Offshore)",
-  "Open (Onshore Only)",
-  "Open (Offshore Only)",
-  "Suspended / Closed",
-];
-
-/**
- * StateIntelligence.status is a free-form string written by the scraper
- * (app/api/cron/sync-states), not guaranteed to be one of the four literal
- * values the scoring logic and PDF status badges switch on. Only accept it
- * as a display override when it's an exact match; otherwise fall back to
- * the static JSON row rather than pushing an unrecognized status string
- * into strictly-typed rendering.
- */
-function asKnownStatus(value: string | undefined): StateNominationStatus | undefined {
-  return KNOWN_STATE_NOMINATION_STATUSES.find((known) => known === value);
-}
 
 // Old/new vocabulary both map to the same scoring behavior for these two --
 // see the doc comment on StateNominationStatus in ./types.ts for why both
@@ -142,14 +118,7 @@ export function applyOccupationListFactor(score: number, status: OccupationListS
   return status === "confirmed" ? Math.min(95, score + 10) : Math.max(0, score - 10);
 }
 
-/** True when the admin row was saved on or after the day the rule was verified (or either date is unknown). */
-export function adminStatusStillCurrent(adminUpdatedAt: string | undefined, ruleLastVerified: string | undefined): boolean {
-  if (!adminUpdatedAt || !ruleLastVerified) return true;
-  const admin = new Date(adminUpdatedAt).getTime();
-  const rule = new Date(`${ruleLastVerified}T00:00:00Z`).getTime();
-  if (Number.isNaN(admin) || Number.isNaN(rule)) return true;
-  return admin >= rule;
-}
+export { adminStatusStillCurrent } from "@/lib/state-nomination/state-status";
 
 function normalize(value?: string): string {
   return (value ?? "").trim().toLowerCase();
@@ -490,7 +459,7 @@ export function calculateStateNominationTracker(
     // admin row was last saved -- then the newer verification decides the status, so an older admin "Open (Onshore &
     // Offshore)" cannot contradict a note verified since (TAS: admin 2026-08-31, offshore 491 paused per the rule
     // verified 2026-09-22).
-    const adminStatus = adminStatusStillCurrent(adminConfig?.updatedAt, rule?.lastVerified) ? asKnownStatus(adminConfig?.status) : undefined;
+    const adminStatus = currentAdminStatus(adminConfig, rule);
     const effectiveStatus: StateNominationStatus =
       adminStatus ?? rule?.status ?? row.status;
 
@@ -538,10 +507,11 @@ export function calculateStateNominationTracker(
     // are overridden here -- the scoring math above already folded in
     // adminConfig/rule via effectiveStatus, so an in-progress or malformed
     // scrape can't silently corrupt the match-score algorithm. adminConfig
-    // still wins over a scrape (asKnownStatus(adminConfig?.status) is
+    // still wins over a scrape (currentAdminStatus(...) is
     // checked first), matching its top-priority position in effectiveStatus.
     const intel = input.stateIntelligence?.[row.code];
-    const displayStatus = adminStatus ?? asKnownStatus(intel?.status) ?? effectiveStatus;
+    // Shared with the AI assistant (lib/state-nomination/state-status.ts), so both show the same status.
+    const displayStatus = resolveDisplayStatus({ admin: adminConfig, rule, intelStatus: intel?.status, fallback: row.status }) ?? effectiveStatus;
 
     // ── Onshore/offshore hard block, applied AFTER the heuristic score above and able to override it.
     // Previously also carried two occupation-list rules here (score=2 "not on list", score capped at 15

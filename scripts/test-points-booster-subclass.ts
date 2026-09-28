@@ -21,7 +21,9 @@ const fail = (m: string) => {
   console.error(`  ❌ ${m}`);
 };
 
-const NOM190 = { en: "(subclass 190)", tr: "190", "zh-Hans": "190" };
+// Nomination rows are labelled as the requirement of their subclass (item 2 of the d545617 follow-up).
+const REQUIRED_RE = /required for subclass (190|491)|Subclass (190|491) için zorunlu|(190|491) 子类的必要条件/;
+const BENCH_RE = /Subclass (189|190|491) (?:invitation benchmark|son davet referansı|近期邀请参考分)/;
 const base: ReadinessInput = {
   locale: "en",
   country: "AU",
@@ -56,7 +58,7 @@ const nominationSubclassesIn = (label: string, nom190: string, nom491: string) =
 for (const locale of ["en", "tr", "zh-Hans"] as const) {
   for (const [name, patch] of variants) {
     const report = runReadinessEngine({ ...base, ...patch, locale } as ReadinessInput);
-    const sim = (report as { pointsBoosterSimulator?: { scenarios?: PointsBoosterScenario[] } }).pointsBoosterSimulator;
+    const sim = (report as { pointsBoosterSimulator?: { currentEstimate?: number; scenarios?: PointsBoosterScenario[] } }).pointsBoosterSimulator;
     const scenarios = sim?.scenarios ?? [];
     const singles = scenarios.filter((s) => !s.isCombined);
     const nom190 = singles.find((s) => s.onlyForSubclass === "190")?.label;
@@ -65,12 +67,13 @@ for (const locale of ["en", "tr", "zh-Hans"] as const) {
       fail(`[${locale}] ${name}: expected both nomination scenarios to be scoped (190: ${nom190 ?? "-"}, 491: ${nom491 ?? "-"})`);
       continue;
     }
-    if (locale === "en" && !nom190.includes(NOM190.en)) fail(`[en] ${name}: 190 nomination label "${nom190}"`);
+    if (!REQUIRED_RE.test(nom190) || !REQUIRED_RE.test(nom491)) fail(`[${locale}] ${name}: nomination rows not labelled as a requirement: "${nom190}" / "${nom491}"`);
+    const current = sim?.currentEstimate ?? report.pointsEstimate?.estimatedPoints ?? 0;
     const conditionals = singles.filter((s) => s.conditional).map((s) => s.label);
     for (const s of scenarios.filter((x) => x.isCombined)) {
       checked++;
       const { has190, has491 } = nominationSubclassesIn(s.label, nom190, nom491);
-      const bench = s.label.match(/Subclass (189|190|491)/)?.[1];
+      const bench = s.label.match(BENCH_RE)?.[1] ?? s.requiredNominationFor;
       const tag = `[${locale}] ${name}: "${s.label}"`;
       if (has190 && has491) fail(`${tag} sums both nominations`);
       if (bench === "189" && (has190 || has491 || s.onlyForSubclass)) fail(`${tag} -- a 189 scenario contains a nomination factor`);
@@ -79,6 +82,14 @@ for (const locale of ["en", "tr", "zh-Hans"] as const) {
       if (has190 && s.onlyForSubclass !== "190") fail(`${tag} -- contains the 190 nomination but is not scoped to 190`);
       if (has491 && s.onlyForSubclass !== "491") fail(`${tag} -- contains the 491 nomination but is not scoped to 491`);
       if ((has190 || has491) && !bench && !/190|491/.test(s.label.replace(nom190, "").replace(nom491, ""))) fail(`${tag} -- nomination combo without a subclass qualifier`);
+      // A 190 / 491 benchmark is only ever compared with a score that includes that visa's nomination.
+      if (bench === "190" || bench === "491") {
+        const bonus = report.pathwayScores?.[bench].nominationBonus ?? 0;
+        const hasOwn = bench === "190" ? has190 : has491;
+        if (s.requiredNominationFor !== bench || (!hasOwn && s.estimatedChange !== bonus) || (s.resultingEstimate ?? 0) < current + bonus) {
+          fail(`${tag} -- compares the ${bench} benchmark with a score without its required nomination (+${bonus})`);
+        }
+      }
       const partnerItems = singles.filter((p) => p.exclusiveGroup === "partner" && s.label.includes(p.label));
       if (partnerItems.length > 1) fail(`${tag} sums both partner options`);
       for (const c of conditionals) if (s.label.includes(c)) fail(`${tag} -- includes the conditional line "${c}"`);

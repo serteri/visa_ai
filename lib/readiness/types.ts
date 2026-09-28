@@ -338,6 +338,8 @@ export type PointsBoosterScenario = {
   isCombined?: boolean;
   /** See PointsAction: the one subclass a nomination factor applies to. Combined: the subclass every item allows. */
   onlyForSubclass?: "190" | "491";
+  /** A benchmark row for 190 / 491 whose score includes the nomination that visa requires. */
+  requiredNominationFor?: "190" | "491";
   exclusiveGroup?: "nomination" | "partner";
   conditional?: boolean;
 };
@@ -829,6 +831,11 @@ export type PremiumSections = {
 export type ReadinessReport = {
   /** Defaults to "AU" when omitted, preserving existing behavior. */
   country?: "AU" | "CA";
+  /**
+   * Set at render time by lib/reports/refresh-report.ts (never stored): whether the shown content was recomputed
+   * with the current engine, and the dates for the "Last updated" / "Generated" stamp on the result page and PDF.
+   */
+  contentStamp?: { recomputed: boolean; generatedAt?: string; updatedAt?: string };
   /** Which subclass 186 stream the user is targeting. Carried forward so the PDF can render stream-specific visa labels and document-checklist filtering. */
   nominationStream?: NominationStream;
   executiveSummary: string[];

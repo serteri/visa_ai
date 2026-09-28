@@ -95,6 +95,8 @@ export async function getUserReportById(reportId: string): Promise<{
   isUnlocked: boolean;
   fullName: string | null;
   previewData: unknown;
+  /** When the report was generated (user_reports.created_at). */
+  createdAt?: string;
 } | null> {
   const rows = await prisma.$queryRawUnsafe<
     Array<{
@@ -107,9 +109,10 @@ export async function getUserReportById(reportId: string): Promise<{
       is_unlocked: boolean;
       full_name: string | null;
       preview_data: unknown;
+      created_at?: Date | string | null;
     }>
   >(
-    `SELECT id, email, locale, report_json, input_json, agent_id, is_unlocked, full_name, preview_data FROM user_reports WHERE id::text = $1::text LIMIT 1`,
+    `SELECT id, email, locale, report_json, input_json, agent_id, is_unlocked, full_name, preview_data, created_at FROM user_reports WHERE id::text = $1::text LIMIT 1`,
     reportId
   );
 
@@ -126,6 +129,7 @@ export async function getUserReportById(reportId: string): Promise<{
     isUnlocked: row.is_unlocked,
     fullName: row.full_name,
     previewData: row.preview_data,
+    createdAt: row.created_at ? new Date(row.created_at).toISOString() : undefined,
   };
 }
 

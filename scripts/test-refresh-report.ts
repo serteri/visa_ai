@@ -68,7 +68,8 @@ async function main() {
   else fail(`subclass guard: ${r3.source} ${r3.reason}`);
 
   const r4 = await refreshStoredReport(stored, null);
-  if (r4.source === "stored" && r4.report === stored) ok("no stored input -> stored report used unchanged");
+  const sameContent = JSON.stringify({ ...r4.report, contentStamp: undefined }) === JSON.stringify({ ...stored, contentStamp: undefined });
+  if (r4.source === "stored" && sameContent && r4.report.contentStamp?.recomputed === false) ok("no stored input -> stored report used unchanged (stamped with its generation date)");
   else fail(`no-input guard: ${r4.source}`);
 
   const r5 = await refreshStoredReport(stored, { ...input, age: { bad: true } as unknown as string });

@@ -5,7 +5,7 @@ import { ENGLISH_TEST_VALIDITY_YEARS } from "@/lib/readiness/constants";
 import { generateChecklist } from "@/lib/generateChecklist";
 import { runReadinessEngine as runBaseReadinessEngine } from "@/lib/readiness/engine";
 import { calculateRankedPathways } from "@/lib/readiness/ranked-pathways";
-import { describePathwayScore, frictionFromScore, type PathwaySubclass } from "@/lib/readiness/pathway-scores";
+import { comparisonOf, describePathwayScore, frictionFromScore, type PathwaySubclass } from "@/lib/readiness/pathway-scores";
 import { occupationWarningFor, resolveAssessingAuthority } from "@/lib/skills-assessment/resolve-authority";
 import { orderBySkilledRanking } from "@/lib/readiness/pathway-ranking";
 import { calculateStateNominationTracker } from "@/lib/readiness/state-nomination";
@@ -171,7 +171,8 @@ function buildImmediateActionPlan(input: ReadinessInput, base: ReadinessReport):
   const expYears = (input.offshoreExperienceYears ?? 0) + (input.onshoreExperienceYears ?? 0);
   const occupationConfirmed = normalize(input.occupationConfirmed) === "yes";
   // Below the recent 190 benchmark on the CURRENT (base) score; without a benchmark, below the 65-point minimum.
-  const lowPointsGap = score190 !== undefined && (score190.gapBase !== null ? score190.gapBase > 0 : score190.baseScore < 65);
+  // Benchmark comparison for 190 includes the state nomination the visa requires (comparisonGap).
+  const lowPointsGap = score190 !== undefined && (comparisonOf(score190).comparisonGap !== null ? (comparisonOf(score190).comparisonGap as number) > 0 : score190.baseScore < 65);
   const englishAtMax = isEnglishAtMaximum(input.englishLevel);
   const lowExperienceGap = expYears < 3;
 
@@ -274,8 +275,12 @@ function buildFrictionItem(input: ReadinessInput, base: ReadinessReport, subclas
     successSignals.push(t3(locale, "Nomination-linked pathways incorporate additional points-table variables compared with independent routes.", "Adaylik baglantili yollar, bagimsiz yollara gore ek puan tablosu degiskenleri icerir.", "与独立路径相比，提名相关路径会纳入额外的打分变量。"));
   }
 
-  if (["189", "190", "491"].includes(subclassKey) && score && score.gapBase !== null && score.gapBase <= 0) {
-    successSignals.push(t3(locale, "The current score meets or exceeds the latest invitation reference observed for this pathway.", "Mevcut puan, bu yol icin gozlenen en guncel davet referansina esit veya ustundedir.", "当前分数已达到或超过该路径观察到的最近邀请参考分。"));
+  if (["189", "190", "491"].includes(subclassKey) && score && comparisonOf(score).comparisonGap !== null && (comparisonOf(score).comparisonGap as number) <= 0) {
+    successSignals.push(
+      subclassKey === "189"
+        ? t3(locale, "The current score meets or exceeds the latest invitation reference observed for this pathway.", "Mevcut puan, bu yol icin gozlenen en guncel davet referansina esit veya ustundedir.", "当前分数已达到或超过该路径观察到的最近邀请参考分。")
+        : t3(locale, `With the nomination required for ${subclassKey}, the score meets or exceeds the latest invitation reference observed for this pathway.`, `${subclassKey} için zorunlu adaylıkla puan, bu yol için gözlenen en güncel davet referansına eşit veya üstündedir.`, `加上 ${subclassKey} 必需的提名后，分数已达到或超过该路径观察到的最近邀请参考分。`)
+    );
   }
 
   if (subclassKey === "820/801" || subclassKey === "482") {
