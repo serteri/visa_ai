@@ -93,23 +93,30 @@ function csvRows(file: string): string[][] {
 }
 
 /** Home Affairs list: title -> ANZSCO 2013 code and whether it is on the 190 / 491 (State or Territory nominated) lists. */
+type HaEntry = { code: string; code2013: string | null; code2022: string | null; s190: boolean; s491: boolean };
+
 function homeAffairsIndex() {
-  const index = new Map<string, { code: string; s190: boolean; s491: boolean }>();
+  const index = new Map<string, HaEntry>();
+  /** Every Home Affairs row per normalized title, to flag a title that maps to more than one code. */
+  const all = new Map<string, HaEntry[]>();
   for (const line of readFileSync(HOME_AFFAIRS_LIST, "utf8").split(/\r?\n/)) {
     if (!line.startsWith("| ") || line.startsWith("| Occupation") || line.startsWith("| :")) continue;
     const cells = line.replace(/​/g, "").split(" | ");
     const title = cells[0].replace(/^\|\s*/, "").replace(/\\/g, "").trim();
     const codeCell = cells[1] ?? "";
     const m2013 = codeCell.match(/ANZSCO 2013[^\]]*?(\d{6})\]/);
+    const m2022 = codeCell.match(/ANZSCO 2022[^\]]*?(\d{6})\]/);
     const any = codeCell.match(/(\d{6})\]/);
     const code = (m2013 ?? any)?.[1];
     if (!title || !code) continue;
     const visas = (cells[2] ?? "").replace(/\\/g, "");
     const s190 = /190 - Skilled Nominated/.test(visas);
     const s491 = /491 - Skilled Work Regional \(provisional\) visa \(subclass 491\) State or Territory nominated/.test(visas);
-    if (!index.has(norm(title))) index.set(norm(title), { code, s190, s491 });
+    const entry: HaEntry = { code, code2013: m2013?.[1] ?? null, code2022: m2022?.[1] ?? null, s190, s491 };
+    if (!index.has(norm(title))) index.set(norm(title), entry);
+    all.set(norm(title), [...(all.get(norm(title)) ?? []), entry]);
   }
-  return index;
+  return { index, all };
 }
 
 function findQuote(pages: Array<{ num: number; text: string }>, re: RegExp, what: string) {
@@ -137,7 +144,7 @@ export async function buildWaOccupations() {
     const prev = waByTitle.get(key);
     waByTitle.set(key, { code: r[col("ANZSCO")], v190: (prev?.v190 ?? false) || r[col("v190")] === "Yes", v491: (prev?.v491 ?? false) || r[col("v491")] === "Yes" });
   }
-  const ha = homeAffairsIndex();
+  const { index: ha, all: haAll } = homeAffairsIndex();
 
   // Merge the list's lines by occupation title.
   const byTitle = new Map<string, { title: string; sector: string; streams: Set<Stream>; pages: Set<number> }>();
@@ -150,16 +157,36 @@ export async function buildWaOccupations() {
   }
 
   let subclassDisagreements = 0;
+  const disagreementList: Array<{ title: string; code: string; waCsv: { v190: boolean; v491: boolean }; homeAffairs: { s190: boolean; s491: boolean } }> = [];
+  const byName: Array<{ title: string; code: string; anzsco2013: string | null; anzsco2022: string | null; flags: string[] }> = [];
   const occupations = [...byTitle.entries()]
     .map(([key, o]) => {
       const wa = waByTitle.get(key);
       const hai = ha.get(key);
       const anzscoCode = wa?.code ?? hai?.code ?? null;
       const codeSource = wa ? "wa-occupation-search.csv" : hai ? "home-affairs-skilled-occupation-list" : null;
-      const haForCode = anzscoCode ? [...ha.values()].find((x) => x.code === anzscoCode) : undefined;
+      // Home Affairs reuses 6-digit numbers across ANZSCO versions (332211 is "Painting Trades Worker" in ANZSCO 2013
+      // but "Painter" in ANZSCO 2022, 482/186 only), so subclasses come from the same-title row first, then a row
+      // whose ANZSCO 2013 code is this code -- never from a 2022-only row that happens to share the number.
+      const haForCode =
+        hai ??
+        (anzscoCode ? [...ha.values()].find((x) => x.code2013 === anzscoCode) : undefined) ??
+        (anzscoCode ? [...ha.values()].find((x) => x.code === anzscoCode) : undefined);
       const s190 = wa ? wa.v190 : (haForCode?.s190 ?? false);
       const s491 = wa ? wa.v491 : (haForCode?.s491 ?? false);
-      if (wa && haForCode && (wa.v190 !== haForCode.s190 || wa.v491 !== haForCode.s491)) subclassDisagreements++;
+      if (wa && haForCode && (wa.v190 !== haForCode.s190 || wa.v491 !== haForCode.s491)) {
+        subclassDisagreements++;
+        disagreementList.push({ title: o.title, code: wa.code, waCsv: { v190: wa.v190, v491: wa.v491 }, homeAffairs: { s190: haForCode.s190, s491: haForCode.s491 } });
+      }
+      if (!wa && hai) {
+        // Matched by exact (normalized) title to the Home Affairs list -- never fuzzy. Flags for a human check:
+        const rows = haAll.get(key) ?? [];
+        const flags: string[] = [];
+        if (new Set(rows.map((r) => r.code)).size > 1) flags.push(`ambiguous: the title has ${rows.length} Home Affairs rows with codes ${[...new Set(rows.map((r) => r.code))].join(", ")}`);
+        if (!hai.code2013) flags.push("no ANZSCO 2013 code on the Home Affairs row; the first code shown was used");
+        if (hai.code2013 && hai.code2022 && hai.code2013 !== hai.code2022) flags.push(`ANZSCO 2022 code differs (${hai.code2022}); the 2013 code applies to subclass 190/491`);
+        byName.push({ title: o.title, code: hai.code, anzsco2013: hai.code2013, anzsco2022: hai.code2022, flags });
+      }
       const streams = (["schedule1", "schedule2", "graduate"] as Stream[]).filter((s) => o.streams.has(s));
       return {
         anzscoCode,
@@ -206,6 +233,9 @@ export async function buildWaOccupations() {
       codeMatching: {
         fromWaOccupationSearchCsv: occupations.filter((o) => o.codeSource === "wa-occupation-search.csv").length,
         fromHomeAffairsList: occupations.filter((o) => o.codeSource === "home-affairs-skilled-occupation-list").length,
+        matchMethod: "exact title after case/whitespace/apostrophe/dash normalization only -- no fuzzy matching",
+        matchedByNameFromHomeAffairs: byName,
+        subclassDisagreementDetails: disagreementList,
         unmatchedTitles: occupations.filter((o) => o.anzscoCode === null).map((o) => o.occupationTitle),
         subclassDisagreementsCsvVsHomeAffairs: subclassDisagreements,
       },

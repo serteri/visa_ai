@@ -43,7 +43,7 @@ export type ReadinessInput = {
    */
   stateNominationConfig?: Record<
     string,
-    { status?: string; supportedVisas?: string[]; feeAud?: number | null; customAiNote?: string | null }
+    { status?: string; supportedVisas?: string[]; feeAud?: number | null; customAiNote?: string | null; updatedAt?: string }
   >;
   passportCountry?: string;
   age?: string;
@@ -652,6 +652,8 @@ export type StateNominationState = {
    * `status` or `matchLevel` -- see lib/readiness/state-nomination.ts's calculateStateNominationTracker.
    */
   occupationMatchNote?: string;
+  /** WA: the stream conditions for the applicant's occupation (190 employment contract, Graduate study), shown in full. */
+  streamNotes?: string[];
 };
 
 export type StateNominationTracker = {

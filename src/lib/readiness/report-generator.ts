@@ -840,7 +840,8 @@ export function generatePremiumSections(input: {
     blockReason,
     remediationSteps,
     {
-      englishAlreadySuperior: /superior/i.test(input.englishLevel ?? ""),
+      // The intake form's englishLevel enum (none | competent | proficient | superior -- full-check/actions.ts).
+      englishAlreadySuperior: input.englishLevel === "superior",
       experienceNotProvided: input.experienceNotProvided === true,
     }
   );

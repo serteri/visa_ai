@@ -12,6 +12,9 @@
  *
  *   npx tsx scripts/test-report-banned-phrases.ts
  */
+import stateStatus from "../src/data/state-nomination-status.json";
+import { STATE_RULES } from "../lib/state-nomination/state-rules-config";
+import { STATE_NOTE_TRANSLATIONS } from "../lib/state-nomination/state-note-translations";
 import { REVIEW_PERSONAS, renderPersonaPdfTexts } from "./render-persona-pdfs";
 
 let failures = 0;
@@ -58,6 +61,11 @@ export const BANNED_CLAIMS: RegExp[] = [
   /potansiyel puan/i,
   /潜在积分/,
   /4,885\s*[–-]\s*4,890/,
+  // English validity: the Home Affairs wording (taken within 3 years before LODGING, valid at invitation) replaced
+  // "within the 3 years before the date of invitation".
+  /before the date of invitation/i,
+  /davet tarihinden önceki/i,
+  /获邀日期前/,
   // "Meets/exceeds the threshold" without the benchmark gap (65 is only the legal minimum).
   /threshold exceeded/i,
   /exceeded the (points )?threshold/i,
@@ -69,7 +77,18 @@ export const BANNED_CLAIMS: RegExp[] = [
   /ANZSCO代码、职责/,
 ];
 
+/** Every English state note / special condition shown in the tracker, which a tr / zh-Hans report must not contain. */
+const ENGLISH_STATE_NOTES = [
+  ...Object.values(STATE_RULES).map((r) => r.note),
+  ...(stateStatus as { states: Array<{ specialConditions: string[] }> }).states.flatMap((st) => st.specialConditions),
+];
+
 async function main() {
+  console.log("==================== state notes: a tr / zh-Hans translation for every English note ====================");
+  const missing = ENGLISH_STATE_NOTES.filter((n) => !STATE_NOTE_TRANSLATIONS[n]);
+  if (missing.length === 0) ok(`${ENGLISH_STATE_NOTES.length} state notes and special conditions all have tr and zh-Hans versions`);
+  else missing.forEach((m) => fail(`no translation for state note: "${m.slice(0, 90)}..."`));
+
   const rendered = await renderPersonaPdfTexts(REVIEW_PERSONAS);
   console.log(`==================== rendered ${rendered.length} PDFs (${Object.keys(REVIEW_PERSONAS).length} personas x en/tr/zh-Hans) ====================`);
 
@@ -82,6 +101,15 @@ async function main() {
     });
     if (hits.length) hits.forEach((h) => fail(`${tag}: ${h}`));
     else ok(`${tag}: no banned phrase (${BANNED_INTERNAL_PHRASES.length} internal + ${BANNED_CLAIMS.length} claim patterns)`);
+
+    // tr / zh-Hans: no English state note (compared on its first 50 characters, whitespace-insensitive).
+    if (r.locale !== "en") {
+      const squash = (t: string) => t.replace(/\s+/g, "");
+      const flat = squash(r.text);
+      const leaked = ENGLISH_STATE_NOTES.filter((n) => flat.includes(squash(n.slice(0, 50))));
+      if (leaked.length) leaked.forEach((n) => fail(`${tag}: English state note in a ${r.locale} report: "${n.slice(0, 70)}..."`));
+      else ok(`${tag}: state notes in ${r.locale}`);
+    }
 
     const input = REVIEW_PERSONAS[r.id];
     const report = r.report as {
@@ -97,6 +125,14 @@ async function main() {
       else fail(`${tag}: experience lines -- below2/deduction ${below2}, "not provided" ${notProvided}`);
     }
 
+    // WA list: a Software Engineer (261313, on WA's Schedule 2 and Graduate lists) sees WA's stream conditions.
+    if (/261313/.test(input.occupation ?? "")) {
+      const wa = report.stateNominationTracker?.states.find((s) => s.code === "WA") as { streamNotes?: string[]; occupationListStatus?: string } | undefined;
+      const shown = (wa?.streamNotes ?? []).every((n) => text.replace(/\s+/g, "").includes(n.replace(/\s+/g, "").slice(0, 60)));
+      if (wa?.occupationListStatus === "confirmed" && (wa.streamNotes?.length ?? 0) === 2 && shown) ok(`${tag}: WA on the list with its 190-contract and Graduate-study conditions shown`);
+      else fail(`${tag}: WA ${wa?.occupationListStatus}, stream notes ${wa?.streamNotes?.length ?? 0}, shown ${shown}`);
+    }
+
     // TAS: status agrees with its note.
     const tas = report.stateNominationTracker?.states.find((s) => s.code === "TAS");
     if (tas && tas.status === "Open (Onshore & Offshore)") fail(`${tag}: TAS shows "Open (Onshore & Offshore)" while its offshore pathway is paused`);
@@ -107,11 +143,14 @@ async function main() {
     if (badTop.length) fail(`${tag}: Top Recommended includes states whose list excludes the occupation: ${badTop.map((s) => s.code)}`);
 
     // Booster: a Subclass 189 benchmark scenario never contains a nomination; 190/491 never the other one.
+    // Checked on the label TEXT as well as the scope field, so an old-format report (no onlyForSubclass) is caught too.
     for (const s of report.pointsBoosterSimulator?.scenarios ?? []) {
-      const bench = s.label.match(/Subclass (189|190|491)/)?.[1];
+      const bench = s.label.match(/Subclass (189|190|491) (?:invitation benchmark|son davet referansı|近期邀请参考分)/)?.[1];
       if (!s.isCombined || !bench) continue;
-      if ((bench === "189" && s.onlyForSubclass) || (bench !== "189" && s.onlyForSubclass && s.onlyForSubclass !== bench)) {
-        fail(`${tag}: "${s.label}" mixes subclasses (scope ${s.onlyForSubclass})`);
+      const noms = [...s.label.matchAll(/\((?:subclass|Subclass) (190|491)\)|（(190|491) 子类）/g)].map((m) => m[1] ?? m[2]);
+      const scope = s.onlyForSubclass ?? noms[0];
+      if ((bench === "189" && (scope || noms.length)) || (bench !== "189" && noms.some((n) => n !== bench)) || (scope && bench !== "189" && scope !== bench)) {
+        fail(`${tag}: "${s.label}" mixes subclasses (benchmark ${bench}, nomination ${noms.join("/") || scope})`);
       }
     }
   }

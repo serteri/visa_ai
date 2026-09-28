@@ -31,6 +31,7 @@ import type { ReadinessInput, ReadinessReport } from "@/lib/readiness/types";
 import { generatePremiumStrategy } from "@/lib/ai/generate-premium-strategy";
 import { retrieveVisaContext } from "@/lib/ai/retrieve-visa-context";
 import { retrieveStateContext } from "@/lib/ai/retrieve-state-context";
+import { ensureCountrySpecificReportSchema } from "@/lib/readiness/country-scope";
 import {
   createUserReport,
   getUserReportById,
@@ -176,49 +177,6 @@ const optionalCourseCompletionStatusSchema = z.preprocess(
   },
   z.enum(["studying", "completed"]).optional()
 );
-
-// ─── Country-specific report schema guards ───────────────────────────────────
-
-const AU_PATHWAY_SUBCLASSES = new Set(["500", "485", "482", "189", "190", "491", "820", "801", "186", "general"]);
-const CA_PATHWAY_SUBCLASSES = new Set(["CEC", "FSW", "FSTP", "AIP", "FAMILY_SPONSORSHIP", "PNP", "general"]);
-
-function ensureCountrySpecificReportSchema(report: ReadinessReport, country: "AU" | "CA"): ReadinessReport {
-  const sanitized = enforceCountryReportScope(report, country);
-
-  if (country === "CA") {
-    const invalidPathway = (sanitized.pathwayComparison ?? []).find(
-      (item) => !CA_PATHWAY_SUBCLASSES.has(item.subclass)
-    );
-
-    if (invalidPathway) {
-      throw new Error(`Invalid Canada pathway schema key: ${invalidPathway.subclass}`);
-    }
-
-    if (sanitized.rankedPathways && sanitized.rankedPathways.length > 0) {
-      throw new Error("Invalid Canada schema: rankedPathways must be omitted for CA reports.");
-    }
-
-    if (sanitized.stateNominationTracker) {
-      throw new Error("Invalid Canada schema: stateNominationTracker must be omitted for CA reports.");
-    }
-
-    if (sanitized.lodgementReadyChecklist) {
-      throw new Error("Invalid Canada schema: lodgementReadyChecklist must be omitted for CA reports.");
-    }
-  }
-
-  if (country === "AU") {
-    const invalidPathway = (sanitized.pathwayComparison ?? []).find(
-      (item) => !AU_PATHWAY_SUBCLASSES.has(item.subclass)
-    );
-
-    if (invalidPathway) {
-      throw new Error(`Invalid Australia pathway schema key: ${invalidPathway.subclass}`);
-    }
-  }
-
-  return sanitized;
-}
 
 // ─── Feature flags ────────────────────────────────────────────────────────────
 
@@ -719,50 +677,6 @@ function resolveTargetCountry(input: {
   if (auSignals.some((signal) => combined.includes(signal))) return "AU";
 
   return defaultCountry;
-}
-
-function enforceCountryReportScope(report: ReadinessReport, country: "AU" | "CA"): ReadinessReport {
-  const sanitized: ReadinessReport = {
-    ...report,
-    country,
-  };
-
-  if (country === "CA") {
-    sanitized.rankedPathways = undefined;
-    sanitized.stateNominationTracker = undefined;
-    sanitized.lodgementReadyChecklist = undefined;
-    sanitized.pathwayComparison = (report.pathwayComparison ?? []).filter(
-      (item) => !["189", "190", "491"].includes(item.subclass)
-    );
-
-    if (sanitized.pathwayComparison.length === 0) {
-      sanitized.pathwayComparison = [
-        {
-          subclass: "general",
-          visaName: report.country === "CA" && report.pathwayComparison?.[0]?.visaName
-            ? report.pathwayComparison[0].visaName
-            : "Canada Express Entry",
-          reason: "Country scope forced to Canada. Australian subclasses were removed.",
-          relevance: "needs_more_information",
-          confidenceLevel: "low",
-          confidenceExplanation: "Country scope is Canada-only and requires more Canada-specific profile detail.",
-          difficulty: "medium",
-          requirementType: "Canada-only eligibility signals",
-          userRelativePosition: "Needs more Canada-specific information",
-          keyRequirements: ["CRS signal", "NOC/TEER alignment", "Language test profile"],
-          pathwaySpecificRisks: ["Australian pathway data is intentionally excluded."],
-        },
-      ];
-    }
-  }
-
-  if (country === "AU") {
-    sanitized.pathwayComparison = (report.pathwayComparison ?? []).filter(
-      (item) => !["CEC", "FSW", "FSTP", "AIP", "FAMILY_SPONSORSHIP", "PNP"].includes(item.subclass)
-    );
-  }
-
-  return sanitized;
 }
 
 // ─── Server actions ───────────────────────────────────────────────────────────
@@ -1343,6 +1257,14 @@ export async function submitFullCheckWaitlist(
     sponsorOrFamily: sponsorOrFamily || undefined,
     preferredPathway: effectiveVisaInterest || undefined,
     biggestConcern: biggestConcern || undefined,
+    // Also persisted so lib/reports/refresh-report.ts can recompute the report with the current engine (the PDF is
+    // regenerated on every download). Live state data (stateIntelligence/stateNominationConfig) is re-read then.
+    migrationGoals: migrationGoals.length > 0 ? migrationGoals : undefined,
+    preferredState,
+    hasGraduateVisaPathwayIntent,
+    isLabourAgreementEmployer: formData.get("isLabourAgreementEmployer") === "on" || undefined,
+    nocCode: nocCode || undefined,
+    nocTeer: nocTeer !== undefined && !isNaN(nocTeer) ? nocTeer : undefined,
   };
 
   const internalLeadTier = computeInternalLeadTier(readinessInputForReport, generatedReport.assessmentState);

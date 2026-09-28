@@ -2762,7 +2762,16 @@ export async function generateReadinessPDF(input: PDFGeneratorInput): Promise<Ui
     if (!report.documentChecklist?.length) return;
 
     addSectionHeading("", text.auditReadyChecklist);
-    addSmallText(text.auditReadyChecklistIntro, 0);
+    addSmallText(
+      report.country === "CA"
+        ? effectiveLocale === "tr"
+          ? "Başvurunuz için hazırlanacak belgeler (IRCC çevrimiçi hesabınız üzerinden yüklenir), çeviriler ve dil testi geçerlilik tarihleri."
+          : effectiveLocale === "zh-Hans"
+            ? "申请需准备的文件清单（通过 IRCC 在线账户上传），包括文件翻译及语言考试有效期要求。"
+            : "Documents to prepare for your application (uploaded through your IRCC online account), including translations and language test validity dates."
+        : text.auditReadyChecklistIntro,
+      0
+    );
     yPosition += 2;
 
     const CHECKBOX_SIZE = 3;
@@ -4098,6 +4107,10 @@ export async function generateReadinessPDF(input: PDFGeneratorInput): Promise<Ui
         // Never affects status/score/matchLevel; absent entirely when the occupation couldn't be resolved.
         if (state.occupationMatchNote) {
           note += (note ? ' ' : '') + state.occupationMatchNote;
+        }
+        // WA stream conditions (190 employment contract, Graduate study) -- never truncated.
+        if (state.streamNotes?.length) {
+          note += (note ? ' ' : '') + state.streamNotes.join(' ');
         }
         // Only present when this state's data came from the live
         // StateIntelligence DB table (lib/state-intelligence.ts), not the

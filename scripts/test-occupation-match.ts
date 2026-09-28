@@ -8,6 +8,7 @@
 import { matchOccupationToState, matchOccupationToStateAllSubclasses } from "../lib/state-nomination/occupation-match";
 import { occupationMatchLine } from "../src/lib/readiness/localization";
 import { runReadinessEngine } from "../src/lib/readiness-engine";
+import { adminStatusStillCurrent, applyOccupationListFactor } from "../lib/readiness/state-nomination";
 import type { ReadinessInput } from "../lib/readiness/types";
 
 let failures = 0;
@@ -241,6 +242,38 @@ console.log("\n==================== state ranking follows the occupation lists =
     const wa = trackers.get(label)?.states.find((x) => x.code === "WA");
     if (wa?.occupationListStatus === "confirmed" && wa.score > 0) ok(`${label}: WA confirmed on the 2025-26 list (${wa.score}%)`);
     else fail(`${label}: WA ${wa?.occupationListStatus} ${wa?.score}`);
+  }
+
+  // Admin panel vs hand-verified rule: the admin status wins unless the rule was verified on a later day. Live dates:
+  // TAS admin "Open (Onshore & Offshore)" saved 2026-08-31, TAS rule (offshore 491 paused) verified 2026-09-22 -> rule;
+  // ACT admin saved 2026-09-22 12:58 UTC, ACT rule verified 2026-09-22 -> admin.
+  {
+    const cfg = {
+      TAS: { status: "Open (Onshore & Offshore)", updatedAt: "2026-08-31T12:16:04.707Z" },
+      ACT: { status: "Open (Onshore & Offshore)", updatedAt: "2026-09-22T12:58:14.178Z" },
+    };
+    const st = runReadinessEngine({ ...baseProfile, occupation: "Software Engineer 261313", currentCountry: "AU", stateNominationConfig: cfg }).stateNominationTracker?.states ?? [];
+    const tas = st.find((x) => x.code === "TAS");
+    const act = st.find((x) => x.code === "ACT");
+    if (tas?.status === "Open (Onshore Only)" && act?.status === "Open (Onshore & Offshore)" && adminStatusStillCurrent(undefined, "2026-09-22")) {
+      ok("older admin status (TAS, 2026-08-31) gives way to the rule verified 2026-09-22; a same-day admin edit (ACT) still wins");
+    } else fail(`admin precedence: TAS ${tas?.status}, ACT ${act?.status}`);
+  }
+
+  // The list is a real score factor (applyOccupationListFactor): on the list +10, not confirmed -10, not listed 0.
+  const factor = [applyOccupationListFactor(50, "confirmed"), applyOccupationListFactor(50, "unconfirmed"), applyOccupationListFactor(50, "not_listed"), applyOccupationListFactor(0, "confirmed"), applyOccupationListFactor(90, "confirmed")];
+  if (JSON.stringify(factor) === JSON.stringify([60, 40, 0, 0, 95])) ok("list factor: 50 -> 60 confirmed / 40 not confirmed / 0 not listed; a closed state stays 0; capped at 95");
+  else fail(`list factor: ${factor}`);
+  // WA, Software Engineer 261313, onshore and offshore: 80 (open onshore & offshore) - 16 (below 1 year of experience)
+  // - 14 (not willing to go regional) = 50 before the list, 60 with it; the WA stream conditions are attached.
+  for (const [label, where] of [["onshore", "AU"], ["offshore", "Turkey"]] as const) {
+    const wa = runReadinessEngine({ ...baseProfile, occupation: "Software Engineer 261313", currentCountry: where }).stateNominationTracker?.states.find((x) => x.code === "WA");
+    const notes = wa?.streamNotes ?? [];
+    const contract = notes.some((n) => /subclass 190.*employment contract.*does not apply to subclass 491/.test(n));
+    const graduate = notes.some((n) => /Graduate stream.*two academic years/.test(n));
+    if (wa?.occupationListStatus === "confirmed" && wa.score === 60 && contract && graduate) {
+      ok(`WA 261313 ${label}: 60% (50 + 10 for being on WA's list); 190 contract note (not 491) and Graduate study note shown`);
+    } else fail(`WA 261313 ${label}: ${wa?.score}% ${wa?.occupationListStatus}; notes ${JSON.stringify(notes)}`);
   }
 
   // TAS: the general offshore 491 pathway is paused, so the status is onshore-only and an offshore applicant is blocked.

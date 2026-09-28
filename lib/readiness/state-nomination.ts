@@ -7,6 +7,8 @@ import {
 } from "@/lib/state-nomination/occupation-match";
 import { findOccupationRecord } from "@/lib/readiness/occupation-eligibility";
 import { occupationMatchLine } from "@/src/lib/readiness/localization";
+import { waStreamRequirementNotes } from "@/lib/state-nomination/wa-streams";
+import { localizeStateNote } from "@/lib/state-nomination/state-note-translations";
 import type {
   AssessmentState,
   Locale,
@@ -129,6 +131,25 @@ export function occupationListStatus(results: readonly OccupationMatchResult[] |
 }
 
 const LIST_STATUS_RANK: Record<OccupationListStatus, number> = { confirmed: 0, unconfirmed: 1, not_listed: 2 };
+
+/**
+ * The occupation list as a score factor: on the list +10 (max 95), list not confirmed -10, not on the list 0%.
+ * A state already at 0 (closed program, on/offshore block) stays at 0.
+ */
+export function applyOccupationListFactor(score: number, status: OccupationListStatus): number {
+  if (status === "not_listed") return 0;
+  if (score <= 0) return score;
+  return status === "confirmed" ? Math.min(95, score + 10) : Math.max(0, score - 10);
+}
+
+/** True when the admin row was saved on or after the day the rule was verified (or either date is unknown). */
+export function adminStatusStillCurrent(adminUpdatedAt: string | undefined, ruleLastVerified: string | undefined): boolean {
+  if (!adminUpdatedAt || !ruleLastVerified) return true;
+  const admin = new Date(adminUpdatedAt).getTime();
+  const rule = new Date(`${ruleLastVerified}T00:00:00Z`).getTime();
+  if (Number.isNaN(admin) || Number.isNaN(rule)) return true;
+  return admin >= rule;
+}
 
 function normalize(value?: string): string {
   return (value ?? "").trim().toLowerCase();
@@ -353,9 +374,7 @@ function buildRequirements(args: {
   }
 
   row.specialConditions.forEach((condition) => {
-    requirements.push(
-      t(locale, condition, condition, condition)
-    );
+    requirements.push(localizeStateNote(locale, condition));
   });
 
   return requirements.slice(0, 3);
@@ -467,8 +486,13 @@ export function calculateStateNominationTracker(
     // closed, never just shows a "Closed" badge over an unchanged score.
     const adminConfig = input.stateNominationConfig?.[row.code];
     const rule = getStateRule(row.code);
+    // The admin status wins unless the hand-verified rule (state-rules-config.ts) was verified on a LATER day than the
+    // admin row was last saved -- then the newer verification decides the status, so an older admin "Open (Onshore &
+    // Offshore)" cannot contradict a note verified since (TAS: admin 2026-08-31, offshore 491 paused per the rule
+    // verified 2026-09-22).
+    const adminStatus = adminStatusStillCurrent(adminConfig?.updatedAt, rule?.lastVerified) ? asKnownStatus(adminConfig?.status) : undefined;
     const effectiveStatus: StateNominationStatus =
-      asKnownStatus(adminConfig?.status) ?? rule?.status ?? row.status;
+      adminStatus ?? rule?.status ?? row.status;
 
     let score = 55;
 
@@ -477,7 +501,7 @@ export function calculateStateNominationTracker(
       // quota pressure both score at the harder floor; a JSON-only closed
       // estimate (no admin/rule confirmation) scores slightly higher since
       // it's a generic guess, not a confirmed program state.
-      score = isClosedStatus(adminConfig?.status) || rule?.offshoreQuotaPressure === "closed" ? 6 : 12;
+      score = isClosedStatus(adminStatus) || rule?.offshoreQuotaPressure === "closed" ? 6 : 12;
     } else if (isOnshoreOnlyStatus(effectiveStatus)) {
       score = offshore ? 18 : 74;
     } else if (isOffshoreOnlyStatus(effectiveStatus)) {
@@ -517,7 +541,7 @@ export function calculateStateNominationTracker(
     // still wins over a scrape (asKnownStatus(adminConfig?.status) is
     // checked first), matching its top-priority position in effectiveStatus.
     const intel = input.stateIntelligence?.[row.code];
-    const displayStatus = asKnownStatus(adminConfig?.status) ?? asKnownStatus(intel?.status) ?? effectiveStatus;
+    const displayStatus = adminStatus ?? asKnownStatus(intel?.status) ?? effectiveStatus;
 
     // ── Onshore/offshore hard block, applied AFTER the heuristic score above and able to override it.
     // Previously also carried two occupation-list rules here (score=2 "not on list", score capped at 15
@@ -561,8 +585,8 @@ export function calculateStateNominationTracker(
       : undefined;
     const listStatus = occupationListStatus(occupationResults);
     let listNote: string | undefined;
+    score = applyOccupationListFactor(score, listStatus);
     if (listStatus === "not_listed") {
-      score = 0;
       listNote = t(
         input.locale,
         `Your occupation is not on ${row.name}'s occupation list for subclass 190 or 491, so this state cannot nominate it.`,
@@ -628,13 +652,16 @@ export function calculateStateNominationTracker(
       // lib/readiness/generate-pdf.ts). Order: admin-set customAiNote (top
       // priority, see StateNominationConfig), then the hand-verified
       // state-rules-config note, then the onshore/offshore rule override.
-      requirements: [adminConfig?.customAiNote, listNote, rule?.note, ruleOverrideNote, ...requirements].filter(
+      requirements: [adminConfig?.customAiNote, listNote, rule?.note ? localizeStateNote(input.locale, rule.note) : undefined, ruleOverrideNote, ...requirements].filter(
         (item): item is string => Boolean(item)
       ),
       officialNote: intel?.officialNote,
       sourceUrl: intel?.sourceUrl,
       lastVerifiedAt: intel?.lastVerifiedAt,
       occupationMatchNote: occupationResults ? occupationMatchLine(input.locale, occupationResults) : undefined,
+      ...(row.code === "WA" && listStatus === "confirmed"
+        ? { streamNotes: waStreamRequirementNotes(occupationAnzscoCode, input.locale) }
+        : {}),
     };
   }).sort(
     (a, b) =>

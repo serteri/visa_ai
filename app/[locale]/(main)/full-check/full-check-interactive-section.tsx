@@ -100,9 +100,9 @@ function getComparisonRows(locale: Locale, country: SupportedCountry): Compariso
         full: {
           included: true,
           text: tx(
-            "Proof of funds validation rules, digital IMM portal specifications, and language test timeline constraints",
-            "Proof of funds dogrulama kurallari, dijital IMM portal sartlari ve dil sinavi zaman cizelgesi kisitlari",
-            "资金证明核验规则、数字化 IMM 申请门户规范及语言考试时限要求"
+            "Proof-of-funds rules for FSW/FSTP, IRCC online account and IMM form requirements, and language test validity dates",
+            "FSW/FSTP icin fon kaniti kurallari, IRCC cevrimici hesabi ve IMM form sartlari ile dil sinavi gecerlilik tarihleri",
+            "FSW/FSTP 资金证明规则、IRCC 在线账户及 IMM 表格要求，以及语言考试有效期"
           ),
         },
       }
@@ -224,9 +224,9 @@ function getReportCards(locale: Locale, country: SupportedCountry): ReportCard[]
     ? {
         title: tx("Premium Feature: Audit-Ready Proof Checklist", "Premium Feature: Denetime Hazir Kanit Kontrol Listesi", "高级功能：审计级证明材料清单"),
         description: tx(
-          "An audit-ready checklist tracks proof of funds validation rules, digital IMM portal form specifications, and language test timeline constraints.",
-          "Proof of funds dogrulama kurallari, dijital IMM portal form sartlari ve dil sinavi zaman cizelgesi kisitlari denetime hazir checklist formatinda raporlanir.",
-          "审计级清单追踪资金证明核验规则、数字化 IMM 表格规范及语言考试时限要求。"
+          "An audit-ready checklist tracks proof-of-funds rules for FSW/FSTP (not required with a valid job offer or Canadian work authorization), IRCC online account and IMM form requirements, and language test validity dates.",
+          "FSW/FSTP icin fon kaniti kurallari (gecerli is teklifi veya Kanada calisma izni varsa gerekmez), IRCC cevrimici hesabi ve IMM form sartlari ile dil sinavi gecerlilik tarihleri denetime hazir checklist formatinda raporlanir.",
+          "审计级清单追踪 FSW/FSTP 资金证明规则（持有效工作邀请或加拿大工作许可者无需提供）、IRCC 在线账户及 IMM 表格要求，以及语言考试有效期。"
         ),
       }
     : {

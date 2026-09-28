@@ -14,6 +14,7 @@ import { existsSync, readFileSync } from "node:fs";
 import data from "../src/data/state-occupation-lists/wa.json";
 import { WA_LIST_DOCUMENT, WA_OUT_FILE, WA_PROGRAM_DOCUMENT, buildWaOccupations, serialize } from "./generate-wa-occupations";
 import { matchOccupationToState } from "../lib/state-nomination/occupation-match";
+import { waStreamRequirementNotes } from "../lib/state-nomination/wa-streams";
 
 let failures = 0;
 const ok = (m: string) => console.log(`  ✅ ${m}`);
@@ -61,6 +62,35 @@ async function main() {
   if (unmatched.length === 1 && unmatched[0] === "Occupational Health and Safety Adviser" && data.occupations.filter((o) => o.anzscoCode === null).every((o) => !o.subclass190 && !o.subclass491)) {
     ok("one title without an exact code match (Occupational Health and Safety Adviser): kept, never matchable");
   } else fail(`unmatched titles: ${unmatched.join(", ")}`);
+
+  // Code mapping: 193 titles matched by exact title to the Home Affairs list, 5 flagged for a human check; ANZSCO 2022
+  // numbers that collide with a different 2013 occupation are never used for subclasses (332211 Painting Trades
+  // Worker vs 2022 "Painter"; 333212 Solid Plasterer vs 2022 "Renderer (Solid Plaster)"; 311399).
+  const cm = p.codeMatching as {
+    matchedByNameFromHomeAffairs: Array<{ title: string; code: string; flags: string[] }>;
+    subclassDisagreementsCsvVsHomeAffairs: number;
+    matchMethod: string;
+  };
+  const flagged = cm.matchedByNameFromHomeAffairs.filter((m) => m.flags.length > 0).map((m) => `${m.title} ${m.code}`);
+  const expectedFlagged = ["Management Consultant 224711", "Quality Assurance Manager 139916", "Arborist 362212", "Flower Grower 121212", "Zoologist 234518"];
+  if (cm.matchedByNameFromHomeAffairs.length === 193 && /no fuzzy/.test(cm.matchMethod) && JSON.stringify([...flagged].sort()) === JSON.stringify([...expectedFlagged].sort())) {
+    ok(`193 titles matched by exact name to the Home Affairs list; flagged for a human check: ${flagged.join(", ")}`);
+  } else fail(`name matches: ${cm.matchedByNameFromHomeAffairs.length}, flagged: ${flagged.join(", ")}`);
+  const collisions: Array<[string, boolean, boolean]> = [["332211", true, true], ["333212", true, true], ["311399", true, true]];
+  const badCollision = collisions.filter(([c, s190, s491]) => {
+    const r = row(c);
+    return !r || r.subclass190 !== s190 || r.subclass491 !== s491;
+  });
+  if (cm.subclassDisagreementsCsvVsHomeAffairs === 0 && badCollision.length === 0) ok("no WA CSV vs Home Affairs subclass disagreement once 2022 number collisions are ignored (332211, 333212, 311399)");
+  else fail(`disagreements ${cm.subclassDisagreementsCsvVsHomeAffairs}; collision rows ${JSON.stringify(badCollision)}`);
+
+  // WA stream conditions shown in the report (lib/state-nomination/wa-streams.ts).
+  const notes = waStreamRequirementNotes("261313", "en");
+  if (notes.length === 2 && /subclass 190.*employment contract.*does not apply to subclass 491.*p\. 5, 9/.test(notes[0]) && /two academic years.*p\. 13/.test(notes[1])) {
+    ok("261313: WA Schedule 2 contract note (190 only, p.5/p.9) and Graduate study note (p.13)");
+  } else fail(`261313 stream notes: ${JSON.stringify(notes)}`);
+  if (waStreamRequirementNotes("999999", "en").length === 0) ok("no WA stream note for an occupation not on WA's lists");
+  else fail("stream note for a code not on WA's lists");
 
   // The matcher reads this file.
   const m190 = matchOccupationToState("261313", "WA", "190");

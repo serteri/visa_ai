@@ -5,6 +5,7 @@ import { prisma } from "@/lib/prisma";
 import { shouldSuppressReportEmails } from "@/lib/email/suppression";
 import { generateReadinessPDF } from "@/lib/readiness/generate-pdf";
 import { getUserReportById, markReportPdfSent } from "@/src/lib/user-reports";
+import { refreshStoredReport } from "@/lib/reports/refresh-report";
 
 function isEmailDeliveryEnabled(): boolean {
   if (process.env.ENABLE_TRANSACTIONAL_EMAILS === "true") return true;
@@ -224,7 +225,7 @@ type UserReportRecord = NonNullable<Awaited<ReturnType<typeof getUserReportById>
 async function buildReportPdf(record: UserReportRecord, fullName?: string): Promise<Uint8Array> {
   const locale = record.locale === "tr" ? "tr" : record.locale === "zh-Hans" ? "zh-Hans" : "en";
 
-  const calculatedPoints = record.report.pointsEstimate?.estimatedPoints ?? 0;
+  const calculatedPoints = record.report.pointsEstimate?.estimatedPoints ?? 0; // unchanged by the refresh below (guarded)
   const migrationGoals = record.input.migrationGoals ?? [];
   const viabilityData = await lookupViabilityData({
     occupation: record.input.occupation,
@@ -234,8 +235,11 @@ async function buildReportPdf(record: UserReportRecord, fullName?: string): Prom
     regionalGoal: migrationGoals.includes("regional"),
   });
 
+  // Deterministic sections are recomputed with the current engine (lib/reports/refresh-report.ts).
+  const { report } = await refreshStoredReport(record.report, record.input);
+
   return generateReadinessPDF({
-    report: record.report,
+    report,
     locale,
     saveToFile: false,
     userInputSummary: {

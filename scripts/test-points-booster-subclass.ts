@@ -39,6 +39,9 @@ const base: ReadinessInput = {
 const variants: Array<[string, Partial<ReadinessInput>]> = [
   ["reference (SE, 28, Superior, PhD, partner w/o English)", {}],
   ["offshore India", { currentCountry: "IN", passportCountry: "IN" }],
+  // Report b0d20f74's answers: PhD recognized, earned outside Australia -> 70 points, where the old simulator put the
+  // 491 nomination into the Subclass 189 benchmark scenario and the 190 nomination into the 491 one.
+  ["real report b0d20f74 inputs (70 pts)", { qualificationLevel: "PhD", isQualificationRecognized: true, qualificationAwardedInAustralia: false, annualSalaryAud: 45000, occupation: "Software Engineer (261313)", mainGoal: "" }],
   ["competent English, 36, bachelor", { age: "36", englishLevel: "competent", qualificationLevel: "Bachelor's Degree", occupationConfirmed: "yes" }],
   ["proficient, 33, 3y offshore", { age: "33", englishLevel: "proficient", offshoreExperienceYears: 3, occupationConfirmed: "yes" }],
   ["single, 41, competent", { age: "41", englishLevel: "competent", sponsorOrFamily: "Single" }],

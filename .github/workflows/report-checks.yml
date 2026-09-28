@@ -94,6 +94,11 @@ jobs:
       - name: Report text -- banned internal phrases and corrected claims (en/tr/zh-Hans)
         run: npm run test:report-banned-phrases
 
+      # The PDF is regenerated from the stored report on every download; its deterministic sections are recomputed
+      # with the current engine (lib/reports/refresh-report.ts) unless that would change the points or subclasses.
+      - name: Stored-report refresh at PDF time (old booster scenario removed; guards)
+        run: npm run test:refresh-report
+
       # Medical registration data (src/data/health-registration/*.json, extracted from the Medical Board / Ahpra
       # "Pathways to registration for international medical graduates" document). The regenerate-and-diff drift
       # check needs the gitignored source PDF and is SKIPPED here; the committed-file invariants (fee schedule

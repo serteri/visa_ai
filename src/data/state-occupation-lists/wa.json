@@ -19,10 +19,1375 @@
     "codeMatching": {
       "fromWaOccupationSearchCsv": 189,
       "fromHomeAffairsList": 193,
+      "matchMethod": "exact title after case/whitespace/apostrophe/dash normalization only -- no fuzzy matching",
+      "matchedByNameFromHomeAffairs": [
+        {
+          "title": "Barrister",
+          "code": "271111",
+          "anzsco2013": "271111",
+          "anzsco2022": "271111",
+          "flags": []
+        },
+        {
+          "title": "Customer Service Manager",
+          "code": "149212",
+          "anzsco2013": "149212",
+          "anzsco2022": null,
+          "flags": []
+        },
+        {
+          "title": "Facilities Manager",
+          "code": "149913",
+          "anzsco2013": "149913",
+          "anzsco2022": null,
+          "flags": []
+        },
+        {
+          "title": "Human Resource Adviser",
+          "code": "223111",
+          "anzsco2013": "223111",
+          "anzsco2022": "223111",
+          "flags": []
+        },
+        {
+          "title": "Human Resource Manager",
+          "code": "132311",
+          "anzsco2013": "132311",
+          "anzsco2022": "132311",
+          "flags": []
+        },
+        {
+          "title": "Interpreter",
+          "code": "272412",
+          "anzsco2013": "272412",
+          "anzsco2022": null,
+          "flags": []
+        },
+        {
+          "title": "Management Consultant",
+          "code": "224711",
+          "anzsco2013": "224711",
+          "anzsco2022": "224713",
+          "flags": [
+            "ANZSCO 2022 code differs (224713); the 2013 code applies to subclass 190/491"
+          ]
+        },
+        {
+          "title": "Organisation and Methods Analyst",
+          "code": "224712",
+          "anzsco2013": "224712",
+          "anzsco2022": "224712",
+          "flags": []
+        },
+        {
+          "title": "Procurement Manager",
+          "code": "133612",
+          "anzsco2013": "133612",
+          "anzsco2022": "133612",
+          "flags": []
+        },
+        {
+          "title": "Quality Assurance Manager",
+          "code": "139916",
+          "anzsco2013": null,
+          "anzsco2022": "139916",
+          "flags": [
+            "no ANZSCO 2013 code on the Home Affairs row; the first code shown was used"
+          ]
+        },
+        {
+          "title": "Recruitment Consultant",
+          "code": "223112",
+          "anzsco2013": "223112",
+          "anzsco2022": "223112",
+          "flags": []
+        },
+        {
+          "title": "Research and Development Manager",
+          "code": "132511",
+          "anzsco2013": "132511",
+          "anzsco2022": "132511",
+          "flags": []
+        },
+        {
+          "title": "Solicitor",
+          "code": "271311",
+          "anzsco2013": "271311",
+          "anzsco2022": "271311",
+          "flags": []
+        },
+        {
+          "title": "Specialist Managers nec",
+          "code": "139999",
+          "anzsco2013": "139999",
+          "anzsco2022": null,
+          "flags": []
+        },
+        {
+          "title": "Translator",
+          "code": "272413",
+          "anzsco2013": "272413",
+          "anzsco2022": "272413",
+          "flags": []
+        },
+        {
+          "title": "Workplace Relations Adviser",
+          "code": "223113",
+          "anzsco2013": "223113",
+          "anzsco2022": "223113",
+          "flags": []
+        },
+        {
+          "title": "Agricultural Consultant",
+          "code": "234111",
+          "anzsco2013": "234111",
+          "anzsco2022": "234111",
+          "flags": []
+        },
+        {
+          "title": "Agricultural Engineer",
+          "code": "233912",
+          "anzsco2013": "233912",
+          "anzsco2022": "233912",
+          "flags": []
+        },
+        {
+          "title": "Agricultural Scientist",
+          "code": "234112",
+          "anzsco2013": "234112",
+          "anzsco2022": null,
+          "flags": []
+        },
+        {
+          "title": "Agricultural Technician",
+          "code": "311111",
+          "anzsco2013": "311111",
+          "anzsco2022": null,
+          "flags": []
+        },
+        {
+          "title": "Apiarist",
+          "code": "121311",
+          "anzsco2013": "121311",
+          "anzsco2022": "121311",
+          "flags": []
+        },
+        {
+          "title": "Aquaculture Farmer",
+          "code": "121111",
+          "anzsco2013": "121111",
+          "anzsco2022": "121111",
+          "flags": []
+        },
+        {
+          "title": "Arborist",
+          "code": "362212",
+          "anzsco2013": "362212",
+          "anzsco2022": "362511",
+          "flags": [
+            "ANZSCO 2022 code differs (362511); the 2013 code applies to subclass 190/491"
+          ]
+        },
+        {
+          "title": "Beef Cattle Farmer",
+          "code": "121312",
+          "anzsco2013": "121312",
+          "anzsco2022": null,
+          "flags": []
+        },
+        {
+          "title": "Cotton Grower",
+          "code": "121211",
+          "anzsco2013": "121211",
+          "anzsco2022": null,
+          "flags": []
+        },
+        {
+          "title": "Crop Farmers nec",
+          "code": "121299",
+          "anzsco2013": "121299",
+          "anzsco2022": null,
+          "flags": []
+        },
+        {
+          "title": "Dairy Cattle Farmer",
+          "code": "121313",
+          "anzsco2013": "121313",
+          "anzsco2022": "121313",
+          "flags": []
+        },
+        {
+          "title": "Deer Farmer",
+          "code": "121314",
+          "anzsco2013": "121314",
+          "anzsco2022": null,
+          "flags": []
+        },
+        {
+          "title": "Farrier",
+          "code": "322113",
+          "anzsco2013": "322113",
+          "anzsco2022": "322113",
+          "flags": []
+        },
+        {
+          "title": "Flower Grower",
+          "code": "121212",
+          "anzsco2013": "121212",
+          "anzsco2022": "121611",
+          "flags": [
+            "ANZSCO 2022 code differs (121611); the 2013 code applies to subclass 190/491"
+          ]
+        },
+        {
+          "title": "Forester",
+          "code": "234113",
+          "anzsco2013": "234113",
+          "anzsco2022": null,
+          "flags": []
+        },
+        {
+          "title": "Fruit or Nut Grower",
+          "code": "121213",
+          "anzsco2013": "121213",
+          "anzsco2022": null,
+          "flags": []
+        },
+        {
+          "title": "Gardener (General)",
+          "code": "362211",
+          "anzsco2013": "362211",
+          "anzsco2022": null,
+          "flags": []
+        },
+        {
+          "title": "Goat Farmer",
+          "code": "121315",
+          "anzsco2013": "121315",
+          "anzsco2022": "121315",
+          "flags": []
+        },
+        {
+          "title": "Grain, Oilseed or Pasture Grower",
+          "code": "121214",
+          "anzsco2013": "121214",
+          "anzsco2022": null,
+          "flags": []
+        },
+        {
+          "title": "Grape Grower",
+          "code": "121215",
+          "anzsco2013": "121215",
+          "anzsco2022": null,
+          "flags": []
+        },
+        {
+          "title": "Greenkeeper",
+          "code": "362311",
+          "anzsco2013": "362311",
+          "anzsco2022": null,
+          "flags": []
+        },
+        {
+          "title": "Horse Breeder",
+          "code": "121316",
+          "anzsco2013": "121316",
+          "anzsco2022": null,
+          "flags": []
+        },
+        {
+          "title": "Horse Trainer",
+          "code": "361112",
+          "anzsco2013": "361112",
+          "anzsco2022": "361112",
+          "flags": []
+        },
+        {
+          "title": "Livestock Farmers nec",
+          "code": "121399",
+          "anzsco2013": "121399",
+          "anzsco2022": null,
+          "flags": []
+        },
+        {
+          "title": "Meat Inspector",
+          "code": "311312",
+          "anzsco2013": "311312",
+          "anzsco2022": "311312",
+          "flags": []
+        },
+        {
+          "title": "Mixed Crop and Livestock Farmer",
+          "code": "121411",
+          "anzsco2013": "121411",
+          "anzsco2022": null,
+          "flags": []
+        },
+        {
+          "title": "Mixed Crop Farmer",
+          "code": "121216",
+          "anzsco2013": "121216",
+          "anzsco2022": null,
+          "flags": []
+        },
+        {
+          "title": "Mixed Livestock Farmer",
+          "code": "121317",
+          "anzsco2013": "121317",
+          "anzsco2022": null,
+          "flags": []
+        },
+        {
+          "title": "Nurseryperson",
+          "code": "362411",
+          "anzsco2013": "362411",
+          "anzsco2022": "362411",
+          "flags": []
+        },
+        {
+          "title": "Pig Farmer",
+          "code": "121318",
+          "anzsco2013": "121318",
+          "anzsco2022": "121318",
+          "flags": []
+        },
+        {
+          "title": "Poultry Farmer",
+          "code": "121321",
+          "anzsco2013": "121321",
+          "anzsco2022": "121321",
+          "flags": []
+        },
+        {
+          "title": "Primary Products Inspectors nec",
+          "code": "311399",
+          "anzsco2013": "311399",
+          "anzsco2022": null,
+          "flags": []
+        },
+        {
+          "title": "Production Manager (Forestry)",
+          "code": "133511",
+          "anzsco2013": "133511",
+          "anzsco2022": "133511",
+          "flags": []
+        },
+        {
+          "title": "Sheep Farmer",
+          "code": "121322",
+          "anzsco2013": "121322",
+          "anzsco2022": null,
+          "flags": []
+        },
+        {
+          "title": "Sugar Cane Grower",
+          "code": "121217",
+          "anzsco2013": "121217",
+          "anzsco2022": null,
+          "flags": []
+        },
+        {
+          "title": "Vegetable Grower",
+          "code": "121221",
+          "anzsco2013": "121221",
+          "anzsco2022": null,
+          "flags": []
+        },
+        {
+          "title": "Veterinarian",
+          "code": "234711",
+          "anzsco2013": "234711",
+          "anzsco2022": "234711",
+          "flags": []
+        },
+        {
+          "title": "Veterinary Nurse",
+          "code": "361311",
+          "anzsco2013": "361311",
+          "anzsco2022": "361311",
+          "flags": []
+        },
+        {
+          "title": "Wine Maker",
+          "code": "234213",
+          "anzsco2013": "234213",
+          "anzsco2022": "234213",
+          "flags": []
+        },
+        {
+          "title": "Arts Administrator or Manager",
+          "code": "139911",
+          "anzsco2013": "139911",
+          "anzsco2022": "139911",
+          "flags": []
+        },
+        {
+          "title": "Cinema or Theatre Manager",
+          "code": "149912",
+          "anzsco2013": "149912",
+          "anzsco2022": "149912",
+          "flags": []
+        },
+        {
+          "title": "Dancer or Choreographer",
+          "code": "211112",
+          "anzsco2013": "211112",
+          "anzsco2022": null,
+          "flags": []
+        },
+        {
+          "title": "Sports Administrator",
+          "code": "139915",
+          "anzsco2013": "139915",
+          "anzsco2022": null,
+          "flags": []
+        },
+        {
+          "title": "Electronic Equipment Trades Worker",
+          "code": "342313",
+          "anzsco2013": "342313",
+          "anzsco2022": "342313",
+          "flags": []
+        },
+        {
+          "title": "Electronic Instrument Trades Worker (General)",
+          "code": "342314",
+          "anzsco2013": "342314",
+          "anzsco2022": "342314",
+          "flags": []
+        },
+        {
+          "title": "Electronic Instrument Trades Worker (Special Class)",
+          "code": "342315",
+          "anzsco2013": "342315",
+          "anzsco2022": "342315",
+          "flags": []
+        },
+        {
+          "title": "Gas or Petroleum Operator",
+          "code": "399212",
+          "anzsco2013": "399212",
+          "anzsco2022": "399212",
+          "flags": []
+        },
+        {
+          "title": "Accountant (General)",
+          "code": "221111",
+          "anzsco2013": "221111",
+          "anzsco2022": "221111",
+          "flags": []
+        },
+        {
+          "title": "Commodities Trader",
+          "code": "222111",
+          "anzsco2013": "222111",
+          "anzsco2022": null,
+          "flags": []
+        },
+        {
+          "title": "Company Secretary",
+          "code": "221211",
+          "anzsco2013": "221211",
+          "anzsco2022": "221211",
+          "flags": []
+        },
+        {
+          "title": "External Auditor",
+          "code": "221213",
+          "anzsco2013": "221213",
+          "anzsco2022": "221213",
+          "flags": []
+        },
+        {
+          "title": "Finance Broker",
+          "code": "222112",
+          "anzsco2013": "222112",
+          "anzsco2022": "222112",
+          "flags": []
+        },
+        {
+          "title": "Finance Manager",
+          "code": "132211",
+          "anzsco2013": "132211",
+          "anzsco2022": "132211",
+          "flags": []
+        },
+        {
+          "title": "Financial Brokers nec",
+          "code": "222199",
+          "anzsco2013": "222199",
+          "anzsco2022": null,
+          "flags": []
+        },
+        {
+          "title": "Financial Dealers nec",
+          "code": "222299",
+          "anzsco2013": "222299",
+          "anzsco2022": null,
+          "flags": []
+        },
+        {
+          "title": "Financial Institution Branch Manager",
+          "code": "149914",
+          "anzsco2013": "149914",
+          "anzsco2022": "149914",
+          "flags": []
+        },
+        {
+          "title": "Financial Investment Adviser",
+          "code": "222311",
+          "anzsco2013": "222311",
+          "anzsco2022": "222311",
+          "flags": []
+        },
+        {
+          "title": "Financial Investment Manager",
+          "code": "222312",
+          "anzsco2013": "222312",
+          "anzsco2022": null,
+          "flags": []
+        },
+        {
+          "title": "Financial Market Dealer",
+          "code": "222211",
+          "anzsco2013": "222211",
+          "anzsco2022": null,
+          "flags": []
+        },
+        {
+          "title": "Insurance Broker",
+          "code": "222113",
+          "anzsco2013": "222113",
+          "anzsco2022": "222113",
+          "flags": []
+        },
+        {
+          "title": "Internal Auditor",
+          "code": "221214",
+          "anzsco2013": "221214",
+          "anzsco2022": "221214",
+          "flags": []
+        },
+        {
+          "title": "Management Accountant",
+          "code": "221112",
+          "anzsco2013": "221112",
+          "anzsco2022": "221112",
+          "flags": []
+        },
+        {
+          "title": "Stockbroking Dealer",
+          "code": "222213",
+          "anzsco2013": "222213",
+          "anzsco2022": null,
+          "flags": []
+        },
+        {
+          "title": "Taxation Accountant",
+          "code": "221113",
+          "anzsco2013": "221113",
+          "anzsco2022": "221113",
+          "flags": []
+        },
+        {
+          "title": "Analyst Programmer",
+          "code": "261311",
+          "anzsco2013": "261311",
+          "anzsco2022": "261311",
+          "flags": []
+        },
+        {
+          "title": "Computer Network and Systems Engineer",
+          "code": "263111",
+          "anzsco2013": "263111",
+          "anzsco2022": "263111",
+          "flags": []
+        },
+        {
+          "title": "Database Administrator",
+          "code": "262111",
+          "anzsco2013": "262111",
+          "anzsco2022": "262111",
+          "flags": []
+        },
+        {
+          "title": "Developer Programmer",
+          "code": "261312",
+          "anzsco2013": "261312",
+          "anzsco2022": "261312",
+          "flags": []
+        },
+        {
+          "title": "Director (Film, Television, Radio or Stage)",
+          "code": "212312",
+          "anzsco2013": "212312",
+          "anzsco2022": null,
+          "flags": []
+        },
+        {
+          "title": "Film and Video Editor",
+          "code": "212314",
+          "anzsco2013": "212314",
+          "anzsco2022": null,
+          "flags": []
+        },
+        {
+          "title": "Hardware Technician",
+          "code": "313111",
+          "anzsco2013": "313111",
+          "anzsco2022": "313111",
+          "flags": []
+        },
+        {
+          "title": "ICT Business Analyst",
+          "code": "261111",
+          "anzsco2013": "261111",
+          "anzsco2022": "261111",
+          "flags": []
+        },
+        {
+          "title": "ICT Managers nec",
+          "code": "135199",
+          "anzsco2013": "135199",
+          "anzsco2022": "135199",
+          "flags": []
+        },
+        {
+          "title": "ICT Project Manager",
+          "code": "135112",
+          "anzsco2013": "135112",
+          "anzsco2022": "135112",
+          "flags": []
+        },
+        {
+          "title": "ICT Security Specialist",
+          "code": "262112",
+          "anzsco2013": "262112",
+          "anzsco2022": null,
+          "flags": []
+        },
+        {
+          "title": "ICT Support Engineer",
+          "code": "263212",
+          "anzsco2013": "263212",
+          "anzsco2022": null,
+          "flags": []
+        },
+        {
+          "title": "ICT Support Technicians nec",
+          "code": "313199",
+          "anzsco2013": "313199",
+          "anzsco2022": "313199",
+          "flags": []
+        },
+        {
+          "title": "ICT Systems Test Engineer",
+          "code": "263213",
+          "anzsco2013": "263213",
+          "anzsco2022": "263213",
+          "flags": []
+        },
+        {
+          "title": "Network Administrator",
+          "code": "263112",
+          "anzsco2013": "263112",
+          "anzsco2022": "263112",
+          "flags": []
+        },
+        {
+          "title": "Network Analyst",
+          "code": "263113",
+          "anzsco2013": "263113",
+          "anzsco2022": "263113",
+          "flags": []
+        },
+        {
+          "title": "Program Director (Television or Radio)",
+          "code": "212315",
+          "anzsco2013": "212315",
+          "anzsco2022": "212315",
+          "flags": []
+        },
+        {
+          "title": "Software and Applications Programmers nec",
+          "code": "261399",
+          "anzsco2013": "261399",
+          "anzsco2022": "261399",
+          "flags": []
+        },
+        {
+          "title": "Software Engineer",
+          "code": "261313",
+          "anzsco2013": "261313",
+          "anzsco2022": "261313",
+          "flags": []
+        },
+        {
+          "title": "Software Tester",
+          "code": "261314",
+          "anzsco2013": "261314",
+          "anzsco2022": "261314",
+          "flags": []
+        },
+        {
+          "title": "Systems Administrator",
+          "code": "262113",
+          "anzsco2013": "262113",
+          "anzsco2022": "262113",
+          "flags": []
+        },
+        {
+          "title": "Systems Analyst",
+          "code": "261112",
+          "anzsco2013": "261112",
+          "anzsco2022": "261112",
+          "flags": []
+        },
+        {
+          "title": "Telecommunications Engineer",
+          "code": "263311",
+          "anzsco2013": "263311",
+          "anzsco2022": null,
+          "flags": []
+        },
+        {
+          "title": "Telecommunications Linesworker",
+          "code": "342413",
+          "anzsco2013": "342413",
+          "anzsco2022": "342413",
+          "flags": []
+        },
+        {
+          "title": "Telecommunications Network Engineer",
+          "code": "263312",
+          "anzsco2013": "263312",
+          "anzsco2022": "263312",
+          "flags": []
+        },
+        {
+          "title": "Web Administrator",
+          "code": "313113",
+          "anzsco2013": "313113",
+          "anzsco2022": "313113",
+          "flags": []
+        },
+        {
+          "title": "Web Developer",
+          "code": "261212",
+          "anzsco2013": "261212",
+          "anzsco2022": "261212",
+          "flags": []
+        },
+        {
+          "title": "Butcher or Smallgoods Maker",
+          "code": "351211",
+          "anzsco2013": "351211",
+          "anzsco2022": "351211",
+          "flags": []
+        },
+        {
+          "title": "Chemist",
+          "code": "234211",
+          "anzsco2013": "234211",
+          "anzsco2022": "234211",
+          "flags": []
+        },
+        {
+          "title": "Electrical Engineering Draftsperson",
+          "code": "312311",
+          "anzsco2013": "312311",
+          "anzsco2022": "312311",
+          "flags": []
+        },
+        {
+          "title": "Electrical Engineering Technician",
+          "code": "312312",
+          "anzsco2013": "312312",
+          "anzsco2022": "312312",
+          "flags": []
+        },
+        {
+          "title": "Fitter (General)",
+          "code": "323211",
+          "anzsco2013": "323211",
+          "anzsco2022": "323211",
+          "flags": []
+        },
+        {
+          "title": "Fitter and Turner",
+          "code": "323212",
+          "anzsco2013": "323212",
+          "anzsco2022": "323212",
+          "flags": []
+        },
+        {
+          "title": "Fitter-Welder",
+          "code": "323213",
+          "anzsco2013": "323213",
+          "anzsco2022": "323213",
+          "flags": []
+        },
+        {
+          "title": "Food Technologist",
+          "code": "234212",
+          "anzsco2013": "234212",
+          "anzsco2022": "234212",
+          "flags": []
+        },
+        {
+          "title": "Mechanical Engineering Draftsperson",
+          "code": "312511",
+          "anzsco2013": "312511",
+          "anzsco2022": "312511",
+          "flags": []
+        },
+        {
+          "title": "Mechanical Engineering Technician",
+          "code": "312512",
+          "anzsco2013": "312512",
+          "anzsco2022": "312512",
+          "flags": []
+        },
+        {
+          "title": "Metal Fabricator",
+          "code": "322311",
+          "anzsco2013": "322311",
+          "anzsco2022": "322311",
+          "flags": []
+        },
+        {
+          "title": "Metal Fitters and Machinists nec",
+          "code": "323299",
+          "anzsco2013": "323299",
+          "anzsco2022": "323299",
+          "flags": []
+        },
+        {
+          "title": "Metal Machinist (First Class)",
+          "code": "323214",
+          "anzsco2013": "323214",
+          "anzsco2022": "323214",
+          "flags": []
+        },
+        {
+          "title": "Pressure Welder",
+          "code": "322312",
+          "anzsco2013": "322312",
+          "anzsco2022": "322312",
+          "flags": []
+        },
+        {
+          "title": "Production Manager (Manufacturing)",
+          "code": "133512",
+          "anzsco2013": "133512",
+          "anzsco2022": "133512",
+          "flags": []
+        },
+        {
+          "title": "Sheetmetal Trades Worker",
+          "code": "322211",
+          "anzsco2013": "322211",
+          "anzsco2022": null,
+          "flags": []
+        },
+        {
+          "title": "Upholsterer",
+          "code": "393311",
+          "anzsco2013": "393311",
+          "anzsco2022": "393311",
+          "flags": []
+        },
+        {
+          "title": "Welder (First Class)",
+          "code": "322313",
+          "anzsco2013": "322313",
+          "anzsco2022": "322313",
+          "flags": []
+        },
+        {
+          "title": "Wood Machinist",
+          "code": "394213",
+          "anzsco2013": "394213",
+          "anzsco2022": "394213",
+          "flags": []
+        },
+        {
+          "title": "Geologist",
+          "code": "234411",
+          "anzsco2013": "234411",
+          "anzsco2022": "234411",
+          "flags": []
+        },
+        {
+          "title": "Metallurgical or Materials Technician",
+          "code": "312912",
+          "anzsco2013": "312912",
+          "anzsco2022": "312912",
+          "flags": []
+        },
+        {
+          "title": "Metallurgist",
+          "code": "234912",
+          "anzsco2013": "234912",
+          "anzsco2022": "234912",
+          "flags": []
+        },
+        {
+          "title": "Mine Deputy",
+          "code": "312913",
+          "anzsco2013": "312913",
+          "anzsco2022": "312913",
+          "flags": []
+        },
+        {
+          "title": "Mining Engineer (excluding Petroleum)",
+          "code": "233611",
+          "anzsco2013": "233611",
+          "anzsco2022": "233611",
+          "flags": []
+        },
+        {
+          "title": "Petroleum Engineer",
+          "code": "233612",
+          "anzsco2013": "233612",
+          "anzsco2022": "233612",
+          "flags": []
+        },
+        {
+          "title": "Production Manager (Mining)",
+          "code": "133513",
+          "anzsco2013": "133513",
+          "anzsco2022": null,
+          "flags": []
+        },
+        {
+          "title": "Automotive Electrician",
+          "code": "321111",
+          "anzsco2013": "321111",
+          "anzsco2022": "321111",
+          "flags": []
+        },
+        {
+          "title": "Diesel Motor Mechanic",
+          "code": "321212",
+          "anzsco2013": "321212",
+          "anzsco2022": "321212",
+          "flags": []
+        },
+        {
+          "title": "Funeral Workers nec",
+          "code": "451399",
+          "anzsco2013": "451399",
+          "anzsco2022": null,
+          "flags": []
+        },
+        {
+          "title": "Hairdresser",
+          "code": "391111",
+          "anzsco2013": "391111",
+          "anzsco2022": "391111",
+          "flags": []
+        },
+        {
+          "title": "Motor Mechanic (General)",
+          "code": "321211",
+          "anzsco2013": "321211",
+          "anzsco2022": "321211",
+          "flags": []
+        },
+        {
+          "title": "Motorcycle Mechanic",
+          "code": "321213",
+          "anzsco2013": "321213",
+          "anzsco2022": "321213",
+          "flags": []
+        },
+        {
+          "title": "Panelbeater",
+          "code": "324111",
+          "anzsco2013": "324111",
+          "anzsco2022": "324111",
+          "flags": []
+        },
+        {
+          "title": "Small Engine Mechanic",
+          "code": "321214",
+          "anzsco2013": "321214",
+          "anzsco2022": "321214",
+          "flags": []
+        },
+        {
+          "title": "Vehicle Painter",
+          "code": "324311",
+          "anzsco2013": "324311",
+          "anzsco2022": "324311",
+          "flags": []
+        },
+        {
+          "title": "Aeronautical Engineer",
+          "code": "233911",
+          "anzsco2013": "233911",
+          "anzsco2022": "233911",
+          "flags": []
+        },
+        {
+          "title": "Biochemist",
+          "code": "234513",
+          "anzsco2013": "234513",
+          "anzsco2022": "234513",
+          "flags": []
+        },
+        {
+          "title": "Biomedical Engineer",
+          "code": "233913",
+          "anzsco2013": "233913",
+          "anzsco2022": "233913",
+          "flags": []
+        },
+        {
+          "title": "Biotechnologist",
+          "code": "234514",
+          "anzsco2013": "234514",
+          "anzsco2022": null,
+          "flags": []
+        },
+        {
+          "title": "Botanist",
+          "code": "234515",
+          "anzsco2013": "234515",
+          "anzsco2022": "234515",
+          "flags": []
+        },
+        {
+          "title": "Cartographer",
+          "code": "232213",
+          "anzsco2013": "232213",
+          "anzsco2022": "232213",
+          "flags": []
+        },
+        {
+          "title": "Chemical Engineer",
+          "code": "233111",
+          "anzsco2013": "233111",
+          "anzsco2022": "233111",
+          "flags": []
+        },
+        {
+          "title": "Conservator",
+          "code": "234911",
+          "anzsco2013": "234911",
+          "anzsco2022": "234911",
+          "flags": []
+        },
+        {
+          "title": "Electrical Engineer",
+          "code": "233311",
+          "anzsco2013": "233311",
+          "anzsco2022": "233311",
+          "flags": []
+        },
+        {
+          "title": "Electronics Engineer",
+          "code": "233411",
+          "anzsco2013": "233411",
+          "anzsco2022": "233411",
+          "flags": []
+        },
+        {
+          "title": "Engineering Manager",
+          "code": "133211",
+          "anzsco2013": "133211",
+          "anzsco2022": "133211",
+          "flags": []
+        },
+        {
+          "title": "Engineering Professionals nec",
+          "code": "233999",
+          "anzsco2013": "233999",
+          "anzsco2022": "233999",
+          "flags": []
+        },
+        {
+          "title": "Engineering Technologist",
+          "code": "233914",
+          "anzsco2013": "233914",
+          "anzsco2022": "233914",
+          "flags": []
+        },
+        {
+          "title": "Environmental Engineer",
+          "code": "233915",
+          "anzsco2013": "233915",
+          "anzsco2022": "233915",
+          "flags": []
+        },
+        {
+          "title": "Environmental Manager",
+          "code": "139912",
+          "anzsco2013": "139912",
+          "anzsco2022": "139912",
+          "flags": []
+        },
+        {
+          "title": "Environmental Research Scientist",
+          "code": "234313",
+          "anzsco2013": "234313",
+          "anzsco2022": null,
+          "flags": []
+        },
+        {
+          "title": "Geophysicist",
+          "code": "234412",
+          "anzsco2013": "234412",
+          "anzsco2022": "234412",
+          "flags": []
+        },
+        {
+          "title": "Geotechnical Engineer",
+          "code": "233212",
+          "anzsco2013": "233212",
+          "anzsco2022": "233212",
+          "flags": []
+        },
+        {
+          "title": "Hydrogeologist",
+          "code": "234413",
+          "anzsco2013": "234413",
+          "anzsco2022": "234413",
+          "flags": []
+        },
+        {
+          "title": "Industrial Engineer",
+          "code": "233511",
+          "anzsco2013": "233511",
+          "anzsco2022": "233511",
+          "flags": []
+        },
+        {
+          "title": "Laboratory Manager",
+          "code": "139913",
+          "anzsco2013": "139913",
+          "anzsco2022": "139913",
+          "flags": []
+        },
+        {
+          "title": "Life Science Technician",
+          "code": "311413",
+          "anzsco2013": "311413",
+          "anzsco2022": null,
+          "flags": []
+        },
+        {
+          "title": "Life Scientist (General)",
+          "code": "234511",
+          "anzsco2013": "234511",
+          "anzsco2022": "234511",
+          "flags": []
+        },
+        {
+          "title": "Life Scientists nec",
+          "code": "234599",
+          "anzsco2013": "234599",
+          "anzsco2022": "234599",
+          "flags": []
+        },
+        {
+          "title": "Marine Biologist",
+          "code": "234516",
+          "anzsco2013": "234516",
+          "anzsco2022": "234516",
+          "flags": []
+        },
+        {
+          "title": "Materials Engineer",
+          "code": "233112",
+          "anzsco2013": "233112",
+          "anzsco2022": "233112",
+          "flags": []
+        },
+        {
+          "title": "Mechanical Engineer",
+          "code": "233512",
+          "anzsco2013": "233512",
+          "anzsco2022": "233512",
+          "flags": []
+        },
+        {
+          "title": "Meteorologist",
+          "code": "234913",
+          "anzsco2013": "234913",
+          "anzsco2022": "234913",
+          "flags": []
+        },
+        {
+          "title": "Microbiologist",
+          "code": "234517",
+          "anzsco2013": "234517",
+          "anzsco2022": null,
+          "flags": []
+        },
+        {
+          "title": "Natural and Physical Science Professionals nec",
+          "code": "234999",
+          "anzsco2013": "234999",
+          "anzsco2022": "234999",
+          "flags": []
+        },
+        {
+          "title": "Naval Architect",
+          "code": "233916",
+          "anzsco2013": "233916",
+          "anzsco2022": "233916",
+          "flags": []
+        },
+        {
+          "title": "Other Spatial Scientist",
+          "code": "232214",
+          "anzsco2013": "232214",
+          "anzsco2022": "232214",
+          "flags": []
+        },
+        {
+          "title": "Production or Plant Engineer",
+          "code": "233513",
+          "anzsco2013": "233513",
+          "anzsco2022": "233513",
+          "flags": []
+        },
+        {
+          "title": "Transport Engineer",
+          "code": "233215",
+          "anzsco2013": "233215",
+          "anzsco2022": "233215",
+          "flags": []
+        },
+        {
+          "title": "Zoologist",
+          "code": "234518",
+          "anzsco2013": "234518",
+          "anzsco2022": "234522",
+          "flags": [
+            "ANZSCO 2022 code differs (234522); the 2013 code applies to subclass 190/491"
+          ]
+        },
+        {
+          "title": "Emergency Service Worker",
+          "code": "441211",
+          "anzsco2013": "441211",
+          "anzsco2022": null,
+          "flags": []
+        },
+        {
+          "title": "Environmental Health Officer",
+          "code": "251311",
+          "anzsco2013": "251311",
+          "anzsco2022": null,
+          "flags": []
+        },
+        {
+          "title": "Policy and Planning Manager",
+          "code": "132411",
+          "anzsco2013": "132411",
+          "anzsco2022": "132411",
+          "flags": []
+        },
+        {
+          "title": "Safety Inspector",
+          "code": "312611",
+          "anzsco2013": "312611",
+          "anzsco2022": null,
+          "flags": []
+        },
+        {
+          "title": "Property Manager",
+          "code": "612112",
+          "anzsco2013": "612112",
+          "anzsco2022": null,
+          "flags": []
+        },
+        {
+          "title": "Aeroplane Pilot",
+          "code": "231111",
+          "anzsco2013": "231111",
+          "anzsco2022": "231111",
+          "flags": []
+        },
+        {
+          "title": "Aircraft Maintenance Engineer (Avionics)",
+          "code": "323111",
+          "anzsco2013": "323111",
+          "anzsco2022": "323111",
+          "flags": []
+        },
+        {
+          "title": "Aircraft Maintenance Engineer (Mechanical)",
+          "code": "323112",
+          "anzsco2013": "323112",
+          "anzsco2022": "323112",
+          "flags": []
+        },
+        {
+          "title": "Aircraft Maintenance Engineer (Structures)",
+          "code": "323113",
+          "anzsco2013": "323113",
+          "anzsco2022": "323113",
+          "flags": []
+        },
+        {
+          "title": "Driving Instructor",
+          "code": "451211",
+          "anzsco2013": "451211",
+          "anzsco2022": null,
+          "flags": []
+        },
+        {
+          "title": "Flying Instructor",
+          "code": "231113",
+          "anzsco2013": "231113",
+          "anzsco2022": "231113",
+          "flags": []
+        },
+        {
+          "title": "Helicopter Pilot",
+          "code": "231114",
+          "anzsco2013": "231114",
+          "anzsco2022": "231114",
+          "flags": []
+        },
+        {
+          "title": "Post Office Manager",
+          "code": "142115",
+          "anzsco2013": "142115",
+          "anzsco2022": null,
+          "flags": []
+        },
+        {
+          "title": "Ship's Master",
+          "code": "231213",
+          "anzsco2013": "231213",
+          "anzsco2022": null,
+          "flags": []
+        },
+        {
+          "title": "Supply and Distribution Manager",
+          "code": "133611",
+          "anzsco2013": "133611",
+          "anzsco2022": "133611",
+          "flags": []
+        },
+        {
+          "title": "Transport Company Manager",
+          "code": "149413",
+          "anzsco2013": "149413",
+          "anzsco2022": null,
+          "flags": []
+        }
+      ],
+      "subclassDisagreementDetails": [],
       "unmatchedTitles": [
         "Occupational Health and Safety Adviser"
       ],
-      "subclassDisagreementsCsvVsHomeAffairs": 2
+      "subclassDisagreementsCsvVsHomeAffairs": 0
     },
     "method": "Every line of the WA list, merged by title (an occupation can appear under several streams). ANZSCO codes are not printed: matched by exact title to WA's occupation-search.csv, else to the Home Affairs skilled occupation list (ANZSCO 2013); unmatched titles keep anzscoCode null. Subclass eligibility per the program document's 'eligible for your intended visa subclass': WA's v190/v491 where the CSV has the occupation, else the Home Affairs 190 / 491 (State or Territory nominated) lists.",
     "rules": {
@@ -4414,8 +5779,8 @@
     {
       "anzscoCode": "311399",
       "occupationTitle": "Primary Products Inspectors nec",
-      "subclass190": false,
-      "subclass491": false,
+      "subclass190": true,
+      "subclass491": true,
       "streams": [
         "graduate"
       ],

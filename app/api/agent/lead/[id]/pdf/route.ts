@@ -5,6 +5,7 @@ import { getAgentLead, getLeadById } from "@/lib/crm/leads";
 import { generateReadinessPDF } from "@/lib/readiness/generate-pdf";
 import type { ReadinessInput } from "@/lib/readiness/types";
 import type { ReadinessReport } from "@/lib/readiness/types";
+import { refreshStoredReport } from "@/lib/reports/refresh-report";
 
 /**
  * Regenerates the assessment PDF for a single lead, server-side, from the
@@ -27,8 +28,9 @@ export async function GET(_req: Request, ctx: { params: Promise<{ id: string }> 
     return new NextResponse("Not found", { status: 404 });
   }
 
-  const report = lead.reportJson as unknown as ReadinessReport;
   const input = (lead.inputJson as unknown as ReadinessInput) ?? ({} as ReadinessInput);
+  // Same current-engine refresh as the customer's download (lib/reports/refresh-report.ts).
+  const { report } = await refreshStoredReport(lead.reportJson as unknown as ReadinessReport, lead.inputJson as unknown as ReadinessInput);
   const locale =
     lead.locale === "tr" || lead.locale === "zh-Hans" ? lead.locale : "en";
 
