@@ -5,7 +5,14 @@ import { ENGLISH_TEST_VALIDITY_YEARS } from "@/lib/readiness/constants";
 import { generateChecklist } from "@/lib/generateChecklist";
 import { runReadinessEngine as runBaseReadinessEngine } from "@/lib/readiness/engine";
 import { calculateRankedPathways } from "@/lib/readiness/ranked-pathways";
-import { comparisonOf, describePathwayScore, frictionFromScore, type PathwaySubclass } from "@/lib/readiness/pathway-scores";
+import {
+  comparisonOf,
+  describePathwayScore,
+  frictionKey,
+  frictionWithAvailability,
+  nominationAvailabilitySentence,
+  type PathwaySubclass,
+} from "@/lib/readiness/pathway-scores";
 import { occupationWarningFor, resolveAssessingAuthority } from "@/lib/skills-assessment/resolve-authority";
 import { orderBySkilledRanking } from "@/lib/readiness/pathway-ranking";
 import { calculateStateNominationTracker } from "@/lib/readiness/state-nomination";
@@ -14,6 +21,7 @@ import { localizeOccupationWarning, localizeText, t3 } from "@/src/lib/readiness
 import { canonicalizeOccupationInput, findOccupationRecord as findCanonicalOccupationRecord } from "@/lib/readiness/occupation-eligibility";
 import { logReportInvariantViolations } from "@/lib/readiness/report-invariants";
 import type {
+  StateNominationTracker,
   DocumentCategory,
   ConfidenceLevel,
   FrictionAnalysisItem,
@@ -207,7 +215,12 @@ function buildImmediateActionPlan(input: ReadinessInput, base: ReadinessReport):
   ];
 }
 
-function buildFrictionItem(input: ReadinessInput, base: ReadinessReport, subclass: string): FrictionAnalysisItem {
+function buildFrictionItem(
+  input: ReadinessInput,
+  base: ReadinessReport,
+  subclass: string,
+  availability?: StateNominationTracker["nominationAvailability"]
+): FrictionAnalysisItem {
   const locale = input.locale;
   const occupation = findOccupationRecord(input);
 
@@ -224,8 +237,12 @@ function buildFrictionItem(input: ReadinessInput, base: ReadinessReport, subclas
 
   if (["189", "190", "491"].includes(subclassKey)) {
     if (score) {
-      frictionScore = frictionFromScore(score);
+      // 190 / 491: the points level raised by nomination availability (frictionWithAvailability), and the
+      // availability stated plainly after the score sentence.
+      const open = subclassKey === "190" || subclassKey === "491" ? availability?.[subclassKey] : undefined;
+      frictionScore = frictionWithAvailability(score, open);
       reality.push(describePathwayScore(score, locale));
+      if (open) reality.push(nominationAvailabilitySentence(score, open, locale));
     } else {
       reality.push(t3(locale, `No recent invitation point benchmark was matched for ${subclassKey}; score pressure is estimated from profile-only indicators.`, `${subclassKey} icin guncel davet puan referansi eslesmedi; puan baskisi yalnizca profil gostergelerine gore tahmin edildi.`, `${subclassKey} 未匹配到最新邀请分数参考；分数压力仅根据档案指标估算。`));
     }
@@ -296,10 +313,14 @@ function buildFrictionItem(input: ReadinessInput, base: ReadinessReport, subclas
   };
 }
 
-function buildFrictionAnalysis(input: ReadinessInput, base: ReadinessReport): FrictionAnalysisItem[] {
+function buildFrictionAnalysis(
+  input: ReadinessInput,
+  base: ReadinessReport,
+  availability?: StateNominationTracker["nominationAvailability"]
+): FrictionAnalysisItem[] {
   const subclasses = base.pathwayComparison.map((item) => item.subclass);
   const unique = Array.from(new Set(subclasses));
-  return unique.map((subclass) => buildFrictionItem(input, base, subclass));
+  return unique.map((subclass) => buildFrictionItem(input, base, subclass, availability));
 }
 
 const ZH_VISA_NAMES: Record<string, string> = {
@@ -805,11 +826,20 @@ export function runReadinessEngine(input: ReadinessInput): ReadinessReport {
     base.pathwayComparison,
     base.assessmentState
   );
-  const frictionAnalysis = orderBySkilledRanking(buildFrictionAnalysis(input, base), (item) => item.pathway, base.pathwayRanking);
+  const availability = stateNominationTracker.eligibilityBlocked ? undefined : stateNominationTracker.nominationAvailability;
+  const frictionAnalysis = orderBySkilledRanking(buildFrictionAnalysis(input, base, availability), (item) => item.pathway, base.pathwayRanking);
 
-  // Friction on each pathway was set in the base engine from the same score gap as frictionAnalysis
-  // (frictionFromScore) -- nothing is overridden here, only the order follows the ranking.
-  const pathwayStrengthComparison = orderBySkilledRanking(base.pathwayStrengthComparison, (item) => item.subclass, base.pathwayRanking);
+  // The base engine set each pathway's friction from the score gap; 190 / 491 are raised here by nomination
+  // availability (the same frictionWithAvailability as frictionAnalysis), and the order follows the ranking.
+  const pathwayStrengthComparison = orderBySkilledRanking(
+    base.pathwayStrengthComparison.map((item) =>
+      (item.subclass === "190" || item.subclass === "491") && availability
+        ? { ...item, friction: frictionKey(frictionWithAvailability(base.pathwayScores?.[item.subclass], availability[item.subclass])) }
+        : item
+    ),
+    (item) => item.subclass,
+    base.pathwayRanking
+  );
 
   const report = {
     ...base,

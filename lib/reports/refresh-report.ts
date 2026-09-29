@@ -3,6 +3,7 @@ import type { ReadinessInput, ReadinessReport } from "@/lib/readiness/types";
 import { getStateIntelligenceMap, getStateNominationConfigMap } from "@/lib/state-intelligence";
 import { runReadinessEngine } from "@/src/lib/readiness-engine";
 import type { ReportContentStamp } from "./report-date-stamp";
+import { contentDataAsOf } from "./content-dates";
 
 export type RefreshedReport = {
   report: ReadinessReport;
@@ -27,7 +28,7 @@ export type RefreshedReport = {
 export async function refreshStoredReport(
   stored: ReadinessReport,
   input: ReadinessInput | null | undefined,
-  meta: { generatedAt?: string; now?: Date } = {}
+  meta: { generatedAt?: string } = {}
 ): Promise<RefreshedReport> {
   const storedStamp: ReportContentStamp = { recomputed: false, generatedAt: meta.generatedAt };
   const keep = (reason: string): RefreshedReport => ({
@@ -46,12 +47,12 @@ export async function refreshStoredReport(
     );
     const mismatch = coreVerdictMismatch(stored, fresh);
     if (mismatch) return keep(mismatch);
-    // "Last updated" only when the recomputed content differs from what was stored (ignoring the AI text and the
-    // stamp itself); identical content keeps its original generation date.
-    const comparable = (r: ReadinessReport) => JSON.stringify({ ...JSON.parse(JSON.stringify(r)), aiStrategy: undefined, contentStamp: undefined });
-    const changed = comparable(fresh) !== comparable(stored);
-    const stamp: ReportContentStamp = changed
-      ? { recomputed: true, generatedAt: meta.generatedAt, updatedAt: (meta.now ?? new Date()).toISOString() }
+    // "Updated to reflect data as of <date>" only when the recomputed content differs from what was stored; the date
+    // is the latest dated source (or content deploy) behind the change -- never the view date (content-dates.ts).
+    // Identical content keeps its original generation date.
+    const asOf = contentDataAsOf(stored, fresh, { generatedAt: meta.generatedAt, stateNominationConfig, stateIntelligence });
+    const stamp: ReportContentStamp = asOf
+      ? { recomputed: true, generatedAt: meta.generatedAt, dataAsOf: asOf.date, dataSources: asOf.sources.map((x) => `${x.source}: ${x.date}`) }
       : storedStamp;
     return { report: { ...fresh, aiStrategy: stored.aiStrategy, contentStamp: stamp }, source: "recomputed", stamp };
   } catch (error) {

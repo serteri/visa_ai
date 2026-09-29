@@ -606,6 +606,9 @@ export function calculateStateNominationTracker(
       isOpen,
       score,
       occupationListStatus: listStatus,
+      listedFor: (occupationResults ?? [])
+        .filter((r) => r.type === "MATCH" || (r.type === "NOT_APPLICABLE" && r.onNationalList))
+        .map((r) => r.subclass),
       summary: buildSummary({
         locale: input.locale,
         row: effectiveRow,
@@ -639,8 +642,13 @@ export function calculateStateNominationTracker(
       b.score - a.score
   );
 
+  // Nomination availability per subclass: on the list for it AND open to this applicant's location.
+  const openFor = (sub: "190" | "491") => states.filter((st) => st.isOpen && (st.listedFor ?? []).includes(sub)).map((st) => st.code);
+  const nominationAvailability = { "190": openFor("190"), "491": openFor("491") };
+
   return {
     states,
+    nominationAvailability,
     topRecommendedStates: states
       .filter((item) => item.matchLevel !== "low" && item.isOpen && item.occupationListStatus !== "not_listed")
       .slice(0, 2),

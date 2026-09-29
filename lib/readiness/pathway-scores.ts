@@ -265,6 +265,57 @@ export function frictionFromScore(score: PathwayScore | undefined): FrictionLeve
   return "EXTREME";
 }
 
+const FRICTION_ORDER: FrictionLevel[] = ["LOW", "MEDIUM", "HIGH", "EXTREME"];
+
+/**
+ * 190 / 491 friction = the points level (frictionFromScore) raised by nomination availability: the states where the
+ * occupation is on that subclass's list AND the program is open for the applicant's location (StateNominationTracker
+ * .nominationAvailability). None -> at least HIGH; one or two -> at least MEDIUM (never LOW). 189 and an unknown
+ * availability (tracker blocked) keep the points level.
+ */
+export function frictionWithAvailability(score: PathwayScore | undefined, openStates: readonly string[] | undefined): FrictionLevel {
+  const level = frictionFromScore(score);
+  if (!score || score.subclass === "189" || !openStates) return level;
+  const floor: FrictionLevel | null = openStates.length === 0 ? "HIGH" : openStates.length <= 2 ? "MEDIUM" : null;
+  if (!floor) return level;
+  if (level === "NOT_ASSESSED") return openStates.length === 0 ? "HIGH" : level;
+  return FRICTION_ORDER.indexOf(level) >= FRICTION_ORDER.indexOf(floor) ? level : floor;
+}
+
+/**
+ * The plain statement of nomination availability for a 190 / 491 reality check. Points met -> "Points are not your
+ * barrier for 491; securing a nomination is." Always names the states open for the occupation and location, or says
+ * that none are.
+ */
+export function nominationAvailabilitySentence(score: PathwayScore, openStates: readonly string[], locale: Locale): string {
+  const sub = score.subclass;
+  const gap = comparisonOf(score).comparisonGap;
+  const pointsMet = gap !== null && gap <= 0;
+  const list = openStates.join(", ");
+  if (openStates.length === 0) {
+    return T(
+      locale,
+      `No state or territory currently has your occupation on its ${sub} list with a program open to applicants in your location -- without a nomination, ${sub} is not available${pointsMet ? ", even though your points meet the benchmark" : ""}.`,
+      `Şu anda hiçbir eyalet veya bölge, bulunduğunuz yerdeki başvuru sahiplerine açık bir programda mesleğinizi ${sub} listesinde bulundurmuyor -- adaylık olmadan ${sub} mümkün değil${pointsMet ? ", puanınız referansı karşılasa bile" : ""}.`,
+      `目前没有任何州或领地在其 ${sub} 清单中列有您的职业且项目对您所在地的申请人开放——没有提名就无法申请 ${sub}${pointsMet ? "，即使您的分数已达到参考分" : ""}。`
+    );
+  }
+  if (pointsMet) {
+    return T(
+      locale,
+      `Points are not your barrier for ${sub}; securing a nomination is. Currently open for your occupation and location: ${list}.`,
+      `${sub} için engeliniz puan değil, adaylık almak. Şu anda mesleğiniz ve bulunduğunuz yer için açık olanlar: ${list}.`,
+      `${sub} 的障碍不在分数，而在于获得提名。目前对您的职业和所在地开放的：${list}。`
+    );
+  }
+  return T(
+    locale,
+    `Currently open for your occupation and location for ${sub}: ${list}.`,
+    `${sub} için şu anda mesleğiniz ve bulunduğunuz yer için açık olanlar: ${list}.`,
+    `目前对您的职业和所在地开放 ${sub} 提名的：${list}。`
+  );
+}
+
 /** Lower-case form used by PathwayStrengthComparison.friction. */
 export function frictionKey(level: FrictionLevel): "low" | "medium" | "high" | "extreme" | "not_assessed" {
   return level === "NOT_ASSESSED" ? "not_assessed" : (level.toLowerCase() as "low" | "medium" | "high" | "extreme");

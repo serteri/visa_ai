@@ -62,3 +62,6 @@ data/knowledge/
 /temp_tests/
 test-output.pdf
 
+
+# Local experiments, logs and one-off verification scripts -- not versioned.
+/scratch/

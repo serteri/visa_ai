@@ -109,6 +109,15 @@ jobs:
       - name: AI assistant and report agree on state status
         run: npm run test:state-status-precedence
 
+      # "Updated to reflect data as of <date>": the latest dated source behind a recomputed report's changes (or the
+      # content deploy date) -- stable across views, never the viewing day.
+      - name: Report date stamp from dated sources (stable across views)
+        run: npm run test:content-dates
+
+      # 190 / 491 friction includes nomination availability (occupation listed AND program open for the location).
+      - name: Nomination availability in 190 / 491 friction
+        run: npm run test:nomination-availability
+
       # Medical registration data (src/data/health-registration/*.json, extracted from the Medical Board / Ahpra
       # "Pathways to registration for international medical graduates" document). The regenerate-and-diff drift
       # check needs the gitignored source PDF and is SKIPPED here; the committed-file invariants (fee schedule

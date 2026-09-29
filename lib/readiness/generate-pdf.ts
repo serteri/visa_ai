@@ -1879,7 +1879,7 @@ export async function generateReadinessPDF(input: PDFGeneratorInput): Promise<Ui
     const stamp = reportDateStamp(effectiveLocale, report.contentStamp);
     const metaRows: Array<[string, string]> = [
       [text.preparedFor, subjectName],
-      stamp ? [stamp.label, stamp.date] : [text.reportDate, reportDate],
+      [text.reportDate, stamp ? stamp.text : reportDate],
       [text.reportId, reportId],
     ];
     if (userInputSummary.occupation) metaRows.push([text.occupationLabel ?? "Occupation", userInputSummary.occupation]);
@@ -2166,7 +2166,7 @@ export async function generateReadinessPDF(input: PDFGeneratorInput): Promise<Ui
 
     const overviewStamp = reportDateStamp(effectiveLocale, report.contentStamp);
     const rawLeftRows: Array<[string, string | undefined]> = [
-      overviewStamp ? [overviewStamp.label, overviewStamp.date] : [text.generatedDate, reportDate],
+      overviewStamp ? [text.reportDate, overviewStamp.text] : [text.generatedDate, reportDate],
       [text.nameLabel, userInputSummary.name],
       [text.occupationLabel, userInputSummary.occupation],
       [text.ageLabel, userInputSummary.age],

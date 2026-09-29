@@ -112,6 +112,34 @@ function pdfBoosterTable(text: string, locale: string): string {
   return squash(out.join(""));
 }
 
+/** Runs fn with Date.now() / new Date() pinned to `iso` -- a simulated viewing day. */
+async function onDay<T>(iso: string, fn: () => Promise<T>): Promise<T> {
+  const RealDate = Date;
+  const fixed = new RealDate(iso).getTime();
+  class FakeDate extends RealDate {
+    constructor(...args: unknown[]) {
+      if (args.length === 0) super(fixed);
+      else super(...(args as [string]));
+    }
+    static now() {
+      return fixed;
+    }
+  }
+  (globalThis as { Date: DateConstructor }).Date = FakeDate as unknown as DateConstructor;
+  try {
+    return await fn();
+  } finally {
+    (globalThis as { Date: DateConstructor }).Date = RealDate;
+  }
+}
+
+async function stampOn(reportId: string, locale: string, iso: string): Promise<string> {
+  const html = await onDay(iso, () => pageHtml(reportId, locale));
+  const pdf = await onDay(iso, () => pdfText(reportId));
+  const stamp = decode(html.match(/data-report-date-stamp[^>]*>([^<]*)</)?.[1] ?? "");
+  return squash(pdf).includes(squash(stamp)) ? stamp : `${stamp} (NOT ON THE PDF)`;
+}
+
 async function compare(label: string, reportId: string, locale: string) {
   const html = await pageHtml(reportId, locale);
   const pdf = await pdfText(reportId);
@@ -147,7 +175,7 @@ async function compare(label: string, reportId: string, locale: string) {
   else fail(`${label} [${locale}]: booster rows differ\n      page: ${concatenated.slice(0, 400)}\n      pdf:  ${table.slice(0, 400)}`);
 
   // Stamp: the page's stamp is on the PDF cover.
-  if (stamp && flatPdf.includes(squash(stamp.replace(/^[^ ：]+(?: [a-z]+)?[ ：]/, "")))) ok(`${label} [${locale}]: stamp "${stamp}" on the page and the PDF`);
+  if (stamp && flatPdf.includes(squash(stamp))) ok(`${label} [${locale}]: stamp "${stamp}" on the page and the PDF`);
   else fail(`${label} [${locale}]: stamp "${stamp}" not found on the PDF`);
   return stamp;
 }
@@ -197,8 +225,11 @@ async function main() {
     const id = `parity-${locale}`;
     rows.set(id, { id, email: "qa@example.com", locale, report_json: stored, input_json: input, agent_id: null, is_unlocked: true, full_name: "Test Persona", preview_data: null, created_at: "2026-09-27T21:30:42.102Z" });
     const stamp = await compare("stale stored report", id, locale);
+    const [day1, day2] = [await stampOn(id, locale, "2026-10-02T03:00:00Z"), await stampOn(id, locale, "2027-01-15T22:00:00Z")];
+    if (day1 === day2 && day1 === stamp) ok(`stale stored report [${locale}]: same stamp on 2 October 2026 and 15 January 2027 ("${day1}")`);
+    else fail(`stale stored report [${locale}]: stamp changes with the viewing day: "${day1}" vs "${day2}" (today "${stamp}")`);
     const html = await pageHtml(id, locale);
-    if (!html.includes("recent Subclass 189 invitation benchmark: 95 pts") && /^(Last updated|Son güncelleme|最后更新)/.test(stamp)) ok(`stale stored report [${locale}]: recomputed (old row gone), stamped "${stamp}"`);
+    if (!html.includes("recent Subclass 189 invitation benchmark: 95 pts") && /^Updated to reflect data as of|itibarıyla verilere göre güncellendi$|^已根据截至/.test(stamp)) ok(`stale stored report [${locale}]: recomputed (old row gone), stamped "${stamp}"`);
     else fail(`stale stored report [${locale}]: not recomputed or wrong stamp "${stamp}"`);
   }
   {
@@ -220,7 +251,11 @@ async function main() {
       stateIntelligence: real.live.stateIntelligence,
     };
     rows.set(REAL_REPORT_ID, { ...real.row, email: "qa@example.com", full_name: real.row.full_name ? "Report Holder" : null });
-    await compare("report b0d20f74", REAL_REPORT_ID, String(real.row.locale ?? "en"));
+    const realLocale = String(real.row.locale ?? "en");
+    const stamp = await compare("report b0d20f74", REAL_REPORT_ID, realLocale);
+    const [day1, day2] = [await stampOn(REAL_REPORT_ID, realLocale, "2026-10-02T03:00:00Z"), await stampOn(REAL_REPORT_ID, realLocale, "2027-01-15T22:00:00Z")];
+    if (day1 === day2 && day1 === stamp) ok(`report b0d20f74: same stamp on two simulated days ("${day1}")`);
+    else fail(`report b0d20f74: stamp changes with the viewing day: "${day1}" vs "${day2}"`);
     rows.delete(REAL_REPORT_ID);
     real = undefined;
   }

@@ -1258,11 +1258,12 @@ function expectedFriction(gapBase: number | null): FrictionName {
 const FRICTION_PROFILES: Array<{ name: string; input: ReadinessInput; expected?: Record<string, FrictionName> }> = [
   // Score 70; benchmarks 95/85/75 -> 189 gap 25; 190 85 - (70+5) = 10; 491 75 - (70+15) = -10
   { name: "f-se-261313-gaps-25-10-minus10", input: { ...base }, expected: { "189": "HIGH", "190": "MEDIUM", "491": "LOW" } },
-  // Civil 233211 with Superior English: score 70; 491 70 - 85 -> LOW; 190 80 - 75 = 5; 189 gap 20
+  // Civil 233211 with Superior English, offshore: score 70; 491 70 - 85 -> points LOW, but only two states (WA, ACT)
+  // are open for the occupation offshore -> MEDIUM; 190 80 - 75 = 5; 189 gap 20
   {
     name: "f-civil-233211-at-benchmark",
     input: { ...base, currentCountry: "Turkey", age: "35", occupation: "Civil Engineer 233211", occupationConfirmed: "yes", englishLevel: "superior", qualificationLevel: "Bachelor's Degree", sponsorOrFamily: undefined, offshoreExperienceYears: 5 },
-    expected: { "189": "HIGH", "190": "MEDIUM", "491": "LOW" },
+    expected: { "189": "HIGH", "190": "MEDIUM", "491": "MEDIUM" },
   },
   // GP 253111: no benchmark for the occupation
   { name: "f-gp-253111-no-benchmark", input: { ...base, currentCountry: "Turkey", age: "34", occupation: "General Practitioner 253111", sponsorOrFamily: undefined }, expected: { "189": "NOT_ASSESSED", "190": "NOT_ASSESSED", "491": "NOT_ASSESSED" } },
@@ -1289,7 +1290,19 @@ async function runFrictionChecks(
       const report = runReadinessEngine(input);
       const scores = report.pathwayScores!;
       const expected = {} as Record<string, FrictionName>;
-      for (const s of PATHWAY_SUBCLASSES) expected[s] = expectedFriction(scores[s].comparisonGap ?? null);
+      // 190 / 491: raised by nomination availability -- none open: at least HIGH; one or two: at least MEDIUM.
+      const availability = report.stateNominationTracker?.eligibilityBlocked ? undefined : report.stateNominationTracker?.nominationAvailability;
+      for (const s of PATHWAY_SUBCLASSES) {
+        let level = expectedFriction(scores[s].comparisonGap ?? null);
+        const open = s === "189" ? undefined : availability?.[s];
+        if (open) {
+          const order: FrictionName[] = ["LOW", "MEDIUM", "HIGH", "EXTREME"];
+          const floor: FrictionName | null = open.length === 0 ? "HIGH" : open.length <= 2 ? "MEDIUM" : null;
+          if (floor && level === "NOT_ASSESSED") level = open.length === 0 ? "HIGH" : level;
+          else if (floor && order.indexOf(level) < order.indexOf(floor)) level = floor;
+        }
+        expected[s] = level;
+      }
       if (profile.expected) {
         for (const s of PATHWAY_SUBCLASSES) if (expected[s] !== profile.expected[s]) f(`${s}: gap ${scores[s].comparisonGap} gives ${expected[s]}, the profile was designed for ${profile.expected[s]}`);
       }

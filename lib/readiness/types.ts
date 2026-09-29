@@ -629,6 +629,8 @@ export type StateNominationState = {
   /** The state's program is open to THIS applicant (status not closed/suspended, and the on/offshore requirement is met). Only open states may be recommended. */
   isOpen?: boolean;
   score: number;
+  /** Subclasses (190 / 491) this state's list (or, for TAS/VIC, the national list) confirms for the occupation. */
+  listedFor?: Array<"190" | "491">;
   /** Whether the occupation is on this state's list: confirmed / not_listed (score 0, never recommended) / unconfirmed. */
   occupationListStatus?: "confirmed" | "not_listed" | "unconfirmed";
   summary: string;
@@ -660,6 +662,12 @@ export type StateNominationState = {
 
 export type StateNominationTracker = {
   states: StateNominationState[];
+  /**
+   * 190 / 491: the states where the occupation is confirmed on that subclass's list AND the program is open to this
+   * applicant's location (isOpen) -- the nomination availability that feeds the 190/491 friction level. Absent when
+   * the tracker is blocked.
+   */
+  nominationAvailability?: { "190": string[]; "491": string[] };
   topRecommendedStates: StateNominationState[];
   note: string;
   /** True only when the underlying 190/491 pathway is hard-ineligible for a
@@ -835,7 +843,7 @@ export type ReadinessReport = {
    * Set at render time by lib/reports/refresh-report.ts (never stored): whether the shown content was recomputed
    * with the current engine, and the dates for the "Last updated" / "Generated" stamp on the result page and PDF.
    */
-  contentStamp?: { recomputed: boolean; generatedAt?: string; updatedAt?: string };
+  contentStamp?: { recomputed: boolean; generatedAt?: string; dataAsOf?: string; dataSources?: string[] };
   /** Which subclass 186 stream the user is targeting. Carried forward so the PDF can render stream-specific visa labels and document-checklist filtering. */
   nominationStream?: NominationStream;
   executiveSummary: string[];

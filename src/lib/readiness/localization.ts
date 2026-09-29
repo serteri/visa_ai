@@ -341,12 +341,12 @@ export function confidenceDefinitionGeneric(locale: Locale): string {
 /** General glossary-level definition of what "Friction Level" measures, independent of any single LOW/MEDIUM/HIGH/EXTREME band (see frictionBandDefinition for the per-band text shown inline next to a specific rating). */
 export function frictionLevelDefinitionGeneric(locale: Locale): string {
   if (locale === "tr") {
-    return "Rekabet Düzeyi (Friction Level), bu yoldaki puanınız (190 ve 491 için bu vizelerin gerektirdiği adaylık dahil) ile güncel davet referansları arasındaki farkı gösterir -- Düşük/Orta/Yüksek/Çok Yüksek olarak derecelendirilir. Yalnızca güncel bir davet referansı ve bir puan farkı varsa gösterilir; aksi halde yol \"Değerlendirilmedi\" olarak işaretlenir.";
+    return "Rekabet Düzeyi (Friction Level), bu yoldaki puanınız (190 ve 491 için bu vizelerin gerektirdiği adaylık dahil) ile güncel davet referansları arasındaki farkı gösterir -- Düşük/Orta/Yüksek/Çok Yüksek olarak derecelendirilir. 190 ve 491 için adaylık erişimini de yansıtır: mesleğinizi listesinde bulunduran ve bulunduğunuz yere açık hiçbir eyalet yoksa en az Yüksek, yalnızca bir veya iki eyalet varsa en az Orta. Yalnızca güncel bir davet referansı ve bir puan farkı varsa gösterilir; aksi halde yol \"Değerlendirilmedi\" olarak işaretlenir.";
   }
   if (locale === "zh-Hans") {
-    return "竞争激烈度（Friction Level）表示您在该路径的分数（190 和 491 含其必需的提名）与当前获邀参考分数之间的差距——分为低/中/高/极高四档。仅当同时存在近期邀请参考分和分数差距时才显示；否则标记为“未评估”。";
+    return "竞争激烈度（Friction Level）表示您在该路径的分数（190 和 491 含其必需的提名）与当前获邀参考分数之间的差距——分为低/中/高/极高四档。对于 190 和 491，还反映提名的可获得性：若没有任何州在清单中列有您的职业且对您所在地开放，至少为“高”；若只有一两个州，至少为“中”。仅当同时存在近期邀请参考分和分数差距时才显示；否则标记为“未评估”。";
   }
-  return "Friction Level indicates the gap between your points for this pathway (for 190 and 491, including the nomination those visas require) and the current invitation benchmark -- rated Low, Medium, High, or Extreme. It is shown only when a recent invitation benchmark and a score gap both exist; otherwise the pathway is marked \"Not assessed\".";
+  return "Friction Level indicates the gap between your points for this pathway (for 190 and 491, including the nomination those visas require) and the current invitation benchmark -- rated Low, Medium, High, or Extreme. For 190 and 491 it also reflects nomination availability: with no state that lists your occupation and is open to applicants in your location it is at least High, and with only one or two it is at least Medium. It is shown only when a recent invitation benchmark and a score gap both exist; otherwise the pathway is marked \"Not assessed\".";
 }
 
 export function strengthLabel(locale: Locale, level: "limited" | "moderate" | "strong"): string {

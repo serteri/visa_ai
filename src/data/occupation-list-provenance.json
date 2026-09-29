@@ -40,14 +40,14 @@
     },
     {
       "id": "state_occ_wa",
-      "description": "WA occupation-match data, grouped by ANZSCO code from occupation-search.csv. CAVEAT: every one of the 329 source rows has Priority Occupation=Yes -- this file reads as a PRIORITY-OCCUPATIONS SEARCH EXPORT, not confirmed to be WA's complete WASMOL Schedule 1/2 + Graduate occupation lists (which may include non-priority occupations this export doesn't cover). A NOT_ON_LIST result for WA means 'not in this priority-occupations export', not 'confirmed excluded from WA's full occupation lists' -- needs human verification against the full WASMOL/GOL before that distinction can be dropped.",
+      "description": "WA occupation-match data: WA's 2025-26 eligible occupation lists (WASMOL Schedule 1, Schedule 2 and the Graduate Occupation List), 383 occupations, with stream rules quoted with pages from the WA State Nominated Migration Program document. Codes matched by exact title to WA's occupation-search.csv, else to the Home Affairs skilled occupation list; see wa.json _provenance.codeMatching (name matches, 5 flagged for human verification, 1 unmatched title).",
       "derivedFile": "src/data/state-occupation-lists/wa.json",
-      "sourceDocument": "data/knowledge/State Immigrations/Western Australia/occupation-search.csv",
-      "rowCount": 189,
-      "generator": "scripts/generate-state-occupation-lists.ts",
-      "extractedOn": "2026-09-22",
-      "lastVerified": "2026-09-22",
-      "confidence": "high for the 189 occupations it does cover; needs human verification -- unknown completeness relative to WA's full published occupation lists"
+      "sourceDocument": "data/knowledge/State Immigrations/Western Australia/2025-26 Eligible occupations WA.pdf; data/knowledge/State Immigrations/Western Australia/State Nominated Migration Program/State Nominated Migration Program Western Australia.pdf",
+      "rowCount": 383,
+      "generator": "scripts/generate-wa-occupations.ts",
+      "extractedOn": "2026-09-28",
+      "lastVerified": "2026-09-28",
+      "confidence": "high for the list and stream rules; needs human verification for the 5 flagged name-matched codes and the 1 unmatched title"
     },
     {
       "id": "state_occ_nsw_unit_groups",
