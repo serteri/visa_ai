@@ -84,6 +84,23 @@ export function ResultView({
             ) : null}
           </CardHeader>
           <CardContent className="space-y-4">
+            {report.twoTierStatus ? (
+              <div className="space-y-2 rounded-md border border-amber-300 bg-amber-50 px-4 py-3 text-sm" data-two-tier>
+                <p className="font-semibold">{report.twoTierStatus.heading}</p>
+                <p data-two-tier-tier1>
+                  <span className="font-medium">{report.twoTierStatus.tier1Label}:</span> {report.twoTierStatus.tier1}
+                </p>
+                <p data-two-tier-tier2>
+                  <span className="font-medium">{report.twoTierStatus.tier2Label}:</span> {report.twoTierStatus.tier2}
+                </p>
+                <p className="text-xs text-muted-foreground">{report.twoTierStatus.explanation}</p>
+                <ul className="list-disc space-y-1 pl-5 text-xs">
+                  {report.twoTierStatus.comparisons.map((c) => (
+                    <li key={c}>{c}</li>
+                  ))}
+                </ul>
+              </div>
+            ) : null}
             <div className="rounded-md border border-slate-200 bg-white shadow-sm px-4 py-3">
               <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
                 {isTr ? "Tahmini puan" : isZh ? "预估积分" : "Estimated points"}

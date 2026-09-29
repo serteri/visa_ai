@@ -198,6 +198,12 @@ export type PointsEstimate = {
   /** Why EOI lodgement is blocked (only set when isEoiEligible === false). */
   eoiIneligibilityReason?: "age" | "skills_assessment" | "english" | "points" | null;
   /**
+   * AU, Tier 2 of the two-tier status: the score with the employment and overseas-education points that only a
+   * missing skills assessment holds back counted as if the assessment were positive (same points table). Equals
+   * estimatedPoints when an assessment is on file.
+   */
+  potentialPoints?: number;
+  /**
    * AU only: the deterministic list of actions that can still raise this
    * applicant's score (see points-actions.ts). Absent on CA reports and on
    * reports stored before this field existed.
@@ -836,7 +842,25 @@ export type PremiumSections = {
   scenarioBasedInsights: PremiumScenarioBasedInsights;
 };
 
+/** Two-tier status for 189/190/491 without a skills assessment (engine.ts buildTwoTierStatus). */
+export type TwoTierStatus = {
+  heading: string;
+  tier1Label: string;
+  /** "BLOCKED: Requires positive Skills Assessment to proceed." */
+  tier1: string;
+  tier2Label: string;
+  /** "POTENTIAL SCORE: [X] Points" */
+  tier2: string;
+  explanation: string;
+  currentScore: number;
+  potentialScore: number;
+  /** One benchmark comparison per evaluated subclass, from the potential score (with required nominations). */
+  comparisons: string[];
+};
+
 export type ReadinessReport = {
+  /** AU: two-tier status when the only thing blocking 189/190/491 is the missing skills assessment. */
+  twoTierStatus?: TwoTierStatus;
   /** Defaults to "AU" when omitted, preserving existing behavior. */
   country?: "AU" | "CA";
   /**

@@ -86,7 +86,8 @@ for (const locale of ["en", "tr", "zh-Hans"] as const) {
       if (bench === "190" || bench === "491") {
         const bonus = report.pathwayScores?.[bench].nominationBonus ?? 0;
         const hasOwn = bench === "190" ? has190 : has491;
-        if (s.requiredNominationFor !== bench || (!hasOwn && s.estimatedChange !== bonus) || (s.resultingEstimate ?? 0) < current + bonus) {
+const released = (report.pathwayScores?.[bench].potentialScore ?? current) - current;
+        if (s.requiredNominationFor !== bench || (!hasOwn && s.estimatedChange !== bonus + released) || (s.resultingEstimate ?? 0) < current + released + bonus) {
           fail(`${tag} -- compares the ${bench} benchmark with a score without its required nomination (+${bonus})`);
         }
       }

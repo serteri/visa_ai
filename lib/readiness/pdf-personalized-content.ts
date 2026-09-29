@@ -267,6 +267,18 @@ export function renderPersonalizedContent(ctx: PDFContext): void {
     }
   }
 
+  // Two-tier status (189/190/491 without a skills assessment): Tier 1 blocked, Tier 2 the potential score and how it
+  // compares with the recent benchmarks -- the pathways are shown, not shut down (engine.ts buildTwoTierStatus).
+  if (report.twoTierStatus) {
+    const tt = report.twoTierStatus;
+    ctx.ensurePageSpace(40);
+    addPremiumBulletContainer(
+      tt.heading,
+      [`${tt.tier1Label}: ${tt.tier1}`, `${tt.tier2Label}: ${tt.tier2}`, tt.explanation, ...tt.comparisons],
+      COLORS.accent,
+    );
+  }
+
   // ════════════════════════════════════════════════════════════════════════
   // 2. EXECUTIVE SUMMARY (goal-adaptive)
   // ════════════════════════════════════════════════════════════════════════

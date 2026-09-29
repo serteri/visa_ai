@@ -57,8 +57,10 @@ export const BANNED_CLAIMS: RegExp[] = [
   /\bIMM\b/,
   /you get a Bridging Visa A/i,
   /Bridging Visa A alırsınız/i,
-  /potential score/i,
-  /potansiyel puan/i,
+  // "Potential score" is now a defined term (Tier 2 of the two-tier status: the score as if the skills assessment
+  // were positive). What stays banned is the old vague use: a potential score that "meets/exceeds the threshold".
+  /potential score (?:meets|exceeds)/i,
+  /potansiyel puanınız (?:barajı|yeterli)/i,
   /潜在积分/,
   /4,885\s*[–-]\s*4,890/,
   // English validity: the Home Affairs wording (taken within 3 years before LODGING, valid at invitation) replaced

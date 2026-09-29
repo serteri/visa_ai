@@ -24,7 +24,6 @@ interface Step3Props {
   qualificationAwardedInAustralia: string; setQualificationAwardedInAustralia: (v: string) => void;
   qualificationRegionalAustralia: string; setQualificationRegionalAustralia: (v: string) => void;
   specialistEducationStemResponse: string; setSpecialistEducationStemResponse: (v: string) => void;
-  isQualificationRecognized: string; setIsQualificationRecognized: (v: string) => void;
   isResearchOrDoctorateQualification: boolean;
   annualSalaryAud: string; setAnnualSalaryAud: (v: string) => void;
   sponsorFamilyStatus: string; setSponsorFamilyStatus: (v: string) => void;
@@ -46,7 +45,6 @@ export function Step3Language(props: Step3Props) {
     qualificationAwardedInAustralia, setQualificationAwardedInAustralia,
     qualificationRegionalAustralia, setQualificationRegionalAustralia,
     specialistEducationStemResponse, setSpecialistEducationStemResponse,
-    isQualificationRecognized, setIsQualificationRecognized,
     isResearchOrDoctorateQualification,
     annualSalaryAud, setAnnualSalaryAud,
     sponsorFamilyStatus, setSponsorFamilyStatus, sponsorFamilyOptions,
@@ -114,26 +112,24 @@ export function Step3Language(props: Step3Props) {
             </div>
           )}
 
-          {selectedCountryIsAU && qualificationAwardedInAustralia === "no" && (
-            <div className="space-y-2">
-              <Label>{txt("Yabancı diploma tanındı mı?", "Overseas qualification recognized?", "海外学历已获认可？")}<RequiredMark /></Label>
-              <select name="isQualificationRecognized" value={isQualificationRecognized} onChange={(e) => setIsQualificationRecognized(e.target.value)} className={selectClassName}>
-                <option className="bg-gray-900 text-white" value="" disabled hidden>{txt("Seçin", "Select", "请选择")}</option>
-                <option className="bg-gray-900 text-white" value="yes">{txt("Evet", "Yes", "是")}</option>
-                <option className="bg-gray-900 text-white" value="no">{txt("Hayır", "No", "否")}</option>
-              </select>
-            </div>
-          )}
-
+          {/* PhD / Master's (Research) completed in Australia: the specialist education (STEM) points need a STEM field. */}
           {selectedCountryIsAU && qualificationAwardedInAustralia === "yes" && isResearchOrDoctorateQualification && (
-            <div className="space-y-2">
-              <Label>{txt("STEM alanında mı?", "In a STEM field?", "STEM领域？")}</Label>
-              <select name="specialistEducationStemResponse" value={specialistEducationStemResponse} onChange={(e) => setSpecialistEducationStemResponse(e.target.value)} className={selectClassName}>
-                <option className="bg-gray-900 text-white" value="">{txt("Belirtmek istemiyorum", "Prefer not to say", "不愿意说明")}</option>
-                <option className="bg-gray-900 text-white" value="yes">{txt("Evet", "Yes", "是")}</option>
-                <option className="bg-gray-900 text-white" value="no">{txt("Hayır", "No", "否")}</option>
-                <option className="bg-gray-900 text-white" value="not_sure">{txt("Emin değilim", "Not sure", "不确定")}</option>
-              </select>
+            <div className="flex items-start gap-3 py-1">
+              <input
+                id="waitlist-specialist-stem"
+                type="checkbox"
+                checked={specialistEducationStemResponse === "yes"}
+                onChange={(e) => setSpecialistEducationStemResponse(e.target.checked ? "yes" : "no")}
+                className="mt-1 size-4 accent-[#53917E]"
+              />
+              <Label htmlFor="waitlist-specialist-stem" className="text-sm font-normal leading-snug">
+                {txt(
+                  "Bu bir STEM derecesi mi? (Fen, Teknoloji, Mühendislik, Matematik)",
+                  "Is this a STEM degree? (Science, Tech, Engineering, Math)",
+                  "这是 STEM 学位吗？（科学、技术、工程、数学）"
+                )}
+              </Label>
+              <input type="hidden" name="specialistEducationStemResponse" value={specialistEducationStemResponse === "yes" ? "yes" : "no"} />
             </div>
           )}
 

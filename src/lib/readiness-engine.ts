@@ -537,7 +537,8 @@ function localizeBaseReportForZh(report: ReadinessReport): ReadinessReport {
   const pathwayComparison = report.pathwayComparison.map((pathway) => ({
     ...pathway,
     visaName: zhVisaName(pathway.subclass, pathway.visaName),
-    reason: zhPathwayReason(pathway.subclass),
+    // A statutory Hard Gate reason (186 / 482 experience) is already written in Chinese by the engine: keep it.
+    reason: pathway.reason.startsWith("硬性门槛") ? pathway.reason : zhPathwayReason(pathway.subclass),
     confidenceLevel: zhConfidence(pathway.confidenceLevel),
     confidenceExplanation: `该置信度基于年龄、英语、职业、资料完整度和路径相关信息作出结构化估算${estimatedPoints !== undefined ? `；当前初步打分估算为 ${estimatedPoints}` : ""}。本内容仅为一般信息。`,
     requirementType: ["189", "190", "491"].includes(pathway.subclass)

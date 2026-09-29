@@ -114,6 +114,11 @@ jobs:
       - name: Report date stamp from dated sources (stable across views)
         run: npm run test:content-dates
 
+      # Intake + engine rules: the four points-test partner options (+10/+10/+5/0), no self-assessed qualification
+      # recognition, 186 / 482 experience Hard Gates (3 / 1 years), and the two-tier status (BLOCKED + potential score).
+      - name: Partner options, 186/482 hard gates, two-tier status
+        run: npm run test:two-tier-gates
+
       # 190 / 491 friction includes nomination availability (occupation listed AND program open for the location).
       - name: Nomination availability in 190 / 491 friction
         run: npm run test:nomination-availability

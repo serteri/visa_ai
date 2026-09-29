@@ -90,7 +90,7 @@ import trTranslations from "@/public/locales/tr.json";
 import zhTranslations from "@/public/locales/zh-Hans.json";
 import { getEligibleSkilledSubclasses, resolveOccupationDisplayName } from "./occupation-eligibility";
 import { generatePremiumSections, getTrendBenchmarks } from "@/src/lib/readiness/report-generator";
-import { blockedLabel, blockedReasonPhrase, computePathwayScores, frictionFromScore, frictionKey, type PathwayScoreSet, type PathwaySubclass } from "@/lib/readiness/pathway-scores";
+import { blockedLabel, blockedReasonPhrase, computePathwayScores, describePathwayScore, frictionFromScore, frictionKey, type PathwayScoreSet, type PathwaySubclass } from "@/lib/readiness/pathway-scores";
 import { computeConfidence } from "@/lib/readiness/confidence";
 import { orderBySkilledRanking, rankPathways, type PathwayRanking } from "@/lib/readiness/pathway-ranking";
 import type { InvitationTrendEstimate } from "@/src/lib/readiness/report-generator";
@@ -129,6 +129,7 @@ import type {
   StateNominationTracker,
   StateNominationState,
   PointsActionPlan,
+  TwoTierStatus,
 } from "./types";
 
 export type LeadTier = "High intent" | "Moderate intent" | "Low intent";
@@ -584,24 +585,24 @@ function buildSubclassIneligiblePointsReason(
     const potentialScore = pathwayPoints["190"].total;
     const remainingGap = Math.max(0, POINTS_THRESHOLD - potentialScore);
     if (isTr) {
-      return `Tahmini puanınız ${estimatedPoints} olup, gereken asgari 65 barajının ${gap} puan altındadır. Eyalet adaylığı (Subclass 190) size +5 ek puan sağlayarak potansiyel puanınızı ${potentialScore}'e yükseltir; ancak bu durumda dahi 65 barajına ulaşmak için ${remainingGap} puanlık bir açığınız kalacaktır. Eyalet sponsorluğuyla bu vizeye başvurabilmek için temel puanınızı en az 60'a yükseltmeniz gerekir. Eyaletlerin ${displayOccupation} mesleğini talep edip etmediğini görmek için bu rapordaki Eyalet Adaylığı Takipçisine göz atın.`;
+      return `Tahmini puanınız ${estimatedPoints} olup, gereken asgari 65 barajının ${gap} puan altındadır. Eyalet adaylığı (Subclass 190) size +5 ek puan sağlayarak adaylıkla puanınızı ${potentialScore}'e yükseltir; ancak bu durumda dahi 65 barajına ulaşmak için ${remainingGap} puanlık bir açığınız kalacaktır. Eyalet sponsorluğuyla bu vizeye başvurabilmek için temel puanınızı en az 60'a yükseltmeniz gerekir. Eyaletlerin ${displayOccupation} mesleğini talep edip etmediğini görmek için bu rapordaki Eyalet Adaylığı Takipçisine göz atın.`;
     }
     if (isZh) {
-      return `您的预估分数为 ${estimatedPoints} 分，比 65 分最低要求低 ${gap} 分。虽然州担保（190 类）可以为您提供 +5 分的加分（使您的潜在分数达到 ${potentialScore} 分），但这仍使您面临 ${remainingGap} 分的差距。您必须将基础分数提高到至少 60 分，才能使该州担保途径可行。请参阅本报告中的州担保跟踪器，了解各州当前是否在积极邀请 ${displayOccupation} 职业。`;
+      return `您的预估分数为 ${estimatedPoints} 分，比 65 分最低要求低 ${gap} 分。虽然州担保（190 类）可以为您提供 +5 分的加分（使您获得该提名后的分数达到 ${potentialScore} 分），但这仍使您面临 ${remainingGap} 分的差距。您必须将基础分数提高到至少 60 分，才能使该州担保途径可行。请参阅本报告中的州担保跟踪器，了解各州当前是否在积极邀请 ${displayOccupation} 职业。`;
     }
-    return `Your estimated score of ${estimatedPoints} points is ${gap} points below the 65-point minimum. While obtaining a state nomination (subclass 190) provides a +5 point boost, bringing your potential score to ${potentialScore}, you would still face a ${remainingGap}-point shortfall. You must raise your base score to at least 60 to make this option viable. Refer to the State Nomination Tracker in this report to check if states are actively nominating ${displayOccupation}.`;
+    return `Your estimated score of ${estimatedPoints} points is ${gap} points below the 65-point minimum. While obtaining a state nomination (subclass 190) provides a +5 point boost, bringing your score with that nomination to ${potentialScore}, you would still face a ${remainingGap}-point shortfall. You must raise your base score to at least 60 to make this option viable. Refer to the State Nomination Tracker in this report to check if states are actively nominating ${displayOccupation}.`;
   }
 
   if (subclass === "491") {
     const potentialScore = pathwayPoints["491"].total;
     const remainingGap = Math.max(0, POINTS_THRESHOLD - potentialScore);
     if (isTr) {
-      return `Tahmini temel puanınız ${estimatedPoints} olup, 65 barajının ${gap} puan altındadır. Ancak Subclass 491, bölgesel adaylık veya aile sponsorluğu aracılığıyla +15 puanlık en büyük tekil puan desteğini sunarak potansiyel puanınızı ${potentialScore}'e yükseltir ve kalan açığı sadece ${remainingGap} puana indirir. Bu yolu uygulanabilir kılmak için temel puanınızı en az 50'ye yükseltmeniz yeterli olacaktır. Subclass 491, profiliniz için en gerçekçi ve en hızlı uygulanabilir nitelikli göç yolu olup, uygunluğa ulaşmak için İngilizce sonucunuzu yükseltmek gibi küçük temel puan artışları yeterlidir.`;
+      return `Tahmini temel puanınız ${estimatedPoints} olup, 65 barajının ${gap} puan altındadır. Ancak Subclass 491, bölgesel adaylık veya aile sponsorluğu aracılığıyla +15 puanlık en büyük tekil puan desteğini sunarak adaylıkla puanınızı ${potentialScore}'e yükseltir ve kalan açığı sadece ${remainingGap} puana indirir. Bu yolu uygulanabilir kılmak için temel puanınızı en az 50'ye yükseltmeniz yeterli olacaktır. Subclass 491, profiliniz için en gerçekçi ve en hızlı uygulanabilir nitelikli göç yolu olup, uygunluğa ulaşmak için İngilizce sonucunuzu yükseltmek gibi küçük temel puan artışları yeterlidir.`;
     }
     if (isZh) {
-      return `您的预估分数为 ${estimatedPoints} 分，比 65 分最低要求低 ${gap} 分。然而，491 类偏远地区提名或亲属担保可提供高达 +15 分的的加分，使您的潜在分数达到 ${potentialScore} 分，并将剩余差距缩短至仅 ${remainingGap} 分。要使该途径可行，您必须将基础分数提高到至少 50 分。这使 491 成为您当前最现实、最易实现的技术移民途径，您只需进行较小的基础分数提升（例如提高英语考试成绩）即可达到申请资格。`;
+      return `您的预估分数为 ${estimatedPoints} 分，比 65 分最低要求低 ${gap} 分。然而，491 类偏远地区提名或亲属担保可提供高达 +15 分的的加分，使您获得该提名后的分数达到 ${potentialScore} 分，并将剩余差距缩短至仅 ${remainingGap} 分。要使该途径可行，您必须将基础分数提高到至少 50 分。这使 491 成为您当前最现实、最易实现的技术移民途径，您只需进行较小的基础分数提升（例如提高英语考试成绩）即可达到申请资格。`;
     }
-    return `Your estimated score of ${estimatedPoints} points is ${gap} points below the 65-point threshold. However, subclass 491 regional nomination or family sponsorship offers a substantial +15 point boost, bringing your potential score to ${potentialScore} and reducing your remaining gap to only ${remainingGap} points. To make this pathway viable, you must raise your base score to at least 50. Subclass 491 is the most realistic and accessible skilled pathway for your profile, requiring only minor base points improvements (such as a higher English test result) to reach eligibility.`;
+    return `Your estimated score of ${estimatedPoints} points is ${gap} points below the 65-point threshold. However, subclass 491 regional nomination or family sponsorship offers a substantial +15 point boost, bringing your score with that nomination to ${potentialScore} and reducing your remaining gap to only ${remainingGap} points. To make this pathway viable, you must raise your base score to at least 50. Subclass 491 is the most realistic and accessible skilled pathway for your profile, requiring only minor base points improvements (such as a higher English test result) to reach eligibility.`;
   }
 
   return "";
@@ -2487,7 +2488,13 @@ function buildPathwayEntry(
   input: ReadinessInput,
   locale: Locale,
   dataCompletenessPercentage: number,
-  estimatedPoints?: number
+  estimatedPoints?: number,
+  /**
+   * Two-tier status: the 65-point gate for 189/190/491 is checked on the potential score (pointsEstimate
+   * .potentialPoints) -- a profile held back only by the missing skills assessment is BLOCKED by that (Tier 1), not
+   * shut down as "below 65". Messages still quote the current score. Defaults to estimatedPoints.
+   */
+  gatePoints: number | undefined = estimatedPoints
 ): PathwayComparison {
   const isTr = locale === "tr";
   const names = VISA_NAMES[subclass] ?? {
@@ -2553,10 +2560,10 @@ function buildPathwayEntry(
           : "The 482 Skills in Demand Visa requires an employer sponsor. Sponsor context is important to support this assessment.";
     }
   } else if (subclass === "189") {
-    if (estimatedPoints !== undefined && estimatedPoints < SKILLED_MIGRATION_MIN_POINTS) {
+    if (gatePoints !== undefined && gatePoints < SKILLED_MIGRATION_MIN_POINTS) {
       // Hard Gate: overrides any "possible"/high-potential signal below.
       relevance = "ineligible";
-      reason = formatIneligibleLowPointsReason(locale, estimatedPoints, input.englishLevel, input);
+      reason = formatIneligibleLowPointsReason(locale, estimatedPoints ?? gatePoints, input.englishLevel, input);
     } else {
       relevance = input.occupation ? "possible" : "needs_more_information";
       reason = isTr
@@ -2564,10 +2571,10 @@ function buildPathwayEntry(
         : "The 189 Skilled Independent Visa is a points-tested pathway requiring an invitation. This is general information only and depends on individual circumstances.";
     }
   } else if (subclass === "190") {
-    if (estimatedPoints !== undefined && estimatedPoints < SKILLED_MIGRATION_MIN_POINTS) {
+    if (gatePoints !== undefined && gatePoints < SKILLED_MIGRATION_MIN_POINTS) {
       // Hard Gate: overrides any "possible"/high-potential signal below.
       relevance = "ineligible";
-      reason = formatIneligibleLowPointsReason(locale, estimatedPoints, input.englishLevel, input);
+      reason = formatIneligibleLowPointsReason(locale, estimatedPoints ?? gatePoints, input.englishLevel, input);
     } else {
       relevance = input.occupation ? "possible" : "needs_more_information";
       reason = isTr
@@ -2575,10 +2582,10 @@ function buildPathwayEntry(
         : "The 190 Skilled Nominated Visa is a points-tested pathway requiring state or territory nomination. This is general information only and depends on individual circumstances.";
     }
   } else if (subclass === "491") {
-    if (estimatedPoints !== undefined && estimatedPoints < SKILLED_MIGRATION_MIN_POINTS) {
+    if (gatePoints !== undefined && gatePoints < SKILLED_MIGRATION_MIN_POINTS) {
       // Hard Gate: overrides any "possible"/high-potential signal below.
       relevance = "ineligible";
-      reason = formatIneligibleLowPointsReason(locale, estimatedPoints, input.englishLevel, input);
+      reason = formatIneligibleLowPointsReason(locale, estimatedPoints ?? gatePoints, input.englishLevel, input);
     } else {
       relevance = input.occupation ? "possible" : "needs_more_information";
       reason = isTr
@@ -2733,8 +2740,8 @@ function buildPathwayEntry(
   const salaryGate = subclass === "482" ? evaluateEmployerSalaryGate(input) : null;
   const isLowPointsIneligible =
     ["189", "190", "491"].includes(subclass) &&
-    estimatedPoints !== undefined &&
-    estimatedPoints < SKILLED_MIGRATION_MIN_POINTS;
+    gatePoints !== undefined &&
+    gatePoints < SKILLED_MIGRATION_MIN_POINTS;
 
   // Split form of the low-points reason: the points line is subclass-specific
   // (rendered per row), the shared notes are profile-level (rendered once).
@@ -2746,6 +2753,22 @@ function buildPathwayEntry(
     ineligibleSharedNotes = parts.sharedNotes;
   }
 
+  // Hard Gate (statutory work experience): Subclass 186 needs at least 3 years and Subclass 482 at least 1 year of
+  // relevant skilled experience. total_experience = offshore + Australian years as entered (unanswered = 0); below
+  // the minimum the pathway is Ineligible and is never recommended, whatever the softer signals above said.
+  const totalExperience = (input.offshoreExperienceYears ?? 0) + (input.onshoreExperienceYears ?? 0);
+  const experienceMinimum = subclass === "186" ? 3 : subclass === "482" ? 1 : undefined;
+  const failsExperienceGate = experienceMinimum !== undefined && totalExperience < experienceMinimum;
+  if (failsExperienceGate) {
+    relevance = "ineligible";
+    const years = Number.isInteger(totalExperience) ? String(totalExperience) : totalExperience.toFixed(1);
+    reason = isTr
+      ? `Kesin şart: Subclass ${subclass} en az ${experienceMinimum} yıl ilgili nitelikli iş deneyimi gerektirir (yasal şart). Beyan ettiğiniz toplam deneyim ${years} yıl; bu nedenle bu yol şu anda uygun değildir.`
+      : locale === "zh-Hans"
+        ? `硬性门槛：Subclass ${subclass} 要求至少 ${experienceMinimum} 年相关技术工作经验（法定要求）。您申报的总经验为 ${years} 年，因此目前不符合该途径。`
+        : `Hard Gate: Subclass ${subclass} requires at least ${experienceMinimum} ${experienceMinimum === 1 ? "year" : "years"} of relevant skilled work experience (statutory requirement). Your declared experience totals ${years} ${totalExperience === 1 ? "year" : "years"}, so this pathway is not available.`;
+  }
+
   // For 186, relevance is already set to "ineligible" only on true hard-gate
   // failures within the branch above (CSIT salary floor, TRT tenure below 2
   // years, or Direct Entry age above 45) — reusing that here avoids
@@ -2753,6 +2776,7 @@ function buildPathwayEntry(
   const isForced186Ineligible = subclass === "186" && relevance === "ineligible";
 
   const forcedIneligibleByRule =
+    failsExperienceGate ||
     (subclass === "485" && (hardAgeGate?.isHardIneligible || ageGate?.isAboveLimit)) ||
     (subclass === "482" && salaryGate?.isBelowCsit) ||
     isLowPointsIneligible ||
@@ -2813,7 +2837,8 @@ function buildPathwayEntry(
     subclass,
     input,
     locale,
-    estimatedPoints
+    // The "below 65" risk follows the same (potential-score) gate as the pathway itself.
+    gatePoints !== undefined && gatePoints >= SKILLED_MIGRATION_MIN_POINTS ? undefined : estimatedPoints
   );
 
   return {
@@ -3504,6 +3529,24 @@ function sponsorOrFamilyToPartnerOption(sponsorOrFamily: string | undefined, loc
           : "Partner does not meet Functional English",
     };
   }
+  // Intake options mirror the points test's partner categories (full-check form): +10 / +5 / 0, plus single (+10).
+  if (value === "Partner with Competent English and positive Skills Assessment") {
+    return {
+      option: "partner_skilled",
+      reason: isTr
+        ? "Partner Competent English ve olumlu beceri değerlendirmesine sahip"
+        : isZh
+          ? "伴侣具备 Competent English 且技能评估结果为正面"
+          : "Partner has Competent English and a positive skills assessment",
+    };
+  }
+  if (value === "Partner with Competent English only") {
+    return {
+      option: "partner_competent_english",
+      reason: isTr ? "Partner yalnızca Competent English'e sahip" : isZh ? "伴侣仅具备 Competent English" : "Partner has Competent English only",
+    };
+  }
+  // Older reports: this option was removed from the form (Functional English earns no partner points).
   if (value === "Partner / Dependants with Functional English") {
     return {
       option: "none_or_unsure",
@@ -3676,7 +3719,9 @@ function buildPointsEstimate(input: ReadinessInput, locale: Locale): PointsEstim
   // Australian qualifications are exempt from assessment for points purposes.
   const hasSkillsAssessmentDone = (input.occupationConfirmed ?? "").trim().toLowerCase() === "yes";
   const isOverseasQualification = !isAustralianQualification(input);
-  const isQualificationRecognized = input.isQualificationRecognized === true;
+  // The intake no longer asks "Overseas qualification recognized?" -- an applicant cannot self-assess that before the
+  // skills assessment, and a "Yes" awarded education points the assessment might not confirm. Overseas education
+  // points count once a positive skills assessment is on file (older reports' answer is ignored).
   const specialistEducation = hasSpecialistEducationClaim(input);
   const australianStudyRequirement = isAustralianQualification(input);
   const regionalStudy = isRegionalAustralianQualification(input);
@@ -3779,12 +3824,12 @@ function buildPointsEstimate(input: ReadinessInput, locale: Locale): PointsEstim
       // level, so it supersedes (and can't be contradicted by) a separate
       // "is your qualification recognized?" answer of "No". Only zero out
       // points when NEITHER signal confirms recognition.
-      points: (isOverseasQualification && !hasSkillsAssessmentDone && !isQualificationRecognized) ? 0 : result.breakdown.education,
+      points: (isOverseasQualification && !hasSkillsAssessmentDone) ? 0 : result.breakdown.education,
       max: 20,
-      note: (isOverseasQualification && !hasSkillsAssessmentDone && !isQualificationRecognized)
-        ? (isTr ? "Yabancı diploma — tanıma gerekli"
-          : isZh ? "海外学历 — 需要资格认可"
-          : "Overseas qualification — recognition required")
+      note: (isOverseasQualification && !hasSkillsAssessmentDone)
+        ? (isTr ? "Yabancı diploma — olumlu beceri değerlendirmesiyle sayılır"
+          : isZh ? "海外学历 — 获得正面技能评估后计分"
+          : "Overseas qualification — counted once a positive skills assessment confirms it")
         : hasEducationInput
           ? getLocalizedQualification(input.qualificationLevel, locale)
           : isTr ? "Eğitim düzeyi girilmedi" : isZh ? "未提供学历" : "Education level not provided",
@@ -3865,6 +3910,15 @@ function buildPointsEstimate(input: ReadinessInput, locale: Locale): PointsEstim
   // reflect reality: no valid English test means no real points position.
   const estimatedPoints = meetsCompetentEnglish ? rawEstimatedPoints : 0;
 
+  // Two-tier status (Tier 2): the same points table, with the employment and overseas-education points that only
+  // the missing skills assessment holds back counted AS IF it were positive. Same coefficients, nothing invented;
+  // equal to estimatedPoints once an assessment is on file.
+  const heldBackByAssessment = hasSkillsAssessmentDone
+    ? 0
+    : (canApplyExperiencePoints ? result.breakdown.overseasEmployment + result.breakdown.australianEmployment : 0) +
+      (isOverseasQualification ? result.breakdown.education : 0);
+  const potentialPoints = meetsCompetentEnglish && !isOverAgeLimit ? estimatedPoints + heldBackByAssessment : estimatedPoints;
+
   // Real EOI eligibility, now that estimatedPoints is known: age + Skills
   // Assessment + Competent English are necessary but not sufficient -- DHA
   // only invites EOIs that also clear the points threshold (65). A positive
@@ -3897,6 +3951,7 @@ function buildPointsEstimate(input: ReadinessInput, locale: Locale): PointsEstim
   return {
     appliesTo: ["189", "190", "491"],
     estimatedPoints,
+    potentialPoints,
     breakdown,
     note,
     occupationNote,
@@ -4877,9 +4932,22 @@ function buildPointsBoosterSimulator(
       const benchmark = score?.benchmark ?? null;
       if (!score || benchmark === null || !subclasses.includes(subclass)) continue;
       const mandatory = score.nominationBonus;
-      const withRequired = currentEstimate + mandatory;
+      // Tier 2: a pathway blocked only by the skills assessment is compared from its potential score, and the row
+      // says so; the points the assessment would release are part of the row's change from the current score.
+      const potential = score.potentialScore ?? currentEstimate;
+      const heldBack = potential - currentEstimate;
+      const withRequired = potential + mandatory;
       const nominated = subclass === "189" ? undefined : subclass;
-      if (mandatory === 0 && benchmark <= currentEstimate) continue; // 189 already at/above: nothing to add
+      if (mandatory === 0 && benchmark <= potential) continue; // 189 already at/above: nothing to add
+      const assessmentItem = {
+        label: isTr
+          ? `Olumlu beceri değerlendirmesi (potansiyel puan ${potential})`
+          : isZh
+            ? `获得正面技能评估（潜在分数 ${potential}）`
+            : `Positive skills assessment (potential score ${potential})`,
+        estimatedChange: heldBack,
+        explanation: "",
+      } as (typeof combinable)[number];
       const nominationItem = combinable.find((c) => c.onlyForSubclass === subclass) ?? scenarios.find((c) => !c.isCombined && c.onlyForSubclass === subclass);
       const suffix = isTr
         ? ` (Subclass ${subclass} son davet referansı: ${benchmark} puan)`
@@ -4891,13 +4959,21 @@ function buildPointsBoosterSimulator(
         const relation = withRequired > benchmark
           ? isTr ? "üzerinde" : isZh ? "高于" : "above"
           : isTr ? "eşit" : isZh ? "等于" : "equal to";
+        const withAssessment =
+          heldBack > 0
+            ? isTr
+              ? `Olumlu beceri değerlendirmesiyle (potansiyel puan ${potential}) ve `
+              : isZh
+                ? `获得正面技能评估（潜在分数 ${potential}）并`
+                : `With a positive skills assessment (potential score ${potential}) and `
+            : "";
         scenarios.push({
           label: isTr
-            ? `${subclass} için zorunlu adaylıkla (${mandatory} puan) puanınız ${withRequired} -- yakın dönem ${benchmark} referansının ${relation}`
+            ? `${withAssessment}${subclass} için zorunlu adaylıkla (${mandatory} puan) puanınız ${withRequired} -- yakın dönem ${benchmark} referansının ${relation}`
             : isZh
-              ? `加上 ${subclass} 必需的提名（${mandatory} 分）后，您的分数为 ${withRequired}——${relation}近期参考分 ${benchmark}`
-              : `With the nomination required for ${subclass} (${mandatory} points), your score is ${withRequired} -- ${relation} the recent benchmark of ${benchmark}`,
-          estimatedChange: mandatory,
+              ? `${withAssessment}加上 ${subclass} 必需的提名（${mandatory} 分）后，您的分数为 ${withRequired}——${relation}近期参考分 ${benchmark}`
+              : `${withAssessment ? withAssessment + "the" : "With the"} nomination required for ${subclass} (${mandatory} points), your score is ${withRequired} -- ${relation} the recent benchmark of ${benchmark}`,
+          estimatedChange: withRequired - currentEstimate,
           resultingEstimate: withRequired,
           explanation: isTr
             ? `Subclass ${subclass} adaylık olmadan verilemez; bu nedenle karşılaştırma zorunlu adaylık puanlarını içerir.`
@@ -4917,10 +4993,14 @@ function buildPointsBoosterSimulator(
         .sort((x, y) => x.items.length - y.items.length || x.total - y.total)
         .find((c) => !seenComboKeys.has([...(mandatory > 0 && nominationItem ? [nominationItem.label] : []), ...c.items.map((i) => i.label)].sort().join("|")));
       if (!chosen) continue;
-      const items = mandatory > 0 && nominationItem ? [nominationItem, ...chosen.items] : chosen.items;
+      const items = [
+        ...(heldBack > 0 ? [assessmentItem] : []),
+        ...(mandatory > 0 && nominationItem ? [nominationItem] : []),
+        ...chosen.items,
+      ];
       seenComboKeys.add(items.map((i) => i.label).sort().join("|"));
-      const total = mandatory + chosen.total;
-      const resulting = currentEstimate + total;
+      const resulting = withRequired + chosen.total;
+      const total = resulting - currentEstimate;
       pushComboScenario(
         items,
         total,
@@ -6853,6 +6933,54 @@ function runCanadaReadinessEngine(input: ReadinessInput): ReadinessReport {
   };
 }
 
+/**
+ * Two-tier status for 189/190/491 when the skills assessment is not done (and no age limit blocks the EOI):
+ * Tier 1 -- current actionability: BLOCKED until a positive skills assessment; Tier 2 -- target viability: the
+ * potential score (pointsEstimate.potentialPoints: the same points table with the employment and overseas-education
+ * points that only the assessment holds back) and how it compares with the recent benchmarks, including each visa's
+ * required nomination (describePathwayScore). The pathways stay in the report; nothing is hidden.
+ */
+function buildTwoTierStatus(
+  input: ReadinessInput,
+  pointsEstimate: PointsEstimate | undefined,
+  pathwayScores: PathwayScoreSet | undefined,
+  detectedSubclasses: readonly string[],
+  locale: Locale,
+  rankOrder: readonly string[] = []
+): TwoTierStatus | undefined {
+  const skilled = (["189", "190", "491"] as const).filter((s) => detectedSubclasses.includes(s));
+  if (skilled.length === 0 || !pointsEstimate || pointsEstimate.estimatedPoints === undefined) return undefined;
+  if ((input.occupationConfirmed ?? "").trim().toLowerCase() === "yes") return undefined;
+  if (pointsEstimate.eoiIneligibilityReason !== "skills_assessment") return undefined;
+  const current = pointsEstimate.estimatedPoints;
+  const potential = pointsEstimate.potentialPoints ?? current;
+  const T3 = (en: string, tr: string, zh: string) => (locale === "tr" ? tr : locale === "zh-Hans" ? zh : en);
+  return {
+    heading: T3("Two-Tier Status", "İki Aşamalı Durum", "双层状态"),
+    tier1Label: T3("Tier 1 -- Current actionability", "Aşama 1 -- Mevcut durum", "第一层——当前可执行性"),
+    tier1: T3(
+      "BLOCKED: Requires positive Skills Assessment to proceed.",
+      "ENGELLİ: Devam etmek için olumlu Beceri Değerlendirmesi gerekir.",
+      "受阻：需获得正面技能评估方可继续。"
+    ),
+    tier2Label: T3("Tier 2 -- Target viability", "Aşama 2 -- Hedef uygunluk", "第二层——目标可行性"),
+    tier2: T3(`POTENTIAL SCORE: ${potential} Points`, `POTANSİYEL PUAN: ${potential} Puan`, `潜在分数：${potential} 分`),
+    explanation: T3(
+      `Calculated from your entered work experience and education as if the skills assessment is positive, on the same points table (current score: ${current}). These points count only once a positive assessment is on file.`,
+      `Girdiğiniz iş deneyimi ve eğitimden, beceri değerlendirmesi olumluymuş gibi aynı puan tablosuyla hesaplanmıştır (mevcut puan: ${current}). Bu puanlar ancak olumlu bir değerlendirme alındığında sayılır.`,
+      `根据您填写的工作经验和学历，按技能评估为正面的情况、使用同一积分表计算（当前分数：${current}）。这些分数仅在获得正面评估后才计入。`
+    ),
+    currentScore: current,
+    potentialScore: potential,
+    // In the ranking's order, like every other section.
+    comparisons: pathwayScores
+      ? [...skilled]
+          .sort((a, b) => rankOrder.indexOf(a) - rankOrder.indexOf(b))
+          .map((s) => `Subclass ${s} -- ${describePathwayScore(pathwayScores[s], locale)}`)
+      : [],
+  };
+}
+
 export function runReadinessEngine(input: ReadinessInput): ReadinessReport {
   const report = runReadinessEngineInternal(input);
   logReportInvariantViolations(report, "runReadinessEngine");
@@ -6959,7 +7087,8 @@ function runReadinessEngineInternal(input: ReadinessInput): ReadinessReport {
         input,
         locale,
         dataCompleteness.percentage,
-        pointsEstimate?.estimatedPoints
+        pointsEstimate?.estimatedPoints,
+        pointsEstimate?.potentialPoints ?? pointsEstimate?.estimatedPoints
       )
     );
   }
@@ -7035,6 +7164,7 @@ function runReadinessEngineInternal(input: ReadinessInput): ReadinessReport {
     pointsEstimate?.estimatedPoints !== undefined
       ? computePathwayScores({
           estimatedPoints: pointsEstimate.estimatedPoints,
+          potentialPoints: pointsEstimate.potentialPoints,
           benchmarks: getTrendBenchmarks(input.occupation),
           eoiBlockReason: assessmentState.eoiIneligibilityReason ?? null,
           occupationEligibleSubclasses:
@@ -7046,6 +7176,7 @@ function runReadinessEngineInternal(input: ReadinessInput): ReadinessReport {
         })
       : undefined;
   const pathwayRanking = pathwayScores ? rankPathways(pathwayScores) : undefined;
+  const twoTierStatus = buildTwoTierStatus(input, pointsEstimate, pathwayScores, detectedSubclasses, locale, pathwayRanking?.entries.map((e) => e.subclass) ?? []);
   const executiveSummary = buildExecutiveSummary(
     input,
     pathwayComparison,
@@ -7184,6 +7315,7 @@ function runReadinessEngineInternal(input: ReadinessInput): ReadinessReport {
     factorsAffectingPathways,
     pointsEstimate,
     pathwayScores,
+    ...(twoTierStatus ? { twoTierStatus } : {}),
     pathwayRanking,
     occupationIndication,
     riskIndicators,

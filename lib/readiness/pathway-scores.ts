@@ -37,7 +37,13 @@ export type PathwayScore = {
   gapBase: number | null;
   gapIfNominated: number | null;
   /**
-   * The score to compare with the subclass's invitation benchmark. For 190 and 491 the nomination (+5 / +15) is a
+   * Tier 2 of the two-tier status: the score as if the skills assessment were positive (pointsEstimate
+   * .potentialPoints). Equals baseScore once an assessment is on file.
+   */
+  potentialScore?: number;
+  /**
+   * The score to compare with the subclass's invitation benchmark (from potentialScore, so a pathway blocked only by
+   * the skills assessment still gets a realistic roadmap). For 190 and 491 the nomination (+5 / +15) is a
    * precondition of the visa, not an optional booster, so it is included; 189 has none (= baseScore).
    */
   comparisonScore?: number;
@@ -89,6 +95,8 @@ export type TrendBenchmarks = {
 export function computePathwayScores(args: {
   /** pointsEstimate.estimatedPoints */
   estimatedPoints: number;
+  /** pointsEstimate.potentialPoints (Tier 2); defaults to estimatedPoints. */
+  potentialPoints?: number;
   benchmarks?: TrendBenchmarks | null;
   /** assessmentState.eoiIneligibilityReason (null/undefined when EOI is not blocked). */
   eoiBlockReason?: "age" | "skills_assessment" | "english" | "points" | null;
@@ -96,6 +104,7 @@ export function computePathwayScores(args: {
   occupationEligibleSubclasses?: readonly string[] | null;
 }): PathwayScoreSet {
   const { estimatedPoints, benchmarks, eoiBlockReason, occupationEligibleSubclasses } = args;
+  const potential = args.potentialPoints ?? estimatedPoints;
   const out = {} as PathwayScoreSet;
   for (const subclass of PATHWAY_SUBCLASSES) {
     const bonus = NOMINATION_BONUS[subclass];
@@ -113,8 +122,9 @@ export function computePathwayScores(args: {
       benchmarkAsOf: benchmarks?.asOf,
       gapBase: benchmark === null ? null : benchmark - estimatedPoints,
       gapIfNominated: benchmark === null ? null : benchmark - (estimatedPoints + bonus),
-      comparisonScore: estimatedPoints + bonus,
-      comparisonGap: benchmark === null ? null : benchmark - (estimatedPoints + bonus),
+      potentialScore: potential,
+      comparisonScore: potential + bonus,
+      comparisonGap: benchmark === null ? null : benchmark - (potential + bonus),
       isBlocked: blockReason !== null,
       blockReason,
     };
@@ -148,7 +158,7 @@ function nominationKind(subclass: PathwaySubclass, locale: Locale): string {
 
 /** comparisonScore / comparisonGap, derived for scores saved before those fields existed (stored reports). */
 export function comparisonOf(score: PathwayScore): { comparisonScore: number; comparisonGap: number | null } {
-  const comparisonScore = score.comparisonScore ?? score.baseScore + score.nominationBonus;
+  const comparisonScore = score.comparisonScore ?? (score.potentialScore ?? score.baseScore) + score.nominationBonus;
   const comparisonGap = score.comparisonGap !== undefined ? score.comparisonGap : score.benchmark === null ? null : score.benchmark - comparisonScore;
   return { comparisonScore, comparisonGap };
 }
@@ -207,14 +217,25 @@ export function describePathwayScore(score: PathwayScore, locale: Locale): strin
     );
   })();
 
+  // Tier 2: when a missing skills assessment holds points back, the comparison starts from the potential score.
+  const potential = score.potentialScore;
+  const now =
+    potential !== undefined && potential !== baseScore
+      ? T(
+          locale,
+          `Score now ${baseScore}; potential score with a positive skills assessment ${potential}`,
+          `Şu anki puan ${baseScore}; olumlu beceri değerlendirmesiyle potansiyel puan ${potential}`,
+          `当前分数 ${baseScore}；获得正面技能评估后的潜在分数 ${potential}`
+        )
+      : T(locale, `Score now ${baseScore}`, `Şu anki puan ${baseScore}`, `当前分数 ${baseScore}`);
   if (score.nominationBonus === 0) {
-    return T(locale, `Score now ${baseScore} -- ${versus}.`, `Şu anki puan ${baseScore} -- ${versus}.`, `当前分数 ${baseScore}——${versus}。`);
+    return T(locale, `${now} -- ${versus}.`, `${now} -- ${versus}.`, `${now}——${versus}。`);
   }
   return T(
     locale,
-    `Score now ${baseScore}; with ${requiredNomination(subclass, locale)}, your score is ${comparisonScore} -- ${versus}.`,
-    `Şu anki puan ${baseScore}; ${requiredNomination(subclass, locale)} puanınız ${comparisonScore} -- ${versus}.`,
-    `当前分数 ${baseScore}；${requiredNomination(subclass, locale)}为 ${comparisonScore} 分——${versus}。`
+    `${now}; with ${requiredNomination(subclass, locale)}, your score is ${comparisonScore} -- ${versus}.`,
+    `${now}; ${requiredNomination(subclass, locale)} puanınız ${comparisonScore} -- ${versus}.`,
+    `${now}；${requiredNomination(subclass, locale)}为 ${comparisonScore} 分——${versus}。`
   );
 }
 
