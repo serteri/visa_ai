@@ -785,8 +785,17 @@ export async function submitFullCheckWaitlist(
       : undefined
     : undefined;
 
-  // "Overseas qualification recognized?" was removed from the form: an applicant cannot self-assess recognition
-  // before the skills assessment; overseas education points count once a positive assessment is on file.
+  // "Did your skills assessment recognise your degree as comparable to the Australian level?" -- asked only after a
+  // positive skills assessment (an applicant cannot self-assess recognition before one); never changes points values.
+  const isQualificationRecognizedResult = optionalYesNoSchema.safeParse(formData.get("isQualificationRecognized"));
+  const isQualificationRecognized =
+    qualificationAwardedInAustralia === false && occupationConfirmedRaw === "yes" && isQualificationRecognizedResult.success
+      ? isQualificationRecognizedResult.data === "yes"
+        ? true
+        : isQualificationRecognizedResult.data === "no"
+          ? false
+          : undefined
+      : undefined;
   const offshoreExperienceYearsResult = optionalExperienceYearsSchema.safeParse(
     formData.get("offshoreExperienceYears")
   );
@@ -1116,6 +1125,7 @@ export async function submitFullCheckWaitlist(
       qualificationAwardedInAustralia,
       qualificationRegionalAustralia,
       specialistEducationStemResponse,
+      isQualificationRecognized,
       offshoreExperienceYears,
       onshoreExperienceYears,
       yearsInSponsoredPosition,
@@ -1227,6 +1237,7 @@ export async function submitFullCheckWaitlist(
     qualificationAwardedInAustralia,
     qualificationRegionalAustralia,
     specialistEducationStemResponse,
+    isQualificationRecognized,
     offshoreExperienceYears,
     onshoreExperienceYears,
     yearsInSponsoredPosition,

@@ -1,3 +1,4 @@
+import type { PathwayGates } from "./visa-gates";
 import type { PathwayBlockReason, PathwayScoreSet } from "./pathway-scores";
 import type { PathwayRanking } from "./pathway-ranking";
 import type { PremiumStrategyResult } from "@/lib/ai/strategy-schema";
@@ -131,6 +132,8 @@ export type PathwayComparison = {
   subclass: string;
   visaName: string;
   reason: string;
+  /** The sourced hard-gate evaluation for this visa (lib/readiness/visa-gates.ts): met / not met / unknown per gate. */
+  gates?: PathwayGates;
   relevance: PathwayRelevance;
   confidenceLevel: ConfidenceLevel;
   confidenceExplanation: string;
@@ -327,6 +330,8 @@ export type PathwayStrengthComparison = {
   isPointsThresholdOnly?: boolean;
   /** Localized "Ineligible: ..." text, shown in bold red as the first item of this pathway's strength breakdown. */
   ineligibleReason?: string;
+  /** True when the pathway is out because a sourced hard gate is not met ("Not eligible now" with the failed gates), not a points-only shortfall. */
+  isGateFailure?: boolean;
 };
 
 export type EvidenceReadinessItem = {
@@ -424,6 +429,8 @@ export type PathwayFriction = {
   isHardIneligible?: boolean;
   /** True when the ONLY reason this points-tested pathway is ineligible is a below-threshold score, not a rule violation. Renders with the neutral "Below Points Threshold" label/color instead of "CRITICAL COMPLIANCE ALERT". */
   isPointsThresholdOnly?: boolean;
+  /** "Not eligible now": a sourced hard gate (lib/readiness/visa-gates.ts) is not met; rendered with that label, not "CRITICAL COMPLIANCE ALERT". */
+  isGateFailure?: boolean;
 };
 
 export type RankedPathwayRecommendation =
@@ -859,6 +866,8 @@ export type TwoTierStatus = {
 };
 
 export type ReadinessReport = {
+  /** AU: the sourced hard-gate evaluation per visa (lib/readiness/visa-gates.ts); a not-met gate = "Not eligible now". */
+  visaGates?: Record<string, PathwayGates>;
   /** AU: two-tier status when the only thing blocking 189/190/491 is the missing skills assessment. */
   twoTierStatus?: TwoTierStatus;
   /** Defaults to "AU" when omitted, preserving existing behavior. */

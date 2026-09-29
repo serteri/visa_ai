@@ -4617,7 +4617,10 @@ export async function generateReadinessPDF(input: PDFGeneratorInput): Promise<Ui
         // below-threshold score (isPointsThresholdOnly) is not a rule
         // violation, so it gets a neutral amber label instead of the red
         // "CRITICAL COMPLIANCE ALERT" reserved for genuine hard-gate breaches.
-        if (item.isPointsThresholdOnly) {
+        if (item.isGateFailure) {
+          // "Not eligible now": the reason already leads with that label, the failed gates and their citations.
+          addCriticalAlertText(item.ineligibleReason, 4);
+        } else if (item.isPointsThresholdOnly) {
           addCriticalAlertText(`${text.belowPointsThreshold}: ${item.ineligibleReason}`, 4, COLORS.riskMedium);
         } else {
           addCriticalAlertText(`${text.criticalComplianceAlertLabel}: ${item.ineligibleReason}`, 4);
@@ -5066,10 +5069,15 @@ export async function generateReadinessPDF(input: PDFGeneratorInput): Promise<Ui
     // severe item actually listed, so a "Critical" heading never sits over High/Medium-only alerts, and a CRITICAL
     // pathway alert elsewhere in the report is repeated here rather than contradicted.
     const hardGateAlerts = (report.pathwayFriction ?? [])
-      .filter((f) => f.isHardIneligible && !f.isPointsThresholdOnly)
+      .filter((f) => f.isHardIneligible && !f.isPointsThresholdOnly && !f.isGateFailure)
       .map((f) => ({ label: `${text.criticalComplianceAlertLabel}: ${f.pathway}`, body: f.explanation, level: "high" as const }));
+    // Pathways shut by a sourced hard gate: "High - Not eligible now: <pathway>" with the failed gates (not "Critical").
+    const gateFailureAlerts = (report.pathwayFriction ?? [])
+      .filter((f) => f.isGateFailure)
+      .map((f) => ({ label: `${text.highRisk} - ${f.pathway}: ${f.frictionType.replace(/^\S+\s/, "")}`, body: f.explanation, level: "high" as const }));
     const criticalComplianceAlerts = [
       ...hardGateAlerts,
+      ...gateFailureAlerts,
       ...report.riskIndicators.map((r) => ({
         label: `${r.level === "high" ? text.highRisk : r.level === "medium" ? text.mediumRisk : text.lowRisk} - ${r.title}`,
         body: r.explanation,

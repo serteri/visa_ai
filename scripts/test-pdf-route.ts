@@ -1519,9 +1519,11 @@ const GP_PROFILE: ReadinessInput = {
   age: "38",
   occupation: "General Practitioner 253111",
   occupationConfirmed: "yes",
-  englishLevel: "competent",
+  // Proficient English and a single applicant: 70 points, so the 491 gates (65 points, ...) are met and the 491 -> 191
+  // Bridge to PR item is offered (a pathway with a not-met gate is not -- lib/readiness/visa-gates.ts).
+  englishLevel: "proficient",
   qualificationLevel: "Bachelor's Degree",
-  sponsorOrFamily: undefined,
+  sponsorOrFamily: "Single / No Dependants",
   offshoreExperienceYears: 6,
   migrationGoals: ["direct_pr"],
 };

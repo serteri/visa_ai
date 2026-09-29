@@ -9,6 +9,7 @@ import { PremiumFeatureGate } from "@/components/premium-feature-gate";
 import type { FullCheckQuickPreview } from "../actions";
 import type { ReadinessReport } from "@/lib/readiness/types";
 import { boosterRows, stateRows } from "@/lib/reports/report-view-model";
+import { gateSectionTitle, gateSummaryText, reportedGateVisas } from "@/lib/readiness/visa-gate-text";
 
 type ResultViewProps = {
   locale: string;
@@ -84,6 +85,20 @@ export function ResultView({
             ) : null}
           </CardHeader>
           <CardContent className="space-y-4">
+            {report.visaGates ? (
+              <div className="space-y-2 rounded-md border border-slate-200 bg-white px-4 py-3 text-sm shadow-sm" data-visa-gates>
+                <p className="font-semibold">{gateSectionTitle(locale === "tr" ? "tr" : locale === "zh-Hans" ? "zh-Hans" : "en")}</p>
+                <ul className="list-disc space-y-1 pl-5 text-xs">
+                  {reportedGateVisas(report.pathwayComparison ?? []).map((v) =>
+                    report.visaGates?.[v] ? (
+                      <li key={v} data-gate-visa={v} data-gate-status={report.visaGates[v].status}>
+                        {gateSummaryText(report.visaGates[v], locale === "tr" ? "tr" : locale === "zh-Hans" ? "zh-Hans" : "en")}
+                      </li>
+                    ) : null
+                  )}
+                </ul>
+              </div>
+            ) : null}
             {report.twoTierStatus ? (
               <div className="space-y-2 rounded-md border border-amber-300 bg-amber-50 px-4 py-3 text-sm" data-two-tier>
                 <p className="font-semibold">{report.twoTierStatus.heading}</p>

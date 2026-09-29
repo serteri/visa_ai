@@ -1,0 +1,856 @@
+{
+  "_provenance": {
+    "generatedBy": "scripts/generate-visa-gates.ts",
+    "extractedOn": "2026-09-30",
+    "last_verified": "2026-09-30",
+    "documents": {
+      "186": "Subclass 186-Employer Nomination Scheme visa/Subclass 186-Employer Nomination Scheme visa.pdf",
+      "189": "Skilled Independent visa (subclass 189) Points-tested stream/Skilled Independent visa (subclass 189) Points-tested stream_23_09_2026.pdf",
+      "190": "Subclass 190 Skilled Nominated visa/Subclass 190 Skilled Nominated visa_23September2026.pdf",
+      "482": "Visa (subclass 482) Core Skills stream/Skills in Demand Visa (subclass 482) Core Skills stream_01July2026.pdf",
+      "485": "Temporary Graduate visa (subclass 485) Post-Higher Education Work stream/Temporary Graduate visa (subclass 485) Post-Higher Education Work stream _23September2026.pdf",
+      "491": "Subclass 491 Skilled Work Regional (Provisional) visa - Main applicant/Subclass 491 Skilled Work Regional (Provisional) visa - Main applicant_23September2026.pdf",
+      "500": "Visa_500/Student visa_class_500_23September2026.pdf",
+      "820": "(Subclasses 820 and 801) Partner visas (apply in Australia)/Subclass 820 Partner visa (temporary)/Subclass 820 Partner visa (temporary)_23September2026.pdf",
+      "482-english": "Visa (subclass 482) Core Skills stream/English proficiency (subclass 482)_25April2026.pdf"
+    },
+    "note": "Each gate's quote was found verbatim (whitespace-insensitive) on its page in the named document. Thresholds not stated in data/knowledge are listed under 'missing'; none is invented.",
+    "gateCount": 50
+  },
+  "thresholds": {
+    "CSIT": {
+      "name": "Core Skills Income Threshold (CSIT)",
+      "value": 79423,
+      "unit": "AUD per year",
+      "effectiveFrom": "2026-07-01",
+      "previous": 76515,
+      "appliesTo": "482 Core Skills nominations; 186 nominations (Direct Entry applied)",
+      "page": 2,
+      "source": "482 document p.1, 186 document p.28"
+    },
+    "SSIT": {
+      "value": 146576,
+      "unit": "AUD per year",
+      "effectiveFrom": "2026-07-01",
+      "previous": 141210,
+      "appliesTo": "482 Specialist Skills nominations"
+    },
+    "TSMIT": {
+      "value": 79423,
+      "unit": "AUD per year",
+      "effectiveFrom": "2026-07-01",
+      "previous": 76515,
+      "appliesTo": "494 and 187 nominations (not evaluated by the report)"
+    },
+    "ageLimits": {
+      "186": 45,
+      "189": 45,
+      "190": 45,
+      "485": 35,
+      "491": 45
+    },
+    "minimumPoints": 65,
+    "minimumExperienceYears": {
+      "186DE": 3,
+      "482CS": 1,
+      "186TRT (sponsored employment)": 2
+    }
+  },
+  "missing": [
+    "482 Specialist Skills stream: no stream document in data/knowledge -- only the SSIT (AUD146,576 from 1 July 2026) is stated (in the 482 and 186 documents). Its eligible occupations, experience and other requirements are missing.",
+    "482 mandatory skills assessment: which occupations require one is set by IMMI 18/039 (named in the 482 document, p.13), which is not in data/knowledge; the gate is evaluated as unknown.",
+    "482 / 186 exemptions (English, skills assessment, work experience, age): only some are described in the documents and none is captured by the intake; a not-met result names the gate as 'unless exempt' where the document allows one.",
+    "186 Temporary Residence Transition income threshold: the documents name CSIT for 186 nominations without a stream; no separate TRT threshold is stated, so none is applied.",
+    "186 Labour Agreement stream: not evaluated (agreement-specific requirements; the report does not offer this stream as a recommendation).",
+    "485: the study requirement details (duration, on-campus) and the exact English scores for each test are in the document but are not evaluated -- the intake collects neither the course completion date nor a test score.",
+    "820 / 801: the sponsor's status and relationship evidence are not collected by the intake.",
+    "189 / 190 / 491: the skills-assessment validity period (3 years before the invitation), the occupation's specific assessing body, and the state-specific nomination criteria are not gates the intake can evaluate."
+  ],
+  "gates": [
+    {
+      "id": "189.skills_assessment",
+      "visa": "189",
+      "stream": null,
+      "kind": "gate",
+      "requirement": "A suitable skills assessment",
+      "source": "Skilled Independent visa (subclass 189) Points-tested stream/Skilled Independent visa (subclass 189) Points-tested stream_23_09_2026.pdf",
+      "page": 7,
+      "quote": "you must declare that you have a suitable skills assessment at the time of invitation",
+      "intakeFields": [
+        "occupationConfirmed"
+      ],
+      "evaluatedFromIntake": true
+    },
+    {
+      "id": "189.occupation_list",
+      "visa": "189",
+      "stream": null,
+      "kind": "gate",
+      "requirement": "Occupation on the relevant skilled occupation list",
+      "source": "Skilled Independent visa (subclass 189) Points-tested stream/Skilled Independent visa (subclass 189) Points-tested stream_23_09_2026.pdf",
+      "page": 15,
+      "quote": "Your occupation must be on the relevant list of eligible skilled occupations for",
+      "intakeFields": [
+        "occupation"
+      ],
+      "evaluatedFromIntake": true
+    },
+    {
+      "id": "189.age",
+      "visa": "189",
+      "stream": null,
+      "kind": "gate",
+      "requirement": "Under 45 when invited",
+      "source": "Skilled Independent visa (subclass 189) Points-tested stream/Skilled Independent visa (subclass 189) Points-tested stream_23_09_2026.pdf",
+      "page": 8,
+      "quote": "You must be aged under 45 when we invite you to apply for the visa",
+      "numeric": {
+        "name": "age limit (must be under)",
+        "value": 45,
+        "unit": "years"
+      },
+      "intakeFields": [
+        "age"
+      ],
+      "evaluatedFromIntake": true
+    },
+    {
+      "id": "189.english",
+      "visa": "189",
+      "stream": null,
+      "kind": "gate",
+      "requirement": "At least Competent English at invitation",
+      "source": "Skilled Independent visa (subclass 189) Points-tested stream/Skilled Independent visa (subclass 189) Points-tested stream_23_09_2026.pdf",
+      "page": 9,
+      "quote": "At the time of invitation, you must have at least competent English.",
+      "intakeFields": [
+        "englishLevel"
+      ],
+      "evaluatedFromIntake": true
+    },
+    {
+      "id": "189.points",
+      "visa": "189",
+      "stream": null,
+      "kind": "gate",
+      "requirement": "At least 65 points",
+      "source": "Skilled Independent visa (subclass 189) Points-tested stream/Skilled Independent visa (subclass 189) Points-tested stream_23_09_2026.pdf",
+      "page": 8,
+      "quote": "If you do not obtain a score of 65 points you will not be invited to apply for",
+      "numeric": {
+        "name": "minimum points",
+        "value": 65,
+        "unit": "points"
+      },
+      "intakeFields": [
+        "age",
+        "englishLevel",
+        "qualificationLevel",
+        "offshoreExperienceYears",
+        "onshoreExperienceYears",
+        "sponsorOrFamily",
+        "occupationConfirmed"
+      ],
+      "evaluatedFromIntake": true
+    },
+    {
+      "id": "189.invitation",
+      "visa": "189",
+      "stream": null,
+      "kind": "future_step",
+      "requirement": "An invitation to apply (after an EOI)",
+      "source": "Skilled Independent visa (subclass 189) Points-tested stream/Skilled Independent visa (subclass 189) Points-tested stream_23_09_2026.pdf",
+      "page": 7,
+      "quote": "You can only apply for this visa if we invite you to",
+      "intakeFields": [],
+      "evaluatedFromIntake": false
+    },
+    {
+      "id": "190.skills_assessment",
+      "visa": "190",
+      "stream": null,
+      "kind": "gate",
+      "requirement": "A suitable skills assessment",
+      "source": "Subclass 190 Skilled Nominated visa/Subclass 190 Skilled Nominated visa_23September2026.pdf",
+      "page": 17,
+      "quote": "You must have a suitable skills assessment at the time we invite you to apply",
+      "intakeFields": [
+        "occupationConfirmed"
+      ],
+      "evaluatedFromIntake": true
+    },
+    {
+      "id": "190.occupation_list",
+      "visa": "190",
+      "stream": null,
+      "kind": "gate",
+      "requirement": "Occupation on the relevant skilled occupation list",
+      "source": "Subclass 190 Skilled Nominated visa/Subclass 190 Skilled Nominated visa_23September2026.pdf",
+      "page": 15,
+      "quote": "Your occupation must be on the relevant list of eligible skilled occupations for",
+      "intakeFields": [
+        "occupation"
+      ],
+      "evaluatedFromIntake": true
+    },
+    {
+      "id": "190.age",
+      "visa": "190",
+      "stream": null,
+      "kind": "gate",
+      "requirement": "Under 45 when invited",
+      "source": "Subclass 190 Skilled Nominated visa/Subclass 190 Skilled Nominated visa_23September2026.pdf",
+      "page": 8,
+      "quote": "You must be aged under 45 when we invite you to apply for the visa",
+      "numeric": {
+        "name": "age limit (must be under)",
+        "value": 45,
+        "unit": "years"
+      },
+      "intakeFields": [
+        "age"
+      ],
+      "evaluatedFromIntake": true
+    },
+    {
+      "id": "190.english",
+      "visa": "190",
+      "stream": null,
+      "kind": "gate",
+      "requirement": "At least Competent English at invitation",
+      "source": "Subclass 190 Skilled Nominated visa/Subclass 190 Skilled Nominated visa_23September2026.pdf",
+      "page": 9,
+      "quote": "At the time of invitation, you must have at least competent English.",
+      "intakeFields": [
+        "englishLevel"
+      ],
+      "evaluatedFromIntake": true
+    },
+    {
+      "id": "190.points",
+      "visa": "190",
+      "stream": null,
+      "kind": "gate",
+      "requirement": "At least 65 points",
+      "source": "Subclass 190 Skilled Nominated visa/Subclass 190 Skilled Nominated visa_23September2026.pdf",
+      "page": 9,
+      "quote": "If you do not obtain a score of 65 points you will not be invited to apply for",
+      "numeric": {
+        "name": "minimum points",
+        "value": 65,
+        "unit": "points"
+      },
+      "intakeFields": [
+        "age",
+        "englishLevel",
+        "qualificationLevel",
+        "offshoreExperienceYears",
+        "onshoreExperienceYears",
+        "sponsorOrFamily",
+        "occupationConfirmed"
+      ],
+      "evaluatedFromIntake": true
+    },
+    {
+      "id": "190.invitation",
+      "visa": "190",
+      "stream": null,
+      "kind": "future_step",
+      "requirement": "An invitation to apply (after an EOI)",
+      "source": "Subclass 190 Skilled Nominated visa/Subclass 190 Skilled Nominated visa_23September2026.pdf",
+      "page": 6,
+      "quote": "You can only apply for this visa if we invite you to",
+      "intakeFields": [],
+      "evaluatedFromIntake": false
+    },
+    {
+      "id": "190.nomination",
+      "visa": "190",
+      "stream": null,
+      "kind": "future_step",
+      "requirement": "Nomination by a state or territory",
+      "source": "Subclass 190 Skilled Nominated visa/Subclass 190 Skilled Nominated visa_23September2026.pdf",
+      "page": 7,
+      "quote": "You must have been nominated for this visa by an Australian state or territory",
+      "intakeFields": [],
+      "evaluatedFromIntake": false
+    },
+    {
+      "id": "491.skills_assessment",
+      "visa": "491",
+      "stream": null,
+      "kind": "gate",
+      "requirement": "A suitable skills assessment",
+      "source": "Subclass 491 Skilled Work Regional (Provisional) visa - Main applicant/Subclass 491 Skilled Work Regional (Provisional) visa - Main applicant_23September2026.pdf",
+      "page": 25,
+      "quote": "You must have a suitable skills assessment at the time we invite you to apply",
+      "intakeFields": [
+        "occupationConfirmed"
+      ],
+      "evaluatedFromIntake": true
+    },
+    {
+      "id": "491.occupation_list",
+      "visa": "491",
+      "stream": null,
+      "kind": "gate",
+      "requirement": "Occupation on the relevant skilled occupation list",
+      "source": "Subclass 491 Skilled Work Regional (Provisional) visa - Main applicant/Subclass 491 Skilled Work Regional (Provisional) visa - Main applicant_23September2026.pdf",
+      "page": 24,
+      "quote": "Your occupation must be on the combined list of eligible skilled occupations for a",
+      "intakeFields": [
+        "occupation"
+      ],
+      "evaluatedFromIntake": true
+    },
+    {
+      "id": "491.age",
+      "visa": "491",
+      "stream": null,
+      "kind": "gate",
+      "requirement": "Under 45 when invited",
+      "source": "Subclass 491 Skilled Work Regional (Provisional) visa - Main applicant/Subclass 491 Skilled Work Regional (Provisional) visa - Main applicant_23September2026.pdf",
+      "page": 8,
+      "quote": "You must be aged under 45 to be invited to apply for the visa",
+      "numeric": {
+        "name": "age limit (must be under)",
+        "value": 45,
+        "unit": "years"
+      },
+      "intakeFields": [
+        "age"
+      ],
+      "evaluatedFromIntake": true
+    },
+    {
+      "id": "491.english",
+      "visa": "491",
+      "stream": null,
+      "kind": "gate",
+      "requirement": "At least Competent English at invitation",
+      "source": "Subclass 491 Skilled Work Regional (Provisional) visa - Main applicant/Subclass 491 Skilled Work Regional (Provisional) visa - Main applicant_23September2026.pdf",
+      "page": 10,
+      "quote": "you must have at least competent English",
+      "intakeFields": [
+        "englishLevel"
+      ],
+      "evaluatedFromIntake": true
+    },
+    {
+      "id": "491.points",
+      "visa": "491",
+      "stream": null,
+      "kind": "gate",
+      "requirement": "At least 65 points",
+      "source": "Subclass 491 Skilled Work Regional (Provisional) visa - Main applicant/Subclass 491 Skilled Work Regional (Provisional) visa - Main applicant_23September2026.pdf",
+      "page": 10,
+      "quote": "If you do not obtain a score of 65 points you will not be invited to apply for",
+      "numeric": {
+        "name": "minimum points",
+        "value": 65,
+        "unit": "points"
+      },
+      "intakeFields": [
+        "age",
+        "englishLevel",
+        "qualificationLevel",
+        "offshoreExperienceYears",
+        "onshoreExperienceYears",
+        "sponsorOrFamily",
+        "occupationConfirmed"
+      ],
+      "evaluatedFromIntake": true
+    },
+    {
+      "id": "491.invitation",
+      "visa": "491",
+      "stream": null,
+      "kind": "future_step",
+      "requirement": "An invitation to apply (after an EOI)",
+      "source": "Subclass 491 Skilled Work Regional (Provisional) visa - Main applicant/Subclass 491 Skilled Work Regional (Provisional) visa - Main applicant_23September2026.pdf",
+      "page": 7,
+      "quote": "You can only apply for this visa if we invite you to",
+      "intakeFields": [],
+      "evaluatedFromIntake": false
+    },
+    {
+      "id": "491.nomination",
+      "visa": "491",
+      "stream": null,
+      "kind": "future_step",
+      "requirement": "Nomination by a state or territory, or sponsorship by an eligible relative",
+      "source": "Subclass 491 Skilled Work Regional (Provisional) visa - Main applicant/Subclass 491 Skilled Work Regional (Provisional) visa - Main applicant_23September2026.pdf",
+      "page": 7,
+      "quote": "You must be either nominated by an Australian state or territory government agency",
+      "intakeFields": [],
+      "evaluatedFromIntake": false
+    },
+    {
+      "id": "186DE.age",
+      "visa": "186",
+      "stream": "Direct Entry",
+      "kind": "gate",
+      "requirement": "Under 45 on the date of application, unless exempt",
+      "source": "Subclass 186-Employer Nomination Scheme visa/Subclass 186-Employer Nomination Scheme visa.pdf",
+      "page": 8,
+      "quote": "Usually, you must be under 45 years of age when you apply.",
+      "numeric": {
+        "name": "age limit (must be under)",
+        "value": 45,
+        "unit": "years"
+      },
+      "intakeFields": [
+        "age"
+      ],
+      "evaluatedFromIntake": true
+    },
+    {
+      "id": "186DE.occupation_csol",
+      "visa": "186",
+      "stream": "Direct Entry",
+      "kind": "gate",
+      "requirement": "Nominated occupation on the Core Skills Occupation List (CSOL)",
+      "source": "Subclass 186-Employer Nomination Scheme visa/Subclass 186-Employer Nomination Scheme visa.pdf",
+      "page": 7,
+      "quote": "Your occupation must be on the Core Skills Occupation List (CSOL).",
+      "intakeFields": [
+        "occupation"
+      ],
+      "evaluatedFromIntake": true
+    },
+    {
+      "id": "186DE.experience",
+      "visa": "186",
+      "stream": "Direct Entry",
+      "kind": "gate",
+      "requirement": "At least 3 years relevant work experience, unless exempt",
+      "source": "Subclass 186-Employer Nomination Scheme visa/Subclass 186-Employer Nomination Scheme visa.pdf",
+      "page": 7,
+      "quote": "Unless exempt, most applicants need to have at least 3 years relevant work experience in their occupation.",
+      "numeric": {
+        "name": "minimum relevant work experience",
+        "value": 3,
+        "unit": "years"
+      },
+      "intakeFields": [
+        "offshoreExperienceYears",
+        "onshoreExperienceYears"
+      ],
+      "evaluatedFromIntake": true
+    },
+    {
+      "id": "186DE.skills_assessment",
+      "visa": "186",
+      "stream": "Direct Entry",
+      "kind": "gate",
+      "requirement": "A positive skills assessment before lodging, unless exempt",
+      "source": "Subclass 186-Employer Nomination Scheme visa/Subclass 186-Employer Nomination Scheme visa.pdf",
+      "page": 7,
+      "quote": "Most applicants need to have a skills assessment that shows they have the skills",
+      "intakeFields": [
+        "occupationConfirmed"
+      ],
+      "evaluatedFromIntake": true
+    },
+    {
+      "id": "186DE.english",
+      "visa": "186",
+      "stream": "Direct Entry",
+      "kind": "gate",
+      "requirement": "At least Competent English",
+      "source": "Subclass 186-Employer Nomination Scheme visa/Subclass 186-Employer Nomination Scheme visa.pdf",
+      "page": 9,
+      "quote": "You must have at least competent English to be granted this stream of the visa.",
+      "intakeFields": [
+        "englishLevel"
+      ],
+      "evaluatedFromIntake": true
+    },
+    {
+      "id": "186DE.salary",
+      "visa": "186",
+      "stream": "Direct Entry",
+      "kind": "gate",
+      "requirement": "Nominated salary at or above the Core Skills Income Threshold (CSIT)",
+      "source": "Subclass 186-Employer Nomination Scheme visa/Subclass 186-Employer Nomination Scheme visa.pdf",
+      "page": 28,
+      "quote": "The Core Skills Income Threshold (CSIT) will increase from AUD76,515 to",
+      "numeric": {
+        "name": "Core Skills Income Threshold (CSIT)",
+        "value": 79423,
+        "unit": "AUD per year",
+        "effectiveFrom": "2026-07-01",
+        "previous": 76515,
+        "note": "The 186 document (p.28) says the CSIT applies to nomination applications for the Employer Nomination Scheme (subclass 186); it does not say which stream, so it is applied to Direct Entry."
+      },
+      "intakeFields": [
+        "annualSalaryAud"
+      ],
+      "evaluatedFromIntake": true
+    },
+    {
+      "id": "186DE.employer_nomination",
+      "visa": "186",
+      "stream": "Direct Entry",
+      "kind": "gate",
+      "requirement": "Nominated by an approved Australian employer",
+      "source": "Subclass 186-Employer Nomination Scheme visa/Subclass 186-Employer Nomination Scheme visa.pdf",
+      "page": 8,
+      "quote": "You must be nominated by an Australian employer whose business is actively",
+      "intakeFields": [],
+      "evaluatedFromIntake": false
+    },
+    {
+      "id": "186TRT.hold_visa",
+      "visa": "186",
+      "stream": "Temporary Residence Transition",
+      "kind": "gate",
+      "requirement": "Hold a subclass 457 / 482 (or eligible bridging) visa",
+      "source": "Subclass 186-Employer Nomination Scheme visa/Subclass 186-Employer Nomination Scheme visa.pdf",
+      "page": 48,
+      "quote": "hold a subclass 457, 482 or eligible bridging visa",
+      "intakeFields": [],
+      "evaluatedFromIntake": false
+    },
+    {
+      "id": "186TRT.sponsored_employment",
+      "visa": "186",
+      "stream": "Temporary Residence Transition",
+      "kind": "gate",
+      "requirement": "2 years full-time eligible sponsored employment in the 3 years before applying",
+      "source": "Subclass 186-Employer Nomination Scheme visa/Subclass 186-Employer Nomination Scheme visa.pdf",
+      "page": 53,
+      "quote": "You must have been employed in eligible sponsored employment for a total of 2 years in",
+      "numeric": {
+        "name": "sponsored employment",
+        "value": 2,
+        "unit": "years (within the last 3)"
+      },
+      "intakeFields": [
+        "yearsInSponsoredPosition",
+        "onshoreExperienceYears"
+      ],
+      "evaluatedFromIntake": true
+    },
+    {
+      "id": "186TRT.age",
+      "visa": "186",
+      "stream": "Temporary Residence Transition",
+      "kind": "gate",
+      "requirement": "Under 45 when applying, unless exempt",
+      "source": "Subclass 186-Employer Nomination Scheme visa/Subclass 186-Employer Nomination Scheme visa.pdf",
+      "page": 54,
+      "quote": "Usually, you must be under 45 years of age when you apply.",
+      "numeric": {
+        "name": "age limit (must be under)",
+        "value": 45,
+        "unit": "years"
+      },
+      "intakeFields": [
+        "age"
+      ],
+      "evaluatedFromIntake": true
+    },
+    {
+      "id": "186TRT.english",
+      "visa": "186",
+      "stream": "Temporary Residence Transition",
+      "kind": "gate",
+      "requirement": "At least Competent English",
+      "source": "Subclass 186-Employer Nomination Scheme visa/Subclass 186-Employer Nomination Scheme visa.pdf",
+      "page": 55,
+      "quote": "You must have at least Competent English.",
+      "intakeFields": [
+        "englishLevel"
+      ],
+      "evaluatedFromIntake": true
+    },
+    {
+      "id": "186TRT.employer_nomination",
+      "visa": "186",
+      "stream": "Temporary Residence Transition",
+      "kind": "gate",
+      "requirement": "Nominated by the employer who sponsored the temporary visa",
+      "source": "Subclass 186-Employer Nomination Scheme visa/Subclass 186-Employer Nomination Scheme visa.pdf",
+      "page": 54,
+      "quote": "You must be nominated by an Australian employer whose business is actively and lawfully operating in Australia.",
+      "intakeFields": [],
+      "evaluatedFromIntake": false
+    },
+    {
+      "id": "482CS.occupation_csol",
+      "visa": "482",
+      "stream": "Core Skills",
+      "kind": "gate",
+      "requirement": "Nominated occupation on the Core Skills Occupation List (CSOL)",
+      "source": "Visa (subclass 482) Core Skills stream/Skills in Demand Visa (subclass 482) Core Skills stream_01July2026.pdf",
+      "page": 2,
+      "quote": "be nominated to work in an occupation on the Core Skills Occupation List",
+      "intakeFields": [
+        "occupation"
+      ],
+      "evaluatedFromIntake": true
+    },
+    {
+      "id": "482CS.salary",
+      "visa": "482",
+      "stream": "Core Skills",
+      "kind": "gate",
+      "requirement": "Paid the market salary and no less than the Core Skills Income Threshold (CSIT)",
+      "source": "Visa (subclass 482) Core Skills stream/Skills in Demand Visa (subclass 482) Core Skills stream_01July2026.pdf",
+      "page": 2,
+      "quote": "no less than the Core Skills Income Threshold (CSIT)",
+      "numeric": {
+        "name": "Core Skills Income Threshold (CSIT)",
+        "value": 79423,
+        "unit": "AUD per year",
+        "effectiveFrom": "2026-07-01",
+        "previous": 76515
+      },
+      "intakeFields": [
+        "annualSalaryAud"
+      ],
+      "evaluatedFromIntake": true
+    },
+    {
+      "id": "482CS.experience",
+      "visa": "482",
+      "stream": "Core Skills",
+      "kind": "gate",
+      "requirement": "At least 1 year relevant work experience",
+      "source": "Visa (subclass 482) Core Skills stream/Skills in Demand Visa (subclass 482) Core Skills stream_01July2026.pdf",
+      "page": 12,
+      "quote": "You must have at least 1 year relevant work experience in the nominated occupation",
+      "numeric": {
+        "name": "minimum relevant work experience",
+        "value": 1,
+        "unit": "years"
+      },
+      "intakeFields": [
+        "offshoreExperienceYears",
+        "onshoreExperienceYears"
+      ],
+      "evaluatedFromIntake": true
+    },
+    {
+      "id": "482CS.skills_assessment",
+      "visa": "482",
+      "stream": "Core Skills",
+      "kind": "gate",
+      "requirement": "A skills assessment where it is mandatory for the occupation",
+      "source": "Visa (subclass 482) Core Skills stream/Skills in Demand Visa (subclass 482) Core Skills stream_01July2026.pdf",
+      "page": 13,
+      "quote": "Some primary SID visa applicants must undergo a mandatory skills assessment",
+      "intakeFields": [],
+      "evaluatedFromIntake": false
+    },
+    {
+      "id": "482CS.english",
+      "visa": "482",
+      "stream": "Core Skills",
+      "kind": "gate",
+      "requirement": "Minimum English test result (IELTS 5.0 overall and each component), unless exempt",
+      "source": "Visa (subclass 482) Core Skills stream/English proficiency (subclass 482)_25April2026.pdf",
+      "page": 2,
+      "quote": "you must take an English language test before you apply for the subclass 482 visa in the Core Skills or Specialist Skills stream",
+      "numeric": {
+        "name": "IELTS minimum (tests taken on or after 13 September 2025)",
+        "value": 5,
+        "unit": "overall and in each component"
+      },
+      "intakeFields": [
+        "englishLevel"
+      ],
+      "evaluatedFromIntake": true
+    },
+    {
+      "id": "482CS.sponsor",
+      "visa": "482",
+      "stream": "Core Skills",
+      "kind": "gate",
+      "requirement": "Nominated by an approved employer sponsor",
+      "source": "Visa (subclass 482) Core Skills stream/Skills in Demand Visa (subclass 482) Core Skills stream_01July2026.pdf",
+      "page": 11,
+      "quote": "Before you can apply for a SID visa, your proposed employer will need to submit a nomination",
+      "intakeFields": [],
+      "evaluatedFromIntake": false
+    },
+    {
+      "id": "482SS.salary",
+      "visa": "482",
+      "stream": "Specialist Skills",
+      "kind": "gate",
+      "requirement": "Salary at or above the Specialist Skills Income Threshold (SSIT)",
+      "source": "Visa (subclass 482) Core Skills stream/Skills in Demand Visa (subclass 482) Core Skills stream_01July2026.pdf",
+      "page": 1,
+      "quote": "The Specialist Skills Income Threshold (SSIT) will increase from AUD141,210 to",
+      "numeric": {
+        "name": "Specialist Skills Income Threshold (SSIT)",
+        "value": 146576,
+        "unit": "AUD per year",
+        "effectiveFrom": "2026-07-01",
+        "previous": 141210
+      },
+      "intakeFields": [
+        "annualSalaryAud"
+      ],
+      "evaluatedFromIntake": true
+    },
+    {
+      "id": "485.age",
+      "visa": "485",
+      "stream": null,
+      "kind": "gate",
+      "requirement": "35 or under when applying (under 50 with a Masters (research) / PhD, or a Hong Kong / BNO passport)",
+      "source": "Temporary Graduate visa (subclass 485) Post-Higher Education Work stream/Temporary Graduate visa (subclass 485) Post-Higher Education Work stream _23September2026.pdf",
+      "page": 7,
+      "quote": "You must be 35 years of age or under when you apply.",
+      "numeric": {
+        "name": "age limit (or under)",
+        "value": 35,
+        "unit": "years",
+        "note": "Under 50 if the study requirement is met with a Masters (research) or Doctoral degree (PhD), or a Hong Kong / BNO passport holder."
+      },
+      "intakeFields": [
+        "age",
+        "qualificationLevel"
+      ],
+      "evaluatedFromIntake": true
+    },
+    {
+      "id": "485.in_australia",
+      "visa": "485",
+      "stream": null,
+      "kind": "gate",
+      "requirement": "In Australia (not in immigration clearance) when applying",
+      "source": "Temporary Graduate visa (subclass 485) Post-Higher Education Work stream/Temporary Graduate visa (subclass 485) Post-Higher Education Work stream _23September2026.pdf",
+      "page": 7,
+      "quote": "You must be in Australia (but not in immigration clearance) when you apply for this",
+      "intakeFields": [
+        "currentCountry"
+      ],
+      "evaluatedFromIntake": true
+    },
+    {
+      "id": "485.eligible_degree",
+      "visa": "485",
+      "stream": null,
+      "kind": "gate",
+      "requirement": "An eligible degree (Bachelor or above) awarded in the 6 months before applying",
+      "source": "Temporary Graduate visa (subclass 485) Post-Higher Education Work stream/Temporary Graduate visa (subclass 485) Post-Higher Education Work stream _23September2026.pdf",
+      "page": 7,
+      "quote": "You must have been awarded an eligible degree, regardless of your field of study, in",
+      "intakeFields": [
+        "qualificationLevel"
+      ],
+      "evaluatedFromIntake": true
+    },
+    {
+      "id": "485.australian_provider",
+      "visa": "485",
+      "stream": null,
+      "kind": "gate",
+      "requirement": "Studied with a CRICOS-registered Australian provider",
+      "source": "Temporary Graduate visa (subclass 485) Post-Higher Education Work stream/Temporary Graduate visa (subclass 485) Post-Higher Education Work stream _23September2026.pdf",
+      "page": 9,
+      "quote": "Your course must have been with an Australian education provider who is registered",
+      "intakeFields": [
+        "qualificationAwardedInAustralia"
+      ],
+      "evaluatedFromIntake": true
+    },
+    {
+      "id": "485.english",
+      "visa": "485",
+      "stream": null,
+      "kind": "gate",
+      "requirement": "English test result from the 12 months before applying (or an eligible passport)",
+      "source": "Temporary Graduate visa (subclass 485) Post-Higher Education Work stream/Temporary Graduate visa (subclass 485) Post-Higher Education Work stream _23September2026.pdf",
+      "page": 9,
+      "quote": "In the 12 months immediately before the day you apply for your visa, you must have",
+      "intakeFields": [],
+      "evaluatedFromIntake": false
+    },
+    {
+      "id": "500.enrolment",
+      "visa": "500",
+      "stream": null,
+      "kind": "gate",
+      "requirement": "Enrolled in a course with a valid Confirmation of Enrolment (CoE)",
+      "source": "Visa_500/Student visa_class_500_23September2026.pdf",
+      "page": 2,
+      "quote": "be enrolled in a course of study in Australia and hold a valid Confirmation of",
+      "intakeFields": [],
+      "evaluatedFromIntake": false
+    },
+    {
+      "id": "500.oshc",
+      "visa": "500",
+      "stream": null,
+      "kind": "gate",
+      "requirement": "Overseas Student Health Cover (OSHC), unless exempt",
+      "source": "Visa_500/Student visa_class_500_23September2026.pdf",
+      "page": 2,
+      "quote": "hold Overseas Student Health Cover (OSHC), or fall in one of the exemption",
+      "intakeFields": [],
+      "evaluatedFromIntake": false
+    },
+    {
+      "id": "500.age",
+      "visa": "500",
+      "stream": null,
+      "kind": "gate",
+      "requirement": "6 years or older",
+      "source": "Visa_500/Student visa_class_500_23September2026.pdf",
+      "page": 2,
+      "quote": "be 6 years or older",
+      "numeric": {
+        "name": "minimum age",
+        "value": 6,
+        "unit": "years"
+      },
+      "intakeFields": [
+        "age"
+      ],
+      "evaluatedFromIntake": true
+    },
+    {
+      "id": "820.relationship",
+      "visa": "820",
+      "stream": null,
+      "kind": "gate",
+      "requirement": "In a genuine relationship with an Australian citizen / permanent resident / eligible NZ citizen partner",
+      "source": "(Subclasses 820 and 801) Partner visas (apply in Australia)/Subclass 820 Partner visa (temporary)/Subclass 820 Partner visa (temporary)_23September2026.pdf",
+      "page": 2,
+      "quote": "be in a genuine relationship with your spouse or de facto partner",
+      "intakeFields": [],
+      "evaluatedFromIntake": false
+    },
+    {
+      "id": "820.sponsor",
+      "visa": "820",
+      "stream": null,
+      "kind": "gate",
+      "requirement": "Sponsored by that partner",
+      "source": "(Subclasses 820 and 801) Partner visas (apply in Australia)/Subclass 820 Partner visa (temporary)/Subclass 820 Partner visa (temporary)_23September2026.pdf",
+      "page": 2,
+      "quote": "have your spouse or de facto partner sponsor you",
+      "intakeFields": [],
+      "evaluatedFromIntake": false
+    },
+    {
+      "id": "820.in_australia",
+      "visa": "820",
+      "stream": null,
+      "kind": "gate",
+      "requirement": "In Australia when applying",
+      "source": "(Subclasses 820 and 801) Partner visas (apply in Australia)/Subclass 820 Partner visa (temporary)/Subclass 820 Partner visa (temporary)_23September2026.pdf",
+      "page": 2,
+      "quote": "be in Australia when you apply for this visa",
+      "intakeFields": [
+        "currentCountry"
+      ],
+      "evaluatedFromIntake": true
+    }
+  ]
+}

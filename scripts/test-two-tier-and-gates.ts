@@ -71,24 +71,25 @@ console.log("\n==================== (3) 186 / 482 hard gates ===================
   const cases: Array<[string, Partial<ReadinessInput>, boolean, boolean]> = [
     // [label, experience, 186 ineligible, 482 ineligible]
     ["0 years", { offshoreExperienceYears: 0, onshoreExperienceYears: 0 }, true, true],
-    ["none entered", { offshoreExperienceYears: undefined, onshoreExperienceYears: undefined }, true, true],
+    // Not entered is unknown, not a failure (lib/readiness/visa-gates.ts): Conditional, never Not eligible now.
+    ["none entered", { offshoreExperienceYears: undefined, onshoreExperienceYears: undefined }, false, false],
     ["0.5 years", { offshoreExperienceYears: 0.5 }, true, true],
     ["1 + 1 = 2 years", { offshoreExperienceYears: 1, onshoreExperienceYears: 1 }, true, false],
     ["2 + 1 = 3 years", { offshoreExperienceYears: 2, onshoreExperienceYears: 1 }, false, false],
   ];
   for (const [label, exp, no186, no482] of cases) {
     for (const locale of ["en", "tr", "zh-Hans"] as const) {
-      const r = run({ ...exp, occupationConfirmed: "yes", preferredPathway: "482,186" }, locale);
+      const r = run({ ...exp, occupationConfirmed: "yes", preferredPathway: "482,186", nominationStream: "direct_entry" }, locale);
       const p186 = r.pathwayComparison.find((p) => p.subclass === "186");
       const p482 = r.pathwayComparison.find((p) => p.subclass === "482");
       const bad186 = p186 ? (p186.relevance === "ineligible") !== no186 : false;
       const bad482 = p482 ? (p482.relevance === "ineligible") !== no482 : false;
-      const statutory = (p: typeof p186) => !p || p.relevance !== "ineligible" || /Hard Gate|Kesin şart|硬性门槛/.test(p.reason);
+      const statutory = (p: typeof p186) => !p || p.relevance !== "ineligible" || /Not eligible now|Şu anda uygun değil|目前不符合条件/.test(p.reason);
       if (!bad186 && !bad482 && statutory(p186) && statutory(p482)) {
         if (locale === "en") ok(`${label}: 186 ${p186?.relevance}, 482 ${p482?.relevance}`);
       } else fail(`${label} [${locale}]: 186 ${p186?.relevance} (expected ${no186 ? "ineligible" : "not"}), 482 ${p482?.relevance} (expected ${no482 ? "ineligible" : "not"})`);
-      if (locale === "en" && no186 && p186 && !/at least 3 years.*statutory/.test(p186.reason)) fail(`${label}: 186 reason lacks the statutory 3-year wording: ${p186.reason}`);
-      if (locale === "en" && no482 && p482 && !/at least 1 year.*statutory/.test(p482.reason)) fail(`${label}: 482 reason lacks the statutory 1-year wording: ${p482.reason}`);
+      if (locale === "en" && no186 && p186 && !/At least 3 years of relevant work experience.*Home Affairs, Subclass 186 page, p\.7/.test(p186.reason)) fail(`${label}: 186 reason lacks the sourced 3-year gate: ${p186.reason}`);
+      if (locale === "en" && no482 && p482 && !/At least 1 year of relevant work experience.*Home Affairs, Subclass 482 page, p\.12/.test(p482.reason)) fail(`${label}: 482 reason lacks the sourced 1-year gate: ${p482.reason}`);
       // Never recommended: an ineligible 186/482 is not in the ranked skilled recommendations.
       if (no186 && r.detectedSubclasses?.includes("186") && p186?.relevance !== "ineligible") fail(`${label}: 186 still recommended`);
     }
@@ -133,8 +134,14 @@ console.log("\n==================== (5) the form ====================");
   const step3 = readFileSync(`${dir}step-3-language.tsx`, "utf8");
   const form = readFileSync(`${dir}full-check-waitlist-form.tsx`, "utf8");
   const action = readFileSync(`${dir}actions.ts`, "utf8");
-  if (![step3, form, action].some((s) => /isQualificationRecognized|Overseas qualification recognized/.test(s.replace(/\/\/.*$/gm, "").replace(/\*[^\n]*/g, "")))) ok('no "Overseas qualification recognized?" field in the form or action');
-  else fail("the recognition field is still referenced in the form or action");
+  // The recognition question is back, but only after a positive skills assessment and worded as the assessment's
+  // recognition of the degree; it never changes points values.
+  const step3Code = step3.replace(/\/\/.*$/gm, "");
+  if (/skillsAssessmentYes && \(|qualificationAwardedInAustralia === "no" && skillsAssessmentYes/.test(step3Code) && step3.includes("Did your skills assessment (or the relevant authority) recognise your degree as comparable to the Australian level?") && !/Overseas qualification recognized\?/.test(step3)) {
+    ok("recognition question: only when the skills assessment is Yes, reworded to the assessment's recognition of the degree");
+  } else fail("recognition question is not conditional on a positive skills assessment / not reworded");
+  if (/occupationConfirmedRaw === "yes" && isQualificationRecognizedResult\.success/.test(action)) ok("the action stores the answer only alongside a positive skills assessment");
+  else fail("the action does not tie the recognition answer to a positive skills assessment");
   const options = ["Single (+10 pts)", "Partner with Competent English AND positive Skills Assessment (+10 pts)", "Partner with Competent English only (+5 pts)", "Partner with NO functional English / Not eligible (0 pts)"];
   const missing = options.filter((o) => !form.includes(o));
   if (missing.length === 0 && !form.includes('"Partner / Dependants with Functional English"')) ok("the four points-test sponsor options, exactly; the Functional-English option is gone");

@@ -4,6 +4,7 @@ import { getPersonalizedPointsBreakdown } from "./pdf-content/personalized-point
 import { skillsAssessmentClaimText } from "./pdf-content/skills-assessment-claim";
 import { getPersonalizedOverview } from "./pdf-content/personalized-overview";
 import { getPersonalizedApplicationGuide } from "./pdf-content/personalized-guide";
+import { gateSectionTitle, gateSummaryText, reportedGateVisas } from "./visa-gate-text";
 import { getPersonalizedFaq } from "./pdf-content/personalized-faq";
 import { getSkillsAssessmentStatus } from "./pdf-content/skills-assessment-status";
 import { getViabilityInsights } from "./pdf-content/viability-insights";
@@ -264,6 +265,19 @@ export function renderPersonalizedContent(ctx: PDFContext): void {
         : t === "zh" ? "EOI 状态：就绪。"
         : "EOI STATUS: READY.";
       drawEoiBanner(readyTitle, null, GREEN_PALETTE);
+    }
+  }
+
+  // Sourced hard gates per visa (lib/readiness/visa-gates.ts): "Not eligible now" with the failed gates and their
+  // Home Affairs citations, "Conditional" with what must be true, or "Eligible to pursue" with the later steps.
+  if (report.visaGates) {
+    const lines = reportedGateVisas(report.pathwayComparison)
+      .map((v) => report.visaGates![v])
+      .filter(Boolean)
+      .map((g) => gateSummaryText(g, effectiveLocale));
+    if (lines.length > 0) {
+      ctx.ensurePageSpace(40);
+      addPremiumBulletContainer(gateSectionTitle(effectiveLocale), lines, COLORS.accent);
     }
   }
 

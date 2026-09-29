@@ -1,0 +1,263 @@
+/**
+ * The sourced hard-gate matrix (src/data/visa-gates.json <- scripts/generate-visa-gates.ts; evaluation in
+ * lib/readiness/visa-gates.ts).
+ *
+ *   1. Drift: regenerates from data/knowledge and diffs the committed JSON (SKIPPED where data/knowledge is absent).
+ *   2. Committed-file invariants: every gate has a page + verbatim quote; the thresholds (CSIT / SSIT with their
+ *      effective dates, ages, points, years of experience) and the flagged missing items.
+ *   3. Gate evaluation over a persona matrix (b0d20f74's inputs, with a skills assessment, salary 44,998 with no
+ *      experience, age 46, English Competent vs none, an occupation off the CSOL, an occupation on no skilled list).
+ *   4. 189/190/491: a not-met gate <=> the pathway score set blocks it (the ranking can never recommend it).
+ *   5. Real PDF text (en / tr / zh-Hans): a not-met pathway is "Not eligible now" with the failed gate and its Home
+ *      Affairs citation; a Conditional one lists what must be true; no sentence recommends a not-met pathway; the
+ *      Bridge to PR section offers no not-met pathway.
+ *   6. The AI strategy validator rejects a recommendation of a not-met pathway (list, reason, summary) and accepts
+ *      one that only says it is not available.
+ *
+ *   npx tsx scripts/test-visa-gates.ts
+ */
+import { existsSync, readFileSync } from "node:fs";
+
+import gatesData from "../src/data/visa-gates.json";
+import type { ReadinessInput, ReadinessReport } from "../lib/readiness/types";
+import { evaluateVisaGates, pathwayGateLabel, type PathwayGates } from "../lib/readiness/visa-gates";
+import { findRecommendationViolations, notEligibleSubclasses, recommendsClosedVisa } from "../lib/readiness/pathway-recommendations";
+import { runReadinessEngine } from "../src/lib/readiness-engine";
+import { VISA_GATES_OUT_FILE, VISA_GATE_DOCUMENTS, buildVisaGates, serialize } from "./generate-visa-gates";
+import { renderPersonaPdfTexts } from "./render-persona-pdfs";
+
+let failures = 0;
+const ok = (m: string) => console.log(`  ✅ ${m}`);
+const fail = (m: string) => {
+  failures++;
+  console.error(`  ❌ ${m}`);
+};
+
+type Persona = { name: string; input: ReadinessInput };
+const A: ReadinessInput = {
+  locale: "en",
+  country: "AU",
+  mainGoal: "",
+  currentCountry: "AU",
+  passportCountry: "TR",
+  age: "28",
+  occupation: "Software Engineer (261313)",
+  occupationConfirmed: "no",
+  englishLevel: "superior",
+  qualificationLevel: "PhD",
+  qualificationAwardedInAustralia: false,
+  annualSalaryAud: 45000,
+  sponsorOrFamily: "Partner / Dependants WITHOUT Functional English",
+  migrationGoals: ["direct_pr", "employer_sponsorship"],
+  preferredPathway: "189,190,491,482,186",
+};
+const PERSONAS: Persona[] = [
+  { name: "b0d20f74 inputs (skills assessment No)", input: A },
+  { name: "b0d20f74 + skills assessment Yes", input: { ...A, occupationConfirmed: "yes" } },
+  { name: "salary 44,998, no experience", input: { ...A, occupationConfirmed: "yes", annualSalaryAud: 44998 } },
+  { name: "age 46", input: { ...A, occupationConfirmed: "yes", age: "46" } },
+  { name: "English Competent", input: { ...A, occupationConfirmed: "yes", englishLevel: "competent", annualSalaryAud: 95000, offshoreExperienceYears: 5, sponsorOrFamily: "Single / No Dependants" } },
+  { name: "no English test", input: { ...A, occupationConfirmed: "yes", englishLevel: "none", annualSalaryAud: 95000, offshoreExperienceYears: 5, sponsorOrFamily: "Single / No Dependants" } },
+  { name: "occupation not on the CSOL (Acupuncturist 252211, STSOL)", input: { ...A, occupation: "Acupuncturist (252211)", occupationConfirmed: "yes", offshoreExperienceYears: 5, annualSalaryAud: 95000 } },
+  { name: "occupation on no skilled list (Aged or Disabled Carer 422111)", input: { ...A, occupation: "Aged or Disabled Carer (422111)", occupationConfirmed: "yes", offshoreExperienceYears: 5, annualSalaryAud: 95000 } },
+];
+
+const gatesFor = (input: ReadinessInput, locale: ReadinessInput["locale"] = "en") => {
+  const r = runReadinessEngine({ ...input, locale });
+  return { report: r, gates: r.visaGates as Record<string, PathwayGates> };
+};
+const notMetIds = (g: PathwayGates) => g.notMet.map((x) => x.id);
+const unknownIds = (g: PathwayGates) => g.unknown.map((x) => x.id);
+
+async function main() {
+  console.log("==================== (1) drift ====================");
+  if (!Object.values(VISA_GATE_DOCUMENTS).every((f) => existsSync(f))) {
+    console.log("  SKIPPED: data/knowledge is not present (gitignored)");
+  } else {
+    const committed = readFileSync(VISA_GATES_OUT_FILE, "utf8").replace(/\r\n/g, "\n");
+    if (committed === serialize(await buildVisaGates())) ok(`${VISA_GATES_OUT_FILE} matches a fresh parse of the ${Object.keys(VISA_GATE_DOCUMENTS).length} source documents`);
+    else fail(`${VISA_GATES_OUT_FILE} drifted -- run: npx tsx scripts/generate-visa-gates.ts`);
+  }
+
+  console.log("\n==================== (2) committed-file invariants ====================");
+  {
+    const d = gatesData as unknown as {
+      _provenance: { last_verified: string; extractedOn: string };
+      thresholds: Record<string, { value: number; effectiveFrom?: string; previous?: number }> & { ageLimits: Record<string, number>; minimumPoints: number };
+      missing: string[];
+      gates: Array<{ id: string; visa: string; stream: string | null; page: number; quote: string; source: string; kind: string; numeric?: { value: number }; intakeFields: string[] }>;
+    };
+    const bad = d.gates.filter((g) => !(g.page > 0) || g.quote.length < 15 || !g.source);
+    if (bad.length === 0) ok(`${d.gates.length} gates, each with a page, a verbatim quote and its source document`);
+    else fail(`gates without page/quote/source: ${bad.map((g) => g.id).join(", ")}`);
+    const t = d.thresholds;
+    if (t.CSIT.value === 79423 && t.CSIT.effectiveFrom === "2026-07-01" && t.CSIT.previous === 76515 && t.SSIT.value === 146576 && t.SSIT.previous === 141210 && t.ageLimits["189"] === 45 && t.ageLimits["485"] === 35 && t.minimumPoints === 65) {
+      ok("thresholds: CSIT AUD79,423 (from 1 July 2026, was 76,515), SSIT AUD146,576 (was 141,210), age 45 (485: 35), 65 points");
+    } else fail(`thresholds: ${JSON.stringify(t)}`);
+    const need = ["189", "190", "491", "186", "482", "485", "500", "820"];
+    const streams = (v: string) => new Set(d.gates.filter((g) => g.visa === v).map((g) => g.stream));
+    if (need.every((v) => d.gates.some((g) => g.visa === v)) && streams("186").has("Direct Entry") && streams("186").has("Temporary Residence Transition") && streams("482").has("Core Skills") && streams("482").has("Specialist Skills")) {
+      ok("every visa is covered; 186 Direct Entry and Temporary Residence Transition, 482 Core Skills and Specialist Skills separately");
+    } else fail("a visa or stream is missing from the matrix");
+    if (d.missing.some((m) => /Specialist Skills/.test(m)) && d.missing.length >= 5 && d._provenance.last_verified === d._provenance.extractedOn) ok(`${d.missing.length} missing items flagged (incl. the 482 Specialist Skills stream); provenance dated ${d._provenance.last_verified}`);
+    else fail("missing-items list or provenance");
+    const noField = d.gates.filter((g) => g.kind === "gate" && g.intakeFields.length === 0).map((g) => g.id);
+    console.log(`  (gates the intake cannot evaluate -> always unknown: ${noField.join(", ")})`);
+  }
+
+  console.log("\n==================== (3) gate evaluation ====================");
+  const G = Object.fromEntries(PERSONAS.map((p) => [p.name, gatesFor(p.input)]));
+  const expect = (persona: string, visa: string, status: string, notMet: string[] = [], unknown: string[] = []) => {
+    const g = G[persona].gates[visa];
+    const okNot = notMet.every((id) => notMetIds(g).includes(id)) && (status !== "not_eligible_now" || notMetIds(g).length >= notMet.length);
+    const okUnk = unknown.every((id) => unknownIds(g).includes(id));
+    if (g.status === status && okNot && okUnk) ok(`${persona} -> ${visa}: ${g.status}${g.notMet.length ? ` [${notMetIds(g).join(", ")}]` : ""}`);
+    else fail(`${persona} -> ${visa}: ${g.status} notMet [${notMetIds(g)}] unknown [${unknownIds(g)}]; expected ${status} notMet [${notMet}] unknown [${unknown}]`);
+  };
+  {
+    const n = PERSONAS[0].name;
+    expect(n, "189", "not_eligible_now", ["189.skills_assessment"]);
+    expect(n, "190", "not_eligible_now", ["190.skills_assessment"]);
+    expect(n, "491", "not_eligible_now", ["491.skills_assessment"]);
+    expect(n, "482", "not_eligible_now", ["482CS.salary"], ["482CS.experience", "482CS.sponsor"]);
+    expect(n, "186", "conditional", [], ["186TRT.hold_visa", "186TRT.employer_nomination"]);
+    const g = G[n].gates["186"];
+    if ((g.closedStreams ?? []).some((c) => c.stream === "Direct Entry" && c.notMet.some((x) => x.id === "186DE.skills_assessment" || x.id === "186DE.salary"))) ok(`${n} -> 186: Direct Entry is out (skills assessment / CSIT), reported with its failed gates`);
+    else fail(`${n} -> 186: closed streams ${JSON.stringify(g.closedStreams?.map((c) => [c.stream, c.notMet.map((x) => x.id)]))}`);
+  }
+  {
+    const n = PERSONAS[1].name;
+    expect(n, "189", "eligible");
+    expect(n, "190", "eligible");
+    expect(n, "491", "eligible");
+    const g = G[n].gates["190"];
+    if (g.future.some((x) => x.id === "190.invitation") && g.future.some((x) => x.id === "190.nomination")) ok("190: invitation and state nomination are future steps, not failures");
+    else fail("190 future steps missing");
+  }
+  {
+    const n = PERSONAS[2].name; // salary 44,998, no experience entered
+    expect(n, "482", "not_eligible_now", ["482CS.salary"], ["482CS.experience"]);
+    // 186 Direct Entry explicitly: CSIT not met; experience unknown (not entered).
+    const de = gatesFor({ ...PERSONAS[2].input, nominationStream: "direct_entry" }).gates["186"];
+    if (de.status === "not_eligible_now" && notMetIds(de).includes("186DE.salary") && unknownIds(de).includes("186DE.experience")) ok("186 Direct Entry: not eligible now (salary 44,998 < CSIT 79,423); experience unknown, not a failure");
+    else fail(`186 DE: ${de.status} [${notMetIds(de)}] [${unknownIds(de)}]`);
+    // With 0 years entered, both fail.
+    const zero = gatesFor({ ...PERSONAS[2].input, offshoreExperienceYears: 0, onshoreExperienceYears: 0, nominationStream: "direct_entry" }).gates;
+    if (notMetIds(zero["186"]).includes("186DE.experience") && notMetIds(zero["482"]).includes("482CS.experience")) ok("0 years entered: 186 (3 years) and 482 (1 year) experience gates are not met");
+    else fail("0 years entered did not fail both experience gates");
+  }
+  {
+    const n = PERSONAS[3].name;
+    for (const v of ["189", "190", "491"]) expect(n, v, "not_eligible_now", [`${v}.age`]);
+    expect(n, "186", "not_eligible_now", ["186DE.age", "186TRT.age"]);
+    // 485: 35 or under -- but under 50 with a Masters (research) / PhD, which this persona has; a Bachelor at 46 fails.
+    if (!notMetIds(G[n].gates["485"]).includes("485.age")) ok("age 46 with a PhD: the 485 age gate is met (research-degree exception, under 50)");
+    else fail("485 age gate ignored the research-degree exception");
+    const b485 = gatesFor({ ...PERSONAS[3].input, qualificationLevel: "Bachelor" }).gates["485"];
+    if (notMetIds(b485).includes("485.age")) ok("age 46 with a Bachelor degree: 485 age gate not met (35 or under)");
+    else fail(`485 age for a Bachelor at 46: ${notMetIds(b485)}`);
+  }
+  {
+    expect(PERSONAS[4].name, "189", "eligible");
+    for (const v of ["189", "190", "491"]) expect(PERSONAS[5].name, v, "not_eligible_now", [`${v}.english`]);
+    expect(PERSONAS[5].name, "482", "conditional", [], ["482CS.english"]);
+    expect(PERSONAS[5].name, "186", "not_eligible_now", ["186DE.english", "186TRT.english"]);
+  }
+  {
+    const n = PERSONAS[6].name;
+    expect(n, "189", "not_eligible_now", ["189.occupation_list"]);
+    expect(n, "190", "eligible");
+    expect(n, "482", "not_eligible_now", ["482CS.occupation_csol"]);
+    const de = gatesFor({ ...PERSONAS[6].input, nominationStream: "direct_entry" }).gates["186"];
+    if (notMetIds(de).includes("186DE.occupation_csol")) ok("186 Direct Entry: occupation not on the CSOL -> not met");
+    else fail(`186 DE occupation: ${notMetIds(de)}`);
+  }
+  {
+    const n = PERSONAS[7].name;
+    for (const v of ["189", "190", "491"]) expect(n, v, "not_eligible_now", [`${v}.occupation_list`]);
+    expect(n, "482", "not_eligible_now", ["482CS.occupation_csol"]);
+  }
+
+  console.log("\n==================== (4) 189/190/491: a not-met gate <=> blocked in the score set ====================");
+  for (const p of PERSONAS) {
+    const { report, gates } = G[p.name];
+    const mism = (["189", "190", "491"] as const).filter((v) => (gates[v].status === "not_eligible_now") !== Boolean(report.pathwayScores?.[v].isBlocked));
+    if (mism.length === 0) ok(`${p.name}: gate result and ranking agree for 189/190/491`);
+    else fail(`${p.name}: gates vs isBlocked disagree for ${mism.join(", ")} (gates ${mism.map((v) => gates[v].status)}, blocked ${mism.map((v) => report.pathwayScores?.[v].isBlocked)})`);
+    const rec = report.pathwayRanking?.recommendable ?? [];
+    const leaked = rec.filter((v) => gates[v].status === "not_eligible_now");
+    if (leaked.length) fail(`${p.name}: recommendable includes not-met pathways ${leaked}`);
+  }
+
+  console.log("\n==================== (5) real PDF text: en / tr / zh-Hans ====================");
+  const NOT_ELIGIBLE = { en: "Not eligible now", tr: "Şu anda uygun değil", "zh-Hans": "目前不符合条件" } as const;
+  const CONDITIONAL = { en: "Conditional", tr: "Koşullu", "zh-Hans": "有条件" } as const;
+  const CITE = { en: "Home Affairs, Subclass", tr: "İçişleri Bakanlığı, Subclass", "zh-Hans": "内政部，" } as const;
+  const rendered = await renderPersonaPdfTexts(Object.fromEntries(PERSONAS.map((p) => [p.name, p.input])));
+  for (const r of rendered) {
+    const locale = r.locale;
+    const flat = r.text.replace(/\s+/g, " ");
+    const squash = r.text.replace(/\s+/g, "");
+    const report = r.report as ReadinessReport;
+    const g = report.visaGates!;
+    const reported = report.pathwayComparison.map((p) => (p.subclass === "801" ? "820" : p.subclass));
+    const tag = `${r.id} [${locale}]`;
+    const problems: string[] = [];
+    for (const v of new Set(reported)) {
+      const gv = g[v];
+      if (!gv) continue;
+      const label = gv.status === "not_eligible_now" ? NOT_ELIGIBLE[locale] : gv.status === "conditional" ? CONDITIONAL[locale] : pathwayGateLabel("eligible", locale);
+      if (!squash.includes(`${label}`.replace(/\s+/g, ""))) problems.push(`${v}: label "${label}" missing`);
+      if (gv.status === "not_eligible_now") {
+        const first = gv.notMet[0];
+        if (!squash.includes(first.label.replace(/\s+/g, "")) || !squash.includes(first.citation.replace(/\s+/g, ""))) problems.push(`${v}: failed gate "${first.label}" or its citation "${first.citation}" not in the PDF`);
+        if (!flat.includes(CITE[locale].replace(/\s+/g, " ").trim().split(" ")[0])) problems.push(`${v}: no Home Affairs citation`);
+      }
+      if (gv.status === "conditional") {
+        const u = gv.unknown[0];
+        if (u && !squash.includes(u.label.replace(/\s+/g, ""))) problems.push(`${v}: conditional gate "${u.label}" not listed`);
+      }
+    }
+    // No sentence recommends a pathway with a not-met gate.
+    const closed = notEligibleSubclasses(report);
+    // (Section headings that contain "suggestions" -- the Points Improvement Tips list -- are not recommendations of a visa.)
+    const rec = recommendsClosedVisa(flat.replace(/积分提升建议|Puan Artırma Önerileri|Points Improvement Tips/g, " "), closed);
+    if (rec) problems.push(`a sentence recommends the not-eligible subclass ${rec}`);
+    // Bridge to PR (English section): no 482 / 485 offer while that visa is not eligible now.
+    if (locale === "en") {
+      const bridge = /Bridge to PR \/ Typical Progression Pathways([\s\S]*?)(?:Critical Compliance Alerts|Risk Alerts|Audit-Ready Proof Checklist)/.exec(r.text)?.[1] ?? "";
+      if (g["482"]?.status === "not_eligible_now" && /Employer sponsorship context|subclass 482|482 →/.test(bridge)) problems.push("Bridge to PR still offers 482 (not eligible now)");
+      if (g["485"]?.status === "not_eligible_now" && /485 bridge|Typical post-485/.test(bridge)) problems.push("Bridge to PR still offers 485 (not eligible now)");
+    }
+    if (problems.length === 0) ok(`${tag}: labels, failed gates + citations, conditional lists; nothing recommends a not-eligible pathway (${closed.filter((c) => reported.includes(c)).join(", ") || "-"} closed)`);
+    else problems.forEach((m) => fail(`${tag}: ${m}`));
+  }
+
+  console.log("\n==================== (6) AI strategy validator ====================");
+  {
+    const report = G[PERSONAS[2].name].report; // 482 is not eligible now (salary 44,998)
+    const base = { executiveSummary: "Your profile is being reviewed.", topRecommendedPathways: [], pointsBoosterStrategy: [], timelineEstimate: "6-12 months" };
+    const recommends482 = { ...base, topRecommendedPathways: [{ subclass: "482", state: "", reason: "Employer sponsorship is the best route.", nextSteps: ["Find a sponsor."] }] };
+    const v1 = findRecommendationViolations(recommends482 as never, report);
+    if (v1.some((v) => /Not eligible now/.test(v.message) && /topRecommendedPathways\[0\]/.test(v.path))) ok("a recommendation list containing a not-eligible pathway (482) is rejected");
+    else fail(`list check: ${JSON.stringify(v1)}`);
+    const v2 = findRecommendationViolations({ ...base, executiveSummary: "We recommend that you pursue Subclass 482 with an employer sponsor." } as never, report);
+    if (v2.some((v) => v.path === "executiveSummary")) ok("a summary that recommends subclass 482 is rejected");
+    else fail(`summary check: ${JSON.stringify(v2)}`);
+    const v3 = findRecommendationViolations({ ...base, executiveSummary: "Subclass 482 is not eligible now because the salary is below the CSIT." } as never, report);
+    if (!v3.some((v) => v.path === "executiveSummary")) ok("saying a pathway is not eligible now is accepted");
+    else fail(`negated mention was rejected: ${JSON.stringify(v3)}`);
+    for (const [locale, text] of [["tr", "482 vizesini öneriyoruz; işveren sponsoru bulun."], ["zh-Hans", "我们建议您申请 482 签证并寻找雇主担保。"]] as const) {
+      if (recommendsClosedVisa(text, ["482"])) ok(`${locale}: a recommendation of 482 is detected`);
+      else fail(`${locale}: recommendation of 482 not detected`);
+    }
+  }
+
+  console.log(`\n${failures === 0 ? "✅ ALL CHECKS PASSED" : `❌ ${failures} CHECK(S) FAILED`}`);
+  process.exitCode = failures === 0 ? 0 : 1;
+}
+
+main().catch((err) => {
+  console.error(err);
+  process.exitCode = 1;
+});

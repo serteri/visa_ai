@@ -257,7 +257,7 @@ async function buildReportPdf(record: UserReportRecord, fullName?: string): Prom
       migrationGoals: record.input.migrationGoals,
       preferredState: record.input.preferredState,
       isAustralianQualification: record.input.qualificationAwardedInAustralia,
-      // (isQualificationRecognized is no longer collected; older reports' answer is not used -- engine.ts)
+      isQualificationRecognized: record.input.isQualificationRecognized,
       viability: viabilityData,
     },
   });

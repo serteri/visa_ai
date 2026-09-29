@@ -90,6 +90,7 @@ import trTranslations from "@/public/locales/tr.json";
 import zhTranslations from "@/public/locales/zh-Hans.json";
 import { getEligibleSkilledSubclasses, resolveOccupationDisplayName } from "./occupation-eligibility";
 import { generatePremiumSections, getTrendBenchmarks } from "@/src/lib/readiness/report-generator";
+import { GATED_VISAS, conditionalGateLines, evaluateVisaGates, failedGateLines, pathwayGateLabel } from "@/lib/readiness/visa-gates";
 import { blockedLabel, blockedReasonPhrase, computePathwayScores, describePathwayScore, frictionFromScore, frictionKey, type PathwayScoreSet, type PathwaySubclass } from "@/lib/readiness/pathway-scores";
 import { computeConfidence } from "@/lib/readiness/confidence";
 import { orderBySkilledRanking, rankPathways, type PathwayRanking } from "@/lib/readiness/pathway-ranking";
@@ -2753,20 +2754,25 @@ function buildPathwayEntry(
     ineligibleSharedNotes = parts.sharedNotes;
   }
 
-  // Hard Gate (statutory work experience): Subclass 186 needs at least 3 years and Subclass 482 at least 1 year of
-  // relevant skilled experience. total_experience = offshore + Australian years as entered (unanswered = 0); below
-  // the minimum the pathway is Ineligible and is never recommended, whatever the softer signals above said.
-  const totalExperience = (input.offshoreExperienceYears ?? 0) + (input.onshoreExperienceYears ?? 0);
-  const experienceMinimum = subclass === "186" ? 3 : subclass === "482" ? 1 : undefined;
-  const failsExperienceGate = experienceMinimum !== undefined && totalExperience < experienceMinimum;
-  if (failsExperienceGate) {
-    relevance = "ineligible";
-    const years = Number.isInteger(totalExperience) ? String(totalExperience) : totalExperience.toFixed(1);
-    reason = isTr
-      ? `Kesin şart: Subclass ${subclass} en az ${experienceMinimum} yıl ilgili nitelikli iş deneyimi gerektirir (yasal şart). Beyan ettiğiniz toplam deneyim ${years} yıl; bu nedenle bu yol şu anda uygun değildir.`
-      : locale === "zh-Hans"
-        ? `硬性门槛：Subclass ${subclass} 要求至少 ${experienceMinimum} 年相关技术工作经验（法定要求）。您申报的总经验为 ${years} 年，因此目前不符合该途径。`
-        : `Hard Gate: Subclass ${subclass} requires at least ${experienceMinimum} ${experienceMinimum === 1 ? "year" : "years"} of relevant skilled work experience (statutory requirement). Your declared experience totals ${years} ${totalExperience === 1 ? "year" : "years"}, so this pathway is not available.`;
+  // Sourced hard-gate matrix (lib/readiness/visa-gates.ts, src/data/visa-gates.json): every mandatory requirement of the
+  // visa evaluated as met / not met / unknown against the intake. Any not-met gate makes the pathway "Not eligible
+  // now" (relevance ineligible, never recommended) with the failed gates and their citations; unknown gates make it
+  // "Conditional" and the reason lists what must be true. 189/190/491 keep their points/skills-assessment
+  // machinery (the ranking blocks them for exactly the same gates -- see test-visa-gates); the gates are attached
+  // for display.
+  const gateKey = subclass === "801" ? "820" : subclass;
+  const gates = (GATED_VISAS as readonly string[]).includes(gateKey)
+    ? evaluateVisaGates(input, { estimatedPoints, potentialPoints: gatePoints }, locale)[gateKey]
+    : undefined;
+  const failsGate = Boolean(gates && gates.status === "not_eligible_now" && !["189", "190", "491"].includes(gateKey));
+  if (gates && !["189", "190", "491"].includes(gateKey)) {
+    if (gates.status === "not_eligible_now") {
+      relevance = "ineligible";
+      reason = `${pathwayGateLabel("not_eligible_now", locale)}: ${failedGateLines(gates).join("; ")}.`;
+    } else if (gates.status === "conditional") {
+      if (relevance === "possible") relevance = "needs_more_information";
+      reason = `${reason} ${pathwayGateLabel("conditional", locale)} -- ${locale === "tr" ? "doğru olması gerekenler" : locale === "zh-Hans" ? "须满足" : "must be true"}: ${conditionalGateLines(gates).join("; ")}.`;
+    }
   }
 
   // For 186, relevance is already set to "ineligible" only on true hard-gate
@@ -2776,7 +2782,7 @@ function buildPathwayEntry(
   const isForced186Ineligible = subclass === "186" && relevance === "ineligible";
 
   const forcedIneligibleByRule =
-    failsExperienceGate ||
+    failsGate ||
     (subclass === "485" && (hardAgeGate?.isHardIneligible || ageGate?.isAboveLimit)) ||
     (subclass === "482" && salaryGate?.isBelowCsit) ||
     isLowPointsIneligible ||
@@ -2845,6 +2851,7 @@ function buildPathwayEntry(
     subclass,
     visaName,
     reason,
+    ...(gates ? { gates } : {}),
     relevance,
     confidenceLevel,
     confidenceExplanation,
@@ -3827,9 +3834,13 @@ function buildPointsEstimate(input: ReadinessInput, locale: Locale): PointsEstim
       points: (isOverseasQualification && !hasSkillsAssessmentDone) ? 0 : result.breakdown.education,
       max: 20,
       note: (isOverseasQualification && !hasSkillsAssessmentDone)
-        ? (isTr ? "Yabancı diploma — olumlu beceri değerlendirmesiyle sayılır"
-          : isZh ? "海外学历 — 获得正面技能评估后计分"
-          : "Overseas qualification — counted once a positive skills assessment confirms it")
+        ? (isTr ? "Geçici — derecenizin beceri değerlendirmenizce Avustralya seviyesiyle karşılaştırılabilir olarak tanınmasına bağlıdır"
+          : isZh ? "暂定——取决于您的技能评估是否认可您的学位与澳大利亚水平相当"
+          : "Provisional — depends on your skills assessment recognising your degree as comparable to the Australian level")
+        : (isOverseasQualification && input.isQualificationRecognized === false)
+          ? (isTr ? "Beceri değerlendirmeniz derecenizi karşılaştırılabilir olarak tanımadığını belirtti — eğitim puanını değerlendirme kurumunuzla doğrulayın"
+            : isZh ? "您表示技能评估未认可您的学位与澳大利亚水平相当——请向评估机构确认学历分数"
+            : "You said your skills assessment did not recognise your degree as comparable — confirm the education points with your assessing authority")
         : hasEducationInput
           ? getLocalizedQualification(input.qualificationLevel, locale)
           : isTr ? "Eğitim düzeyi girilmedi" : isZh ? "未提供学历" : "Education level not provided",
@@ -4503,9 +4514,13 @@ function buildPathwayStrengthComparison(
       isHardIneligible: pathway.relevance === "ineligible",
       // A below-threshold score is not a rule violation -- see isPointsThresholdOnly doc comment.
       isPointsThresholdOnly: pathway.ineligiblePointsLine !== undefined,
+      // A sourced hard gate that is not met: "Not eligible now" with the failed gates and their citations.
+      isGateFailure: isGateFailurePathway(pathway),
       ineligibleReason:
         pathway.relevance === "ineligible"
-          ? shortIneligibleReference(locale)
+          ? isGateFailurePathway(pathway)
+            ? pathway.reason
+            : shortIneligibleReference(locale)
           : undefined,
     };
   });
@@ -5716,6 +5731,11 @@ function buildProgressionPathways(
   return items;
 }
 
+/** A non-points pathway (186 / 482 / 485 / 500 / 820) shut by a sourced hard gate: shown as "Not eligible now". */
+function isGateFailurePathway(pathway: PathwayComparison): boolean {
+  return pathway.relevance === "ineligible" && pathway.gates?.status === "not_eligible_now" && !["189", "190", "491"].includes(pathway.subclass);
+}
+
 function buildPathwayFriction(
   pathways: PathwayComparison[],
   locale: Locale
@@ -5736,6 +5756,16 @@ function buildPathwayFriction(
       const visaLabel =
         pathway.subclass === "general" ? pathway.visaName : `${pathway.visaName.replace(/\s*\(subclass\s+\d+\)\s*$/i, "").replace(/\s*\(\d+\)\s*$/, "")} (${pathway.subclass})`;
       const isPointsThresholdOnly = pathway.ineligiblePointsLine !== undefined;
+      if (isGateFailurePathway(pathway)) {
+        return {
+          pathway: visaLabel,
+          frictionType: isTr ? "🚫 ŞU ANDA UYGUN DEĞİL" : isZh ? "🚫 目前不符合条件" : "🚫 NOT ELIGIBLE NOW",
+          explanation: pathway.reason,
+          isHardIneligible: true,
+          isPointsThresholdOnly: false,
+          isGateFailure: true,
+        };
+      }
       return {
         pathway: visaLabel,
         frictionType: isPointsThresholdOnly
@@ -7224,6 +7254,14 @@ function runReadinessEngineInternal(input: ReadinessInput): ReadinessReport {
     input,
     locale
   );
+  // Sourced hard gates for every visa (lib/readiness/visa-gates.ts): a pathway with a not-met gate is not offered as a
+  // way to PR (Bridge to PR), as a recommendation, or as an alternative.
+  const visaGates = evaluateVisaGates(
+    input,
+    { estimatedPoints: pointsEstimate?.estimatedPoints, potentialPoints: pointsEstimate?.potentialPoints },
+    locale
+  );
+  const closedVisa = (v: string) => visaGates[v]?.status === "not_eligible_now";
   const progressionPathways = buildProgressionPathways(
     detectedSubclasses,
     locale,
@@ -7231,7 +7269,15 @@ function runReadinessEngineInternal(input: ReadinessInput): ReadinessReport {
     isPartnerPathwaySelected(input),
     input,
     pointsEstimate
-  );
+  ).filter((item) => {
+    // A pathway progression is offered only while its visa is not "Not eligible now": from 482 / 485 / 491 / 190 / 189 /
+    // 500 / 820 items (first token of `from`), the 485 bridge (graduate intent) and the post-485 options.
+    const fromVisa = item.from.split(" ")[0];
+    if (closedVisa(fromVisa)) return false;
+    if (closedVisa("485") && /^485 (bridge|köprüsü|桥梁)/.test(item.to)) return false;
+    return true;
+  });
+
   const pathwayFriction = buildPathwayFriction(
     pathwayComparison,
     locale
@@ -7316,6 +7362,7 @@ function runReadinessEngineInternal(input: ReadinessInput): ReadinessReport {
     pointsEstimate,
     pathwayScores,
     ...(twoTierStatus ? { twoTierStatus } : {}),
+    visaGates,
     pathwayRanking,
     occupationIndication,
     riskIndicators,

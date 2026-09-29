@@ -25,6 +25,10 @@ interface Step3Props {
   qualificationRegionalAustralia: string; setQualificationRegionalAustralia: (v: string) => void;
   specialistEducationStemResponse: string; setSpecialistEducationStemResponse: (v: string) => void;
   isResearchOrDoctorateQualification: boolean;
+  /** The skills assessment answer is Yes (step 2 radio, or the "occupation confirmed" select). */
+  skillsAssessmentYes: boolean;
+  occupationConfirmedSel: string; setOccupationConfirmedSel: (v: string) => void;
+  isQualificationRecognized: string; setIsQualificationRecognized: (v: string) => void;
   annualSalaryAud: string; setAnnualSalaryAud: (v: string) => void;
   sponsorFamilyStatus: string; setSponsorFamilyStatus: (v: string) => void;
   sponsorFamilyOptions: { value: string; label: string }[];
@@ -46,6 +50,8 @@ export function Step3Language(props: Step3Props) {
     qualificationRegionalAustralia, setQualificationRegionalAustralia,
     specialistEducationStemResponse, setSpecialistEducationStemResponse,
     isResearchOrDoctorateQualification,
+    skillsAssessmentYes, occupationConfirmedSel, setOccupationConfirmedSel,
+    isQualificationRecognized, setIsQualificationRecognized,
     annualSalaryAud, setAnnualSalaryAud,
     sponsorFamilyStatus, setSponsorFamilyStatus, sponsorFamilyOptions,
     experienceHelpText, budgetCurrency,
@@ -105,6 +111,25 @@ export function Step3Language(props: Step3Props) {
             <div className="space-y-2">
               <Label>{txt("Bölgesel kampüs mü?", "Regional campus?", "偏远地区校区？")}</Label>
               <select name="qualificationRegionalAustralia" value={qualificationRegionalAustralia} onChange={(e) => setQualificationRegionalAustralia(e.target.value)} className={selectClassName}>
+                <option className="bg-gray-900 text-white" value="">{txt("Belirtmek istemiyorum", "Prefer not to say", "不愿意说明")}</option>
+                <option className="bg-gray-900 text-white" value="yes">{txt("Evet", "Yes", "是")}</option>
+                <option className="bg-gray-900 text-white" value="no">{txt("Hayır", "No", "否")}</option>
+              </select>
+            </div>
+          )}
+
+          {/* Recognition of an overseas degree can only be answered once a skills assessment exists: whether the
+              assessment (or the relevant authority) recognised the degree as comparable to the Australian level. */}
+          {selectedCountryIsAU && qualificationAwardedInAustralia === "no" && skillsAssessmentYes && (
+            <div className="space-y-2">
+              <Label htmlFor="waitlist-qualification-recognized">
+                {txt(
+                  "Beceri değerlendirmeniz (veya ilgili kurum) derecenizi Avustralya seviyesiyle karşılaştırılabilir olarak tanıdı mı?",
+                  "Did your skills assessment (or the relevant authority) recognise your degree as comparable to the Australian level?",
+                  "您的技能评估（或相关机构）是否认可您的学位与澳大利亚水平相当？"
+                )}
+              </Label>
+              <select id="waitlist-qualification-recognized" name="isQualificationRecognized" value={isQualificationRecognized} onChange={(e) => setIsQualificationRecognized(e.target.value)} className={selectClassName}>
                 <option className="bg-gray-900 text-white" value="">{txt("Belirtmek istemiyorum", "Prefer not to say", "不愿意说明")}</option>
                 <option className="bg-gray-900 text-white" value="yes">{txt("Evet", "Yes", "是")}</option>
                 <option className="bg-gray-900 text-white" value="no">{txt("Hayır", "No", "否")}</option>
@@ -176,7 +201,7 @@ export function Step3Language(props: Step3Props) {
         <>
           <div className="space-y-2">
             <Label htmlFor="waitlist-occupation-confirmed">{txt("Meslek net mi?", "Occupation confirmed?", "职业已确认？")}</Label>
-            <select id="waitlist-occupation-confirmed" name="occupationConfirmed" defaultValue="" className={selectClassName}>
+            <select id="waitlist-occupation-confirmed" name="occupationConfirmed" value={occupationConfirmedSel} onChange={(e) => setOccupationConfirmedSel(e.target.value)} className={selectClassName}>
               <option className="bg-gray-900 text-white" value="">{txt("Belirtmek istemiyorum", "Prefer not to say", "不愿意说明")}</option>
               <option className="bg-gray-900 text-white" value="yes">{txt("Evet", "Yes", "是")}</option>
               <option className="bg-gray-900 text-white" value="no">{txt("Hayır", "No", "否")}</option>

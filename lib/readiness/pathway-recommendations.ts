@@ -88,10 +88,53 @@ export function findScoreViolations(text: string, report: ReadinessReport): stri
   return out;
 }
 
+/** Subclasses whose sourced hard gate is not met ("Not eligible now"): never recommended (801 shares 820's gates). */
+export function notEligibleSubclasses(report: ReadinessReport): string[] {
+  const out: string[] = [];
+  for (const [visa, g] of Object.entries(report.visaGates ?? {})) {
+    if (g.status === "not_eligible_now") out.push(visa, ...(visa === "820" ? ["801"] : []));
+  }
+  return out;
+}
+
+const RECOMMENDING = /\b(?:recommend\w*|pursue|consider|prioriti[sz]e|go for|opt for|suggest\w*)\b|öner\w*|tavsiye|建议|推荐|优先考虑/i;
+const NEGATING = /\b(?:not eligible|ineligible|cannot|can't|not available|not recommended|unavailable|not met|do(?:es)? not (?:meet|qualify))\b|uygun değil|karşılanmıyor|mümkün değil|不符合|无法|不适用|未满足/i;
+
+/** True when a sentence of `text` recommends one of the `closed` subclasses without saying it is not available. */
+export function recommendsClosedVisa(text: string, closed: readonly string[]): string | undefined {
+  for (const sentence of text.split(/(?<=[.!?。！？])\s*/)) {
+    if (sentence.length > 500) continue; // a run of table/list text, not a sentence
+    for (const v of closed) {
+      const mentions = new RegExp(String.raw`(?:subclass|alt sınıf|visa|vize)\s*${v}\b|\b${v}\s*(?:visa|vize|subclass|子类|签证|\()|${v}\s*(?:子类|签证)`, "i").test(sentence);
+      if (mentions && RECOMMENDING.test(sentence) && !NEGATING.test(sentence)) return v;
+    }
+  }
+  return undefined;
+}
+
 export function findRecommendationViolations(result: PremiumStrategyResult, report: ReadinessReport): RecommendationViolation[] {
-  const ranking = report.pathwayRanking;
-  if (!ranking || !report.pathwayScores) return [];
   const violations: RecommendationViolation[] = [];
+  // A pathway with a not-met hard gate (lib/readiness/visa-gates.ts) may not be recommended anywhere -- in the
+  // recommendation list, its reason and steps, or the executive summary.
+  const closed = notEligibleSubclasses(report);
+  if (closed.length > 0) {
+    result.topRecommendedPathways.forEach((rec, i) => {
+      if (closed.includes(String(rec.subclass))) {
+        violations.push({ path: `topRecommendedPathways[${i}]`, message: `recommends subclass ${rec.subclass}, which is "Not eligible now" (a mandatory requirement is not met)` });
+      }
+    });
+    const texts: Array<[string, string]> = [
+      ["executiveSummary", result.executiveSummary],
+      ...result.topRecommendedPathways.map((r, i): [string, string] => [`topRecommendedPathways[${i}].reason`, r.reason]),
+      ...result.topRecommendedPathways.flatMap((r, i) => r.nextSteps.map((st, j): [string, string] => [`topRecommendedPathways[${i}].nextSteps[${j}]`, st])),
+    ];
+    for (const [path, text] of texts) {
+      const v = recommendsClosedVisa(text, closed);
+      if (v) violations.push({ path, message: `recommends subclass ${v}, which is "Not eligible now": "${text.slice(0, 120)}"` });
+    }
+  }
+  const ranking = report.pathwayRanking;
+  if (!ranking || !report.pathwayScores) return violations;
 
   let lastPosition = 0;
   result.topRecommendedPathways.forEach((rec, i) => {

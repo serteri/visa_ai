@@ -119,6 +119,13 @@ jobs:
       - name: Partner options, 186/482 hard gates, two-tier status
         run: npm run test:two-tier-gates
 
+      # The sourced hard-gate matrix per visa (src/data/visa-gates.json <- scripts/generate-visa-gates.ts): drift vs the
+      # Home Affairs documents (SKIPPED here -- data/knowledge is gitignored), the committed thresholds and citations,
+      # gate evaluation over a persona matrix, and real PDF text (en/tr/zh-Hans): "Not eligible now" with the failed
+      # gate + citation, "Conditional" lists, and nothing recommends a not-eligible pathway.
+      - name: Visa hard-gate matrix (data + evaluation + PDF + AI validator)
+        run: npm run test:visa-gates
+
       # 190 / 491 friction includes nomination availability (occupation listed AND program open for the location).
       - name: Nomination availability in 190 / 491 friction
         run: npm run test:nomination-availability
