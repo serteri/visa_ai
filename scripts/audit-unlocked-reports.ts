@@ -3,27 +3,29 @@
  * Stripe webhook writes with the Checkout session id) and whose email is NOT on the admin / known-test allow-lists
  * (ADMIN_EMAILS, KNOWN_TEST_EMAILS). Prints counts and dates only -- never an email, name or report id.
  *
- * Usage: npx tsx scripts/audit-unlocked-reports.ts   (reads DATABASE_URL, ADMIN_EMAILS, KNOWN_TEST_EMAILS from .env)
+ * Reads PRODUCTION through PROD_DATABASE_URL in a READ ONLY transaction (never DATABASE_URL, which is the dev branch --
+ * see docs/database-environments.md). ADMIN_EMAILS / KNOWN_TEST_EMAILS come from the environment.
+ *
+ * Usage: npx tsx scripts/audit-unlocked-reports.ts
  */
 import "dotenv/config";
 
-import { PrismaClient } from "@prisma/client";
+import { withProdReadOnly } from "./lib/prod-db";
 
 const list = (raw: string | undefined) =>
   (raw ?? "").split(",").map((s) => s.trim().replace(/^["']+|["']+$/g, "").trim().toLowerCase()).filter(Boolean);
 
 async function main() {
   const allow = new Set([...list(process.env.ADMIN_EMAILS), ...list(process.env.KNOWN_TEST_EMAILS)]);
-  const prisma = new PrismaClient();
-  try {
-    const rows = await prisma.$queryRawUnsafe<
+  {
+    const rows = await withProdReadOnly((prisma) => prisma.$queryRawUnsafe<
       Array<{ email: string; ip_address: string | null; unlock_method: string | null; payment_status: string; is_free_promo: boolean; unlocked_at: Date | null; created_at: Date; has_tx: boolean }>
     >(`
       SELECT r.email, r.ip_address, r.unlock_method, r.payment_status, r.is_free_promo, r.unlocked_at, r.created_at,
              EXISTS (SELECT 1 FROM transactions t WHERE t.lead_id = r.id) AS has_tx
       FROM user_reports r
       WHERE r.is_unlocked = true
-    `);
+    `));
     const total = rows.length;
     const withoutStripe = rows.filter((r) => !r.has_tx);
     const suspect = withoutStripe.filter((r) => !allow.has(r.email.trim().toLowerCase()));
@@ -61,8 +63,6 @@ async function main() {
     console.log(`  on an IP shared with other allow-listed reports: ${allowed.length - lone.length}`);
     console.log(`  on an IP no other allow-listed report used (or no IP): ${lone.length}`);
     for (const [k, n] of group(lone, (r) => `${day(r.unlocked_at)} ${r.unlock_method ?? "null"}`)) console.log(`    ${k}: ${n}`);
-  } finally {
-    await prisma.$disconnect();
   }
 }
 

@@ -8,12 +8,13 @@
  *     Synthetic review personas (REVIEW_PERSONAS). The engine runs on the persona's input, so this shows what a NEW
  *     report looks like with the current code. It is NOT a reproduction of any real report: a real report's inputs
  *     come from the intake form, and production also passes the live admin state config (StateNominationConfig /
- *     StateIntelligence) to the engine. --live-state reads those two tables (read-only) so state statuses match
+ *     StateIntelligence) to the engine. --live-state reads those two tables from production (PROD_DATABASE_URL, read-only) so state statuses match
  *     production.
  *
  *   npx tsx scripts/render-persona-pdfs.ts --report <reportId> <label> [--at <commit>] [--row-file <path>]
  *     Reproduces a REAL report. Reads the user_reports row (report_json, input_json with the stored AI strategy)
- *     and the live state config in a READ ONLY transaction -- no writes -- and renders it exactly as production does:
+ *     and the live state config from PRODUCTION via PROD_DATABASE_URL (never DATABASE_URL, which is the Neon dev
+ *     branch -- docs/database-environments.md) in a READ ONLY transaction -- no writes -- and renders it exactly as production does:
  *     the route receives the stored row. Without --at, the current checkout's code renders it (which recomputes the
  *     deterministic sections, lib/reports/refresh-report.ts). With --at <commit>, the same stored row is rendered by
  *     that commit's code in a temporary git worktree (e.g. the commit that was deployed when the report was made).
@@ -168,29 +169,26 @@ export async function renderPersonaPdfTexts(
   return out;
 }
 
-/** READ ONLY transaction: the report row and the live state config. Nothing is written. */
+/**
+ * PRODUCTION, READ ONLY transaction via PROD_DATABASE_URL (never DATABASE_URL, the dev branch): the report row and the
+ * live state config. Nothing is written.
+ */
 async function readLiveData(reportId?: string): Promise<{ row?: Record<string, unknown>; live: LiveStateRows }> {
   await import("dotenv/config");
-  const { PrismaClient } = await import("@prisma/client");
-  const db = new PrismaClient();
-  try {
-    return await db.$transaction(async (tx) => {
-      await tx.$executeRawUnsafe("SET TRANSACTION READ ONLY");
-      const rows = reportId
-        ? await tx.$queryRawUnsafe<Array<Record<string, unknown>>>(
-            "SELECT id, email, locale, report_json, input_json, agent_id, is_unlocked, full_name, preview_data FROM user_reports WHERE id::text = $1::text LIMIT 1",
-            reportId
-          )
-        : [];
-      const live = {
-        stateNominationConfig: await tx.stateNominationConfig.findMany(),
-        stateIntelligence: await tx.stateIntelligence.findMany(),
-      };
-      return { row: rows[0], live };
-    });
-  } finally {
-    await db.$disconnect();
-  }
+  const { withProdReadOnly } = await import("./lib/prod-db");
+  return withProdReadOnly(async (tx) => {
+    const rows = reportId
+      ? await tx.$queryRawUnsafe<Array<Record<string, unknown>>>(
+          "SELECT id, email, locale, report_json, input_json, agent_id, is_unlocked, full_name, preview_data FROM user_reports WHERE id::text = $1::text LIMIT 1",
+          reportId
+        )
+      : [];
+    const live = {
+      stateNominationConfig: await tx.stateNominationConfig.findMany(),
+      stateIntelligence: await tx.stateIntelligence.findMany(),
+    };
+    return { row: rows[0], live };
+  });
 }
 
 async function reproduceReport(reportId: string, label: string, at?: string, rowFile?: string) {

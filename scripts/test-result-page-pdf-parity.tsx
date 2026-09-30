@@ -5,8 +5,8 @@
  *
  *   1. Always (CI too): a stored report built from report b0d20f74's non-personal answers, made stale (an old
  *      491-in-189 booster row), rendered by the page and the PDF route in en / tr / zh-Hans.
- *   2. With database access: the stored report b0d20f74 itself, read in a READ ONLY transaction and kept in memory
- *      only (nothing written to disk, no personal data printed). SKIPPED without a database (CI).
+ *   2. With PROD_DATABASE_URL set: the stored production report b0d20f74 itself, read in a READ ONLY transaction and
+ *      kept in memory only (nothing written to disk, no personal data printed). SKIPPED without it (CI).
  *
  *   npx tsx scripts/test-result-page-pdf-parity.tsx
  */
@@ -183,26 +183,21 @@ async function compare(label: string, reportId: string, locale: string) {
 async function main() {
   await import("dotenv/config");
   process.env.DATABASE_URL ||= "postgres://stub:stub@127.0.0.1:1/stub"; // import-time check only; nothing connects
-  const hadRealDb = !process.env.DATABASE_URL.includes("127.0.0.1:1");
+  // b0d20f74 is a PRODUCTION report: read through PROD_DATABASE_URL only (DATABASE_URL is the dev branch).
+  const { prodDatabaseUrl, withProdReadOnly } = await import("./lib/prod-db");
+  const hadProdDb = Boolean(prodDatabaseUrl());
 
   // Real report b0d20f74: read once, before the stub replaces the client. In memory only.
   let real: { row: Row; live: Live } | undefined;
-  if (hadRealDb && process.env.CI !== "true") {
+  if (hadProdDb && process.env.CI !== "true") {
     try {
-      const { PrismaClient } = await import("@prisma/client");
-      const db = new PrismaClient();
-      try {
-        real = await db.$transaction(async (tx) => {
-          await tx.$executeRawUnsafe("SET TRANSACTION READ ONLY");
-          const r = await tx.$queryRawUnsafe<Row[]>(
-            "SELECT id, email, locale, report_json, input_json, agent_id, is_unlocked, full_name, preview_data, created_at FROM user_reports WHERE id::text = $1::text LIMIT 1",
-            REAL_REPORT_ID
-          );
-          return { row: r[0], live: { stateNominationConfig: await tx.stateNominationConfig.findMany(), stateIntelligence: await tx.stateIntelligence.findMany() } };
-        });
-      } finally {
-        await db.$disconnect();
-      }
+      real = await withProdReadOnly(async (tx) => {
+        const r = await tx.$queryRawUnsafe<Row[]>(
+          "SELECT id, email, locale, report_json, input_json, agent_id, is_unlocked, full_name, preview_data, created_at FROM user_reports WHERE id::text = $1::text LIMIT 1",
+          REAL_REPORT_ID
+        );
+        return { row: r[0], live: { stateNominationConfig: await tx.stateNominationConfig.findMany(), stateIntelligence: await tx.stateIntelligence.findMany() } };
+      });
     } catch (error) {
       console.log(`  (database not reachable: ${(error as Error).message.split("\n")[0]})`);
     }
@@ -244,7 +239,7 @@ async function main() {
 
   console.log("\n==================== (2) stored report b0d20f74 (read-only, in memory) ====================");
   if (!real?.row) {
-    console.log("  SKIPPED: no database access (CI) -- run locally with DATABASE_URL to compare the real stored report");
+    console.log("  SKIPPED: no production database access (CI, or PROD_DATABASE_URL not set) -- set PROD_DATABASE_URL locally to compare the real stored report");
   } else {
     live = {
       stateNominationConfig: real.live.stateNominationConfig,

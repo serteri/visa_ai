@@ -1,3 +1,9 @@
+# Database environments
+
+`DATABASE_URL` is the Neon **dev** branch locally and on Vercel Preview; only Vercel Production uses **main**. Scripts
+that must read production use `PROD_DATABASE_URL` through `scripts/lib/prod-db.ts` (`withProdReadOnly`, a READ ONLY
+transaction) -- never `DATABASE_URL`. See `docs/database-environments.md`.
+
 # Database: two ORMs, one database
 
 This project uses **both Prisma** (`prisma/schema.prisma`) **and Drizzle** (`db/schema.ts`) against the same PostgreSQL database. Neither ORM is aware of the other's tables by default.

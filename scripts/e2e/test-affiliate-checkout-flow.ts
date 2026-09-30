@@ -25,7 +25,16 @@
  * Usage: npx tsx scripts/e2e/test-affiliate-checkout-flow.ts
  */
 import * as dotenv from "dotenv";
-dotenv.config({ path: ".env" }); // .env.local intentionally NOT loaded -- see ADR 0001 / prior session notes: it points DATABASE_URL at a different host that fails auth here.
+// Writes test rows (user, transactions) and cleans them up, through DATABASE_URL -- the Neon dev branch locally, never
+// production (docs/database-environments.md). Refuses to run against PROD_DATABASE_URL's host.
+dotenv.config({ path: ".env" });
+{
+  const host = (u?: string) => { try { return u ? new URL(u).host : undefined; } catch { return undefined; } };
+  const prodHost = host(process.env.PROD_DATABASE_URL);
+  if (prodHost && prodHost === host(process.env.DATABASE_URL)) {
+    throw new Error("DATABASE_URL points at the production host; this e2e test writes rows and only runs against the dev branch.");
+  }
+}
 
 import bcrypt from "bcryptjs";
 import { PrismaClient } from "@prisma/client";

@@ -101,7 +101,7 @@ jobs:
 
       # The on-screen result page and the PDF run the same refresh and show identical state statuses, match figures,
       # Points Booster rows and "Last updated" / "Generated" stamp (en/tr/zh-Hans). The stored-report b0d20f74
-      # comparison needs database access and prints SKIPPED here.
+      # comparison reads production through PROD_DATABASE_URL (read-only), which CI never has: it prints SKIPPED here.
       - name: Result page = PDF (states, booster rows, date stamp)
         run: npm run test:result-page-parity
 
