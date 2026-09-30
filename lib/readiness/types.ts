@@ -118,7 +118,23 @@ export type ReadinessInput = {
    * 6 months" evidence window -- can be added without a data migration.
    */
   courseCompletionDate?: string;
+  /**
+   * Employer sponsorship (intake, AU): none / a job offer from an employer willing to sponsor / currently sponsored on
+   * a 482 or 457. Feeds the 482 sponsor and 186 employer-nomination / TRT gates. Undefined on older reports: those
+   * gates stay unknown, exactly as before the field existed.
+   */
+  employerSponsorship?: EmployerSponsorshipStatus;
+  /** Years with the current sponsor (0-10, 10 = 10+); asked only when currently sponsored on a 482 / 457. */
+  yearsWithCurrentSponsor?: number;
+  /** State or territory of residence, asked only when the current country is Australia (190/491 availability). */
+  residenceState?: AuStateCode;
+  /** Where the applicant is in the process; wording only, never eligibility. Undefined = "planning". */
+  applicationStage?: ApplicationStage;
 };
+
+export type EmployerSponsorshipStatus = "none" | "job_offer" | "sponsored_482";
+export type AuStateCode = "NSW" | "VIC" | "QLD" | "SA" | "WA" | "TAS" | "NT" | "ACT";
+export type ApplicationStage = "planning" | "skills_assessment_in_progress" | "eoi_submitted" | "invited";
 
 export type PathwayRelevance =
   | "possible"
@@ -642,6 +658,11 @@ export type StateNominationState = {
   /** The state's program is open to THIS applicant (status not closed/suspended, and the on/offshore requirement is met). Only open states may be recommended. */
   isOpen?: boolean;
   score: number;
+  /**
+   * Set when the applicant lives in Australia in ANOTHER state and this state's onshore residence rule keeps it from
+   * counting as available to them: "required" (sourced rule) or "not_confirmed" (no rule in the sourced data).
+   */
+  residenceBlock?: "required" | "not_confirmed";
   /** Subclasses (190 / 491) this state's list (or, for TAS/VIC, the national list) confirms for the occupation. */
   listedFor?: Array<"190" | "491">;
   /** Whether the occupation is on this state's list: confirmed / not_listed (score 0, never recommended) / unconfirmed. */
@@ -866,6 +887,8 @@ export type TwoTierStatus = {
 };
 
 export type ReadinessReport = {
+  /** AU: the applicant's application stage (intake); drives the lodgement section and wording, never eligibility. */
+  applicationStage?: ApplicationStage;
   /** AU: the sourced hard-gate evaluation per visa (lib/readiness/visa-gates.ts); a not-met gate = "Not eligible now". */
   visaGates?: Record<string, PathwayGates>;
   /** AU: two-tier status when the only thing blocking 189/190/491 is the missing skills assessment. */

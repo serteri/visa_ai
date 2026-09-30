@@ -14,6 +14,9 @@ const ACTIONABLE = [
   "189.english", "190.english", "491.english", "186DE.english", "186TRT.english", "482CS.english", "485.english",
   "189.points", "190.points", "491.points",
   "186DE.experience", "482CS.experience", "186TRT.sponsored_employment",
+  // Lack of an employer sponsor is something the applicant can change (find one), never structural. Holding a
+  // 482 / 457 (186TRT.hold_visa) is a visa-held fact and stays structural.
+  "482CS.sponsor", "186DE.employer_nomination", "186TRT.employer_nomination",
 ];
 
 export function gateFailureKind(id: string): GateFailureKind {

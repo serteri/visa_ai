@@ -206,6 +206,12 @@ export function FullCheckWaitlistForm({
         ["waitlist-passport-country", txt("Pasaport ülkesi gerekli", "Passport country is required", "护照国家为必填项")],
         ["waitlist-age", txt("Yaş gerekli", "Age is required", "年龄为必填项")],
       ];
+      // Shown only for Australia reports (residence: only when in Australia) -- checked only while present.
+      const conditional: [string, string][] = [
+        ["waitlist-employer-sponsorship", txt("İşveren sponsorluğu gerekli", "Employer sponsorship is required", "雇主担保为必填项")],
+        ["waitlist-residence-state", txt("Yaşadığınız eyalet gerekli", "State or territory of residence is required", "居住的州或领地为必填项")],
+      ];
+      for (const [id, msg] of conditional) if (document.getElementById(id)) fields.push([id, msg]);
       const errors: Record<string, string> = {};
       for (const [id, msg] of fields) {
         const val = (document.getElementById(id) as HTMLInputElement)?.value?.trim();

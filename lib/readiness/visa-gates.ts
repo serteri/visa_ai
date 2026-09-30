@@ -13,8 +13,8 @@ export * from "./visa-gate-text";
  * the intake. Each gate is met / not_met / unknown, or "future" for a step that comes after lodging an EOI
  * (invitation, nomination, sponsorship). A pathway with any not_met gate is "Not eligible now" and is never
  * recommended; with unknown gates (and no not_met) it is "Conditional"; otherwise "eligible to pursue".
- * No intake field is added: a gate that depends on something the form does not collect (employer sponsor, ...) is
- * unknown by design.
+ * A gate that depends on something the form does not collect is unknown by design; so are the employer-sponsorship
+ * gates on reports made before the intake asked about sponsorship.
  */
 
 type GateRow = {
@@ -47,6 +47,29 @@ export type GateContext = {
   pointsIfEnglishMet?: number;
   /** 189 / 190 / 491: the score to compare with the recent invitation benchmark (nomination included for 190 / 491). */
   invitation?: Partial<Record<"189" | "190" | "491", { score: number; benchmark: number | null }>>;
+  /**
+   * How a points shortfall closes: the smallest (quickest, then fewest actions) combination of the factors the
+   * closable ceiling (boosterGain) is computed from. Undefined when nothing closes it.
+   */
+  closurePlan?: (short: number) => PointsClosurePlan | undefined;
+};
+
+/** One factor of a points closure plan; the gain is its points in that combination (experience: net of age). */
+export type PointsClosureFactor = {
+  id: "english_proficient" | "english_superior" | "experience" | "education" | "australian_study" | "specialist_education" | "community_language" | "professional_year" | "regional_study" | "partner_skills" | "partner_english";
+  gain: number;
+  /** experience: the further years of skilled experience. */
+  years?: number;
+};
+
+export type PointsClosurePlan = {
+  factors: PointsClosureFactor[];
+  /** Roughly how long the plan takes, from the factors with a stated duration (experience years, 2 years of study). */
+  years: number;
+  /** Factors whose duration is not stated in the sources (a further qualification, a Professional Year). */
+  openDuration: PointsClosureFactor["id"][];
+  /** Multi-year actions the plan relies on. */
+  multiYear: PointsClosureFactor["id"][];
 };
 
 // ── requirement labels (en / tr / zh-Hans) ───────────────────────────────────────────────────────────────────────
@@ -240,12 +263,41 @@ EVAL["186DE.experience"] = (_i, f) => experienceGate(f, 3);
 EVAL["186DE.skills_assessment"] = (_i, f) => skillsGate(f);
 EVAL["186DE.english"] = (_i, f) => englishGate(f);
 EVAL["186DE.salary"] = (_i, f) => salaryGate(f, THRESHOLDS.CSIT.value, "Core Skills Income Threshold (CSIT)");
-EVAL["186DE.employer_nomination"] = () => noField();
-EVAL["186TRT.hold_visa"] = () => noField();
+// Employer sponsorship (intake). Undefined on reports made before the field existed: unknown, exactly as before.
+// Having no sponsor is something the applicant can change (find one): actionable, never structural.
+const noSponsor = () => notMet("You answered that you have no employer sponsor or job offer.", "İşveren sponsorunuz veya iş teklifiniz olmadığını belirttiniz.", "您表示没有雇主担保或工作邀约。");
+const NOMINATION_NOT_COLLECTED = (who: "offer" | "current") =>
+  who === "offer"
+    ? unknown("You have a job offer from an employer willing to sponsor you; whether they will nominate you for permanent residence is not collected.", "Sizi sponsor etmeye istekli bir işverenden iş teklifiniz var; sizi daimi oturum için aday gösterip göstermeyeceği formda sorulmuyor.", "您已获得愿意担保您的雇主的工作邀约；该雇主是否会为您提名永久居留，表单未收集。")
+    : unknown("You are currently sponsored on a 482 / 457; whether your sponsor will nominate you for permanent residence is not collected.", "Şu anda 482 / 457 ile sponsorlusunuz; sponsorunuzun sizi daimi oturum için aday gösterip göstermeyeceği formda sorulmuyor.", "您目前持 482 / 457 获担保；您的担保雇主是否会为您提名永久居留，表单未收集。");
+EVAL["482CS.sponsor"] = (i) => {
+  if (i.employerSponsorship === undefined) return noField();
+  if (i.employerSponsorship === "none") return noSponsor();
+  return i.employerSponsorship === "job_offer"
+    ? met("You have a job offer from an Australian employer willing to sponsor you.", "Sizi sponsor etmeye istekli bir Avustralya işvereninden iş teklifiniz var.", "您已获得愿意担保您的澳大利亚雇主的工作邀约。")
+    : met("You are currently sponsored on a 482 / 457 visa.", "Şu anda 482 / 457 vizesiyle sponsorlusunuz.", "您目前持 482 / 457 签证获得担保。");
+};
+EVAL["186DE.employer_nomination"] = (i) => {
+  if (i.employerSponsorship === undefined) return noField();
+  if (i.employerSponsorship === "none") return noSponsor();
+  return NOMINATION_NOT_COLLECTED(i.employerSponsorship === "job_offer" ? "offer" : "current");
+};
+EVAL["186TRT.hold_visa"] = (i) => {
+  if (i.employerSponsorship === undefined) return noField();
+  return i.employerSponsorship === "sponsored_482"
+    ? met("You currently hold a 482 / 457 visa.", "Şu anda 482 / 457 vizeniz var.", "您目前持有 482 / 457 签证。")
+    : notMet("You do not currently hold a 482 / 457 visa.", "Şu anda 482 / 457 vizeniz yok.", "您目前未持有 482 / 457 签证。");
+};
 EVAL["186TRT.sponsored_employment"] = (i, f) => {
   // Sponsored employment happens in Australia: fewer than 2 years of Australian experience rules it out, but
   // 2 or more Australian years do not show it was sponsored -- only the sponsored-position answer can confirm that.
-  const y = i.yearsInSponsoredPosition ?? (f.onshore !== undefined && f.onshore < 2 ? f.onshore : undefined);
+  // Years with the CURRENT sponsor meet the requirement at 2 or more; fewer do not rule it out (earlier sponsored
+  // employment with another sponsor also counts).
+  const current = i.yearsInSponsoredPosition === undefined && i.employerSponsorship === "sponsored_482" ? i.yearsWithCurrentSponsor : undefined;
+  if (current !== undefined && current < 2) {
+    return unknown(`${current} years with your current sponsor; sponsored employment with an earlier sponsor also counts toward the 2 years.`, `Mevcut sponsorunuzla ${current} yıl; önceki bir sponsorla sponsorlu istihdam da 2 yıla sayılır.`, `与当前担保雇主共 ${current} 年；此前在其他担保雇主处的担保雇佣也计入 2 年。`);
+  }
+  const y = i.yearsInSponsoredPosition ?? current ?? (f.onshore !== undefined && f.onshore < 2 ? f.onshore : undefined);
   if (y === undefined) return unknown("Years in a sponsored position were not provided.", "Sponsorlu pozisyondaki yıl girilmedi.", "未提供担保职位的年限。");
   return y >= 2
     ? met(`${y} years declared (2 needed).`, `${y} yıl beyan edildi (2 gerekir).`, `已申报 ${y} 年（需要 2 年）。`)
@@ -253,14 +305,19 @@ EVAL["186TRT.sponsored_employment"] = (i, f) => {
 };
 EVAL["186TRT.age"] = (_i, f) => ageGate(f, 45);
 EVAL["186TRT.english"] = (_i, f) => englishGate(f);
-EVAL["186TRT.employer_nomination"] = () => noField();
+EVAL["186TRT.employer_nomination"] = (i) => {
+  if (i.employerSponsorship === undefined) return noField();
+  if (i.employerSponsorship === "sponsored_482") return NOMINATION_NOT_COLLECTED("current");
+  return i.employerSponsorship === "none"
+    ? noSponsor()
+    : notMet("The nomination must come from the employer who sponsored your temporary visa; you are not currently sponsored.", "Adaylık, geçici vizenize sponsor olan işverenden gelmelidir; şu anda sponsorlu değilsiniz.", "提名须来自担保您临时签证的雇主；您目前未获担保。");
+};
 
 EVAL["482CS.occupation_csol"] = (_i, f) => csolGate(f);
 EVAL["482CS.salary"] = (_i, f) => salaryGate(f, THRESHOLDS.CSIT.value, "Core Skills Income Threshold (CSIT)");
 EVAL["482CS.experience"] = (_i, f) => experienceGate(f, 1);
 EVAL["482CS.skills_assessment"] = () => unknown("Only some occupations need one (IMMI 18/039, not in the sources), so it cannot be checked from the intake.", "Yalnızca bazı meslekler gerektirir (IMMI 18/039, kaynaklarda yok); bu yüzden formdan kontrol edilemez.", "仅部分职业需要（IMMI 18/039，资料中没有），因此无法根据表单核对。");
 EVAL["482CS.english"] = (_i, f) => englishGate(f, { noneIsUnknown: true });
-EVAL["482CS.sponsor"] = () => noField();
 EVAL["482SS.salary"] = (_i, f) => salaryGate(f, THRESHOLDS.SSIT.value, "Specialist Skills Income Threshold (SSIT)");
 
 EVAL["485.age"] = (i, f) => {
@@ -391,12 +448,17 @@ function stepFor(row: GateRow, input: ReadinessInput, f: ReturnType<typeof facts
       ? [`, including ${bonus} for the required nomination or sponsorship`, `, zorunlu adaylık veya sponsorluk için ${bonus} puan dahil`, `，含必需的提名或担保 ${bonus} 分`]
       : ["", "", ""];
     const basis = noEnglish ? [", counting Competent English", ", Competent İngilizce sayılarak", "，按 Competent 英语计算"] : ["", "", ""];
+    const plan = short > 0 ? ctx.closurePlan?.(short) : undefined;
+    const how = plan ? closurePlanText(plan, short, locale) : undefined;
     return T(
       locale,
-      `Raise your points from ${total} to at least 65 (currently ${short} short${inc[0]}${basis[0]}; see the points improvement tips)`,
-      `Puanınızı ${total} değerinden en az 65'e çıkarın (şu anda ${short} puan eksik${inc[1]}${basis[1]}; puan iyileştirme ipuçlarına bakın)`,
-      `将分数从 ${total} 分提高到至少 65 分（目前差 ${short} 分${inc[2]}${basis[2]}；见提分建议）`
+      `Raise your points from ${total} to at least 65 (currently ${short} short${inc[0]}${basis[0]}${how ? `; ${how}` : ""}; see the points improvement tips)`,
+      `Puanınızı ${total} değerinden en az 65'e çıkarın (şu anda ${short} puan eksik${inc[1]}${basis[1]}${how ? `; ${how}` : ""}; puan iyileştirme ipuçlarına bakın)`,
+      `将分数从 ${total} 分提高到至少 65 分（目前差 ${short} 分${inc[2]}${basis[2]}${how ? `；${how}` : ""}；见提分建议）`
     );
+  }
+  if (key === "sponsor" || key === "employer_nomination") {
+    return T(locale, "Find an employer willing to sponsor you", "Sizi sponsor etmeye istekli bir işveren bulun", "找到愿意担保您的雇主");
   }
   if (key === "experience" || key === "sponsored_employment") {
     const need = row.numeric?.value ?? (row.id === "186DE.experience" ? 3 : row.id === "482CS.experience" ? 1 : 2);
@@ -412,6 +474,65 @@ function stepFor(row: GateRow, input: ReadinessInput, f: ReturnType<typeof facts
     );
   }
   return undefined;
+}
+
+const FACTOR_LABEL: Record<Exclude<PointsClosureFactor["id"], "experience">, [string, string, string]> = {
+  english_proficient: ["Proficient English", "Proficient İngilizce", "Proficient 英语"],
+  english_superior: ["Superior English", "Superior İngilizce", "Superior 英语"],
+  education: ["a further qualification", "ek bir yükseköğretim derecesi", "更高一级的学历"],
+  australian_study: ["the Australian study requirement (at least 2 academic years of study in Australia)", "Avustralya eğitim şartı (Avustralya'da en az 2 akademik yıl eğitim)", "澳大利亚学习要求（在澳大利亚至少学习 2 个学年）"],
+  specialist_education: ["specialist education (an Australian research masters or doctorate in STEM)", "uzmanlık eğitimi (STEM alanında Avustralya araştırma yüksek lisansı veya doktorası)", "专业教育（澳大利亚 STEM 研究型硕士或博士）"],
+  community_language: ["a credentialled community language (NAATI)", "onaylı topluluk dili (NAATI)", "社区语言认证（NAATI）"],
+  professional_year: ["a Professional Year program", "Mesleki Yıl (Professional Year) programı", "职业年（Professional Year）项目"],
+  regional_study: ["study in regional Australia", "Avustralya'nın bölgesel bir alanında eğitim", "在澳大利亚偏远地区学习"],
+  partner_skills: ["your partner's skills", "partnerinizin becerileri", "伴侣的技能"],
+  partner_english: ["your partner's Competent English", "partnerinizin Competent İngilizcesi", "伴侣的 Competent 英语"],
+};
+
+/**
+ * How the gap closes and roughly how long it takes, naming only the factors of the plan (the same factors the
+ * closable ceiling uses): "closes with Proficient English (+10) and 3 more years of skilled experience (+5), about 3 years".
+ */
+function closurePlanText(plan: PointsClosurePlan, short: number, locale: Locale): string {
+  const li = locale === "tr" ? 1 : locale === "zh-Hans" ? 2 : 0;
+  const part = (f: PointsClosureFactor) => {
+    const label =
+      f.id === "experience"
+        ? [`${f.years} more year${f.years === 1 ? "" : "s"} of skilled experience`, `${f.years} yıl daha nitelikli iş deneyimi`, `再积累 ${f.years} 年技术工作经验`][li]
+        : FACTOR_LABEL[f.id][li];
+    return `${label} (+${f.gain})`;
+  };
+  const parts = plan.factors.map(part);
+  const joined = [
+    parts.length > 1 ? `${parts.slice(0, -1).join(", ")} and ${parts[parts.length - 1]}` : parts[0],
+    parts.length > 1 ? `${parts.slice(0, -1).join(", ")} ve ${parts[parts.length - 1]}` : parts[0],
+    parts.join("、"),
+  ][li];
+  const open = plan.openDuration.map((id) => FACTOR_LABEL[id as Exclude<PointsClosureFactor["id"], "experience">][li]);
+  const time =
+    plan.years === 0 && open.length === 0
+      ? ["no waiting time needed", "beklemeye gerek yok", "无需等待"][li]
+      : plan.years > 0
+        ? [`about ${plan.years} year${plan.years === 1 ? "" : "s"}`, `yaklaşık ${plan.years} yıl`, `约 ${plan.years} 年`][li]
+        : "";
+  const openText = open.length > 0 ? [`plus the time to complete ${open.join(" and ")}`, `artı ${open.join(" ve ")} için gereken süre`, `另加完成${open.join("和")}所需时间`][li] : "";
+  const MULTI: Record<string, [string, string, string]> = {
+    experience: ["skilled experience accrual", "nitelikli iş deneyimi birikimi", "技术工作经验积累"],
+    australian_study: ["Australian study", "Avustralya'da eğitim", "澳大利亚学习"],
+    regional_study: ["regional study", "bölgesel eğitim", "偏远地区学习"],
+    specialist_education: ["specialist education", "uzmanlık eğitimi", "专业教育"],
+    education: ["a further qualification", "ek bir derece", "更高学历"],
+  };
+  const multi = plan.multiYear.map((id) => MULTI[id]?.[li]).filter(Boolean);
+  const multiText = multi.length > 0 ? [`relies on multi-year actions (${multi.join(", ")})`, `çok yıllık adımlara dayanır (${multi.join(", ")})`, `依赖多年期行动（${multi.join("、")}）`][li] : "";
+  const tail = [time, openText, multiText].filter(Boolean);
+  // The shortfall itself is already stated just before this text in the step sentence.
+  void short;
+  return [
+    `closes with ${joined}${tail.length ? `, ${tail.join(", ")}` : ""}`,
+    `açık şununla kapanır: ${joined}${tail.length ? `, ${tail.join(", ")}` : ""}`,
+    `可通过${joined}补足${tail.length ? `，${tail.join("，")}` : ""}`,
+  ][li];
 }
 
 function combine(visa: string, gates: GateResult[], streamsConsidered?: string[]): PathwayGates {

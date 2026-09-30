@@ -90,7 +90,8 @@ import trTranslations from "@/public/locales/tr.json";
 import zhTranslations from "@/public/locales/zh-Hans.json";
 import { getEligibleSkilledSubclasses, resolveOccupationDisplayName } from "./occupation-eligibility";
 import { generatePremiumSections, getTrendBenchmarks } from "@/src/lib/readiness/report-generator";
-import { GATED_VISAS, conditionalGateLines, evaluateVisaGates, failedGateLines, pathwayGateLabel } from "@/lib/readiness/visa-gates";
+import { lodgementNextStep } from "@/lib/readiness/pdf-content/lodgement";
+import { GATED_VISAS, conditionalGateLines, evaluateVisaGates, failedGateLines, pathwayGateLabel, type PointsClosureFactor, type PointsClosurePlan } from "@/lib/readiness/visa-gates";
 import { NOMINATION_BONUS } from "@/lib/readiness/pathway-scores";
 import { blockedLabel, blockedReasonPhrase, computePathwayScores, describePathwayScore, frictionFromScore, frictionKey, type PathwayScoreSet, type PathwaySubclass } from "@/lib/readiness/pathway-scores";
 import { computeConfidence } from "@/lib/readiness/confidence";
@@ -2498,12 +2499,28 @@ function buildPathwayEntry(
    */
   rawGatePoints: number | undefined = estimatedPoints,
   boosterGain?: number,
-  pointsIfEnglishMet?: number
+  pointsIfEnglishMet?: number,
+  closurePlan?: (short: number) => PointsClosurePlan | undefined
 ): PathwayComparison {
   // The 65-point minimum applies to the total including the nomination / sponsorship points the visa requires
   // (190: +5, 491: +15), the same total the invitation benchmark is compared with.
   const requiredNominationPoints = subclass === "190" || subclass === "491" ? NOMINATION_BONUS[subclass] : 0;
   const gatePoints = rawGatePoints === undefined ? undefined : rawGatePoints + requiredNominationPoints;
+
+  // Sourced hard-gate matrix (lib/readiness/visa-gates.ts, src/data/visa-gates.json): every mandatory requirement of the
+  // visa evaluated as met / not met / unknown against the intake. Any not-met gate makes the pathway "Not eligible
+  // now" (relevance ineligible, never recommended) with the failed gates and their citations; unknown gates make it
+  // "Conditional" and the reason lists what must be true.
+  const gateKey = subclass === "801" ? "820" : subclass;
+  const gates = (GATED_VISAS as readonly string[]).includes(gateKey)
+    ? evaluateVisaGates(input, { estimatedPoints, potentialPoints: rawGatePoints, boosterGain, pointsIfEnglishMet, closurePlan }, locale)[gateKey]
+    : undefined;
+  const isSkilledGate = ["189", "190", "491"].includes(gateKey);
+  // 189/190/491: the body uses the gate's arithmetic. A pathway the gate marks "Next step required" (a no-English
+  // applicant counted at Competent English, or a shortfall the applicant's own actions close) is shown with those
+  // steps, never as "below the points threshold".
+  const pointsNextStep = isSkilledGate && gates?.status === "next_step_required";
+  const belowMinimum = gatePoints !== undefined && gatePoints < SKILLED_MIGRATION_MIN_POINTS && !pointsNextStep;
   const isTr = locale === "tr";
   const names = VISA_NAMES[subclass] ?? {
     en: `Subclass ${subclass}`,
@@ -2552,7 +2569,10 @@ function buildPathwayEntry(
     }
   } else if (subclass === "482") {
     const salaryGate = evaluateEmployerSalaryGate(input);
-    const hasSponsor = hasKw(sponsorText, ["sponsor", "employer", "işveren", "sponsored"]);
+    // The structured intake answer wins; older reports without it keep the free-text signal.
+    const hasSponsor = input.employerSponsorship
+      ? input.employerSponsorship !== "none"
+      : hasKw(sponsorText, ["sponsor", "employer", "işveren", "sponsored"]);
     if (salaryGate.isBelowCsit && salaryGate.declaredSalaryAud !== null) {
       // Hard Gate (1 July 2026): overrides any "possible"/high-potential signal below.
       relevance = "ineligible";
@@ -2568,7 +2588,7 @@ function buildPathwayEntry(
           : "The 482 Skills in Demand Visa requires an employer sponsor. Sponsor context is important to support this assessment.";
     }
   } else if (subclass === "189") {
-    if (gatePoints !== undefined && gatePoints < SKILLED_MIGRATION_MIN_POINTS) {
+    if (belowMinimum) {
       // Hard Gate: overrides any "possible"/high-potential signal below.
       relevance = "ineligible";
       reason = formatIneligibleLowPointsReason(locale, estimatedPoints ?? gatePoints, input.englishLevel, input);
@@ -2579,7 +2599,7 @@ function buildPathwayEntry(
         : "The 189 Skilled Independent Visa is a points-tested pathway requiring an invitation. This is general information only and depends on individual circumstances.";
     }
   } else if (subclass === "190") {
-    if (gatePoints !== undefined && gatePoints < SKILLED_MIGRATION_MIN_POINTS) {
+    if (belowMinimum) {
       // Hard Gate: overrides any "possible"/high-potential signal below.
       relevance = "ineligible";
       reason = formatIneligibleLowPointsReason(locale, estimatedPoints ?? gatePoints, input.englishLevel, input);
@@ -2590,7 +2610,7 @@ function buildPathwayEntry(
         : "The 190 Skilled Nominated Visa is a points-tested pathway requiring state or territory nomination. This is general information only and depends on individual circumstances.";
     }
   } else if (subclass === "491") {
-    if (gatePoints !== undefined && gatePoints < SKILLED_MIGRATION_MIN_POINTS) {
+    if (belowMinimum) {
       // Hard Gate: overrides any "possible"/high-potential signal below.
       relevance = "ineligible";
       reason = formatIneligibleLowPointsReason(locale, estimatedPoints ?? gatePoints, input.englishLevel, input);
@@ -2746,10 +2766,7 @@ function buildPathwayEntry(
   const ageGate = subclass === "485" ? evaluate485AgeGate(input) : null;
   const hardAgeGate = subclass === "485" ? evaluate485HardAgeGate(input) : null;
   const salaryGate = subclass === "482" ? evaluateEmployerSalaryGate(input) : null;
-  const isLowPointsIneligible =
-    ["189", "190", "491"].includes(subclass) &&
-    gatePoints !== undefined &&
-    gatePoints < SKILLED_MIGRATION_MIN_POINTS;
+  const isLowPointsIneligible = ["189", "190", "491"].includes(subclass) && belowMinimum;
 
   // Split form of the low-points reason: the points line is subclass-specific
   // (rendered per row), the shared notes are profile-level (rendered once).
@@ -2761,16 +2778,13 @@ function buildPathwayEntry(
     ineligibleSharedNotes = parts.sharedNotes;
   }
 
-  // Sourced hard-gate matrix (lib/readiness/visa-gates.ts, src/data/visa-gates.json): every mandatory requirement of the
-  // visa evaluated as met / not met / unknown against the intake. Any not-met gate makes the pathway "Not eligible
-  // now" (relevance ineligible, never recommended) with the failed gates and their citations; unknown gates make it
-  // "Conditional" and the reason lists what must be true. 189/190/491 keep their points/skills-assessment
-  // machinery (the ranking blocks them for exactly the same gates -- see test-visa-gates); the gates are attached
-  // for display.
-  const gateKey = subclass === "801" ? "820" : subclass;
-  const gates = (GATED_VISAS as readonly string[]).includes(gateKey)
-    ? evaluateVisaGates(input, { estimatedPoints, potentialPoints: rawGatePoints, boosterGain, pointsIfEnglishMet }, locale)[gateKey]
-    : undefined;
+  // 189/190/491 keep their points/skills-assessment machinery (the ranking blocks them for exactly the same gates --
+  // see test-visa-gates); the gates are attached for display. A shortfall the gate treats as a next step (the raw
+  // total is below 65 but English / the applicant's own boosters close it) is stated with those steps.
+  if (pointsNextStep && gatePoints !== undefined && gatePoints < SKILLED_MIGRATION_MIN_POINTS && gates) {
+    relevance = "needs_more_information";
+    reason = `${pathwayGateLabel("next_step_required", locale)}: ${gates.steps.join("; ")}. ${locale === "tr" ? "Bu yol yalnızca bu adımlar tamamlandıktan sonra uygun olur" : locale === "zh-Hans" ? "仅在完成以上步骤后才可推进" : "This pathway is available only once these steps are done"}.`;
+  }
   const failsGate = Boolean(gates && gates.status === "not_eligible_now" && !["189", "190", "491"].includes(gateKey));
   if (gates && !["189", "190", "491"].includes(gateKey)) {
     if (gates.status === "not_eligible_now") {
@@ -2855,7 +2869,7 @@ function buildPathwayEntry(
     input,
     locale,
     // The "below 65" risk follows the same (potential-score) gate as the pathway itself.
-    gatePoints !== undefined && gatePoints >= SKILLED_MIGRATION_MIN_POINTS ? undefined : estimatedPoints
+    gatePoints !== undefined && !belowMinimum ? undefined : estimatedPoints
   );
 
   return {
@@ -5748,48 +5762,104 @@ function pointsIfEnglishMetOf(input: ReadinessInput, locale: Locale): number {
   return calculateAustraliaPoints(buildBaselineAuCalcInput(input, locale).calc).total189;
 }
 
-function boosterGainOf(pe: PointsEstimate | undefined, input: ReadinessInput, locale: Locale): number | undefined {
+/** Durations used to order closure plans; only the 2 academic years of Australian study are stated in the sources. */
+const CLOSURE_DURATION: Partial<Record<PointsClosureFactor["id"], number>> = { australian_study: 2, regional_study: 2, specialist_education: 2 };
+/** No stated duration: said as "plus the time to complete ..."; weighted for ordering only. */
+const CLOSURE_OPEN_DURATION: Partial<Record<PointsClosureFactor["id"], number>> = { education: 3, professional_year: 1 };
+const CLOSURE_MULTI_YEAR = new Set<PointsClosureFactor["id"]>(["australian_study", "regional_study", "specialist_education", "education"]);
+
+/** Tie-break between equally quick, equally small plans: the applicant's own test first, then the lighter actions. */
+const CLOSURE_PREFERENCE: PointsClosureFactor["id"][] = ["english_proficient", "english_superior", "experience", "community_language", "partner_english", "partner_skills", "professional_year", "australian_study", "regional_study", "specialist_education", "education"];
+
+type ClosureCombo = { gain: number; t: number; factors: PointsClosureFactor[]; rank: number; pref: number };
+
+/**
+ * The applicant's own ways to close a points gap (no nomination; alternatives such as the partner options count
+ * once): English (to Proficient / Superior), every non-nomination, non-conditional booster the action plan offers,
+ * and skilled experience accruing year by year until the age limit (still subject to a positive skills assessment,
+ * which the potential score assumes; the age bracket is recomputed each year). `gain` is the most they can add (the
+ * closable ceiling); `plan(short)` is the quickest, then smallest, combination of those same factors that closes it.
+ */
+function pointsClosureOf(pe: PointsEstimate | undefined, input: ReadinessInput, locale: Locale): { gain: number; plan: (short: number) => PointsClosurePlan | undefined } | undefined {
   const actions = pe?.actionPlan?.actions;
   if (!actions) return undefined;
   const b = buildBaselineAuCalcInput(input, locale);
   const baseTotal = calculateAustraliaPoints(b.calc).total189;
-  // Every non-nomination, non-conditional booster the plan offers (English is taken at its top level).
-  const patch: Partial<AustraliaPointsInput> = { english: "superior" };
+  const englishOptions: Array<{ id?: PointsClosureFactor["id"]; patch: Partial<AustraliaPointsInput> }> = [{ patch: {} }];
+  if (b.calc.english === "competent") englishOptions.push({ id: "english_proficient", patch: { english: "proficient" } });
+  if (b.calc.english !== "superior") englishOptions.push({ id: "english_superior", patch: { english: "superior" } });
+  const instant: Array<{ id: PointsClosureFactor["id"]; patch: Partial<AustraliaPointsInput> }> = [];
+  const partner: Array<{ id: PointsClosureFactor["id"]; patch: Partial<AustraliaPointsInput> }> = [];
   for (const a of actions) {
     if (a.onlyForSubclass || a.exclusiveGroup === "nomination" || a.conditional) continue;
-    if (a.id === "education") patch.education = b.calc.education === "bachelor_or_higher" ? "doctorate" : "bachelor_or_higher";
-    else if (a.id === "australian_study") patch.australianStudyRequirement = true;
-    else if (a.id === "specialist_education") patch.specialistEducation = true;
-    else if (a.id === "community_language") patch.credentialledCommunityLanguage = true;
-    else if (a.id === "professional_year") patch.professionalYear = true;
-    else if (a.id === "regional_study") patch.regionalStudy = true;
-    else if (a.id === "partner_skills") patch.partner = "partner_skilled";
-    else if (a.id === "partner_english" && patch.partner === undefined) patch.partner = "partner_competent_english";
+    if (a.id === "education") instant.push({ id: "education", patch: { education: b.calc.education === "bachelor_or_higher" ? "doctorate" : "bachelor_or_higher" } });
+    else if (a.id === "australian_study") instant.push({ id: "australian_study", patch: { australianStudyRequirement: true } });
+    else if (a.id === "specialist_education") instant.push({ id: "specialist_education", patch: { specialistEducation: true } });
+    else if (a.id === "community_language") instant.push({ id: "community_language", patch: { credentialledCommunityLanguage: true } });
+    else if (a.id === "professional_year") instant.push({ id: "professional_year", patch: { professionalYear: true } });
+    else if (a.id === "regional_study") instant.push({ id: "regional_study", patch: { regionalStudy: true } });
+    else if (a.id === "partner_skills") partner.push({ id: "partner_skills", patch: { partner: "partner_skilled" } });
+    else if (a.id === "partner_english") partner.push({ id: "partner_english", patch: { partner: "partner_competent_english" } });
   }
-  // Skilled experience accrues over time (points still need a positive skills assessment, which the potential score
-  // assumes) but the applicant ages: try every year until the age limit and keep the best total.
+  const partnerOptions: Array<{ id?: PointsClosureFactor["id"]; patch: Partial<AustraliaPointsInput> }> = [{ patch: {} }, ...partner];
+
+  // Skilled experience accrues over time but the applicant ages: every year until the age limit (onshore if in
+  // Australia, otherwise offshore).
   const age = input.age ? parseInt(input.age, 10) : NaN;
   const yearsLeft = Number.isNaN(age) ? 0 : Math.max(0, 44 - age);
   const country = (input.currentCountry ?? "").trim().toLowerCase();
   const inAustralia = country === "au" || country.includes("australia") || country.includes("avustralya");
-  let best = calculateAustraliaPoints({ ...b.calc, ...patch }).total189;
+  const timeline: Array<{ t: number; patch: Partial<AustraliaPointsInput> }> = [{ t: 0, patch: {} }];
   if (b.canApplyExperiencePoints && input.age) {
     for (let t = 1; t <= yearsLeft; t++) {
       const ageOption = parseAgeOption(String(age + t));
       if (!ageOption || ageOption === "45_plus") break;
       const on = (input.onshoreExperienceYears ?? 0) + (inAustralia ? t : 0);
       const off = (input.offshoreExperienceYears ?? 0) + (inAustralia ? 0 : t);
-      const total = calculateAustraliaPoints({
-        ...b.calc,
-        ...patch,
-        age: ageOption,
-        overseasEmployment: yearsToOverseasEmploymentOption(off),
-        australianEmployment: yearsToAustralianEmploymentOption(on),
-      }).total189;
-      best = Math.max(best, total);
+      timeline.push({ t, patch: { age: ageOption, overseasEmployment: yearsToOverseasEmploymentOption(off), australianEmployment: yearsToAustralianEmploymentOption(on) } });
     }
   }
-  return Math.max(0, best - baseTotal);
+
+  const gainOf = (patch: Partial<AustraliaPointsInput>) => calculateAustraliaPoints({ ...b.calc, ...patch }).total189 - baseTotal;
+  const combos: ClosureCombo[] = [];
+  let best = 0;
+  for (let mask = 0; mask < 1 << instant.length; mask++) {
+    const chosen = instant.filter((_, i) => mask & (1 << i));
+    for (const en of englishOptions) {
+      for (const pa of partnerOptions) {
+        const opts = [...chosen, ...(en.id ? [en as { id: PointsClosureFactor["id"]; patch: Partial<AustraliaPointsInput> }] : []), ...(pa.id ? [pa as { id: PointsClosureFactor["id"]; patch: Partial<AustraliaPointsInput> }] : [])];
+        const patch = Object.assign({}, ...opts.map((o) => o.patch)) as Partial<AustraliaPointsInput>;
+        const instantGains = opts.map((o) => ({ id: o.id, gain: gainOf(o.patch) }));
+        const stated = Math.max(0, ...opts.map((o) => CLOSURE_DURATION[o.id] ?? 0));
+        const weighted = Math.max(stated, ...opts.map((o) => CLOSURE_OPEN_DURATION[o.id] ?? 0));
+        for (const step of timeline) {
+          const gain = gainOf({ ...patch, ...step.patch });
+          best = Math.max(best, gain);
+          const experienceGain = gain - instantGains.reduce((s, x) => s + x.gain, 0);
+          if (step.t > 0 && experienceGain <= 0) continue;
+          const factors: PointsClosureFactor[] = [...instantGains.filter((x) => x.gain > 0), ...(step.t > 0 ? [{ id: "experience" as const, gain: experienceGain, years: step.t }] : [])];
+          const pref = factors.reduce((s, f) => s + CLOSURE_PREFERENCE.indexOf(f.id), 0);
+          combos.push({ gain, t: Math.max(step.t, stated), factors, rank: Math.max(step.t, weighted) * 100 + factors.length, pref });
+        }
+      }
+    }
+  }
+  combos.sort((x, y) => x.rank - y.rank || x.pref - y.pref || x.gain - y.gain);
+  return {
+    gain: Math.max(0, best),
+    plan: (short: number) => {
+      const c = combos.find((x) => x.gain >= short && x.factors.length > 0);
+      if (!c) return undefined;
+      const factors = [...c.factors].sort((x, y) => CLOSURE_PREFERENCE.indexOf(x.id) - CLOSURE_PREFERENCE.indexOf(y.id));
+      const ids = factors.map((f) => f.id);
+      return {
+        factors,
+        years: c.t,
+        openDuration: ids.filter((id) => CLOSURE_OPEN_DURATION[id] !== undefined),
+        multiYear: [...(ids.includes("experience") ? (["experience"] as PointsClosureFactor["id"][]) : []), ...ids.filter((id) => CLOSURE_MULTI_YEAR.has(id))],
+      };
+    },
+  };
 }
 
 /** A non-points pathway (186 / 482 / 485 / 500 / 820) shut by a sourced hard gate: shown as "Not eligible now". */
@@ -7098,6 +7168,8 @@ function runReadinessEngineInternal(input: ReadinessInput): ReadinessReport {
     pointsEstimate.actionPlan = buildAuPointsActionPlan(input, detectedSubclasses, locale);
   }
   const dataCompleteness = buildDataCompleteness(input, locale);
+  // The closable ceiling and the closure plan: one computation shared by every pathway entry and the gates below.
+  const pointsClosure = pointsClosureOf(pointsEstimate, input, locale);
 
   let pathwayComparison: PathwayComparison[];
 
@@ -7180,8 +7252,9 @@ function runReadinessEngineInternal(input: ReadinessInput): ReadinessReport {
         dataCompleteness.percentage,
         pointsEstimate?.estimatedPoints,
         pointsEstimate?.potentialPoints ?? pointsEstimate?.estimatedPoints,
-        boosterGainOf(pointsEstimate, input, locale),
-        pointsIfEnglishMetOf(input, locale)
+        pointsClosure?.gain,
+        pointsIfEnglishMetOf(input, locale),
+        pointsClosure?.plan
       )
     );
   }
@@ -7324,8 +7397,9 @@ function runReadinessEngineInternal(input: ReadinessInput): ReadinessReport {
     {
       estimatedPoints: pointsEstimate?.estimatedPoints,
       potentialPoints: pointsEstimate?.potentialPoints,
-      boosterGain: boosterGainOf(pointsEstimate, input, locale),
+      boosterGain: pointsClosure?.gain,
       pointsIfEnglishMet: pointsIfEnglishMetOf(input, locale),
+      closurePlan: pointsClosure?.plan,
       invitation: pathwayScores
         ? Object.fromEntries(
             (["189", "190", "491"] as const).map((v) => [v, { score: pathwayScores[v].comparisonScore ?? pathwayScores[v].baseScore, benchmark: pathwayScores[v].benchmark }])
@@ -7421,9 +7495,13 @@ function runReadinessEngineInternal(input: ReadinessInput): ReadinessReport {
 
   const disclaimer = buildDisclaimer(locale);
 
+  // Invited or nominated: lodgement is the next step, ahead of any points booster (wording only, never eligibility).
+  if (input.applicationStage === "invited") suggestedNextSteps.unshift(lodgementNextStep(locale));
+
   return {
     country: "AU",
     nominationStream: input.nominationStream,
+    ...(input.applicationStage ? { applicationStage: input.applicationStage } : {}),
     executiveSummary,
     signalSnapshot,
     primaryLimitingFactor,

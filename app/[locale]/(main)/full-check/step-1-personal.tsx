@@ -14,9 +14,10 @@ function ErrorText({ message }: { message?: string }) {
   if (!message) return null;
   return <p className="text-xs text-red-600">{message}</p>;
 }
-import { activeCountries, countryLabels, countryVisaPathways, migrationGoalOptions, getVisaSubclassesForGoals, getMigrationGoalDescription, type SupportedCountry, type MigrationGoalId } from "@/lib/countries";
+import { isPartnerFamilySponsorship, activeCountries, countryLabels, countryVisaPathways, migrationGoalOptions, getVisaSubclassesForGoals, getMigrationGoalDescription, type SupportedCountry, type MigrationGoalId } from "@/lib/countries";
 import { useTranslation } from "@/contexts/language-context";
 import { renderVisaPathwayOptions } from "./full-check-waitlist-form";
+import { SituationFields } from "./situation-fields";
 
 const COUNTRIES = [
   { code: "AU", label: { en: "Australia", tr: "Avustralya", "zh-Hans": "澳大利亚" } },
@@ -268,6 +269,19 @@ export function Step1Personal({
           {fieldErrors?.["waitlist-age"] && <p className="text-xs text-red-600">{fieldErrors["waitlist-age"]}</p>}
         </div>
       </div>
+
+      {selectedCountry === "AU" && !isPartnerFamilySponsorship(visaInterest) && (
+        <SituationFields
+          locale={locale}
+          currentCountry={currentCountry}
+          selectClassName={selectClassName}
+          fieldErrors={{
+            ...(state.errors?.employerSponsorship ? { "waitlist-employer-sponsorship": state.errors.employerSponsorship } : {}),
+            ...(state.errors?.residenceState ? { "waitlist-residence-state": state.errors.residenceState } : {}),
+            ...(fieldErrors ?? {}),
+          }}
+        />
+      )}
     </>
   );
 }

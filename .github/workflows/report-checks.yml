@@ -126,6 +126,13 @@ jobs:
       - name: Visa hard-gate matrix (data + evaluation + PDF + AI validator)
         run: npm run test:visa-gates
 
+      # Intake: employer sponsorship (482 / 186 gates; no sponsor = next step), residence state (sourced per-state onshore
+      # residence rule -> 190 / 491 availability), application stage (lodgement section above the Points Booster in real
+      # PDF text, en/tr/zh-Hans); body "below points threshold" = gate arithmetic; the points step says how the gap closes
+      # and how long it takes; older reports (b0d20f74's inputs) keep their gate results; form conditional display.
+      - name: Intake sponsorship / residence / stage, points closure wording
+        run: npm run test:intake-situation
+
       # 190 / 491 friction includes nomination availability (occupation listed AND program open for the location).
       - name: Nomination availability in 190 / 491 friction
         run: npm run test:nomination-availability

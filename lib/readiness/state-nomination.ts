@@ -1,5 +1,6 @@
 import stateNominationData from "@/src/data/state-nomination-status.json";
 import { getStateRule } from "@/lib/state-nomination/state-rules-config";
+import { STATE_NAMES, stateResidenceRule } from "@/lib/state-nomination/residence-rules";
 import {
   matchOccupationToStateAllSubclasses,
   type OccupationMatchResult,
@@ -384,6 +385,54 @@ function buildPartialDataWarning(
   };
 }
 
+/**
+ * The residence check for one state, or undefined when it does not apply (applicant offshore, residence state not
+ * given -- every report made before the field existed -- or living in this state, or a state whose sourced rule
+ * admits applicants from other states).
+ */
+function residenceCheck(
+  input: ReadinessInput,
+  row: StateDatasetRow,
+  offshore: boolean
+): { block: "required" | "not_confirmed"; note: string } | undefined {
+  const home = offshore ? undefined : input.residenceState;
+  if (!home || home === row.code) return undefined;
+  const rule = stateResidenceRule(row.code);
+  if (rule.requirement === "not_required") return undefined;
+  const li = input.locale === "tr" ? 1 : input.locale === "zh-Hans" ? 2 : 0;
+  const state = STATE_NAMES[row.code]?.[li] ?? row.name;
+  const homeName = STATE_NAMES[home]?.[li] ?? home;
+  if (rule.requirement === "not_confirmed") {
+    return {
+      block: "not_confirmed",
+      note: t(
+        input.locale,
+        `${state}: residence requirement not confirmed for applicants living in another state (you live in ${homeName}), so it is not counted as available to you.`,
+        `${state}: başka bir eyalette yaşayan başvuru sahipleri için ikamet şartı teyit edilmedi (siz ${homeName} eyaletinde yaşıyorsunuz); bu nedenle sizin için uygun sayılmıyor.`,
+        `${state}：对居住在其他州的申请人的居住要求未确认（您居住在${homeName}），因此不计为您可申请的州。`
+      ),
+    };
+  }
+  const verb = row.code === "NSW" ? ["live or work in", "yaşamanızı veya çalışmanızı", "居住或工作"] : ["live in", "yaşamanızı", "居住"];
+  const scope = rule.subclasses?.length === 1 ? rule.subclasses[0] : undefined;
+  const other = scope === "190" ? "491" : "190";
+  const path = scope
+    ? [`${state}'s onshore subclass ${scope} pathway requires you to ${verb[0]} ${state}`, `${state} Avustralya içi subclass ${scope} yolu ${state} eyaletinde ${verb[1]} gerektirir`, `${state}境内 ${scope} 类别途径要求您在${state}${verb[2]}`]
+    : [`${state}'s onshore pathways require you to ${verb[0]} ${state}`, `${state} Avustralya içi yolları ${state} eyaletinde ${verb[1]} gerektirir`, `${state}境内途径要求您在${state}${verb[2]}`];
+  const tail = scope
+    ? [`; its subclass ${other} residence requirement is not confirmed`, `; subclass ${other} için ikamet şartı teyit edilmedi`, `；其 ${other} 类别的居住要求未确认`]
+    : ["", "", ""];
+  return {
+    block: "required",
+    note: t(
+      input.locale,
+      `${path[0]}; you live in ${homeName}${tail[0]}.`,
+      `${path[1]}; siz ${homeName} eyaletinde yaşıyorsunuz${tail[1]}.`,
+      `${path[2]}；您居住在${homeName}${tail[2]}。`
+    ),
+  };
+}
+
 export function calculateStateNominationTracker(
   input: ReadinessInput,
   pathwayComparison: PathwayComparison[],
@@ -572,6 +621,12 @@ export function calculateStateNominationTracker(
       );
     }
 
+    // Residence (intake, applicants in Australia only): a state whose onshore streams require living in it -- or whose
+    // residence rule the sourced data does not state -- does not count as available to someone living in another
+    // state. Older reports without the field are unaffected.
+    const residence = residenceCheck(input, row, offshore);
+    if (residence?.block === "required") score = 0;
+
     const matchLevel: StateMatchLevel = score >= 70 ? "high" : score >= 45 ? "medium" : "low";
 
     // Open = the program is not closed/suspended AND the on/offshore requirement is met by this
@@ -580,7 +635,8 @@ export function calculateStateNominationTracker(
       !isClosedStatus(effectiveStatus) &&
       !isClosedStatus(displayStatus) &&
       !(isOnshoreOnlyStatus(displayStatus) && offshore) &&
-      !(isOffshoreOnlyStatus(displayStatus) && !offshore);
+      !(isOffshoreOnlyStatus(displayStatus) && !offshore) &&
+      !residence;
 
     // buildSummary/buildRequirements read row.status for their copy -- pass
     // the effective (rule-overridden) status through so the PDF's prose
@@ -625,7 +681,8 @@ export function calculateStateNominationTracker(
       // lib/readiness/generate-pdf.ts). Order: admin-set customAiNote (top
       // priority, see StateNominationConfig), then the hand-verified
       // state-rules-config note, then the onshore/offshore rule override.
-      requirements: [adminConfig?.customAiNote, listNote, rule?.note ? localizeStateNote(input.locale, rule.note) : undefined, ruleOverrideNote, ...requirements].filter(
+      ...(residence ? { residenceBlock: residence.block } : {}),
+      requirements: [adminConfig?.customAiNote, residence?.note, listNote, rule?.note ? localizeStateNote(input.locale, rule.note) : undefined, ruleOverrideNote, ...requirements].filter(
         (item): item is string => Boolean(item)
       ),
       officialNote: intel?.officialNote,

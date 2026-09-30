@@ -20,6 +20,7 @@ import { notoSansSCRegularBase64 } from "./pdf-font-sc";
 import { appendNominationStreamSuffix, buildCaRankedPathways, calculateRankedPathways } from "./ranked-pathways";
 import { renderPersonalizedContent } from "./pdf-personalized-content";
 import { getCommonPitfalls } from "./pdf-content/common-pitfalls";
+import { eoiUpdateNote, getLodgementSection } from "./pdf-content/lodgement";
 import { getResourcesSection } from "./pdf-content/resources";
 import {
   frictionBandLabel,
@@ -2283,6 +2284,24 @@ export async function generateReadinessPDF(input: PDFGeneratorInput): Promise<Ui
    * this section renders nothing at all in that case rather than an empty
    * placeholder.
    */
+  /**
+   * "Invited or nominated" (AU): the lodgement section, rendered once, above the first Points Booster section of the
+   * PDF (the AI strategy's roadmap when present, otherwise the Points Booster Simulator).
+   */
+  let lodgementRendered = false;
+  function renderLodgementSection() {
+    if (lodgementRendered) return;
+    lodgementRendered = true;
+    const lodgement = getLodgementSection(effectiveLocale);
+    addHeading(lodgement.title);
+    addBody(lodgement.intro);
+    addBody(lodgement.deadline);
+    lodgement.order.forEach((line) => addSmallText(line, 4));
+    yPosition += 1;
+    lodgement.leadTimes.forEach((line) => addSmallText(line, 4));
+    yPosition += 3;
+  }
+
   function renderAiStrategySection() {
     const strategy = report.aiStrategy;
     if (!strategy) return;
@@ -2379,6 +2398,7 @@ export async function generateReadinessPDF(input: PDFGeneratorInput): Promise<Ui
           : [];
     const enablingSteps = report.country === "CA" ? [] : (auPlan?.enablingSteps ?? []);
 
+    if (report.country !== "CA" && report.applicationStage === "invited") renderLodgementSection();
     if (boosterRows.length > 0 || enablingSteps.length > 0) {
       const boosterHeading = isTr ? "Puan Artırma Yol Haritası" : isZh ? "积分提升路线图" : "Points Booster Roadmap";
       addHeading(boosterHeading);
@@ -4678,8 +4698,15 @@ export async function generateReadinessPDF(input: PDFGeneratorInput): Promise<Ui
     yPosition += 3;
   }
 
+  // Application stage (AU intake; wording only, never eligibility). Invited or nominated: lodgement comes first, so its
+  // section sits above the Points Booster and the boosters are marked secondary.
+  const stage = report.country === "CA" ? undefined : report.applicationStage;
+  if (stage === "invited") renderLodgementSection();
+
   if (report.pointsBoosterSimulator) {
     addHeading(text.pointsBoosterSimulator);
+    if (stage === "invited") addSmallText(getLodgementSection(effectiveLocale).boosterNote, 0);
+    if (stage === "eoi_submitted") addSmallText(eoiUpdateNote(effectiveLocale), 0);
     if (report.dataRequiredSections?.includes("pointsBoosterSimulator")) {
       drawVisualPlaceholder(text.pointsBoosterSimulator);
     } else {

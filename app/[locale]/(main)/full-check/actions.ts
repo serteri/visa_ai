@@ -825,6 +825,21 @@ export async function submitFullCheckWaitlist(
     formData.get("courseCompletionStatus")
   );
   const courseCompletionStatus = courseCompletionStatusResult.success ? courseCompletionStatusResult.data : undefined;
+  // Situation fields (AU): employer sponsorship, residence state (only when in Australia), application stage.
+  const employerSponsorshipRaw = String(formData.get("employerSponsorship") ?? "").trim();
+  const employerSponsorship = (["none", "job_offer", "sponsored_482"] as const).find((v) => v === employerSponsorshipRaw);
+  const yearsWithCurrentSponsorRaw = String(formData.get("yearsWithCurrentSponsor") ?? "").trim();
+  const yearsWithCurrentSponsorNum = yearsWithCurrentSponsorRaw === "" ? undefined : Number(yearsWithCurrentSponsorRaw);
+  const yearsWithCurrentSponsor =
+    employerSponsorship === "sponsored_482" && yearsWithCurrentSponsorNum !== undefined && Number.isInteger(yearsWithCurrentSponsorNum) && yearsWithCurrentSponsorNum >= 0 && yearsWithCurrentSponsorNum <= 10
+      ? yearsWithCurrentSponsorNum
+      : undefined;
+  const residenceStateRaw = String(formData.get("residenceState") ?? "").trim();
+  const residenceState = String(formData.get("currentCountry") ?? "").trim() === "AU"
+    ? (["NSW", "VIC", "QLD", "SA", "WA", "TAS", "NT", "ACT"] as const).find((v) => v === residenceStateRaw)
+    : undefined;
+  const applicationStageRaw = String(formData.get("applicationStage") ?? "").trim();
+  const applicationStage = (["planning", "skills_assessment_in_progress", "eoi_submitted", "invited"] as const).find((v) => v === applicationStageRaw) ?? "planning";
   const occupationConfirmed = occupationConfirmedRaw || String(formData.get("occupationConfirmed") ?? "").trim();
   const hasGraduateVisaPathwayIntentRaw = String(formData.get("hasGraduateVisaPathwayIntent") ?? "").trim();
   const hasGraduateVisaPathwayIntent =
@@ -922,6 +937,20 @@ export async function submitFullCheckWaitlist(
           ? "请输入有效的年薪数值。"
           : "Enter a valid annual salary amount.";
     }
+  }
+  if (!isPartner && targetCountry === "AU" && !employerSponsorship) {
+    errors.employerSponsorship = isTr
+      ? "İşveren sponsorluğu gereklidir."
+      : isZh
+        ? "雇主担保为必填项。"
+        : "Employer sponsorship is required.";
+  }
+  if (!isPartner && targetCountry === "AU" && currentCountry === "AU" && !residenceState) {
+    errors.residenceState = isTr
+      ? "Yaşadığınız eyalet veya bölge gereklidir."
+      : isZh
+        ? "居住的州或领地为必填项。"
+        : "State or territory of residence is required.";
   }
   if (!isPartner && !offshoreExperienceYearsResult.success) {
     errors.offshoreExperienceYears = isTr
@@ -1104,6 +1133,17 @@ export async function submitFullCheckWaitlist(
     getStateNominationConfigMap(),
   ]);
 
+  // AU skilled/employer intake only; persisted with the input so the refreshed PDF uses the same answers.
+  const situationInput: Pick<ReadinessInput, "employerSponsorship" | "yearsWithCurrentSponsor" | "residenceState" | "applicationStage"> =
+    targetCountry === "AU" && !isPartner
+      ? {
+          employerSponsorship,
+          ...(yearsWithCurrentSponsor !== undefined ? { yearsWithCurrentSponsor } : {}),
+          ...(residenceState ? { residenceState } : {}),
+          applicationStage,
+        }
+      : {};
+
   const generatedReport = ensureCountrySpecificReportSchema(
     runReadinessEngine({
       locale: resolvedLocale,
@@ -1144,6 +1184,7 @@ export async function submitFullCheckWaitlist(
       biggestConcern: biggestConcern || undefined,
       nocCode: nocCode || undefined,
       nocTeer: nocTeer !== undefined && !isNaN(nocTeer) ? nocTeer : undefined,
+      ...situationInput,
     }),
     targetCountry
   );
@@ -1260,6 +1301,7 @@ export async function submitFullCheckWaitlist(
     isLabourAgreementEmployer: formData.get("isLabourAgreementEmployer") === "on" || undefined,
     nocCode: nocCode || undefined,
     nocTeer: nocTeer !== undefined && !isNaN(nocTeer) ? nocTeer : undefined,
+    ...situationInput,
   };
 
   const internalLeadTier = computeInternalLeadTier(readinessInputForReport, generatedReport.assessmentState);

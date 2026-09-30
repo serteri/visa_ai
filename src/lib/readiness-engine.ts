@@ -20,6 +20,7 @@ import type { EnglishLevel } from "@/lib/readiness/visa-points-calculator";
 import { localizeOccupationWarning, localizeText, t3 } from "@/src/lib/readiness/localization";
 import { canonicalizeOccupationInput, findOccupationRecord as findCanonicalOccupationRecord } from "@/lib/readiness/occupation-eligibility";
 import { logReportInvariantViolations } from "@/lib/readiness/report-invariants";
+import { lodgementNextStep } from "@/lib/readiness/pdf-content/lodgement";
 import type {
   StateNominationTracker,
   DocumentCategory,
@@ -861,7 +862,12 @@ export function runReadinessEngine(input: ReadinessInput): ReadinessReport {
       pathwayRanking: base.pathwayRanking,
     }),
     documentChecklist: buildPremiumDocumentChecklist(input, base),
-    suggestedNextSteps: buildImmediateActionPlan(input, base),
+    // Invited or nominated (AU intake stage): lodgement is the first next step, ahead of any points booster.
+    suggestedNextSteps: ((steps: string[]) => {
+      if (input.applicationStage !== "invited" || base.country === "CA") return steps;
+      const lodge = lodgementNextStep(input.locale);
+      return [lodge, ...steps.filter((s) => s !== lodge)];
+    })(buildImmediateActionPlan(input, base)),
     frictionAnalysis,
   };
 
