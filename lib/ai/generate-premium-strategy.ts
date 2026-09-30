@@ -273,7 +273,7 @@ function findPointsPlanViolations(
   }
   result.topRecommendedPathways.forEach((pathway, i) => {
     pathway.nextSteps.forEach((step, j) => {
-      for (const message of findPointsClaimViolations(step, plan, { checkFactors: true, estimate })) {
+      for (const message of findPointsClaimViolations(withoutEngineSentences(step), plan, { checkFactors: true, estimate })) {
         violations.push({ path: `topRecommendedPathways[${i}].nextSteps[${j}]`, message: `${message}: "${step}"` });
       }
     });
@@ -307,7 +307,7 @@ function finalizeAuPoints(
     topRecommendedPathways: result.topRecommendedPathways.map((pathway, i) => ({
       ...pathway,
       reason: badPaths.has(`topRecommendedPathways[${i}].reason`) ? countryMismatchFallbackText("topRecommendedPathways") : pathway.reason,
-      nextSteps: pathway.nextSteps.filter((step) => findPointsClaimViolations(step, plan, { checkFactors: true, estimate }).length === 0),
+      nextSteps: pathway.nextSteps.filter((step) => findPointsClaimViolations(engineSentences.reduce((acc, sentence) => acc.split(sentence).join(" "), step), plan, { checkFactors: true, estimate }).length === 0),
     })),
     pointsBoosterStrategy: rows.map((r) => ({
       actionId: r.actionId,
@@ -353,9 +353,12 @@ async function generatePremiumStrategyInternal(
   // The engine's own pathway statements (the deterministic recommendation reasons) are never a violation.
   const sentenceLocale = (locale === "tr" ? "tr" : locale === "zh-Hans" ? "zh-Hans" : "en") as Locale;
   const scoresForSentences = deterministicReport.pathwayScores;
-  const engineSentences = scoresForSentences
-    ? (["189", "190", "491"] as const).map((sub) => describePathwayScore(scoresForSentences[sub], sentenceLocale))
-    : [];
+  const gateSentences = Object.values(deterministicReport.visaGates ?? {}).flatMap((g) => [...g.steps, ...g.gates.map((x) => x.reason)]).filter((t) => t.length > 0);
+  const engineSentences = [
+    ...(scoresForSentences ? (["189", "190", "491"] as const).map((sub) => describePathwayScore(scoresForSentences[sub], sentenceLocale)) : []),
+    // ... and its gate steps / reasons (e.g. "Raise your points from 50 to at least 65 (currently 15 short)").
+    ...gateSentences,
+  ].sort((a, b) => b.length - a.length);
   const check = (r: PremiumStrategyResult) => ({
     blocked: isEoiEligible ? [] : findBlockedLanguageViolations(r, country),
     country: findCountryMismatchViolations(r, country),

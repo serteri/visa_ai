@@ -48,10 +48,23 @@ function scoreNumbers(report: ReadinessReport): Set<number> {
   return out;
 }
 
+/** The engine's own deterministic sentences (gate steps and reasons), which state its numbers by construction. */
+function engineSentences(report: ReadinessReport): string[] {
+  const out: string[] = [];
+  for (const g of Object.values(report.visaGates ?? {})) {
+    out.push(...g.steps);
+    for (const x of g.gates) out.push(x.reason);
+  }
+  return out.filter((t) => t.length > 0).sort((a, b) => b.length - a.length);
+}
+
 /** Score/gap numbers and bonus-as-current claims in one free-text string. */
-export function findScoreViolations(text: string, report: ReadinessReport): string[] {
+export function findScoreViolations(rawText: string, report: ReadinessReport): string[] {
   const scores = report.pathwayScores;
   if (!scores) return [];
+  // Engine-authored sentences (e.g. "Raise your points from 50 to at least 65 (currently 15 short)") are exempt.
+  let text = rawText;
+  for (const sentence of engineSentences(report)) text = text.split(sentence).join(" ");
   const out: string[] = [];
   const allowed = scoreNumbers(report);
   for (const n of report.pointsEstimate?.actionPlan?.actions.map((a) => a.gain) ?? []) allowed.add(n);

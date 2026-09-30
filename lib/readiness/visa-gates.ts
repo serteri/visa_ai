@@ -43,6 +43,8 @@ export type GateContext = {
    * shortfall no more than this is actionable; without it a shortfall is treated as structural.
    */
   boosterGain?: number;
+  /** The total as if the English test were taken at Competent (the engine zeroes the estimate without a valid test). */
+  pointsIfEnglishMet?: number;
   /** 189 / 190 / 491: the score to compare with the recent invitation benchmark (nomination included for 190 / 491). */
   invitation?: Partial<Record<"189" | "190" | "491", { score: number; benchmark: number | null }>>;
 };
@@ -187,8 +189,9 @@ function csolGate(f: ReturnType<typeof facts>): Verdict {
  * The 65-point minimum applies to the total including the nomination / sponsorship points the visa requires
  * (+5 for 190, +15 for 491), the same total the invitation benchmark is compared with.
  */
-function pointsGate(ctx: GateContext, visa: "189" | "190" | "491"): Verdict {
-  const own = ctx.potentialPoints ?? ctx.estimatedPoints;
+function pointsGate(ctx: GateContext, visa: "189" | "190" | "491", f?: ReturnType<typeof facts>): Verdict {
+  const noEnglish = f?.english === "none" && ctx.pointsIfEnglishMet !== undefined;
+  const own = noEnglish ? ctx.pointsIfEnglishMet : (ctx.potentialPoints ?? ctx.estimatedPoints);
   if (own === undefined) return unknown("A points estimate could not be calculated.", "Puan tahmini hesaplanamadı.", "无法计算分数估算。");
   const bonus = NOMINATION_BONUS[visa];
   const p = own + bonus;
@@ -222,7 +225,7 @@ const skilled = (v: "189" | "190" | "491") => {
   EVAL[`${v}.occupation_list`] = (_i, f) => occupationListGate(f, v);
   EVAL[`${v}.age`] = (_i, f) => ageGate(f, 45);
   EVAL[`${v}.english`] = (_i, f) => englishGate(f);
-  EVAL[`${v}.points`] = (_i, _f, c) => pointsGate(c, v);
+  EVAL[`${v}.points`] = (_i, _f, c) => pointsGate(c, v, _f);
   EVAL[`${v}.invitation`] = () => future("After you submit an EOI you may be invited; this is a later step, not a failure.", "EOI verdikten sonra davet alabilirsiniz; bu sonraki bir adımdır, başarısızlık değildir.", "提交 EOI 后才可能获邀；这是后续步骤，并非不符合条件。");
 };
 skilled("189");
@@ -357,6 +360,9 @@ function evaluateGate(row: GateRow, input: ReadinessInput, f: ReturnType<typeof 
 /** The action that resolves an actionable not-met gate. */
 function stepFor(row: GateRow, input: ReadinessInput, f: ReturnType<typeof facts>, ctx: GateContext, locale: Locale): string | undefined {
   const key = row.id.replace(/^[0-9A-Z]+\./, "");
+  if (key === "skills_assessment" && row.visa === "482") {
+    return T(locale, "Complete a skills assessment (mandatory for some occupations) before the nomination", "Nominasyondan önce bir beceri değerlendirmesi tamamlayın (bazı meslekler için zorunlu)", "在提名前完成技能评估（部分职业强制要求）");
+  }
   if (key === "skills_assessment") {
     const body = f.authority?.trim();
     return T(
@@ -366,12 +372,31 @@ function stepFor(row: GateRow, input: ReadinessInput, f: ReturnType<typeof facts
       `向${body || "您职业的评估机构"}完成正面技能评估`
     );
   }
+  if (key === "english" && row.visa === "482") {
+    return T(locale, "Take an English test and reach the minimum result (IELTS 5.0 overall and in each component)", "Bir İngilizce testi alın ve asgari sonuca ulaşın (genel ve her bölümde IELTS 5.0)", "参加英语考试并达到最低成绩（雅思总分及各项均 5.0）");
+  }
+  if (key === "english" && row.visa === "485") {
+    return T(locale, "Take an English test and obtain a result from the last 12 months", "Bir İngilizce testi alın ve son 12 aydan bir sonuç edinin", "参加英语考试并取得过去 12 个月内的成绩");
+  }
   if (key === "english") {
     return T(locale, "Take an English test and reach at least Competent English", "Bir İngilizce testi alın ve en az Competent seviyesine ulaşın", "参加英语考试并至少达到 Competent 水平");
   }
   if (key === "points") {
-    // No number in the wording: a figure such as 65 collides with the score-number checks (65 can be the 190 score if nominated).
-    return T(locale, "Raise your points to the required minimum (see the points improvement tips)", "Puanınızı gereken asgari düzeye çıkarın (puan iyileştirme ipuçlarına bakın)", "将分数提高到所需的最低要求（见提分建议）");
+    const noEnglish = f.english === "none" && ctx.pointsIfEnglishMet !== undefined;
+    const own = (noEnglish ? ctx.pointsIfEnglishMet : (ctx.potentialPoints ?? ctx.estimatedPoints)) ?? 0;
+    const bonus = NOMINATION_BONUS[row.visa as "189" | "190" | "491"];
+    const total = own + bonus;
+    const short = Math.max(65 - total, 0);
+    const inc = bonus > 0
+      ? [`, including ${bonus} for the required nomination or sponsorship`, `, zorunlu adaylık veya sponsorluk için ${bonus} puan dahil`, `，含必需的提名或担保 ${bonus} 分`]
+      : ["", "", ""];
+    const basis = noEnglish ? [", counting Competent English", ", Competent İngilizce sayılarak", "，按 Competent 英语计算"] : ["", "", ""];
+    return T(
+      locale,
+      `Raise your points from ${total} to at least 65 (currently ${short} short${inc[0]}${basis[0]}; see the points improvement tips)`,
+      `Puanınızı ${total} değerinden en az 65'e çıkarın (şu anda ${short} puan eksik${inc[1]}${basis[1]}; puan iyileştirme ipuçlarına bakın)`,
+      `将分数从 ${total} 分提高到至少 65 分（目前差 ${short} 分${inc[2]}${basis[2]}；见提分建议）`
+    );
   }
   if (key === "experience" || key === "sponsored_employment") {
     const need = row.numeric?.value ?? (row.id === "186DE.experience" ? 3 : row.id === "482CS.experience" ? 1 : 2);

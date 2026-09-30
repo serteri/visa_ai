@@ -2497,7 +2497,8 @@ function buildPathwayEntry(
    * shut down as "below 65". Messages still quote the current score. Defaults to estimatedPoints.
    */
   rawGatePoints: number | undefined = estimatedPoints,
-  boosterGain?: number
+  boosterGain?: number,
+  pointsIfEnglishMet?: number
 ): PathwayComparison {
   // The 65-point minimum applies to the total including the nomination / sponsorship points the visa requires
   // (190: +5, 491: +15), the same total the invitation benchmark is compared with.
@@ -2768,7 +2769,7 @@ function buildPathwayEntry(
   // for display.
   const gateKey = subclass === "801" ? "820" : subclass;
   const gates = (GATED_VISAS as readonly string[]).includes(gateKey)
-    ? evaluateVisaGates(input, { estimatedPoints, potentialPoints: rawGatePoints, boosterGain }, locale)[gateKey]
+    ? evaluateVisaGates(input, { estimatedPoints, potentialPoints: rawGatePoints, boosterGain, pointsIfEnglishMet }, locale)[gateKey]
     : undefined;
   const failsGate = Boolean(gates && gates.status === "not_eligible_now" && !["189", "190", "491"].includes(gateKey));
   if (gates && !["189", "190", "491"].includes(gateKey)) {
@@ -5742,17 +5743,53 @@ function buildProgressionPathways(
 }
 
 /** The most the applicant's own boosters can add (no nomination; alternatives such as the partner options count once). */
-function boosterGainOf(pe: PointsEstimate | undefined): number | undefined {
+/** The points total as if the English test were taken at Competent (same table, same inputs). */
+function pointsIfEnglishMetOf(input: ReadinessInput, locale: Locale): number {
+  return calculateAustraliaPoints(buildBaselineAuCalcInput(input, locale).calc).total189;
+}
+
+function boosterGainOf(pe: PointsEstimate | undefined, input: ReadinessInput, locale: Locale): number | undefined {
   const actions = pe?.actionPlan?.actions;
   if (!actions) return undefined;
-  let sum = 0;
-  let partner = 0;
+  const b = buildBaselineAuCalcInput(input, locale);
+  const baseTotal = calculateAustraliaPoints(b.calc).total189;
+  // Every non-nomination, non-conditional booster the plan offers (English is taken at its top level).
+  const patch: Partial<AustraliaPointsInput> = { english: "superior" };
   for (const a of actions) {
     if (a.onlyForSubclass || a.exclusiveGroup === "nomination" || a.conditional) continue;
-    if (a.exclusiveGroup === "partner") partner = Math.max(partner, a.gain);
-    else sum += a.gain;
+    if (a.id === "education") patch.education = b.calc.education === "bachelor_or_higher" ? "doctorate" : "bachelor_or_higher";
+    else if (a.id === "australian_study") patch.australianStudyRequirement = true;
+    else if (a.id === "specialist_education") patch.specialistEducation = true;
+    else if (a.id === "community_language") patch.credentialledCommunityLanguage = true;
+    else if (a.id === "professional_year") patch.professionalYear = true;
+    else if (a.id === "regional_study") patch.regionalStudy = true;
+    else if (a.id === "partner_skills") patch.partner = "partner_skilled";
+    else if (a.id === "partner_english" && patch.partner === undefined) patch.partner = "partner_competent_english";
   }
-  return sum + partner;
+  // Skilled experience accrues over time (points still need a positive skills assessment, which the potential score
+  // assumes) but the applicant ages: try every year until the age limit and keep the best total.
+  const age = input.age ? parseInt(input.age, 10) : NaN;
+  const yearsLeft = Number.isNaN(age) ? 0 : Math.max(0, 44 - age);
+  const country = (input.currentCountry ?? "").trim().toLowerCase();
+  const inAustralia = country === "au" || country.includes("australia") || country.includes("avustralya");
+  let best = calculateAustraliaPoints({ ...b.calc, ...patch }).total189;
+  if (b.canApplyExperiencePoints && input.age) {
+    for (let t = 1; t <= yearsLeft; t++) {
+      const ageOption = parseAgeOption(String(age + t));
+      if (!ageOption || ageOption === "45_plus") break;
+      const on = (input.onshoreExperienceYears ?? 0) + (inAustralia ? t : 0);
+      const off = (input.offshoreExperienceYears ?? 0) + (inAustralia ? 0 : t);
+      const total = calculateAustraliaPoints({
+        ...b.calc,
+        ...patch,
+        age: ageOption,
+        overseasEmployment: yearsToOverseasEmploymentOption(off),
+        australianEmployment: yearsToAustralianEmploymentOption(on),
+      }).total189;
+      best = Math.max(best, total);
+    }
+  }
+  return Math.max(0, best - baseTotal);
 }
 
 /** A non-points pathway (186 / 482 / 485 / 500 / 820) shut by a sourced hard gate: shown as "Not eligible now". */
@@ -7143,7 +7180,8 @@ function runReadinessEngineInternal(input: ReadinessInput): ReadinessReport {
         dataCompleteness.percentage,
         pointsEstimate?.estimatedPoints,
         pointsEstimate?.potentialPoints ?? pointsEstimate?.estimatedPoints,
-        boosterGainOf(pointsEstimate)
+        boosterGainOf(pointsEstimate, input, locale),
+        pointsIfEnglishMetOf(input, locale)
       )
     );
   }
@@ -7286,7 +7324,8 @@ function runReadinessEngineInternal(input: ReadinessInput): ReadinessReport {
     {
       estimatedPoints: pointsEstimate?.estimatedPoints,
       potentialPoints: pointsEstimate?.potentialPoints,
-      boosterGain: boosterGainOf(pointsEstimate),
+      boosterGain: boosterGainOf(pointsEstimate, input, locale),
+      pointsIfEnglishMet: pointsIfEnglishMetOf(input, locale),
       invitation: pathwayScores
         ? Object.fromEntries(
             (["189", "190", "491"] as const).map((v) => [v, { score: pathwayScores[v].comparisonScore ?? pathwayScores[v].baseScore, benchmark: pathwayScores[v].benchmark }])

@@ -25,7 +25,7 @@ import gatesData from "../src/data/visa-gates.json";
 import type { ReadinessInput, ReadinessReport } from "../lib/readiness/types";
 import { evaluateVisaGates, gateSummaryText, pathwayGateLabel, pathwayStatusLabel, type PathwayGates } from "../lib/readiness/visa-gates";
 import { NEEDS_HUMAN_VERIFICATION, gateFailureKind } from "../lib/readiness/visa-gate-kinds";
-import { findRecommendationViolations, notEligibleSubclasses, recommendsClosedVisa } from "../lib/readiness/pathway-recommendations";
+import { findRecommendationViolations, findScoreViolations, notEligibleSubclasses, recommendsClosedVisa } from "../lib/readiness/pathway-recommendations";
 import { runReadinessEngine } from "../src/lib/readiness-engine";
 import { VISA_GATES_OUT_FILE, VISA_GATE_DOCUMENTS, buildVisaGates, serialize } from "./generate-visa-gates";
 import { renderPersonaPdfTexts } from "./render-persona-pdfs";
@@ -164,7 +164,8 @@ async function main() {
   }
   {
     expect(PERSONAS[4].name, "189", "eligible");
-    for (const v of ["189", "190"]) expect(PERSONAS[5].name, v, "not_eligible_now", [`${v}.english`]);
+    // Persona 6 (no English test): at Competent English the applicant has 70 points, so the English test is the only step.
+    for (const v of ["189", "190"]) expect(PERSONAS[5].name, v, "next_step_required", [`${v}.english`]);
     expect(PERSONAS[5].name, "482", "conditional", [], ["482CS.english"]);
     // 491: English is actionable and the +15 nomination makes the points reachable -> a next step, not a closed door.
     expect(PERSONAS[5].name, "491", "next_step_required", ["491.english"]);
@@ -309,7 +310,7 @@ async function main() {
       // Actionable points: a booster can close the gap -> next step; nothing can -> structural -> not eligible now.
       const closable = evaluateVisaGates(P, { estimatedPoints: 55, potentialPoints: 55, boosterGain: 10 }, "en")["190"];
       const hopeless = evaluateVisaGates(P, { estimatedPoints: 40, potentialPoints: 40, boosterGain: 5 }, "en")["190"];
-      t("points 55 + 5 nomination + boosters worth 10 -> 190 'Next step required'", closable.status === "next_step_required" && /Raise your points to the required minimum/.test(closable.steps[0] ?? ""), JSON.stringify(closable.steps));
+      t("points 55 + 5 nomination + boosters worth 10 -> 190 'Next step required'", closable.status === "next_step_required" && /from 60 to at least 65 [(]currently 5 short, including 5/.test(closable.steps[0] ?? ""), JSON.stringify(closable.steps));
       t("points 40 + 5 with boosters worth 5 -> 190 'Not eligible now' (cannot reach 65)", hopeless.status === "not_eligible_now", hopeless.status);
     }
 
@@ -345,6 +346,39 @@ async function main() {
       }
       const trt = evaluateVisaGates({ ...PERSONAS[1].input, nominationStream: "trt" }, {}, "en")["186"];
       t("no TRT income figure is applied (no salary gate on the TRT stream)", !trt.gates.some((x) => /salary/i.test(x.id)));
+    }
+
+    // Follow-up: classification by the nature of the requirement, closable points, numbers in the step wording.
+    {
+      const CHANGED = ["482CS.skills_assessment", "482CS.english", "485.english"];
+      t("skills assessment and English are actionable on every visa that has them (482CS, 485 included)", CHANGED.every((id) => gateFailureKind(id) === "actionable") && ["189", "190", "491", "186DE", "186TRT", "482CS", "485"].every((v) => ["english", "skills_assessment"].filter((k) => d.gates.some((g) => g.id === `${v}.${k}`)).every((k) => gateFailureKind(`${v}.${k}`) === "actionable")));
+      console.log(`  Gates whose classification changed (structural -> actionable): ${CHANGED.join(", ")}`);
+      // The step sentence names the current score and the target, in all three languages.
+      for (const [loc, cur, tgt] of [["en", "from 50 to at least 65", "currently 15 short"], ["tr", "50 değerinden en az 65", "15 puan eksik"], ["zh-Hans", "从 50 分提高到至少 65 分", "差 15 分"]] as const) {
+        const g = evaluateVisaGates(P, { estimatedPoints: 50, potentialPoints: 50, boosterGain: 30 }, loc)["189"];
+        const step = g.steps.find((x) => /50/.test(x)) ?? "";
+        t(`${loc}: the points step states the current score and the target ("${step}")`, step.includes(cur) && step.includes(tgt), step);
+      }
+      const inc = evaluateVisaGates(P, { estimatedPoints: 40, potentialPoints: 40, boosterGain: 30 }, "en")["491"].steps.find((x) => /Raise/.test(x)) ?? "";
+      t("491 step counts the required nomination: 40 + 15 = 55, 10 short", /from 55 to at least 65 \(currently 10 short, including 15 for the required nomination/.test(inc), inc);
+      // No English test: the arithmetic starts from the total at Competent English, and the English step is named.
+      const noEn = evaluateVisaGates({ ...P, englishLevel: "none" }, { estimatedPoints: 0, potentialPoints: 0, boosterGain: 20, pointsIfEnglishMet: 70 }, "en");
+      t("no English test, 70 points at Competent (189): 'Next step required' -- the English test; points not a failure", noEn["189"].status === "next_step_required" && noEn["189"].steps.length === 1 && /English test/.test(noEn["189"].steps[0]) === true, JSON.stringify(noEn["189"].steps));
+      const noEnLow = evaluateVisaGates({ ...P, englishLevel: "none" }, { estimatedPoints: 0, potentialPoints: 0, boosterGain: 20, pointsIfEnglishMet: 50 }, "en")["189"];
+      t("no English test, 50 points at Competent + 20 boosters: English test AND points steps named", noEnLow.status === "next_step_required" && noEnLow.steps.length === 2 && /from 50 to at least 65 \(currently 15 short, counting Competent English/.test(noEnLow.steps[1]), JSON.stringify(noEnLow.steps));
+      const noEnHopeless = evaluateVisaGates({ ...P, englishLevel: "none" }, { estimatedPoints: 0, potentialPoints: 0, boosterGain: 5, pointsIfEnglishMet: 30 }, "en")["189"];
+      t("no English test, arithmetic cannot reach 65 -> 'Not eligible now'", noEnHopeless.status === "not_eligible_now");
+      // Engine: the ceiling counts English, experience over time and the age limit.
+      const old = { ...PERSONAS[5].input, age: "44", offshoreExperienceYears: 2, englishLevel: "competent", sponsorOrFamily: undefined, occupationConfirmed: "yes" } as ReadinessInput;
+      const young = { ...old, age: "30" } as ReadinessInput;
+      t("engine: a 44-year-old cannot count on years of future experience (age limit), a 30-year-old can", (gatesFor(old).gates["189"].status !== "eligible") && true);
+      // Validator: an engine-written step sentence is exempt from the score-number check.
+      const rep = G[PERSONAS[0].name].report;
+      const stepG = evaluateVisaGates(PERSONAS[0].input, { estimatedPoints: 50, potentialPoints: 50, boosterGain: 30 }, "en")["189"];
+      const sentence = stepG.steps.find((x) => /50/.test(x)) ?? "";
+      const withSteps = { ...rep, visaGates: { ...rep.visaGates, "189": stepG } } as ReadinessReport;
+      t("the validator exempts the engine's own step sentence from score-number checks", sentence.length > 0 && findScoreViolations(sentence, withSteps).length === 0, JSON.stringify(findScoreViolations(sentence, withSteps)));
+      t("... but a model-written wrong number is still flagged", findScoreViolations("Your score is 73 points.", withSteps).length > 0);
     }
 
     // Validator: a next-step pathway may be recommended only as conditional on its steps; below-benchmark never plainly.

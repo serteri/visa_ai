@@ -8,8 +8,10 @@
 export type GateFailureKind = "actionable" | "structural";
 
 const ACTIONABLE = [
-  "189.skills_assessment", "190.skills_assessment", "491.skills_assessment", "186DE.skills_assessment",
-  "189.english", "190.english", "491.english", "186DE.english", "186TRT.english",
+  // By the nature of the requirement, not by visa: a skills assessment or an English test/level is something the
+  // applicant can do, on every visa that has one.
+  "189.skills_assessment", "190.skills_assessment", "491.skills_assessment", "186DE.skills_assessment", "482CS.skills_assessment",
+  "189.english", "190.english", "491.english", "186DE.english", "186TRT.english", "482CS.english", "485.english",
   "189.points", "190.points", "491.points",
   "186DE.experience", "482CS.experience", "186TRT.sponsored_employment",
 ];
