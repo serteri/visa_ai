@@ -1,10 +1,10 @@
 /**
  * Read-only access to the PRODUCTION database for scripts (see docs/database-environments.md).
  *
- * DATABASE_URL is the Neon dev branch locally (.env / .env.local) and on Vercel Preview; only Vercel Production points
- * at main. A script that must read real production rows (a stored report, the live state config, the unlock audit)
- * uses PROD_DATABASE_URL instead -- never DATABASE_URL -- and every query runs inside a transaction opened with
- * SET TRANSACTION READ ONLY, so Postgres itself rejects any write.
+ * There is one database, production, and DATABASE_URL points at it locally too (so it is read-write). A script that
+ * only needs to read production rows (a stored report, the live state config, the unlock audit) uses PROD_DATABASE_URL
+ * instead of DATABASE_URL, and every query runs inside a transaction opened with SET TRANSACTION READ ONLY, so
+ * Postgres itself rejects any write.
  */
 import type { Prisma, PrismaClient } from "@prisma/client";
 
@@ -19,7 +19,7 @@ export function prodDatabaseUrl(): string | undefined {
 export function requireProdDatabaseUrl(): string {
   const url = prodDatabaseUrl();
   if (!url) {
-    throw new Error(`${PROD_DB_ENV} is not set. Production reads never use DATABASE_URL (the dev branch) -- see docs/database-environments.md.`);
+    throw new Error(`${PROD_DB_ENV} is not set. Read-only production scripts never fall back to DATABASE_URL -- see docs/database-environments.md.`);
   }
   return url;
 }
