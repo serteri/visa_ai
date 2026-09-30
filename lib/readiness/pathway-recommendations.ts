@@ -1,4 +1,5 @@
 import type { PremiumStrategyResult } from "@/lib/ai/strategy-schema";
+import { pathwayGateLabel } from "./visa-gate-text";
 import { describePathwayScore, PATHWAY_SUBCLASSES, type PathwaySubclass } from "./pathway-scores";
 import { rankPosition } from "./pathway-ranking";
 import type { Locale, ReadinessReport, StateNominationState } from "./types";
@@ -97,6 +98,9 @@ export function notEligibleSubclasses(report: ReadinessReport): string[] {
   return out;
 }
 
+const STEP_WORDS = /\b(?:once|after|complete\w*|only if|conditional\w*|next step|steps?|until|first)\b|ancak|tamamlan\w*|adım|koşullu|完成|之后|仅在|先/i;
+const BENCHMARK_WORDS = /\b(?:below|benchmark|recent invitation\w*|competitive)\b|altında|benchmark|davet|低于|基准|参考分|邀请/i;
+
 const RECOMMENDING = /\b(?:recommend\w*|pursue|consider|prioriti[sz]e|go for|opt for|suggest\w*)\b|öner\w*|tavsiye|建议|推荐|优先考虑/i;
 const NEGATING = /\b(?:not eligible|ineligible|cannot|can't|not available|not recommended|unavailable|not met|do(?:es)? not (?:meet|qualify))\b|uygun değil|karşılanmıyor|mümkün değil|不符合|无法|不适用|未满足/i;
 
@@ -133,6 +137,18 @@ export function findRecommendationViolations(result: PremiumStrategyResult, repo
       if (v) violations.push({ path, message: `recommends subclass ${v}, which is "Not eligible now": "${text.slice(0, 120)}"` });
     }
   }
+  // A pathway that needs an applicant step is recommended only as conditional on it; an eligible 189/190/491 below the
+  // recent invitation benchmark never as plainly eligible.
+  result.topRecommendedPathways.forEach((rec, i) => {
+    const g = report.visaGates?.[String(rec.subclass)];
+    const text = [rec.reason, ...rec.nextSteps].join(" ");
+    if (g?.status === "next_step_required" && !STEP_WORDS.test(text)) {
+      violations.push({ path: `topRecommendedPathways[${i}]`, message: `recommends subclass ${rec.subclass} without saying it is conditional on its required steps (${g.steps.join("; ")})` });
+    }
+    if (g?.belowBenchmark && !BENCHMARK_WORDS.test(text)) {
+      violations.push({ path: `topRecommendedPathways[${i}]`, message: `recommends subclass ${rec.subclass} without saying the score (${g.belowBenchmark.score}) is below recent invitation levels` });
+    }
+  });
   const ranking = report.pathwayRanking;
   if (!ranking || !report.pathwayScores) return violations;
 
@@ -140,7 +156,9 @@ export function findRecommendationViolations(result: PremiumStrategyResult, repo
   result.topRecommendedPathways.forEach((rec, i) => {
     const path = `topRecommendedPathways[${i}]`;
     const sub = rec.subclass as PathwaySubclass;
-    if (!ranking.recommendable.includes(sub)) {
+    // "Next step required" (only applicant-fixable gates fail): allowed, as conditional on the steps (checked above).
+    const nextStep = report.visaGates?.[String(sub)]?.status === "next_step_required";
+    if (!ranking.recommendable.includes(sub) && !nextStep) {
       const entry = ranking.entries.find((e) => e.subclass === sub);
       violations.push({
         path,
@@ -151,8 +169,8 @@ export function findRecommendationViolations(result: PremiumStrategyResult, repo
       return;
     }
     const position = rankPosition(ranking, sub) ?? 0;
-    if (position < lastPosition) violations.push({ path, message: `subclass ${sub} is out of ranking order` });
-    lastPosition = Math.max(lastPosition, position);
+    if (!nextStep && position < lastPosition) violations.push({ path, message: `subclass ${sub} is out of ranking order` });
+    if (!nextStep) lastPosition = Math.max(lastPosition, position);
 
     if (sub === "190" || sub === "491") {
       if (!findOpenState(report, rec.state)) {
@@ -204,6 +222,22 @@ export function deterministicRecommendations(report: ReadinessReport, locale: Lo
     const state = openStates[0];
     if (!state) continue; // a nominated pathway cannot be recommended without an open state
     out.push({ state: state.name, subclass: sub, reason: describePathwayScore(score, locale), nextSteps: steps });
+  }
+  // Pathways that need an applicant step come after the ready ones, fewest steps remaining first, marked conditional.
+  const pending = Object.values(report.visaGates ?? {})
+    .filter((g) => g.status === "next_step_required" && (g.visa === "189" || g.visa === "190" || g.visa === "491") && !ranking.recommendable.includes(g.visa as PathwaySubclass))
+    .sort((a, b) => a.stepsRemaining - b.stepsRemaining);
+  for (const g of pending) {
+    const sub = g.visa as PathwaySubclass;
+    const state = sub === "189" ? undefined : openStates[0];
+    if (sub !== "189" && !state) continue;
+    const cond = T(locale, "Available only once these steps are done", "Yalnızca bu adımlar tamamlanınca uygun olur", "仅在完成以下步骤后才可推进");
+    out.push({
+      state: state ? state.name : T(locale, "Federal (no nomination)", "Federal (adaylık yok)", "联邦（无需提名）"),
+      subclass: sub,
+      reason: `${pathwayGateLabel("next_step_required", locale)}: ${g.steps.join("; ")}. ${cond}.`,
+      nextSteps: g.steps,
+    });
   }
   return out;
 }

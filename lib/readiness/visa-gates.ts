@@ -2,6 +2,8 @@ import visaGatesData from "@/src/data/visa-gates.json";
 import { findOccupationRecord, getEligibleSkilledSubclasses, getSkilledListMembership } from "@/lib/readiness/occupation-eligibility";
 
 import type { Locale, ReadinessInput } from "./types";
+import { NOMINATION_BONUS } from "./pathway-scores";
+import { gateFailureKind, type GateFailureKind } from "./visa-gate-kinds";
 import { GATED_VISAS, T, type GateResult, type GateStatus, type PathwayGateStatus, type PathwayGates } from "./visa-gate-text";
 
 export * from "./visa-gate-text";
@@ -36,6 +38,13 @@ export type GateContext = {
   /** pointsEstimate.estimatedPoints / potentialPoints (Tier 2 of the two-tier status). */
   estimatedPoints?: number;
   potentialPoints?: number;
+  /**
+   * The most the applicant's own boosters (English, experience, study, ... -- not nomination) can add. A points
+   * shortfall no more than this is actionable; without it a shortfall is treated as structural.
+   */
+  boosterGain?: number;
+  /** 189 / 190 / 491: the score to compare with the recent invitation benchmark (nomination included for 190 / 491). */
+  invitation?: Partial<Record<"189" | "190" | "491", { score: number; benchmark: number | null }>>;
 };
 
 // ── requirement labels (en / tr / zh-Hans) ───────────────────────────────────────────────────────────────────────
@@ -100,12 +109,13 @@ function facts(input: ReadinessInput) {
     english: (input.englishLevel ?? "").trim().toLowerCase() || undefined,
     inAustralia: country === "" ? undefined : country === "au" || country.includes("australia") || country.includes("avustralya"),
     hasOccupation: Boolean(record),
+    authority: record?.authority,
     onCsol: lists ? lists.has("CSOL") : undefined,
     eligibleSkilled: new Set<string>(getEligibleSkilledSubclasses(input.occupation)),
   };
 }
 
-type Verdict = { status: GateStatus; reason: [string, string, string] };
+type Verdict = { status: GateStatus; reason: [string, string, string]; kind?: GateFailureKind };
 const met = (en: string, tr: string, zh: string): Verdict => ({ status: "met", reason: [en, tr, zh] });
 const notMet = (en: string, tr: string, zh: string): Verdict => ({ status: "not_met", reason: [en, tr, zh] });
 const unknown = (en: string, tr: string, zh: string): Verdict => ({ status: "unknown", reason: [en, tr, zh] });
@@ -173,15 +183,27 @@ function csolGate(f: ReturnType<typeof facts>): Verdict {
     : notMet("The occupation is not on the Core Skills Occupation List.", "Meslek Core Skills Occupation List üzerinde değil.", "该职业不在 Core Skills Occupation List 上。");
 }
 
-function pointsGate(ctx: GateContext): Verdict {
-  const p = ctx.potentialPoints ?? ctx.estimatedPoints;
-  if (p === undefined) return unknown("A points estimate could not be calculated.", "Puan tahmini hesaplanamadı.", "无法计算分数估算。");
+/**
+ * The 65-point minimum applies to the total including the nomination / sponsorship points the visa requires
+ * (+5 for 190, +15 for 491), the same total the invitation benchmark is compared with.
+ */
+function pointsGate(ctx: GateContext, visa: "189" | "190" | "491"): Verdict {
+  const own = ctx.potentialPoints ?? ctx.estimatedPoints;
+  if (own === undefined) return unknown("A points estimate could not be calculated.", "Puan tahmini hesaplanamadı.", "无法计算分数估算。");
+  const bonus = NOMINATION_BONUS[visa];
+  const p = own + bonus;
   const note = ctx.potentialPoints !== undefined && ctx.estimatedPoints !== undefined && ctx.potentialPoints !== ctx.estimatedPoints
-    ? [` (potential score ${p}, as if the skills assessment is positive)`, ` (potansiyel puan ${p}; beceri değerlendirmesi olumluymuş gibi)`, `（潜在分数 ${p}，按技能评估为正面计算）`]
+    ? [` (potential score ${own}, as if the skills assessment is positive)`, ` (potansiyel puan ${own}; beceri değerlendirmesi olumluymuş gibi)`, `（潜在分数 ${own}，按技能评估为正面计算）`]
     : ["", "", ""];
-  return p >= 65
-    ? met(`Estimated ${p} points${note[0]}.`, `Tahmini ${p} puan${note[1]}.`, `预估 ${p} 分${note[2]}。`)
-    : notMet(`Estimated ${p} points${note[0]}; 65 are needed.`, `Tahmini ${p} puan${note[1]}; 65 gerekir.`, `预估 ${p} 分${note[2]}；需要 65 分。`);
+  const nom = bonus > 0
+    ? [` + ${bonus} for the required ${visa === "190" ? "state" : "regional"} nomination or sponsorship = ${p}`, ` + zorunlu ${visa === "190" ? "eyalet" : "bölgesel"} adaylık veya sponsorluk için ${bonus} = ${p}`, ` + 必需的${visa === "190" ? "州" : "地区"}提名或担保 ${bonus} 分 = ${p}`]
+    : ["", "", ""];
+  if (p >= 65) return met(`Estimated ${own} points${note[0]}${nom[0]}.`, `Tahmini ${own} puan${note[1]}${nom[1]}.`, `预估 ${own} 分${note[2]}${nom[2]}。`);
+  const closable = ctx.boosterGain !== undefined && p + ctx.boosterGain >= 65;
+  return {
+    ...notMet(`Estimated ${own} points${note[0]}${nom[0]}; 65 are needed.`, `Tahmini ${own} puan${note[1]}${nom[1]}; 65 gerekir.`, `预估 ${own} 分${note[2]}${nom[2]}；需要 65 分。`),
+    kind: closable ? "actionable" : "structural",
+  };
 }
 
 function locationGate(f: ReturnType<typeof facts>): Verdict {
@@ -200,7 +222,7 @@ const skilled = (v: "189" | "190" | "491") => {
   EVAL[`${v}.occupation_list`] = (_i, f) => occupationListGate(f, v);
   EVAL[`${v}.age`] = (_i, f) => ageGate(f, 45);
   EVAL[`${v}.english`] = (_i, f) => englishGate(f);
-  EVAL[`${v}.points`] = (_i, _f, c) => pointsGate(c);
+  EVAL[`${v}.points`] = (_i, _f, c) => pointsGate(c, v);
   EVAL[`${v}.invitation`] = () => future("After you submit an EOI you may be invited; this is a later step, not a failure.", "EOI verdikten sonra davet alabilirsiniz; bu sonraki bir adımdır, başarısızlık değildir.", "提交 EOI 后才可能获邀；这是后续步骤，并非不符合条件。");
 };
 skilled("189");
@@ -316,6 +338,8 @@ function labelFor(row: GateRow, locale: Locale): string {
 function evaluateGate(row: GateRow, input: ReadinessInput, f: ReturnType<typeof facts>, ctx: GateContext, locale: Locale): GateResult {
   const evaluator = EVAL[row.id];
   const verdict = evaluator ? evaluator(input, f, ctx) : noField();
+  const kind = verdict.status === "not_met" ? (verdict.kind ?? gateFailureKind(row.id)) : undefined;
+  const step = kind === "actionable" ? stepFor(row, input, f, ctx, locale) : undefined;
   return {
     id: row.id,
     visa: row.visa,
@@ -325,19 +349,60 @@ function evaluateGate(row: GateRow, input: ReadinessInput, f: ReturnType<typeof 
     reason: T(locale, ...verdict.reason),
     citation: citation(row, locale),
     quote: row.quote,
+    ...(kind ? { kind } : {}),
+    ...(step ? { step } : {}),
   };
+}
+
+/** The action that resolves an actionable not-met gate. */
+function stepFor(row: GateRow, input: ReadinessInput, f: ReturnType<typeof facts>, ctx: GateContext, locale: Locale): string | undefined {
+  const key = row.id.replace(/^[0-9A-Z]+\./, "");
+  if (key === "skills_assessment") {
+    const body = f.authority?.trim();
+    return T(
+      locale,
+      `Complete a positive skills assessment with ${body || "the assessing authority for your occupation"}`,
+      `${body || "Mesleğiniz için yetkili değerlendirme kurumu"} ile olumlu bir beceri değerlendirmesi tamamlayın`,
+      `向${body || "您职业的评估机构"}完成正面技能评估`
+    );
+  }
+  if (key === "english") {
+    return T(locale, "Take an English test and reach at least Competent English", "Bir İngilizce testi alın ve en az Competent seviyesine ulaşın", "参加英语考试并至少达到 Competent 水平");
+  }
+  if (key === "points") {
+    // No number in the wording: a figure such as 65 collides with the score-number checks (65 can be the 190 score if nominated).
+    return T(locale, "Raise your points to the required minimum (see the points improvement tips)", "Puanınızı gereken asgari düzeye çıkarın (puan iyileştirme ipuçlarına bakın)", "将分数提高到所需的最低要求（见提分建议）");
+  }
+  if (key === "experience" || key === "sponsored_employment") {
+    const need = row.numeric?.value ?? (row.id === "186DE.experience" ? 3 : row.id === "482CS.experience" ? 1 : 2);
+    const have = key === "experience" ? f.experience : (input.yearsInSponsoredPosition ?? f.onshore ?? 0);
+    const more = Math.max(need - have, 0);
+    const m = Number.isInteger(more) ? String(more) : more.toFixed(1);
+    const what = key === "experience" ? "" : " sponsored";
+    return T(
+      locale,
+      `Gain ${m} more year${more === 1 ? "" : "s"} of relevant${what} work experience (${need} required)`,
+      `${m} yıl daha ilgili${key === "experience" ? "" : " sponsorlu"} iş deneyimi kazanın (${need} yıl gerekir)`,
+      `再积累 ${m} 年相关${key === "experience" ? "" : "担保"}工作经验（需要 ${need} 年）`
+    );
+  }
+  return undefined;
 }
 
 function combine(visa: string, gates: GateResult[], streamsConsidered?: string[]): PathwayGates {
   const notMetList = gates.filter((g) => g.status === "not_met");
   const unknownList = gates.filter((g) => g.status === "unknown");
+  const structural = notMetList.filter((g) => g.kind !== "actionable");
+  const steps = Array.from(new Set(notMetList.filter((g) => g.kind === "actionable" && g.step).map((g) => g.step as string)));
   return {
     visa,
-    status: notMetList.length > 0 ? "not_eligible_now" : unknownList.length > 0 ? "conditional" : "eligible",
+    status: structural.length > 0 ? "not_eligible_now" : notMetList.length > 0 ? "next_step_required" : unknownList.length > 0 ? "conditional" : "eligible",
     gates,
     notMet: notMetList,
     unknown: unknownList,
     future: gates.filter((g) => g.status === "future"),
+    steps: structural.length > 0 ? [] : steps,
+    stepsRemaining: structural.length > 0 ? 0 : notMetList.length,
     ...(streamsConsidered ? { streamsConsidered } : {}),
   };
 }
@@ -358,12 +423,17 @@ function streamRows(visa: string, stream: string): GateRow[] {
 export function evaluateVisaGates(input: ReadinessInput, ctx: GateContext, locale: Locale): Record<string, PathwayGates> {
   const f = facts(input);
   const out: Record<string, PathwayGates> = {};
-  for (const v of ["189", "190", "491"] as const) out[v] = pathwayFor(GATES.filter((g) => g.visa === v), v, input, f, ctx, locale);
+  for (const v of ["189", "190", "491"] as const) {
+    const pw = pathwayFor(GATES.filter((g) => g.visa === v), v, input, f, ctx, locale);
+    const inv = ctx.invitation?.[v];
+    // Every gate met but the score is below the recent invitation benchmark: eligible, not competitive.
+    out[v] = pw.status === "eligible" && inv && inv.benchmark !== null && inv.score < inv.benchmark ? { ...pw, belowBenchmark: { score: inv.score, benchmark: inv.benchmark } } : pw;
+  }
 
   const de = pathwayFor(streamRows("186", "Direct Entry"), "186", input, f, ctx, locale);
   const trt = pathwayFor(streamRows("186", "Temporary Residence Transition"), "186", input, f, ctx, locale);
   const chosen = input.nominationStream === "direct_entry" ? [de] : input.nominationStream === "trt" ? [trt] : [de, trt];
-  const viable = chosen.filter((s) => s.status !== "not_eligible_now");
+  const viable = chosen.filter((s) => s.status !== "not_eligible_now").sort((x, y) => x.stepsRemaining - y.stepsRemaining);
   const all186 = chosen.flatMap((s) => s.gates);
   const streamName = (s: PathwayGates) => (s === de ? "Direct Entry" : "Temporary Residence Transition");
   const pick = viable.length > 0 ? viable : chosen;

@@ -539,7 +539,7 @@ function localizeBaseReportForZh(report: ReadinessReport): ReadinessReport {
     visaName: zhVisaName(pathway.subclass, pathway.visaName),
     // A hard-gate result ("Not eligible now" / "Conditional", lib/readiness/visa-gates.ts) is already written in
     // Chinese by the engine, with its citations: keep it.
-    reason: pathway.reason.startsWith("目前不符合条件") ? pathway.reason : zhPathwayReason(pathway.subclass),
+    reason: (pathway.reason.startsWith("目前不符合条件") || pathway.reason.startsWith("需先完成下一步")) ? pathway.reason : zhPathwayReason(pathway.subclass),
     confidenceLevel: zhConfidence(pathway.confidenceLevel),
     confidenceExplanation: `该置信度基于年龄、英语、职业、资料完整度和路径相关信息作出结构化估算${estimatedPoints !== undefined ? `；当前初步打分估算为 ${estimatedPoints}` : ""}。本内容仅为一般信息。`,
     requirementType: ["189", "190", "491"].includes(pathway.subclass)

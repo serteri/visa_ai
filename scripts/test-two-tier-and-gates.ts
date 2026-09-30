@@ -69,7 +69,8 @@ console.log("\n==================== (2) recognition answer no longer counts ====
 console.log("\n==================== (3) 186 / 482 hard gates ====================");
 {
   const cases: Array<[string, Partial<ReadinessInput>, boolean, boolean]> = [
-    // [label, experience, 186 ineligible, 482 ineligible]
+    // [label, experience, 186 short of the years, 482 short of the years]. Experience is an ACTIONABLE gate: more time
+    // meets it, so a shortfall is "Next step required" (not ineligible), naming the years still to gain.
     ["0 years", { offshoreExperienceYears: 0, onshoreExperienceYears: 0 }, true, true],
     // Not entered is unknown, not a failure (lib/readiness/visa-gates.ts): Conditional, never Not eligible now.
     ["none entered", { offshoreExperienceYears: undefined, onshoreExperienceYears: undefined }, false, false],
@@ -82,16 +83,18 @@ console.log("\n==================== (3) 186 / 482 hard gates ===================
       const r = run({ ...exp, occupationConfirmed: "yes", preferredPathway: "482,186", nominationStream: "direct_entry" }, locale);
       const p186 = r.pathwayComparison.find((p) => p.subclass === "186");
       const p482 = r.pathwayComparison.find((p) => p.subclass === "482");
-      const bad186 = p186 ? (p186.relevance === "ineligible") !== no186 : false;
-      const bad482 = p482 ? (p482.relevance === "ineligible") !== no482 : false;
-      const statutory = (p: typeof p186) => !p || p.relevance !== "ineligible" || /Not eligible now|Şu anda uygun değil|目前不符合条件/.test(p.reason);
+      const NEXT = { en: "Next step required", tr: "Sonraki adım gerekli", "zh-Hans": "需先完成下一步" }[locale];
+      const isNext = (p: typeof p186) => p?.relevance === "needs_more_information" && p.reason.startsWith(NEXT);
+      const bad186 = p186 ? isNext(p186) !== no186 : false;
+      const bad482 = p482 ? isNext(p482) !== no482 : false;
+      const statutory = (p: typeof p186) => !p || p.relevance !== "ineligible";
       if (!bad186 && !bad482 && statutory(p186) && statutory(p482)) {
         if (locale === "en") ok(`${label}: 186 ${p186?.relevance}, 482 ${p482?.relevance}`);
-      } else fail(`${label} [${locale}]: 186 ${p186?.relevance} (expected ${no186 ? "ineligible" : "not"}), 482 ${p482?.relevance} (expected ${no482 ? "ineligible" : "not"})`);
-      if (locale === "en" && no186 && p186 && !/At least 3 years of relevant work experience.*Home Affairs, Subclass 186 page, p\.7/.test(p186.reason)) fail(`${label}: 186 reason lacks the sourced 3-year gate: ${p186.reason}`);
-      if (locale === "en" && no482 && p482 && !/At least 1 year of relevant work experience.*Home Affairs, Subclass 482 page, p\.12/.test(p482.reason)) fail(`${label}: 482 reason lacks the sourced 1-year gate: ${p482.reason}`);
+      } else fail(`${label} [${locale}]: 186 ${p186?.relevance} (expected ${no186 ? "next step required" : "not"}), 482 ${p482?.relevance} (expected ${no482 ? "next step required" : "not"})`);
+      if (locale === "en" && no186 && p186 && !/Next step required: Gain [\d.]+ more years? of relevant work experience \(3 required\)/.test(p186.reason)) fail(`${label}: 186 reason lacks the sourced 3-year gate: ${p186.reason}`);
+      if (locale === "en" && no482 && p482 && !/Next step required: Gain [\d.]+ more years? of relevant work experience \(1 required\)/.test(p482.reason)) fail(`${label}: 482 reason lacks the sourced 1-year gate: ${p482.reason}`);
       // Never recommended: an ineligible 186/482 is not in the ranked skilled recommendations.
-      if (no186 && r.detectedSubclasses?.includes("186") && p186?.relevance !== "ineligible") fail(`${label}: 186 still recommended`);
+      if (no186 && r.detectedSubclasses?.includes("186") && p186?.relevance === "possible") fail(`${label}: 186 offered as ready despite the experience shortfall`);
     }
   }
 }

@@ -91,6 +91,7 @@ import zhTranslations from "@/public/locales/zh-Hans.json";
 import { getEligibleSkilledSubclasses, resolveOccupationDisplayName } from "./occupation-eligibility";
 import { generatePremiumSections, getTrendBenchmarks } from "@/src/lib/readiness/report-generator";
 import { GATED_VISAS, conditionalGateLines, evaluateVisaGates, failedGateLines, pathwayGateLabel } from "@/lib/readiness/visa-gates";
+import { NOMINATION_BONUS } from "@/lib/readiness/pathway-scores";
 import { blockedLabel, blockedReasonPhrase, computePathwayScores, describePathwayScore, frictionFromScore, frictionKey, type PathwayScoreSet, type PathwaySubclass } from "@/lib/readiness/pathway-scores";
 import { computeConfidence } from "@/lib/readiness/confidence";
 import { orderBySkilledRanking, rankPathways, type PathwayRanking } from "@/lib/readiness/pathway-ranking";
@@ -2495,8 +2496,13 @@ function buildPathwayEntry(
    * .potentialPoints) -- a profile held back only by the missing skills assessment is BLOCKED by that (Tier 1), not
    * shut down as "below 65". Messages still quote the current score. Defaults to estimatedPoints.
    */
-  gatePoints: number | undefined = estimatedPoints
+  rawGatePoints: number | undefined = estimatedPoints,
+  boosterGain?: number
 ): PathwayComparison {
+  // The 65-point minimum applies to the total including the nomination / sponsorship points the visa requires
+  // (190: +5, 491: +15), the same total the invitation benchmark is compared with.
+  const requiredNominationPoints = subclass === "190" || subclass === "491" ? NOMINATION_BONUS[subclass] : 0;
+  const gatePoints = rawGatePoints === undefined ? undefined : rawGatePoints + requiredNominationPoints;
   const isTr = locale === "tr";
   const names = VISA_NAMES[subclass] ?? {
     en: `Subclass ${subclass}`,
@@ -2762,13 +2768,17 @@ function buildPathwayEntry(
   // for display.
   const gateKey = subclass === "801" ? "820" : subclass;
   const gates = (GATED_VISAS as readonly string[]).includes(gateKey)
-    ? evaluateVisaGates(input, { estimatedPoints, potentialPoints: gatePoints }, locale)[gateKey]
+    ? evaluateVisaGates(input, { estimatedPoints, potentialPoints: rawGatePoints, boosterGain }, locale)[gateKey]
     : undefined;
   const failsGate = Boolean(gates && gates.status === "not_eligible_now" && !["189", "190", "491"].includes(gateKey));
   if (gates && !["189", "190", "491"].includes(gateKey)) {
     if (gates.status === "not_eligible_now") {
       relevance = "ineligible";
       reason = `${pathwayGateLabel("not_eligible_now", locale)}: ${failedGateLines(gates).join("; ")}.`;
+    } else if (gates.status === "next_step_required") {
+      // Only actionable gates fail: available once the applicant completes the steps -- shown as conditional on them.
+      relevance = "needs_more_information";
+      reason = `${pathwayGateLabel("next_step_required", locale)}: ${gates.steps.join("; ")}. ${locale === "tr" ? "Bu yol yalnızca bu adımlar tamamlandıktan sonra uygun olur" : locale === "zh-Hans" ? "仅在完成以上步骤后才可推进" : "This pathway is available only once these steps are done"}.`;
     } else if (gates.status === "conditional") {
       if (relevance === "possible") relevance = "needs_more_information";
       reason = `${reason} ${pathwayGateLabel("conditional", locale)} -- ${locale === "tr" ? "doğru olması gerekenler" : locale === "zh-Hans" ? "须满足" : "must be true"}: ${conditionalGateLines(gates).join("; ")}.`;
@@ -5731,6 +5741,20 @@ function buildProgressionPathways(
   return items;
 }
 
+/** The most the applicant's own boosters can add (no nomination; alternatives such as the partner options count once). */
+function boosterGainOf(pe: PointsEstimate | undefined): number | undefined {
+  const actions = pe?.actionPlan?.actions;
+  if (!actions) return undefined;
+  let sum = 0;
+  let partner = 0;
+  for (const a of actions) {
+    if (a.onlyForSubclass || a.exclusiveGroup === "nomination" || a.conditional) continue;
+    if (a.exclusiveGroup === "partner") partner = Math.max(partner, a.gain);
+    else sum += a.gain;
+  }
+  return sum + partner;
+}
+
 /** A non-points pathway (186 / 482 / 485 / 500 / 820) shut by a sourced hard gate: shown as "Not eligible now". */
 function isGateFailurePathway(pathway: PathwayComparison): boolean {
   return pathway.relevance === "ineligible" && pathway.gates?.status === "not_eligible_now" && !["189", "190", "491"].includes(pathway.subclass);
@@ -7118,7 +7142,8 @@ function runReadinessEngineInternal(input: ReadinessInput): ReadinessReport {
         locale,
         dataCompleteness.percentage,
         pointsEstimate?.estimatedPoints,
-        pointsEstimate?.potentialPoints ?? pointsEstimate?.estimatedPoints
+        pointsEstimate?.potentialPoints ?? pointsEstimate?.estimatedPoints,
+        boosterGainOf(pointsEstimate)
       )
     );
   }
@@ -7258,7 +7283,16 @@ function runReadinessEngineInternal(input: ReadinessInput): ReadinessReport {
   // way to PR (Bridge to PR), as a recommendation, or as an alternative.
   const visaGates = evaluateVisaGates(
     input,
-    { estimatedPoints: pointsEstimate?.estimatedPoints, potentialPoints: pointsEstimate?.potentialPoints },
+    {
+      estimatedPoints: pointsEstimate?.estimatedPoints,
+      potentialPoints: pointsEstimate?.potentialPoints,
+      boosterGain: boosterGainOf(pointsEstimate),
+      invitation: pathwayScores
+        ? Object.fromEntries(
+            (["189", "190", "491"] as const).map((v) => [v, { score: pathwayScores[v].comparisonScore ?? pathwayScores[v].baseScore, benchmark: pathwayScores[v].benchmark }])
+          )
+        : undefined,
+    },
     locale
   );
   const closedVisa = (v: string) => visaGates[v]?.status === "not_eligible_now";
@@ -7276,7 +7310,18 @@ function runReadinessEngineInternal(input: ReadinessInput): ReadinessReport {
     if (closedVisa(fromVisa)) return false;
     if (closedVisa("485") && /^485 (bridge|köprüsü|桥梁)/.test(item.to)) return false;
     return true;
-  });
+  })
+    // A pathway that needs an applicant step stays, marked as conditional on those steps, and is ordered after the
+    // ready ones by how many steps remain (stable sort: everything else keeps its order).
+    .map((item) => {
+      const g = visaGates[item.from.split(" ")[0]];
+      if (g?.status !== "next_step_required") return item;
+      const cond = locale === "tr" ? "Yalnızca şu adımlar tamamlanırsa" : locale === "zh-Hans" ? "仅在完成以下步骤后" : "Conditional on these steps";
+      return { ...item, explanation: `${item.explanation} ${pathwayGateLabel("next_step_required", locale)} (${cond}): ${g.steps.join("; ")}.` };
+    })
+    .map((item, index) => ({ item, index, remaining: visaGates[item.from.split(" ")[0]]?.stepsRemaining ?? 0 }))
+    .sort((a, b) => a.remaining - b.remaining || a.index - b.index)
+    .map((x) => x.item);
 
   const pathwayFriction = buildPathwayFriction(
     pathwayComparison,

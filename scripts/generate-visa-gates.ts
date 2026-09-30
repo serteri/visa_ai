@@ -24,6 +24,8 @@ import { existsSync, readFileSync, writeFileSync } from "node:fs";
 
 import { PDFParse } from "pdf-parse";
 
+import { NEEDS_HUMAN_VERIFICATION, gateFailureKind } from "../lib/readiness/visa-gate-kinds";
+
 export const VISA_GATES_OUT_FILE = "src/data/visa-gates.json";
 // Pinned so a regenerate on another day is not drift; bump when a source document is replaced.
 const EXTRACTED_DATE = "2026-09-30";
@@ -174,6 +176,7 @@ export async function buildVisaGates() {
       visa: spec.visa,
       stream: spec.stream,
       kind: spec.kind,
+      failureKind: gateFailureKind(spec.id),
       requirement: spec.requirement,
       source: VISA_GATE_DOCUMENTS[spec.doc].replace(`${D}/`, ""),
       page,
@@ -201,6 +204,7 @@ export async function buildVisaGates() {
       minimumExperienceYears: { "186DE": 3, "482CS": 1, "186TRT (sponsored employment)": 2 },
     },
     missing: MISSING_THRESHOLDS,
+    needsHumanVerification: NEEDS_HUMAN_VERIFICATION,
     gates,
   };
 }

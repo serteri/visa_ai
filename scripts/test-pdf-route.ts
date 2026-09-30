@@ -910,13 +910,18 @@ async function runPathwayChecks(
         if (calls !== (run.kind === "valid" ? 1 : 2)) f(`${runLabel} LLM stub called ${calls}x`);
         const recs = strategy.topRecommendedPathways;
         // Only recommendable pathways, in ranking order, only open states
-        const positions = recs.map((r) => expectedOrder.indexOf(r.subclass));
-        if (recs.some((r) => !ranking.recommendable.includes(r.subclass as never))) f(`${runLabel} recommends a pathway the ranking does not allow: ${recs.map((r) => r.subclass)}`);
+        // ... plus a "Next step required" pathway (only applicant-fixable gates fail), listed after the ready ones as conditional on its steps
+        const isNextStep = (sub: string) => baseReport.visaGates?.[sub]?.status === "next_step_required";
+        const ready = recs.filter((r) => !isNextStep(r.subclass));
+        const positions = ready.map((r) => expectedOrder.indexOf(r.subclass));
+        const afterPending = recs.findIndex((r) => isNextStep(r.subclass));
+        if (afterPending >= 0 && recs.slice(afterPending).some((r) => !isNextStep(r.subclass))) f(`${runLabel} a ready pathway is listed after a next-step pathway`);
+        if (recs.some((r) => !ranking.recommendable.includes(r.subclass as never) && !isNextStep(r.subclass))) f(`${runLabel} recommends a pathway the ranking does not allow: ${recs.map((r) => r.subclass)}`);
         if (positions.some((p, i) => i > 0 && p < positions[i - 1])) f(`${runLabel} recommendations are not in ranking order`);
         for (const r of recs) {
           if ((r.subclass === "190" || r.subclass === "491") && !findOpenState(baseReport, r.state)) f(`${runLabel} recommends state ${r.state}, which is not open in the state data`);
         }
-        if (ranking.allBlocked && recs.length > 0) f(`${runLabel} every pathway is blocked but ${recs.length} recommendations remain`);
+        if (ranking.allBlocked && recs.some((r) => !isNextStep(r.subclass))) f(`${runLabel} every pathway is blocked but ${recs.length} recommendations remain`);
         if (JSON.stringify(strategy).includes(HOSTILE)) f(`${runLabel} hostile text survived validation`);
         if (run.kind === "hostile" && JSON.stringify(recs) !== JSON.stringify(deterministic)) f(`${runLabel} hostile recommendations were not replaced by the deterministic list`);
         if (run.kind === "valid" && JSON.stringify(recs) !== JSON.stringify(deterministic)) f(`${runLabel} a valid recommendation list was altered`);
@@ -1519,11 +1524,9 @@ const GP_PROFILE: ReadinessInput = {
   age: "38",
   occupation: "General Practitioner 253111",
   occupationConfirmed: "yes",
-  // Proficient English and a single applicant: 70 points, so the 491 gates (65 points, ...) are met and the 491 -> 191
-  // Bridge to PR item is offered (a pathway with a not-met gate is not -- lib/readiness/visa-gates.ts).
-  englishLevel: "proficient",
+  englishLevel: "competent",
   qualificationLevel: "Bachelor's Degree",
-  sponsorOrFamily: "Single / No Dependants",
+  sponsorOrFamily: undefined,
   offshoreExperienceYears: 6,
   migrationGoals: ["direct_pr"],
 };

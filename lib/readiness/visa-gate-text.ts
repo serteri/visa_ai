@@ -1,4 +1,5 @@
 import type { Locale } from "./types";
+import type { GateFailureKind } from "./visa-gate-kinds";
 
 // Types and customer-facing text of the visa hard-gate matrix. Kept free of the occupation datasets so the client
 // result page can import it without pulling them into the bundle (the evaluation itself is in ./visa-gates).
@@ -18,9 +19,14 @@ export type GateResult = {
   /** "Home Affairs, Subclass 186 page, p.7" (localized). */
   citation: string;
   quote: string;
+  /** Only for a not-met gate: can the applicant fix it by their own action (see visa-gate-kinds.ts)? */
+  kind?: GateFailureKind;
+  /** Actionable not-met gate: the step to take, in the report's language. */
+  step?: string;
+  /** Actionable not-met gate: how many discrete steps it takes (e.g. years of experience are one step). */
 };
 
-export type PathwayGateStatus = "not_eligible_now" | "conditional" | "eligible";
+export type PathwayGateStatus = "not_eligible_now" | "next_step_required" | "conditional" | "eligible";
 
 export type PathwayGates = {
   /** Report pathway key: 189, 190, 491, 186, 482, 485, 500, 820. */
@@ -34,6 +40,11 @@ export type PathwayGates = {
   streamsConsidered?: string[];
   /** 186: a stream that is out (a not-met gate) while another remains open, with its failed gates. */
   closedStreams?: Array<{ stream: string; notMet: GateResult[] }>;
+  /** next_step_required: the steps that make the pathway available, and how many remain (ordering key). */
+  steps: string[];
+  stepsRemaining: number;
+  /** All gates met, but the score (with the required nomination for 190/491) is below the recent invitation benchmark. */
+  belowBenchmark?: { score: number; benchmark: number };
 };
 
 
@@ -64,9 +75,30 @@ export const GATED_VISAS = ["189", "190", "491", "186", "482", "485", "500", "82
 export function pathwayGateLabel(status: PathwayGateStatus, locale: Locale): string {
   return status === "not_eligible_now"
     ? T(locale, "Not eligible now", "Şu anda uygun değil", "目前不符合条件")
-    : status === "conditional"
+    : status === "next_step_required"
+      ? T(locale, "Next step required", "Sonraki adım gerekli", "需先完成下一步")
+      : status === "conditional"
       ? T(locale, "Conditional", "Koşullu", "有条件")
       : T(locale, "Eligible to pursue", "İlerlemeye uygun", "可继续推进");
+}
+
+/** The label shown for a pathway: adds the recent-invitation caveat to an otherwise eligible 189 / 190 / 491. */
+export function pathwayStatusLabel(p: PathwayGates, locale: Locale): string {
+  if (p.status === "eligible" && p.belowBenchmark) {
+    const n = p.belowBenchmark.score;
+    return T(locale, `Eligible, but below recent invitation levels (${n} points)`, `Uygun, ancak son davet seviyelerinin altında (${n} puan)`, `符合条件，但低于近期邀请水平（${n} 分）`);
+  }
+  return pathwayGateLabel(p.status, locale);
+}
+
+/** 186: the employer's nomination must meet the salary requirements (no separate TRT figure is sourced). */
+export function employerSalaryNote(locale: Locale): string {
+  return T(
+    locale,
+    "The employer's nomination must meet the salary requirements.",
+    "İşverenin adaylığı maaş şartlarını karşılamalıdır.",
+    "雇主的提名必须满足薪资要求。"
+  );
 }
 
 /** One line per failed gate: "label -- why (citation)". */
@@ -92,9 +124,18 @@ export function gateSectionTitle(locale: Locale): string {
 }
 
 export function gateSummaryText(p: PathwayGates, locale: Locale): string {
-  const head = `${visaGateLabel(p.visa, locale)}: ${pathwayGateLabel(p.status, locale)}`;
+  const base = gateSummaryBase(p, locale);
+  return p.visa === "186" ? `${base} ${employerSalaryNote(locale)}` : base;
+}
+
+function gateSummaryBase(p: PathwayGates, locale: Locale): string {
+  const head = `${visaGateLabel(p.visa, locale)}: ${pathwayStatusLabel(p, locale)}`;
   if (p.status === "not_eligible_now") {
     return `${head}. ${T(locale, "Failed", "Karşılanmayan", "未满足")}: ${failedGateLines(p).join("; ")}.`;
+  }
+  if (p.status === "next_step_required") {
+    const cond = T(locale, "Available only once these steps are done", "Yalnızca bu adımlar tamamlanınca uygun olur", "仅在完成以下步骤后才可推进");
+    return `${head}: ${p.steps.join("; ")}. ${cond}.`;
   }
   if (p.status === "conditional") {
     return `${head}. ${T(locale, "Must be true", "Doğru olması gerekenler", "须满足")}: ${conditionalGateLines(p).join("; ")}.`;
