@@ -183,7 +183,7 @@ async function compare(label: string, reportId: string, locale: string) {
 async function main() {
   await import("dotenv/config");
   process.env.DATABASE_URL ||= "postgres://stub:stub@127.0.0.1:1/stub"; // import-time check only; nothing connects
-  // b0d20f74 is a PRODUCTION report: read through PROD_DATABASE_URL only (DATABASE_URL is the dev branch).
+  // b0d20f74 is a PRODUCTION report: read through PROD_DATABASE_URL only, read-only (scripts/lib/prod-db.ts).
   const { prodDatabaseUrl, withProdReadOnly } = await import("./lib/prod-db");
   const hadProdDb = Boolean(prodDatabaseUrl());
 

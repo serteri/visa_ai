@@ -13,7 +13,7 @@ supposed to show. It goes through the same path a customer does, with no bypass:
    `temp_tests/smoke/`, which is gitignored.
 
 The script talks to production only over HTTPS (the live site, Stripe Checkout and the PDF route). It opens no
-database connection and reads neither `DATABASE_URL` (the Neon dev branch) nor `PROD_DATABASE_URL`; see
+database connection and reads neither `DATABASE_URL` nor `PROD_DATABASE_URL`; see
 [database-environments.md](database-environments.md). The report row it creates is written by the production app itself.
 
 ## One-time setup

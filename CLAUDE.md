@@ -1,8 +1,8 @@
 # Database environments
 
-`DATABASE_URL` is the Neon **dev** branch locally and on Vercel Preview; only Vercel Production uses **main**. Scripts
-that must read production use `PROD_DATABASE_URL` through `scripts/lib/prod-db.ts` (`withProdReadOnly`, a READ ONLY
-transaction) -- never `DATABASE_URL`. See `docs/database-environments.md`.
+There is one database: production. Local `DATABASE_URL` points at it, so every local write is a production write and
+needs explicit go-ahead. Scripts that only read production use `PROD_DATABASE_URL` through `scripts/lib/prod-db.ts`
+(`withProdReadOnly`, a READ ONLY transaction). See `docs/database-environments.md`.
 
 # Database: two ORMs, one database
 

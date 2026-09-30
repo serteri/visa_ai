@@ -1,28 +1,27 @@
 # Database environments
 
-The project uses one Neon Postgres project with two branches.
+The project uses a single Neon Postgres database, which is production.
 
-| Where | Variable | Neon branch |
+| Where | Variable | Database |
 |---|---|---|
-| Local development (`.env`, `.env.local`) | `DATABASE_URL` | **dev** branch |
-| Vercel Preview deployments | `DATABASE_URL` | **dev** branch |
-| Vercel Production | `DATABASE_URL` | **main** (production) |
-| Scripts that must read production | `PROD_DATABASE_URL` | **main**, read-only |
+| Local development (`.env`, `.env.local`) | `DATABASE_URL` | production |
+| Vercel (Production and Preview) | `DATABASE_URL` | production |
+| Scripts that read production | `PROD_DATABASE_URL` | production, read-only |
 | GitHub Actions (`report-checks.yml`) | `DATABASE_URL` = dummy localhost URL | none (nothing connects) |
 
-**`DATABASE_URL` is never production outside Vercel Production.** Anything you run locally, including
-`prisma db push`, the `scripts/add-*.ts` / `apply-migration.ts` migration helpers, the seed scripts and the e2e
-checkout test, reads and writes the dev branch. Applying a change to production is a separate, deliberate step:
-it needs an explicit go-ahead and must follow the `prisma db push` rules in `CLAUDE.md`.
+**Anything run locally against `DATABASE_URL` reads and writes production.** That includes `prisma db push`, the
+`scripts/add-*.ts` / `apply-migration.ts` migration helpers, the seed scripts and the e2e checkout test. Every write
+needs an explicit go-ahead first, and schema changes must follow the `prisma db push` rules in `CLAUDE.md`.
 
 ## Reading production from a script
 
-Set `PROD_DATABASE_URL` in your local `.env.local`. Never commit it, and never set it in Vercel or GitHub
-Actions. Prefer a connection string for a **read-only Neon role**, so the database itself refuses writes as well.
+Scripts that only need to read production connect through `PROD_DATABASE_URL`, never `DATABASE_URL`, so every read
+runs in a transaction the database itself keeps read-only. Set `PROD_DATABASE_URL` in your local `.env.local`
+(never commit it). Prefer a connection string for a **read-only Neon role**.
 
-Scripts reach production only through `scripts/lib/prod-db.ts`:
+All production reads go through `scripts/lib/prod-db.ts`:
 
-- `withProdReadOnly(fn)` connects with `PROD_DATABASE_URL` and runs `fn` inside a single transaction opened with
+- `withProdReadOnly(fn)` connects with `PROD_DATABASE_URL` and runs `fn` inside one transaction opened with
   `SET TRANSACTION READ ONLY`, so any `INSERT` / `UPDATE` / `DELETE` fails. It then disconnects.
 - `requireProdDatabaseUrl()` throws when `PROD_DATABASE_URL` is unset. It never falls back to `DATABASE_URL`.
 - `prodDatabaseUrl()` returns the URL or `undefined`. Tests use it to skip production-only checks.
@@ -45,13 +44,7 @@ and email before rendering.
 
 ## Adding a new production-reading script
 
-1. Import `withProdReadOnly` from `scripts/lib/prod-db.ts`. Do not construct `new PrismaClient()` against
-   `DATABASE_URL` for production data.
+1. Import `withProdReadOnly` from `scripts/lib/prod-db.ts`. Do not construct `new PrismaClient()` for read-only
+   production data.
 2. Do all reads inside the callback. No writes, since the transaction rejects them.
 3. Add the script to the table above.
-
-## Scripts that write
-
-Scripts that write rows use `DATABASE_URL`, which means the dev branch locally. They must never be pointed at
-production without an explicit go-ahead. `scripts/e2e/test-affiliate-checkout-flow.ts` refuses to run when
-`DATABASE_URL` has the same host as `PROD_DATABASE_URL`.

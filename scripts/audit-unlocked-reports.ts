@@ -3,8 +3,8 @@
  * Stripe webhook writes with the Checkout session id) and whose email is NOT on the admin / known-test allow-lists
  * (ADMIN_EMAILS, KNOWN_TEST_EMAILS). Prints counts and dates only -- never an email, name or report id.
  *
- * Reads PRODUCTION through PROD_DATABASE_URL in a READ ONLY transaction (never DATABASE_URL, which is the dev branch --
- * see docs/database-environments.md). ADMIN_EMAILS / KNOWN_TEST_EMAILS come from the environment.
+ * Reads PRODUCTION through PROD_DATABASE_URL in a READ ONLY transaction (see
+ * docs/database-environments.md). ADMIN_EMAILS / KNOWN_TEST_EMAILS come from the environment.
  *
  * Usage: npx tsx scripts/audit-unlocked-reports.ts
  */

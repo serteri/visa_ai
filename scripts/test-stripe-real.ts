@@ -4,7 +4,7 @@
  * Unlike scripts/test-email-suppression.ts (Stripe stubbed with fixtures), Stripe is NOT stubbed here: every
  * session below is created in, and read back from, Stripe's test mode. Only the edges that would otherwise
  * touch production are stubbed:
- *   - Prisma is an in-memory stub (no database is touched at all -- neither the dev branch in DATABASE_URL nor production);
+ *   - Prisma is an in-memory stub (the real DATABASE_URL points at the shared production database);
  *   - NextAuth's auth() returns "not signed in" (it needs a live request context);
  *   - Resend's Emails.send is a recorder (no email ever leaves the machine; RESEND_API_KEY is fake).
  *

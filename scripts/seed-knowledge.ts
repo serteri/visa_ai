@@ -2,9 +2,8 @@
  * One-off seed script: reads every file in data/knowledge, chunks it,
  * embeds each chunk with OpenAI, and writes the results to the
  * DocumentChunk table. Makes real OpenAI API calls and real writes to the
- * database in DATABASE_URL -- locally that is the Neon dev branch, not
- * production (docs/database-environments.md). Seeding production is a
- * separate, deliberate step that needs explicit go-ahead. Not part of CI/build.
+ * production Neon DB (DATABASE_URL) -- run deliberately, with explicit
+ * go-ahead, not as part of CI/build.
  *
  * Usage: npx tsx scripts/seed-knowledge.ts
  */
