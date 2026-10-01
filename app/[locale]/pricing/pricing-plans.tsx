@@ -22,24 +22,28 @@ interface Plan {
   highlighted?: boolean;
 }
 
+/**
+ * What every package includes, worded only from what the code does (the packages differ only in the number of
+ * credits): the same assistant, model and knowledge-base retrieval as the free messages (app/api/knowledge-chat);
+ * a one-time Stripe payment with no expiry on the credits, which can be bought again (app/api/stripe/checkout,
+ * webhook); credits held by the anonymous ChatVisitor, identified by IP address + browser (lib/visitor-tracking.ts).
+ */
+const SHARED_FEATURE_KEYS = ["pricing.feature.sameAssistant", "pricing.feature.oneTime", "pricing.feature.device"];
+
 const PLANS: Plan[] = [
   {
     id: "starter",
     nameKey: "pricing.starter.name",
     descriptionKey: "pricing.starter.description",
     priceProduct: "credits_starter",
-    featureKeys: ["pricing.starter.feature1", "pricing.starter.feature2", "pricing.starter.feature3"],
+    featureKeys: ["pricing.starter.feature1", ...SHARED_FEATURE_KEYS],
   },
   {
     id: "comprehensive",
     nameKey: "pricing.comprehensive.name",
     descriptionKey: "pricing.comprehensive.description",
     priceProduct: "credits_comprehensive",
-    featureKeys: [
-      "pricing.comprehensive.feature1",
-      "pricing.comprehensive.feature2",
-      "pricing.comprehensive.feature3",
-    ],
+    featureKeys: ["pricing.comprehensive.feature1", ...SHARED_FEATURE_KEYS],
     highlighted: true,
   },
 ];
