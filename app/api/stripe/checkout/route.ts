@@ -57,6 +57,10 @@ export async function POST(req: NextRequest) {
       mode: "payment",
       payment_method_types: ["card"],
       line_items: [getCreditPackageLineItem(plan)],
+      // Same as the report checkout (app/api/checkout/route.ts): promotion codes can be entered on Checkout. No
+      // `discounts` is set here -- Stripe rejects a session with both. The webhook credits the package from
+      // metadata.credits, never from the amount paid, so a 100% code (total A$0) still credits the right package.
+      allow_promotion_codes: true,
       customer_email: session?.user?.email || prefillEmail,
       // Stripe Tax needs a customer location to calculate GST; this is the
       // billing address Checkout collects to satisfy that requirement.

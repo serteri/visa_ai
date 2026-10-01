@@ -73,6 +73,11 @@ jobs:
       - name: Free-admin-order email suppression tests (stubbed sender)
         run: npm run test:email-suppression
 
+      # Credit-package checkout (Starter / Comprehensive) through the real route and webhook, Stripe and Prisma
+      # stubbed: allow_promotion_codes on, prices unchanged, and a 100% promotion code (A$0) still credits 50 / 150.
+      - name: Credit-package checkout promotion codes (A$0 still credits the package)
+        run: npm run test:credit-checkout-promo
+
       # Real occupation <-> state occupation-list matching (lib/state-nomination/occupation-match.ts) over
       # the git-committed src/data/state-occupation-lists/*.json -- pure data/function tests, no database.
       - name: Occupation <-> state occupation-list match tests

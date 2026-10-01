@@ -17,6 +17,8 @@
  *      be sent. Control: the same flow without the promotion code sends both emails.
  *      Pass --session cs_test_... to use an already-COMPLETED test session instead: its real
  *      checkout.session.completed event is fetched from Stripe and replayed byte-for-byte.
+ *   3. Real credit-package sessions (Starter, Comprehensive) with ADMINFREE applied: amount_total 0, and the real
+ *      webhook still credits 50 / 150 to the visitor.
  *
  * Needs STRIPE_TEST_SECRET_KEY (sk_test_...). Without it the script prints SKIPPED and exits 0, so CI stays
  * green until the secret is configured; a live key is refused outright.
@@ -84,11 +86,27 @@ async function main() {
     sent.push({ to: Array.isArray(payload.to) ? payload.to : [payload.to], subject: payload.subject });
     return { data: { id: "stub" }, error: null };
   };
-  (globalThis as { prisma?: unknown }).prisma = {
+  // Credit-package purchases (section 3): the visitor's balance and the purchase ledger, in memory.
+  const creditBalance = { value: 0 };
+  const creditPurchases = new Set<string>();
+  const prismaStub: Record<string, unknown> = {
     chatVisitor: {
       findFirst: async () => ({ id: "visitor-test-1", ipAddress: "127.0.0.1", userAgent: "test" }),
       create: async () => ({ id: "visitor-test-1" }),
+      update: async (args: { data: { premiumCredits?: { increment?: number } } }) => {
+        creditBalance.value += args.data.premiumCredits?.increment ?? 0;
+        return {};
+      },
     },
+    chatCreditPurchase: {
+      findUnique: async (args: { where: { stripeSessionId: string } }) => (creditPurchases.has(args.where.stripeSessionId) ? { id: "p" } : null),
+      create: async (args: { data: { stripeSessionId: string } }) => {
+        creditPurchases.add(args.data.stripeSessionId);
+        return { id: "p" };
+      },
+    },
+    chatCreditLink: { upsert: async () => ({}) },
+    $transaction: async (fn: (tx: unknown) => Promise<unknown>) => fn(prismaStub),
     userReport: {
       findUnique: async () => ({ id: "rep-1", email: CUSTOMER, locale: "en", fullName: "Test Person", source: "full_check", preferredPath: "189", reportJson: {}, inputJson: {} }),
       update: async () => ({}),
@@ -101,6 +119,7 @@ async function main() {
     $executeRawUnsafe: async () => 0,
     $disconnect: async () => undefined,
   };
+  (globalThis as { prisma?: unknown }).prisma = prismaStub;
 
   // eslint-disable-next-line @typescript-eslint/no-require-imports
   const Stripe = (require("stripe") as { default?: typeof import("stripe").default }).default ?? (require("stripe") as typeof import("stripe").default);
@@ -325,6 +344,32 @@ async function main() {
     check(r.status === 200, `webhook returned ${r.status}`);
     check(r.suppression.length === 0, "nothing suppressed");
     check(r.sent.length === 2, `both emails sent (got ${r.sent.length}: ${r.sent.map((m) => m.subject).join(" | ")})`);
+  }
+
+  // ── 3. ADMINFREE on real credit-package sessions: A$0, the webhook still credits the chosen package ──
+  console.log("\n=== 3. real ADMINFREE credit-package sessions through the real webhook handler ===");
+  if (promo) {
+    for (const plan of ["starter", "comprehensive"] as const) {
+      console.log(`\n-- ${plan}`);
+      // The route's own parameters (allow_promotion_codes is checked in the stubbed test-credit-checkout-promo.ts);
+      // here the promotion code is pre-applied with `discounts`, since a customer types it on the hosted page.
+      const created = await stripe.checkout.sessions.create({
+        mode: "payment",
+        line_items: [getCreditPackageLineItem(plan)],
+        discounts: [{ promotion_code: promo.id }],
+        billing_address_collection: "required",
+        automatic_tax: { enabled: true },
+        success_url: "https://example.test/ai-assistant?success=true",
+        cancel_url: "https://example.test/pricing?canceled=true",
+        metadata: { visitorId: "visitor-test-1", userId: "", email: CUSTOMER, plan, credits: String(CREDIT_PACKAGES[plan].credits) },
+      });
+      const s = await stripe.checkout.sessions.retrieve(created.id);
+      check(s.amount_total === 0 && s.amount_subtotal === expectedCents(plan === "starter" ? "credits_starter" : "credits_comprehensive"), `ADMINFREE applied: subtotal ${s.amount_subtotal}, total ${s.amount_total}`);
+      const before = creditBalance.value;
+      const r = await replay(eventFor(created));
+      check(r.status === 200, `webhook returned ${r.status}`);
+      check(creditBalance.value - before === CREDIT_PACKAGES[plan].credits, `credited ${creditBalance.value - before} (expected ${CREDIT_PACKAGES[plan].credits} for ${plan})`);
+    }
   }
 
   console.log = realLog;
