@@ -92,6 +92,30 @@ export function getSkillsAssessmentStatus(
   //    always resolve one via getAssessingAuthority's universal fallback
   //    now) -- honest "go find out" instruction, never a placeholder that
   //    reads like an answer but isn't one.
+  // Completed: the assessment has been done -- no future-tense "will be conducted", no "without assessment you cannot
+  // apply". The next step is the EOI.
+  if (assessmentDone) {
+    const by = assessingAuthority && !isGeneralAuthorityFallback ? assessingAuthority : undefined;
+    return {
+      title: isTr ? "Beceri Değerlendirmesi" : isZh ? "技能评估" : "Skills Assessment",
+      status: isTr ? "✅ Tamamlandı" : isZh ? "✅ 已完成" : "✅ Completed",
+      statusColor: "green",
+      details: [
+        isTr ? `Meslek: ${occupation}` : isZh ? `职业：${occupation}` : `Occupation: ${occupation}`,
+        isTr
+          ? `${namePrefixTr}${occupation} için beceri değerlendirmenizin tamamlandığını belirttiniz${by ? ` (${by})` : ""}.`
+          : isZh
+            ? `${namePrefixZh}您表示已完成${occupation}的技能评估${by ? `（${by}）` : ""}。`
+            : `${namePrefix}you told us your skills assessment for ${occupation} is complete${by ? ` (${by})` : ""}.`,
+        isTr
+          ? "Sonuç mektubunu saklayın; EOI'deki meslek ve deneyim beyanlarınız onunla uyumlu olmalıdır ve davet tarihinde geçerli olmalıdır."
+          : isZh
+            ? "请妥善保存评估结果信；EOI 中的职业和工作经验申报须与之一致，且在获邀时仍须有效。"
+            : "Keep the outcome letter: your EOI's occupation and experience claims must match it, and it must still be valid when you are invited.",
+      ],
+    };
+  }
+
   const authorityLine = assessingAuthority
     ? (isGeneralAuthorityFallback
         ? (isTr

@@ -317,10 +317,10 @@ async function main() {
     // 3. Eligible vs competitive.
     {
       const below = evaluateVisaGates(P, { estimatedPoints: 65, potentialPoints: 65, invitation: { "190": { score: 70, benchmark: 90 }, "491": { score: 95, benchmark: 90 } } }, "en");
-      t("all gates met, 70 (65 + 5 nomination) below the benchmark 90 -> 'Eligible, but below recent invitation levels (70 points)'", pathwayStatusLabel(below["190"], "en") === "Eligible, but below recent invitation levels (70 points)", pathwayStatusLabel(below["190"], "en"));
+      t("all gates met, 70 (65 + 5 nomination) below the benchmark 90 -> 'Eligible, but below recent invitation levels (your 70 vs recent 90, 20 points short)'", pathwayStatusLabel(below["190"], "en") === "Eligible, but below recent invitation levels (your 70 vs recent 90, 20 points short)", pathwayStatusLabel(below["190"], "en"));
       t("at or above the benchmark -> plain 'Eligible to pursue'", pathwayStatusLabel(below["491"], "en") === "Eligible to pursue");
-      t("tr / zh-Hans below-benchmark wording", pathwayStatusLabel(evaluateVisaGates(P, { estimatedPoints: 65, potentialPoints: 65, invitation: { "190": { score: 70, benchmark: 90 } } }, "tr")["190"], "tr").includes("70 puan") && pathwayStatusLabel(evaluateVisaGates(P, { estimatedPoints: 65, potentialPoints: 65, invitation: { "190": { score: 70, benchmark: 90 } } }, "zh-Hans")["190"], "zh-Hans").includes("70 分"));
-      t("the summary shows the caveat", gateSummaryText(below["190"], "en").includes("Eligible, but below recent invitation levels (70 points)"));
+      t("tr / zh-Hans below-benchmark wording", pathwayStatusLabel(evaluateVisaGates(P, { estimatedPoints: 65, potentialPoints: 65, invitation: { "190": { score: 70, benchmark: 90 } } }, "tr")["190"], "tr").includes("sizin puanınız 70, son davetler 90; 20 puan eksik") && pathwayStatusLabel(evaluateVisaGates(P, { estimatedPoints: 65, potentialPoints: 65, invitation: { "190": { score: 70, benchmark: 90 } } }, "zh-Hans")["190"], "zh-Hans").includes("70 分"));
+      t("the summary shows the caveat", gateSummaryText(below["190"], "en").includes("Eligible, but below recent invitation levels (your 70 vs recent 90, 20 points short)"));
       const engine = gatesFor(PERSONAS[1].input).gates;
       for (const v of ["189", "190", "491"] as const) console.log(`  (engine, persona 2 -> ${v}: ${pathwayStatusLabel(engine[v], "en")})`);
     }

@@ -302,6 +302,8 @@ export type RiskIndicator = {
   level: RiskLevel;
   title: string;
   explanation: string;
+  /** The "Limited risk indicators" placeholder the engine adds when it found no risk of its own. */
+  placeholder?: boolean;
 };
 
 export type DocumentChecklistItem =
@@ -399,6 +401,11 @@ export type FinancialRoadmapItem = {
   amountMax?: number;
   /** True when the figure comes from an authority fee flagged `estimated` (pending verification); every section quoting it says so. */
   estimated?: boolean;
+  /**
+   * The step is already done (a completed skills assessment): the fee is still shown, but it is not a future cost, so
+   * every Estimated total leaves it out and says why.
+   */
+  completed?: boolean;
   /**
    * Stable identifier for the handful of line items other report sections
    * (personalized FAQ, Application Guide) need to find reliably across all

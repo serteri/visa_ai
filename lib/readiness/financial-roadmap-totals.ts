@@ -40,6 +40,8 @@ export type FinancialRoadmapTotal = {
    * rather than pretending the figure is exact.
    */
   missingAmountKinds: ReadonlyArray<NonNullable<FinancialRoadmapItem["kind"]>>;
+  /** Core kinds already completed (e.g. the skills assessment): shown in the roadmap but not a future cost. */
+  completedKinds: ReadonlyArray<NonNullable<FinancialRoadmapItem["kind"]>>;
 };
 
 /**
@@ -69,10 +71,15 @@ export function computeEstimatedTotalAud(
   const missingAmountKinds: NonNullable<FinancialRoadmapItem["kind"]>[] = [];
   const includedKinds: NonNullable<FinancialRoadmapItem["kind"]>[] = [];
   const estimatedKinds: NonNullable<FinancialRoadmapItem["kind"]>[] = [];
+  const completedKinds: NonNullable<FinancialRoadmapItem["kind"]>[] = [];
 
   let min = 0;
   let max = 0;
   for (const { kind, item } of present) {
+    if (item.completed === true) {
+      completedKinds.push(kind);
+      continue;
+    }
     if (typeof item.amountMin === "number" && typeof item.amountMax === "number") {
       min += item.amountMin;
       max += item.amountMax;
@@ -90,7 +97,18 @@ export function computeEstimatedTotalAud(
     estimatedKinds,
     excludedKinds,
     missingAmountKinds,
+    completedKinds,
   };
+}
+
+/** " (the skills assessment is already completed, so its fee is not included)" -- empty when nothing is completed. */
+export function describeCompletedKinds(total: FinancialRoadmapTotal, locale: "en" | "tr" | "zh-Hans"): string {
+  if (total.completedKinds.length === 0) return "";
+  const lang = locale === "tr" ? "tr" : locale === "zh-Hans" ? "zh" : "en";
+  const names = total.completedKinds.map((k) => KIND_LABEL[k][lang]);
+  if (lang === "tr") return ` (${names.join(", ")} zaten tamamlandığı için ücreti dahil edilmedi.)`;
+  if (lang === "zh") return `（${names.join("、")}已完成，其费用不计入总计。）`;
+  return ` (${names.join(", ")} is already completed, so its fee is not included.)`;
 }
 
 /** Finds one core item by kind, e.g. to quote the VAC or skills-assessment figure alone. */
@@ -166,7 +184,7 @@ export function formatEstimatedTotalLine(
       : locale === "zh-Hans"
         ? total.complete ? "预计总计（主申请人）：" : "预计总计（主申请人，最低金额）："
         : total.complete ? "Estimated total (primary applicant): " : "Estimated total (primary applicant, minimum): ";
-  return `${label}${range}${estimated}${terminal}${gaps}`;
+  return `${label}${range}${estimated}${terminal}${gaps}${describeCompletedKinds(total, locale)}`;
 }
 
 const KIND_NOUN: Record<NonNullable<FinancialRoadmapItem["kind"]>, { en: string; tr: string; zh: string }> = {
@@ -199,7 +217,10 @@ export function describeTotalScope(
       : lang === "zh"
         ? ["随行伴侣/子女的费用及可能的第二期费用", "NAATI 认证翻译", "移民代理或律师费用"]
         : ["partner/child charges and any second instalment", "NAATI-certified translation", "migration agent or lawyer fees"];
-  const notIncluded = [...leftOut, ...fixedExtras];
+  const done = total.completedKinds.map((k) =>
+    lang === "tr" ? `${KIND_NOUN[k].tr} (zaten tamamlandı)` : lang === "zh" ? `${KIND_NOUN[k].zh}（已完成）` : `${KIND_NOUN[k].en} (already completed)`
+  );
+  const notIncluded = [...leftOut, ...done, ...fixedExtras];
   return lang === "tr"
     ? { included: `Bu toplama dahil: ${included.join(sep)}.`, notIncluded: `Dahil değil: ${notIncluded.join(sep)}.` }
     : lang === "zh"

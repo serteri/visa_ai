@@ -10,8 +10,15 @@
  *      paused; no Subclass 189 benchmark scenario with a nomination factor; a state not listing the occupation is
  *      never a Top Recommended State.
  *
+ *   4. "Proceed to the application" / "your profile is strong" while no invitation exists, and any sentence tying
+ *      English test age to the visa grant (meaning variants, en / tr / zh-Hans) -- in the rendered PDFs AND in every
+ *      static text source (lib, src, app, components, public/locales).
+ *
  *   npx tsx scripts/test-report-banned-phrases.ts
  */
+import { existsSync, readFileSync, readdirSync } from "node:fs";
+import path from "node:path";
+
 import stateStatus from "../src/data/state-nomination-status.json";
 import { STATE_RULES } from "../lib/state-nomination/state-rules-config";
 import { STATE_NOTE_TRANSLATIONS } from "../lib/state-nomination/state-note-translations";
@@ -82,7 +89,50 @@ export const BANNED_CLAIMS: RegExp[] = [
   /must include ANZSCO code/i,
   /ANZSCO kodu, görev/i,
   /ANZSCO代码、职责/,
+  // "Proceed to the application" / "your profile is strong" while no invitation exists (the next step is an EOI; a
+  // visa application needs an invitation, and for 190/491 a nomination).
+  /proceed (?:directly )?(?:to|with) (?:the |your )?(?:visa )?application/i,
+  /(?:your )?profile is strong/i,
+  /can (?:now )?(?:start|begin) (?:the |your )?(?:visa )?application(?: process)?/i,
+  /profiliniz güçlü/i,
+  /(?:hemen )?başvuru sürecine geçebilirsiniz/i,
+  /档案较强/,
+  /可以立即开始申请/,
 ];
+
+/**
+ * English test age tied to the visa GRANT, in any wording (the rule: taken within 3 years before LODGING, valid at
+ * invitation). A sentence matches when it names an English test/score, a validity/age condition and the grant.
+ */
+export function englishAgeTiedToGrant(text: string): string | undefined {
+  // Sentences, and JSON array items / clauses (one-line JSON arrays hold several unrelated steps).
+  const sentences = text.split(/(?<=[.!?。！？])\s*|\n+|"\s*,\s*"|;\s/);
+  const rules: Array<[RegExp, RegExp, RegExp]> = [
+    [/\b(english|ielts|pte|toefl|oet|language test|test results?|scores?)\b/i, /\b(old|valid|validity|within|no more than|expire[sd]?|current)\b/i, /\bgrant(?:ed)?\b/i],
+    [/(ingilizce|ielts|pte|toefl|dil testi|sınav|test sonuc|skor)/i, /(geçerli|eski|yıl içinde|süresi)/i, /(vize onay|vizenin veril|vize verili|veriliş)/i],
+    [/(英语|雅思|托福|语言考试|考试成绩|成绩)/, /(有效|年内|超过|过期)/, /(获批|获签|签证批准|发放签证|批签)/],
+  ];
+  return sentences.find((s) => rules.some(([a, b, c]) => a.test(s) && b.test(s) && c.test(s)));
+}
+
+/** Every static text source a report or page can show: engine/content code, data files and locale bundles. */
+function staticTextSources(): string[] {
+  const roots = ["lib", "src", "app", "components", "public/locales"];
+  const out: string[] = [];
+  const walk = (dir: string) => {
+    if (!existsSync(dir)) return;
+    for (const e of readdirSync(dir, { withFileTypes: true })) {
+      const p = path.join(dir, e.name);
+      if (e.isDirectory()) walk(p);
+      else if (/\.(ts|tsx|json|md)$/.test(e.name)) out.push(p);
+    }
+  };
+  roots.forEach(walk);
+  return out;
+}
+
+/** Files that LIST banned wording as detection patterns (validators), not as text shown to anyone. */
+const PATTERN_DEFINITION_FILES = new Set(["lib/readiness/report-invariants.ts", "lib/ai/generate-premium-strategy.ts", "lib/ai/strategy-schema.ts"].map((f) => path.normalize(f)));
 
 /** Every English state note / special condition shown in the tracker, which a tr / zh-Hans report must not contain. */
 const ENGLISH_STATE_NOTES = [
@@ -96,6 +146,40 @@ async function main() {
   if (missing.length === 0) ok(`${ENGLISH_STATE_NOTES.length} state notes and special conditions all have tr and zh-Hans versions`);
   else missing.forEach((m) => fail(`no translation for state note: "${m.slice(0, 90)}..."`));
 
+  console.log("==================== static text sources: proceed-to-application claims, English age tied to grant ====================");
+  {
+    const files = staticTextSources();
+    const proceed = BANNED_CLAIMS.slice(-7);
+    const hits: string[] = [];
+    for (const f of files) {
+      if (PATTERN_DEFINITION_FILES.has(path.normalize(f))) continue;
+      const text = readFileSync(f, "utf8");
+      for (const re of proceed) {
+        const m = text.match(re);
+        if (m) hits.push(`${f}: ${re} -> "${text.slice(Math.max(0, (m.index ?? 0) - 50), (m.index ?? 0) + 70).replace(/\s+/g, " ")}"`);
+      }
+      // Line by line (code and JSON keep one sentence per string), then sentence by sentence.
+      for (const line of text.split("\n")) {
+        const s = englishAgeTiedToGrant(line);
+        if (s) hits.push(`${f}: English test age tied to grant -> "${s.trim().slice(0, 160)}"`);
+      }
+    }
+    if (hits.length === 0) ok(`${files.length} static source files: no proceed-to-application claim, no English-age-at-grant sentence`);
+    else hits.forEach((h) => fail(h));
+    // The detector itself catches the meaning variants.
+    const variants = [
+      "Scores must be no more than 3 years old at time of visa grant.",
+      "Your IELTS result has to remain valid until the visa is granted.",
+      "Sınav sonucu vize onayı tarihinde 3 yıldan eski olmamalıdır.",
+      "英语成绩在签证获批时不得超过 3 年。",
+    ];
+    const misses = variants.filter((v) => !englishAgeTiedToGrant(v));
+    if (misses.length === 0) ok(`the English-age-at-grant detector catches ${variants.length} wording variants (en / tr / zh-Hans)`);
+    else misses.forEach((m) => fail(`detector missed: "${m}"`));
+    if (!englishAgeTiedToGrant("The test must have been taken within the 3 years before you lodge your visa application, and the result must also be valid on the date of invitation.")) ok("the corrected wording is not flagged");
+    else fail("the corrected wording is flagged");
+  }
+
   const rendered = await renderPersonaPdfTexts(REVIEW_PERSONAS);
   console.log(`==================== rendered ${rendered.length} PDFs (${Object.keys(REVIEW_PERSONAS).length} personas x en/tr/zh-Hans) ====================`);
 
@@ -106,6 +190,8 @@ async function main() {
       const m = text.match(re);
       return m ? [`${re} -> "...${text.slice(Math.max(0, (m.index ?? 0) - 60), (m.index ?? 0) + 60)}..."`] : [];
     });
+    const grant = englishAgeTiedToGrant(text); // PDF lines wrap mid-sentence: check the whitespace-joined text
+    if (grant) hits.push(`English test age tied to grant -> "${grant.replace(/\s+/g, " ").slice(0, 160)}"`);
     if (hits.length) hits.forEach((h) => fail(`${tag}: ${h}`));
     else ok(`${tag}: no banned phrase (${BANNED_INTERNAL_PHRASES.length} internal + ${BANNED_CLAIMS.length} claim patterns)`);
 
@@ -173,7 +259,10 @@ async function main() {
   process.exitCode = failures === 0 ? 0 : 1;
 }
 
-main().catch((err) => {
-  console.error(err);
-  process.exitCode = 1;
-});
+// Only when run directly: test-reference-report.ts imports the patterns from here.
+if (/test-report-banned-phrases\.ts$/.test(process.argv[1] ?? "")) {
+  main().catch((err) => {
+    console.error(err);
+    process.exitCode = 1;
+  });
+}

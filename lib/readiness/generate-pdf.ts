@@ -21,6 +21,7 @@ import { appendNominationStreamSuffix, buildCaRankedPathways, calculateRankedPat
 import { renderPersonalizedContent } from "./pdf-personalized-content";
 import { getCommonPitfalls } from "./pdf-content/common-pitfalls";
 import { eoiUpdateNote, getLodgementSection } from "./pdf-content/lodgement";
+import { isLimitedRiskPlaceholder } from "./risk-rules";
 import { getResourcesSection } from "./pdf-content/resources";
 import {
   frictionBandLabel,
@@ -2167,7 +2168,9 @@ export async function generateReadinessPDF(input: PDFGeneratorInput): Promise<Ui
 
     const overviewStamp = reportDateStamp(effectiveLocale, report.contentStamp);
     const rawLeftRows: Array<[string, string | undefined]> = [
-      overviewStamp ? [text.reportDate, overviewStamp.text] : [text.generatedDate, reportDate],
+      // The narrow value column clipped the full sentence ("Updated to reflect data as of ..."): the row shows the
+      // stamp's own label ("Generated" / "Updated") and its date, which always fit; the full sentence is on the cover.
+      overviewStamp ? [overviewStamp.label, overviewStamp.date] : [text.generatedDate, reportDate],
       [text.nameLabel, userInputSummary.name],
       [text.occupationLabel, userInputSummary.occupation],
       [text.ageLabel, userInputSummary.age],
@@ -3534,7 +3537,14 @@ export async function generateReadinessPDF(input: PDFGeneratorInput): Promise<Ui
     return COLORS.riskHigh;
   }
 
-  function viabilityBadge(matchPercentage: number) {
+  function viabilityBadge(matchPercentage: number, tag?: RankedPathway["recommendationTag"]) {
+    // The badge follows the row's recommendation tag (gate status, friction, availability), so a row is never
+    // "HIGH POTENTIAL" and "High Risk / Low Probability" at once. The percentage decides only without a tag.
+    if (tag === "🌟 Highly Recommended Pathway") return { label: text.highPotentialBadge, color: COLORS.riskLow };
+    if (tag === "⚖️ Alternative Option") return { label: text.conditionalBadge, color: COLORS.riskMedium };
+    if (tag === "⚠️ High Risk / Low Probability" || tag === "❌ Ineligible (Compliance Violation)" || tag === "📉 Below Points Threshold") {
+      return { label: text.highRiskBadge, color: COLORS.riskHigh };
+    }
     if (matchPercentage > 60) {
       return { label: text.highPotentialBadge, color: COLORS.riskLow };
     }
@@ -3887,7 +3897,7 @@ export async function generateReadinessPDF(input: PDFGeneratorInput): Promise<Ui
       ensurePageSpace(rowHeight + 2);
 
       const topY = yPosition;
-      const badge = viabilityBadge(item.matchPercentage!);
+      const badge = viabilityBadge(item.matchPercentage!, item.recommendationTag);
       doc.setFillColor(255, 255, 255);
       doc.setDrawColor(COLORS.border.r, COLORS.border.g, COLORS.border.b);
       doc.setLineWidth(0.25);
@@ -5082,7 +5092,8 @@ export async function generateReadinessPDF(input: PDFGeneratorInput): Promise<Ui
   // not buried as a general note inside the Financial Roadmap.
   {
     const secondInstalmentAlerts = report.financialRoadmap
-      .filter((item) => /second-instalment|ikinci taksit|第二期/i.test(item.category))
+      // [iİ]: the tr category starts with a capital dotted "İ", which the /i flag does not fold to "i".
+      .filter((item) => /second-instalment|[iİ]kinci taksit|第二期/i.test(item.category))
       .map((item) => ({
         // item.category already carries the "🚨 CRITICAL COMPLIANCE ALERT: ..."
         // prefix (re-labeled at the source in buildFinancialRoadmap), so it is
@@ -5102,10 +5113,14 @@ export async function generateReadinessPDF(input: PDFGeneratorInput): Promise<Ui
     const gateFailureAlerts = (report.pathwayFriction ?? [])
       .filter((f) => f.isGateFailure)
       .map((f) => ({ label: `${text.highRisk} - ${f.pathway}: ${f.frictionType.replace(/^\S+\s/, "")}`, body: f.explanation, level: "high" as const }));
+    // "Limited risk indicators" (the engine's placeholder when it found no risk) is dropped whenever any High or
+    // Critical alert is listed -- the section must not say "limited risk" above a High alert.
+    const anyHigh = hardGateAlerts.length > 0 || gateFailureAlerts.length > 0 || secondInstalmentAlerts.length > 0 || report.riskIndicators.some((r) => r.level === "high");
+    const shownIndicators = anyHigh ? report.riskIndicators.filter((r) => !isLimitedRiskPlaceholder(r)) : report.riskIndicators;
     const criticalComplianceAlerts = [
       ...hardGateAlerts,
       ...gateFailureAlerts,
-      ...report.riskIndicators.map((r) => ({
+      ...shownIndicators.map((r) => ({
         label: `${r.level === "high" ? text.highRisk : r.level === "medium" ? text.mediumRisk : text.lowRisk} - ${r.title}`,
         body: r.explanation,
         level: r.level,

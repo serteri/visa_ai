@@ -4594,10 +4594,14 @@ function buildEvidenceReadiness(
       status: input.occupation ? (input.occupationConfirmed === "yes" ? "provided" : "unclear") : hasSkilled || has482 ? "missing" : "unclear",
       explanation: isTr
         ? input.occupation
-          ? "Meslek bilgisi sağlandı; beceri değerlendirmesi veya deneyim kanıtı ayrıca değişebilir."
+          ? input.occupationConfirmed === "yes"
+            ? "Meslek bilgisi sağlandı ve beceri değerlendirmesi tamamlandı; deneyim kanıtı yola göre ayrıca değişebilir."
+            : "Meslek bilgisi sağlandı; beceri değerlendirmesi veya deneyim kanıtı ayrıca değişebilir."
           : "Meslek bilgisi özellikle yetenekli ve işveren odaklı yollar için önemlidir."
         : input.occupation
-          ? "Occupation was provided; skills assessment or work evidence may still vary by pathway."
+          ? input.occupationConfirmed === "yes"
+            ? "Occupation was provided and the skills assessment is complete; work evidence may still vary by pathway."
+            : "Occupation was provided; skills assessment or work evidence may still vary by pathway."
           : "Occupation detail is important for skilled and employer-sponsored pathways.",
     },
   ];
@@ -5208,8 +5212,8 @@ function buildFinancialRoadmap(
         ? "AUD 385–590 (teste ve lokasyona göre)"
         : "AUD $385–$590 (varies by test and location)",
       explanation: isTr
-        ? `Avustralya göçü için kabul edilen testler şunlardır: IELTS Academic veya General Training (~AUD 385–405), PTE Academic (~AUD 375–395), OET (Occupational English Test, sağlık meslekleri için, ~AUD 587), TOEFL iBT (~AUD 340–390, bazı akışlar için kabul edilir). Competent English için genel eşikler: IELTS her bantta minimum 6.0, PTE her bantta minimum 50. Superior English (IELTS 8.0+) puan tablosunda +20 ek puan sağlar. Sınavlar ${ENGLISH_TEST_VALIDITY_YEARS.AU} yıldan eski olamaz.`
-        : `Tests accepted for Australian migration include: IELTS Academic or General Training (~AUD $385–$405 per attempt), PTE Academic (~AUD $375–$395), OET (Occupational English Test, used by healthcare occupations, ~AUD $587), and TOEFL iBT (~AUD $340–$390, accepted for some streams). Minimum Competent English thresholds: IELTS 6.0 in all four bands, PTE 50 in all bands. Achieving Superior English (IELTS 8.0+ in all four bands or PTE 79+) unlocks +20 additional points in the Australian points test — a significant investment if retesting is needed. Scores must be no more than ${ENGLISH_TEST_VALIDITY_YEARS.AU} years old at time of visa grant.`,
+        ? `Avustralya göçü için kabul edilen testler şunlardır: IELTS Academic veya General Training (~AUD 385–405), PTE Academic (~AUD 375–395), OET (Occupational English Test, sağlık meslekleri için, ~AUD 587), TOEFL iBT (~AUD 340–390, bazı akışlar için kabul edilir). Competent English için genel eşikler: IELTS her bantta minimum 6.0, PTE her bantta minimum 50. Superior English (IELTS 8.0+) puan tablosunda +20 ek puan sağlar. Test, vize başvurunuzu yapmadan önceki ${ENGLISH_TEST_VALIDITY_YEARS.AU} yıl içinde alınmış olmalı ve sonuç davet tarihinde de geçerli olmalıdır.`
+        : `Tests accepted for Australian migration include: IELTS Academic or General Training (~AUD $385–$405 per attempt), PTE Academic (~AUD $375–$395), OET (Occupational English Test, used by healthcare occupations, ~AUD $587), and TOEFL iBT (~AUD $340–$390, accepted for some streams). Minimum Competent English thresholds: IELTS 6.0 in all four bands, PTE 50 in all bands. Achieving Superior English (IELTS 8.0+ in all four bands or PTE 79+) unlocks +20 additional points in the Australian points test — a significant investment if retesting is needed. The test must have been taken within the ${ENGLISH_TEST_VALIDITY_YEARS.AU} years before you lodge your visa application, and the result must also be valid on the date of invitation.`,
       kind: "english_test",
       amountMin: 385,
       amountMax: 590,
@@ -5552,6 +5556,12 @@ function buildFinancialRoadmap(
         : "Engaging a Registered Migration Agent (RMA) or immigration lawyer is not mandatory, but is strongly recommended for applications involving prior visa refusals, complex employment histories, or family members with health or character issues. Typical fee ranges: full EOI + 189/190/491 skilled application: AUD $3,000–$8,000; state nomination assistance only: AUD $1,000–$2,500; 482 employer-sponsored nomination and visa: AUD $5,000–$10,000+. Verify any agent's registration via the MARA (Migration Agents Registration Authority) public register at mara.gov.au. Never pay upfront in full before the work commences.",
     }
   );
+
+  // A completed skills assessment is not a future cost: the fee row stays exactly as it was, but is marked completed,
+  // so every Estimated total leaves it out and says why (financial-roadmap-totals.ts describeCompletedKinds).
+  if ((input.occupationConfirmed ?? "").trim().toLowerCase() === "yes") {
+    for (const item of items) if (item.kind === "skills_assessment") item.completed = true;
+  }
 
   return items;
 }
@@ -6038,6 +6048,15 @@ function buildConfidenceExplanation(
         : `Confidence is stronger because ${providedList} are provided, while some pathway-specific evidence still needs separate review${estimatedPoints !== undefined ? ` (estimated base points: ${estimatedPoints})` : ""}. This is general information only.`;
   }
 
+  // A completed skills assessment is not "unclear": the moderate level then rests on what is still missing.
+  if ((input.occupationConfirmed ?? "").trim().toLowerCase() === "yes") {
+    const noExperience = input.offshoreExperienceYears === undefined && input.onshoreExperienceYears === undefined;
+    return isTr
+      ? `Güven düzeyi orta seviyededir: beceri değerlendirmeniz tamamlandı${estimatedPoints !== undefined ? ` (tahmini temel puan: ${estimatedPoints})` : ""}, ancak ${noExperience ? "iş deneyimi girilmedi ve " : ""}bazı yol-özel kanıtlar hâlâ ayrıca incelenir. Bu yalnızca genel bilgidir.`
+      : isZh
+        ? `置信度为中等：您的技能评估已完成${estimatedPoints !== undefined ? `（预估基础分：${estimatedPoints}）` : ""}，但${noExperience ? "未填写工作经验，且" : ""}部分路径特定证据仍需单独复核。本内容仅为一般信息。`
+        : `Confidence is moderate: your skills assessment is complete${estimatedPoints !== undefined ? ` (estimated base points: ${estimatedPoints})` : ""}, but ${noExperience ? "work experience was not entered and " : ""}some pathway-specific evidence still needs separate review. This is general information only.`;
+  }
   return isTr
     ? "Güven düzeyi orta seviyededir çünkü bazı temel bilgiler sağlanmıştır; ancak beceri değerlendirmesi ve puan bağlamı net değildir."
     : isZh
@@ -7373,6 +7392,7 @@ function runReadinessEngineInternal(input: ReadinessInput): ReadinessReport {
     estimatedPoints: pointsEstimate?.estimatedPoints,
     englishLevel: input.englishLevel,
     experienceNotProvided: input.offshoreExperienceYears === undefined && input.onshoreExperienceYears === undefined,
+    skillsAssessmentCompleted: (input.occupationConfirmed ?? "").trim().toLowerCase() === "yes",
     country: "AU",
     pathwayComparison,
     assessmentState,

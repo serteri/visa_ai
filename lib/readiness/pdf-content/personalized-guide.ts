@@ -20,6 +20,8 @@ interface UserProfile {
   currentCountry?: string;
   hasGraduateVisaPathwayIntent?: boolean;
   qualificationLevel?: string;
+  /** Whether the qualification was awarded in Australia (intake); null / undefined = not answered. */
+  isAustralianQualification?: boolean | null;
 }
 
 /**
@@ -186,7 +188,9 @@ export function getPersonalizedApplicationGuide(
     });
   }
 
-  if (country === "AU" && !profile.hasGraduateVisaPathwayIntent) {
+  // The 485 needs Australian study: suggested only when it is recorded or unknown, never when the degree is recorded
+  // as earned outside Australia.
+  if (country === "AU" && !profile.hasGraduateVisaPathwayIntent && profile.isAustralianQualification !== false) {
     nextSteps.push({
       priority: "medium",
       title: isTr ? "485 Graduate Visa Yolunu Değerlendirin" : isZh ? "评估485毕业生签证路径" : "Consider 485 Graduate Visa Pathway",
@@ -245,7 +249,7 @@ export function getPersonalizedApplicationGuide(
   const detailedTimeline = isTr
     ? [
         skillsAssessmentStepTr,
-        isCA ? "Ay 3-4: Express Entry profili oluşturma ve gönderme" : "Ay 3-4: Değerlendirme sonuçlarını bekleme, EOI oluşturma",
+        isCA ? "Ay 3-4: Express Entry profili oluşturma ve gönderme" : requirementMet ? "Ay 3-4: EOI'yi gönderme ve eyalet adaylığı başvurularını hazırlama" : "Ay 3-4: Değerlendirme sonuçlarını bekleme, EOI oluşturma",
         "Ay 5-8: Davet beklemesi (puanınıza bağlı)",
         "Ay 9-10: Başvuru hazırlığı ve belge toplama",
         "Ay 11-12: Başvuru sunma",
@@ -254,7 +258,7 @@ export function getPersonalizedApplicationGuide(
     : isZh
       ? [
           skillsAssessmentStepZh,
-          isCA ? "第3-4个月：创建并提交 Express Entry 档案" : "第3-4个月：等待评估结果，创建EOI",
+          isCA ? "第3-4个月：创建并提交 Express Entry 档案" : requirementMet ? "第3-4个月：提交 EOI，并准备州提名申请" : "第3-4个月：等待评估结果，创建EOI",
           "第5-8个月：等待邀请（取决于积分）",
           "第9-10个月：准备申请材料",
           "第11-12个月：提交申请",
@@ -262,7 +266,7 @@ export function getPersonalizedApplicationGuide(
         ]
       : [
           skillsAssessmentStepEn,
-          isCA ? "Month 3-4: Create and submit Express Entry profile" : "Month 3-4: Wait for assessment results, create EOI",
+          isCA ? "Month 3-4: Create and submit Express Entry profile" : requirementMet ? "Month 3-4: Submit your EOI and prepare state nomination applications" : "Month 3-4: Wait for assessment results, create EOI",
           "Month 5-8: Wait for invitation (depends on your points)",
           "Month 9-10: Prepare application and gather documents",
           "Month 11-12: Lodge application",

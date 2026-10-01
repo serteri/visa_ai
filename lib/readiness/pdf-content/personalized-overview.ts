@@ -291,7 +291,8 @@ export function getPersonalizedOverview(
   if (matchPercentage !== undefined) {
     keyFindings.push(
       matchPercentage >= 70 && eoiEligibleForMatch
-        ? (isTr ? `✅ ${matchPercentage}% eşleşme oranı — güçlü bir profil.` : isZh ? `✅ 匹配率${matchPercentage}%——档案较强。` : `✅ ${matchPercentage}% match rate — strong profile.`)
+        // A match figure is not an invitation: no "strong profile" claim (the next step is still an EOI).
+        ? (isTr ? `✅ ${matchPercentage}% eşleşme oranı — yüksek uyum.` : isZh ? `✅ 匹配率${matchPercentage}%——匹配度较高。` : `✅ ${matchPercentage}% match rate — high alignment.`)
         : matchPercentage >= 40 || !eoiEligibleForMatch
           ? (isTr ? `⚠️ ${matchPercentage}% eşleşme oranı — geliştirilebilir.` : isZh ? `⚠️ 匹配率${matchPercentage}%——有提升空间。` : `⚠️ ${matchPercentage}% match rate — improvable.`)
           : (isTr ? `❌ ${matchPercentage}% eşleşme oranı — ciddi iyileştirme gerekli.` : isZh ? `❌ 匹配率${matchPercentage}%——需要大幅改进。` : `❌ ${matchPercentage}% match rate — significant improvement needed.`),
@@ -302,8 +303,8 @@ export function getPersonalizedOverview(
   // Mirrors the executiveSummary branching above: a met/exceeded points
   // threshold (AU) or a satisfied language-test gate (CA) is NOT itself a
   // green light to apply if the OTHER country-appropriate requirement is
-  // still unmet -- "proceed directly to the application process" must never
-  // appear while requirementMet is false.
+  // still unmet. No branch tells the applicant to go straight to the visa
+  // application: without an invitation the next step is an EOI.
   const fastestWays = fastestWaysPhrase(locale, levers, undefined);
   const nominationLabel = isTr ? (isCA ? 'PNP adaylığı' : 'eyalet adaylığı') : isZh ? (isCA ? 'PNP省提名' : '州提名') : (isCA ? 'provincial' : 'state');
   const recommendation = isCA
@@ -336,11 +337,13 @@ export function getPersonalizedOverview(
                 : isZh
                   ? `${name}，您可以递交 EOI，但要获得邀请仍需提高分数。${benchmarkClause}${fastestWays ? `最快的方法：${fastestWays}。` : ""}`
                   : `${name}, you can lodge an EOI, but you will need a higher score to be invited.${benchmarkClause} ${fastestWays ? `Fastest path: ${fastestWays}.` : ""}`.trim())
+            // At or above a recent benchmark: still no invitation. The next step is the EOI; a visa application can
+            // only be lodged once invited (and, for 190/491, nominated).
             : (isTr
-                ? `${name}, profiliniz güçlü! Hemen başvuru sürecine geçebilirsiniz. Belgelerinizi toplamaya başlayın.`
+                ? `${name}, bir sonraki adımınız EOI vermektir.${benchmarkClause} Vize başvurusu ancak davet aldıktan sonra yapılabilir (190/491 için ayrıca eyalet/bölge adaylığı gerekir).`
                 : isZh
-                  ? `${name}，您的档案较强！可以立即开始申请流程。请开始准备文件。`
-                  : `${name}, your profile is strong! You can proceed directly to the application process. Start gathering your documents.`));
+                  ? `${name}，您的下一步是递交 EOI。${benchmarkClause}只有在获邀后才能递交签证申请（190/491 还需获得州或地区提名）。`
+                  : `${name}, your next step is submitting an EOI.${benchmarkClause} A visa application can only be lodged once you are invited (and, for 190 or 491, nominated).`));
 
   // ── Confidence Note ───────────────────────────────────────────────────
   const confidenceNote = isTr

@@ -625,7 +625,9 @@ export function calculateStateNominationTracker(
     // residence rule the sourced data does not state -- does not count as available to someone living in another
     // state. Older reports without the field are unaffected.
     const residence = residenceCheck(input, row, offshore);
-    if (residence?.block === "required") score = 0;
+    // Not counted as available because of residence -- a sourced rule OR an unconfirmed one -- gets the same 0% as a
+    // confirmed residence block, so it can never rank above an available state.
+    if (residence) score = 0;
 
     const matchLevel: StateMatchLevel = score >= 70 ? "high" : score >= 45 ? "medium" : "low";
 
@@ -695,6 +697,8 @@ export function calculateStateNominationTracker(
     };
   }).sort(
     (a, b) =>
+      // A state not available because of residence never ranks above one that is.
+      Number(Boolean(a.residenceBlock)) - Number(Boolean(b.residenceBlock)) ||
       LIST_STATUS_RANK[a.occupationListStatus ?? "unconfirmed"] - LIST_STATUS_RANK[b.occupationListStatus ?? "unconfirmed"] ||
       b.score - a.score
   );

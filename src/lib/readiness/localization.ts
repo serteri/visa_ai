@@ -161,6 +161,11 @@ const textMap: Record<string, { tr?: string; zh?: string }> = {
     zh: "为 {occupation} 向对应的澳大利亚评估机构提交正式职业评估。",
   },
   "Skills Validation": { tr: "Yetenek Doğrulama", zh: "技能核验" },
+  "Skills Assessment Completed": { tr: "Beceri Değerlendirmesi Tamamlandı", zh: "技能评估已完成" },
+  "Your skills assessment for {occupation} is complete: keep the outcome letter valid and use it for your EOI claims.": {
+    tr: "{occupation} için beceri değerlendirmeniz tamamlandı: sonuç mektubunun geçerliliğini koruyun ve EOI beyanlarınızda kullanın.",
+    zh: "您的 {occupation} 技能评估已完成：请保持评估结果信有效，并用于 EOI 中的申报。",
+  },
   "EOI Strategy": { tr: "EOI Stratejisi", zh: "EOI 策略" },
   "Visa Lodgement & Processing": { tr: "Vize Başvurusu ve İşlem", zh: "签证递交与审理" },
   "Profile Foundation & 485 Bridge": { tr: "Profil Temeli ve 485 Köprüsü", zh: "档案基础与 485 过渡" },

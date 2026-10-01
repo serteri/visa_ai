@@ -85,8 +85,16 @@ export function pathwayGateLabel(status: PathwayGateStatus, locale: Locale): str
 /** The label shown for a pathway: adds the recent-invitation caveat to an otherwise eligible 189 / 190 / 491. */
 export function pathwayStatusLabel(p: PathwayGates, locale: Locale): string {
   if (p.status === "eligible" && p.belowBenchmark) {
+    // Score (190/491: including the nomination the visa requires), the recent benchmark and the gap, explicitly.
     const n = p.belowBenchmark.score;
-    return T(locale, `Eligible, but below recent invitation levels (${n} points)`, `Uygun, ancak son davet seviyelerinin altında (${n} puan)`, `符合条件，但低于近期邀请水平（${n} 分）`);
+    const b = p.belowBenchmark.benchmark;
+    const gap = b - n;
+    return T(
+      locale,
+      `Eligible, but below recent invitation levels (your ${n} vs recent ${b}, ${gap} points short)`,
+      `Uygun, ancak son davet seviyelerinin altında (sizin puanınız ${n}, son davetler ${b}; ${gap} puan eksik)`,
+      `符合条件，但低于近期邀请水平（您的 ${n} 分，近期 ${b} 分，差 ${gap} 分）`
+    );
   }
   return pathwayGateLabel(p.status, locale);
 }

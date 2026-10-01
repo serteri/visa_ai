@@ -222,6 +222,7 @@ export function buildRiskIndicators(ctx: RiskContext): RiskIndicator[] {
 
   if (risks.length === 0) {
     risks.push({
+      placeholder: true,
       level: "low",
       title: isTr
         ? "Mevcut bilgiye dayalı risk göstergeleri sınırlı"
@@ -233,4 +234,9 @@ export function buildRiskIndicators(ctx: RiskContext): RiskIndicator[] {
   }
 
   return risks;
+}
+
+/** The "Limited risk indicators" placeholder (flagged, or recognised by its title on reports stored before the flag). */
+export function isLimitedRiskPlaceholder(r: { placeholder?: boolean; title: string; level: string }): boolean {
+  return r.placeholder === true || (r.level === "low" && /Limited risk indicators|risk göstergeleri sınırlı|风险指标有限|风险信号有限/i.test(r.title));
 }

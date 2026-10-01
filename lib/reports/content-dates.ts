@@ -10,7 +10,7 @@ import { STATE_RULES } from "@/lib/state-nomination/state-rules-config";
  * than a dated data source. Bump it in any commit that changes what a recomputed report shows; scripts/test-content-
  * dates.ts fails if it is in the future or older than the latest data-source date below.
  */
-export const REPORT_CONTENT_DEPLOY_DATE = "2026-09-29";
+export const REPORT_CONTENT_DEPLOY_DATE = "2026-10-01";
 
 type SourceDate = { source: string; date: string };
 
@@ -113,8 +113,10 @@ export function contentDataAsOf(stored: ReadinessReport, fresh: ReadinessReport,
     else codeChange = true;
   }
 
-  if (sources.length === 0 && !codeChange) return null;
-  if (codeChange) sources.push({ source: "report update deploy", date: REPORT_CONTENT_DEPLOY_DATE });
+  // A code change counts only when its deploy is dated after the report was generated: a report created on or after
+  // every contributing source and deploy date keeps "Generated <creation date>".
+  if (codeChange && newer(REPORT_CONTENT_DEPLOY_DATE)) sources.push({ source: "report update deploy", date: REPORT_CONTENT_DEPLOY_DATE });
+  if (sources.length === 0) return null;
   const date = sources.map((x) => x.date).sort().at(-1)!;
   return { date, sources };
 }

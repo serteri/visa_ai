@@ -485,10 +485,17 @@ export function renderPersonalizedContent(ctx: PDFContext): void {
       const partnerExplicitlyDeclaredNoEnglish =
         isPartner && userInputSummary.sponsorOrFamily === "Partner / Dependants WITHOUT Functional English";
 
+      // Specialist education needs a degree from an Australian institution: with the degree recorded as NOT from one,
+      // the row is a definite "not eligible", not missing information.
+      const isSpecialist = /stem/i.test(item.label) || /专业教育|uzmanlık/i.test(item.label);
       if (claimedPts > 0) {
         actionStatus = t === "tr" ? "✅ Tamamlandı"
           : t === "zh" ? "✅ 已完成"
           : "✅ Complete";
+      } else if (isSpecialist && isAusQual === false) {
+        actionStatus = t === "tr" ? "Uygun değil — Avustralya'daki bir kurumdan derece gerekir"
+          : t === "zh" ? "不符合条件——需持有澳大利亚院校的学位"
+          : "Not eligible — requires a degree from an Australian institution";
       } else if (isEducation && isQualRecognized === true) {
         // A user-declared "Yes, recognized" must never be overridden by a
         // hardcoded "requires recognition" status -- if claimedPts is still

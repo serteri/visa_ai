@@ -80,6 +80,27 @@ export const REVIEW_PERSONAS: Record<string, ReadinessInput> = {
     annualSalaryAud: 45000,
     sponsorOrFamily: "Partner / Dependants WITHOUT Functional English",
   },
+  // The non-personal intake answers of real report LVA-20261001-ASDASDASD: Software Engineer 261313, 38, in Australia
+  // living in Queensland, Superior English, PhD earned outside Australia, partner without Functional English, a
+  // completed skills assessment, no experience entered (65 points; 491 at its benchmark, 189 / 190 below).
+  "ref-asd-qld": {
+    locale: "en",
+    country: "AU",
+    mainGoal: "",
+    currentCountry: "AU",
+    passportCountry: "TR",
+    age: "38",
+    occupation: "Software Engineer (261313)",
+    occupationConfirmed: "yes",
+    englishLevel: "superior",
+    qualificationLevel: "PhD",
+    qualificationAwardedInAustralia: false,
+    sponsorOrFamily: "Partner / Dependants WITHOUT Functional English",
+    migrationGoals: ["direct_pr"],
+    residenceState: "QLD",
+    employerSponsorship: "none",
+    applicationStage: "planning",
+  },
   // An occupation on WA's 2025-26 lists (Civil Engineer 233211: Schedule 2 + Graduate, p.10), in Australia, with a
   // skills assessment and experience -- exercises the ranking with a confirmed WA list match and a score above 65.
   "wa-civil-engineer-au": {
@@ -146,7 +167,9 @@ async function renderRow(row: Record<string, unknown>): Promise<string> {
 export async function renderPersonaPdfTexts(
   personas: Record<string, ReadinessInput>,
   locales: readonly (typeof LOCALES)[number][] = LOCALES,
-  live?: LiveStateRows
+  live?: LiveStateRows,
+  /** user_reports.created_at for every rendered row (drives the "Generated <date>" stamp); omitted = none stored. */
+  createdAt?: string
 ): Promise<RenderedPersona[]> {
   const rows = new Map<string, Record<string, unknown>>();
   installStubPrisma(rows, live);
@@ -161,7 +184,7 @@ export async function renderPersonaPdfTexts(
       const input: ReadinessInput = { ...base, locale };
       const report = runReadinessEngine({ ...input, stateIntelligence, stateNominationConfig });
       const reportId = `${id}-${locale}`;
-      rows.set(reportId, { id: reportId, email: "qa@example.com", locale, report_json: JSON.parse(JSON.stringify(report)), input_json: JSON.parse(JSON.stringify(input)), agent_id: null, is_unlocked: true, full_name: "Test Persona", preview_data: null });
+      rows.set(reportId, { id: reportId, email: "qa@example.com", locale, report_json: JSON.parse(JSON.stringify(report)), input_json: JSON.parse(JSON.stringify(input)), agent_id: null, is_unlocked: true, full_name: "Test Persona", preview_data: null, ...(createdAt ? { created_at: createdAt } : {}) });
       out.push({ id, locale, text: await renderRow(rows.get(reportId)!), report });
     }
   }

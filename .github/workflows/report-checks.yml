@@ -133,6 +133,13 @@ jobs:
       - name: Intake sponsorship / residence / stage, points closure wording
         run: npm run test:intake-situation
 
+      # The reference profile of real report LVA-20261001-ASDASDASD (non-personal answers), real PDF text en/tr/zh-Hans:
+      # no "proceed to the application", completed skills assessment everywhere (fee out of the totals), ranking labels
+      # from gate status / friction / availability, "Generated <creation date>", no English-age-at-grant wording, no
+      # "Limited risk" beside a High alert, specialist education / 485, explicit benchmark gaps, residence-blocked states 0%.
+      - name: Reference report LVA-20261001-ASDASDASD (9 fixes, en/tr/zh-Hans)
+        run: npm run test:reference-report
+
       # 190 / 491 friction includes nomination availability (occupation listed AND program open for the location).
       - name: Nomination availability in 190 / 491 friction
         run: npm run test:nomination-availability

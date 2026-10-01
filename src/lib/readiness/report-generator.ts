@@ -394,6 +394,8 @@ type GanttProfile = {
   englishAlreadySuperior?: boolean;
   /** No work experience was entered -- Step 2 does not talk about deducted years of experience. */
   experienceNotProvided?: boolean;
+  /** A positive skills assessment is already on file -- Step 2 does not tell the applicant to lodge one. */
+  skillsAssessmentCompleted?: boolean;
 };
 
 function buildRawGanttSteps(
@@ -485,7 +487,14 @@ function buildRawGanttSteps(
             window: "Quarter 1",
             description: "Establish baseline points, finalize highest possible English language testing, and gather core identity documents.",
           },
-      {
+      profile.skillsAssessmentCompleted
+        ? {
+            step: 2,
+            title: "Skills Assessment Completed",
+            window: "Quarter 2",
+            description: "Your skills assessment for {occupation} is complete: keep the outcome letter valid and use it for your EOI claims.",
+          }
+        : {
         step: 2,
         title: "Skills Validation",
         window: "Quarter 2",
@@ -514,7 +523,7 @@ function buildRawGanttSteps(
         description:
           "Bridge to PR (Subclass 485): Utilize your Temporary Graduate Visa timeline (Post-Higher Education or Post-Vocational stream) to accumulate crucial Australian work experience and bridge the gap toward state nomination requirements. Keep English testing and identity documents aligned with the 485-to-190/491 transition plan.",
       };
-      steps[1] = {
+      if (!profile.skillsAssessmentCompleted) steps[1] = {
         ...steps[1],
         title: "Skills Validation & 485 Work-Experience Window",
         description:
@@ -728,6 +737,8 @@ export function generatePremiumSections(input: {
   englishLevel?: string;
   /** True when neither offshore nor Australian work experience was entered. */
   experienceNotProvided?: boolean;
+  /** True when the intake records a completed (positive) skills assessment. */
+  skillsAssessmentCompleted?: boolean;
   country?: "AU" | "CA";
   /** Required so this section can never disagree with the main engine's eligibility verdict — see assessment-state.ts. */
   pathwayComparison: PathwayComparison[];
@@ -843,6 +854,7 @@ export function generatePremiumSections(input: {
       // The intake form's englishLevel enum (none | competent | proficient | superior -- full-check/actions.ts).
       englishAlreadySuperior: input.englishLevel === "superior",
       experienceNotProvided: input.experienceNotProvided === true,
+      skillsAssessmentCompleted: input.skillsAssessmentCompleted === true,
     }
   );
   const methodologyNote = localizeTrendDescription(

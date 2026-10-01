@@ -10,7 +10,7 @@ import type {
   ReadinessReport,
 } from "./types";
 import { isPartnerPathwaySelected } from "./engine";
-import { describePathwayScore } from "./pathway-scores";
+import { comparisonOf, describePathwayScore, frictionFromScore } from "./pathway-scores";
 import type { PathwayFit } from "./pathway-ranking";
 
 type RankedPathwayInput = {
@@ -457,13 +457,37 @@ function buildAuRankedFromRanking(report: ReadinessReport, locale: Locale): Rank
 
   // Legacy display percentages (only for unblocked pathways, only when a number may be shown): the
   // same figures as before, but assigned in RANKING order so the percentage can never contradict it.
+  // Each pathway's figure follows its OWN position: the gap to its recent invitation benchmark (190/491 with the
+  // nomination they require) -- not one shared delta. Still assigned in ranking order (never contradicting it), and
+  // two pathways whose gate status, friction or nomination availability differ never share a figure.
+  const avail = report.stateNominationTracker?.nominationAvailability;
+  const signature = (e: (typeof ranking.entries)[number]) =>
+    `${report.visaGates?.[e.subclass]?.status ?? ""}|${frictionFromScore(e.score)}|${e.subclass === "189" ? "-" : (avail?.[e.subclass]?.length ?? -1) > 0}`;
   let percentages: number[] = [];
   if (numeric) {
-    const pointsDelta = Math.max(-10, Math.min(30, ranking.entries[0].score.baseScore - 65));
-    const conf = (s: "189" | "190" | "491") =>
-      clampPercentage(confidenceToBaseScore(report.pathwayComparison.find((p) => p.subclass === s)?.confidenceLevel) + pointsDelta);
-    percentages = ranking.entries.map((e) => conf(e.subclass)).sort((a, b) => b - a);
+    const own = (e: (typeof ranking.entries)[number]) => {
+      const gap = comparisonOf(e.score).comparisonGap;
+      const delta = gap === null ? Math.max(-10, Math.min(30, e.score.baseScore - 65)) : Math.max(-25, Math.min(30, -gap));
+      return clampPercentage(confidenceToBaseScore(report.pathwayComparison.find((p) => p.subclass === e.subclass)?.confidenceLevel) + delta);
+    };
+    percentages = ranking.entries.map(own).sort((a, b) => b - a);
+    for (let i = 1; i < percentages.length; i++) {
+      if (percentages[i] >= percentages[i - 1] && signature(ranking.entries[i]) !== signature(ranking.entries[i - 1])) {
+        percentages[i] = Math.max(0, percentages[i - 1] - 1);
+      }
+    }
   }
+
+  // The label of a non-first pathway comes from the same gate status, friction and nomination availability shown
+  // elsewhere: eligible with a LOW/MEDIUM gap (and, for 190/491, at least one available state) is an alternative;
+  // anything else is high risk. A pathway is never "high potential" and "high risk" at once (the PDF badge follows
+  // the tag).
+  const alternativeFit = (e: (typeof ranking.entries)[number]) => {
+    const gate = report.visaGates?.[e.subclass]?.status;
+    const friction = frictionFromScore(e.score);
+    const available = e.subclass === "189" || (avail?.[e.subclass]?.length ?? 1) > 0;
+    return (gate === undefined || gate === "eligible") && (friction === "LOW" || friction === "MEDIUM") && available;
+  };
 
   let firstRecommendable = true;
   let secondRecommendable = false;
@@ -491,6 +515,8 @@ function buildAuRankedFromRanking(report: ReadinessReport, locale: Locale): Rank
     } else if (entry.recommendable && secondRecommendable) {
       tag = "⚖️ Alternative Option";
       secondRecommendable = false;
+    } else if (!firstRecommendable && alternativeFit(entry)) {
+      tag = "⚖️ Alternative Option";
     }
     return {
       ...base,
