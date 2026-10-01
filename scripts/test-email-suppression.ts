@@ -341,6 +341,7 @@ async function main() {
     const NOT_REPORT_EMAIL: Record<string, string> = {
       "app/api/contact/route.ts": "contact form",
       "lib/email/magic-link.ts": "authentication",
+      "lib/email/chat-restore.ts": "AI-assistant credit restore link (not a report email)",
       "lib/email/agent-notifications.ts": "agent-portal assignment notice (claim/pool actions)",
       "lib/alerts/check-points-alerts.ts": "points-alert subscriptions",
       "lib/email/pdf-delivery.ts": "low-level sender; every caller is checked below",

@@ -11,8 +11,8 @@ interface VipUnlockPayload {
 }
 
 /**
- * Lets someone who knows the server-only VIP_UNLOCK_SECRET unlock unlimited
- * chat access for their current anonymous ChatVisitor without going through
+ * Lets someone who knows the server-only VIP_UNLOCK_SECRET grant a credit
+ * balance (VIP_UNLOCK_CREDITS) to their current anonymous ChatVisitor without going through
  * Stripe. Previously gated by a hardcoded founder email
  * (VIP_BYPASS_EMAIL = "serteri@gmail.com") compared against a client-supplied
  * email field -- that email was public (readable in the repo/bundle), so
@@ -43,9 +43,12 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "Visitor not found." }, { status: 404 });
   }
 
+  // isPremium no longer bypasses the credit decrement (lib/chat/handler.ts), so the VIP code grants a credit
+  // balance instead of an unlimited flag. Amount: VIP_UNLOCK_CREDITS (default 100).
+  const grant = Number.parseInt(process.env.VIP_UNLOCK_CREDITS ?? "", 10);
   await prisma.chatVisitor.update({
     where: { id: visitorId },
-    data: { isPremium: true },
+    data: { premiumCredits: { increment: Number.isFinite(grant) && grant > 0 ? grant : 100 } },
   });
 
   return NextResponse.json({ success: true });

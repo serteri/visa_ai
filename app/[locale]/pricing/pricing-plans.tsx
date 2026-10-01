@@ -23,12 +23,20 @@ interface Plan {
 }
 
 /**
- * What every package includes, worded only from what the code does (the packages differ only in the number of
- * credits): the same assistant, model and knowledge-base retrieval as the free messages (app/api/knowledge-chat);
- * a one-time Stripe payment with no expiry on the credits, which can be bought again (app/api/stripe/checkout,
- * webhook); credits held by the anonymous ChatVisitor, identified by IP address + browser (lib/visitor-tracking.ts).
+ * What every package includes, each line describing something the code does (credit amount is the only difference):
+ * every message costs one credit and credits never expire (lib/chat/handler.ts); answers use the visitor's own stored
+ * LogiVisa report once the purchase email is confirmed through "Restore my credits" (lib/chat/profile.ts); premium
+ * answers cite retrieved source documents and pages (lib/chat/citations.ts); the model is PREMIUM_CHAT_MODEL
+ * (lib/chat/config.ts); credits restore on any device by emailed link (lib/chat/restore.ts); a one-time Stripe payment.
  */
-const SHARED_FEATURE_KEYS = ["pricing.feature.sameAssistant", "pricing.feature.oneTime", "pricing.feature.device"];
+const SHARED_FEATURE_KEYS = [
+  "pricing.feature.profile",
+  "pricing.feature.sources",
+  "pricing.feature.model",
+  "pricing.feature.noExpiry",
+  "pricing.feature.restore",
+  "pricing.feature.oneTime",
+];
 
 const PLANS: Plan[] = [
   {

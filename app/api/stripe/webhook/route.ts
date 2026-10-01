@@ -10,6 +10,7 @@ import { getStripeClient } from "@/lib/stripe";
 import { sendFullCheckAdminEmail } from "@/lib/email/full-check-admin";
 import { shouldSuppressReportEmails } from "@/lib/email/suppression";
 import { getSessionPromotionCodes } from "@/lib/stripe/session-discounts";
+import { recordCreditPurchase } from "@/lib/chat/purchases";
 
 export const dynamic = "force-dynamic";
 
@@ -56,11 +57,10 @@ function resolvePdfSlug(productType: CheckoutSessionMeta["productType"]): string
 /**
  * AI-assistant credit-package purchase (app/[locale]/pricing, checkout
  * created in app/api/stripe/checkout/route.ts). Grants the purchased
- * premiumCredits to the anonymous ChatVisitor named in metadata.visitorId
- * and flips isPremium true -- isPremium alone is what
- * app/api/knowledge-chat/route.ts checks to skip the free-message gate;
- * premiumCredits is metered separately (decremented per paid message once
- * the free limit is hit) as a spend record, not the access flag itself.
+ * premiumCredits to the anonymous ChatVisitor named in metadata.visitorId and
+ * links the email Stripe collected to those credits (lib/chat/purchases.ts),
+ * which is what "Restore my credits" and the stored-report profile hang off.
+ * isPremium is no longer set: it grants nothing, the balance is the access.
  */
 async function handleCreditsPurchase(session: Stripe.Checkout.Session): Promise<Response> {
   const metadata = (session.metadata || {}) as CheckoutSessionMeta;
@@ -77,13 +77,16 @@ async function handleCreditsPurchase(session: Stripe.Checkout.Session): Promise<
   }
 
   try {
-    await prisma.chatVisitor.update({
-      where: { id: visitorId },
-      data: {
-        premiumCredits: { increment: credits },
-        isPremium: true,
-      },
+    const outcome = await recordCreditPurchase(prisma, {
+      sessionId: session.id,
+      visitorId,
+      credits,
+      email: session.customer_details?.email || session.customer_email || session.metadata?.email,
     });
+    if (outcome === "duplicate") {
+      console.warn("Webhook: credit purchase already processed, skipping", { sessionId: session.id });
+      return Response.json({ received: true });
+    }
   } catch (err) {
     // Includes Prisma's "record not found" (P2025) if visitorId doesn't
     // match any ChatVisitor -- surfaced as a 500 so Stripe retries and this
