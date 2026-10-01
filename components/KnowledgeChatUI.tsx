@@ -12,6 +12,10 @@ import { ChatRestoreCredits } from "@/components/ChatRestoreCredits";
 import { renderCitations } from "@/lib/chat/citations";
 import type { SourceRef } from "@/lib/chat/types";
 import { ChatQuickProfileCard } from "@/components/ChatQuickProfileCard";
+import { ChatQuickResult } from "@/components/ChatQuickResult";
+import { ChatBalanceBar } from "@/components/ChatBalanceBar";
+import type { BalanceView } from "@/lib/chat/balance";
+import type { EngineResultSummary } from "@/lib/chat/quick-profile-api";
 import type { QuickProfileFields } from "@/lib/chat/quick-profile";
 import { useLanguage, useTranslation } from "@/contexts/language-context";
 import { cn } from "@/lib/utils";
@@ -61,7 +65,8 @@ export function KnowledgeChatUI({ className, restoreToken }: KnowledgeChatUIProp
   const [restoredCredits, setRestoredCredits] = useState(0);
   // Quick profile card (premium visitor without a linked report): /api/chat/profile says whether to show it.
   const { language } = useLanguage();
-  const [quick, setQuick] = useState<{ premium: boolean; hasReport: boolean; available: boolean; profile: Partial<QuickProfileFields> | null } | null>(null);
+  const [quick, setQuick] = useState<{ premium: boolean; hasReport: boolean; available: boolean; profile: Partial<QuickProfileFields> | null; result: EngineResultSummary | null } | null>(null);
+  const [balance, setBalance] = useState<BalanceView | null>(null);
   const [editingProfile, setEditingProfile] = useState(false);
   const loadQuickProfile = () =>
     fetch("/api/chat/profile")
@@ -109,9 +114,10 @@ export function KnowledgeChatUI({ className, restoreToken }: KnowledgeChatUIProp
     }
   };
 
+  // The language rides along so a correction block is written in the visitor's language.
   const transport = useMemo(
-    () => new DefaultChatTransport({ api: "/api/knowledge-chat" }),
-    [],
+    () => new DefaultChatTransport({ api: "/api/knowledge-chat", body: { locale: language } }),
+    [language],
   );
 
   const { messages, sendMessage, status, error } = useChat({
@@ -122,6 +128,16 @@ export function KnowledgeChatUI({ className, restoreToken }: KnowledgeChatUIProp
   });
 
   const isBusy = status === "submitted" || status === "streaming";
+
+  // The header balance is read from the server on load and again after every message settles ("ready" or "error"),
+  // so a credit spent, a refund after a failed message, a restore and a VIP unlock all show up.
+  useEffect(() => {
+    if (status !== "ready" && status !== "error") return;
+    fetch("/api/chat/balance", { cache: "no-store" })
+      .then((res) => (res.ok ? res.json() : null))
+      .then((data: BalanceView | null) => setBalance(data))
+      .catch(() => {});
+  }, [status, restoreState, isLimitReached]);
   const inputDisabled = isLimitReached || isBusy;
 
   const messagesEndRef = useRef<HTMLDivElement>(null);
@@ -205,6 +221,7 @@ export function KnowledgeChatUI({ className, restoreToken }: KnowledgeChatUIProp
         className,
       )}
     >
+      <ChatBalanceBar balance={balance} />
       {restoreToken && restoreState !== "done" && (
         <div className="space-y-2 border-b border-border bg-muted/50 p-3 text-center text-sm">
           <p>
@@ -227,7 +244,7 @@ export function KnowledgeChatUI({ className, restoreToken }: KnowledgeChatUIProp
         </p>
       )}
       <div className="flex-1 space-y-3 overflow-y-auto p-4">
-        {quick?.premium && !quick.hasReport && quick.available && (!quick.profile || editingProfile) && (
+        {!quick?.hasReport && quick?.available && (!quick.profile || editingProfile) && (
           <ChatQuickProfileCard
             locale={language}
             initial={quick.profile}
@@ -237,6 +254,9 @@ export function KnowledgeChatUI({ className, restoreToken }: KnowledgeChatUIProp
             }}
             onCancel={quick.profile ? () => setEditingProfile(false) : undefined}
           />
+        )}
+        {quick && !quick.premium && !quick.hasReport && quick.profile && quick.result && !editingProfile && (
+          <ChatQuickResult result={quick.result} locale={language} onEdit={() => setEditingProfile(true)} />
         )}
         {quick?.premium && !quick.hasReport && quick.profile && !editingProfile && (
           <button type="button" onClick={() => setEditingProfile(true)} className="text-xs text-muted-foreground underline-offset-2 hover:underline">
@@ -254,6 +274,11 @@ export function KnowledgeChatUI({ className, restoreToken }: KnowledgeChatUIProp
           const sources = meta?.sources;
           const text = message.role === "assistant" && sources ? renderCitations(rawText, sources) : rawText;
           const isUser = message.role === "user";
+          // Correction blocks appended to this answer after it streamed (the engine's fact and its source).
+          const corrections = message.parts
+            .filter((part) => part.type === "data-correction")
+            .map((part) => (part as unknown as { data: { text?: string } }).data.text)
+            .filter((x): x is string => Boolean(x));
           // One-line CTA to the full report, once: after the first answer personalised from the quick profile card.
           const firstQuickAnswer =
             message.role === "assistant" &&
@@ -275,6 +300,11 @@ export function KnowledgeChatUI({ className, restoreToken }: KnowledgeChatUIProp
                   {text}
                 </div>
               </div>
+              {corrections.map((c) => (
+                <div key={c} role="note" data-testid="chat-correction" className="max-w-[80%] rounded-lg border border-amber-500/50 bg-amber-50 px-3 py-2 text-xs leading-relaxed text-amber-950 dark:bg-amber-950/30 dark:text-amber-100">
+                  {c}
+                </div>
+              ))}
               {firstQuickAnswer && !isBusy && (
                 <p className="text-xs text-muted-foreground" data-testid="chat-full-report-cta">
                   {QP_TEXT.cta[lang]}{" "}

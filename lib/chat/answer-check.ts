@@ -13,7 +13,15 @@ import { engineFeeTable } from "./engine-facts";
  * Used on every finished answer (logged, see lib/chat/handler.ts) and by the tests.
  */
 
-export type EngineConflict = { kind: "fee" | "gate" | "state_availability" | "repeated_disclaimer"; sentence: string; detail: string };
+export type EngineConflict = {
+  kind: "fee" | "gate" | "state_availability" | "repeated_disclaimer";
+  sentence: string;
+  detail: string;
+  /** The subclasses the flagged sentence names (fee / gate conflicts): what the correction block is about. */
+  subclasses?: string[];
+  /** gate: which requirement was contradicted. */
+  topic?: "skills_assessment" | "income_191";
+};
 
 const SENTENCE_SPLIT = /(?<=[.!?。！？])\s+|\n+/;
 const SUBCLASS = /(?:subclass|alt sınıf|vize|visa|子类)?\s*\b(189|190|191|482|485|491|500|186|820|801)\b/gi;
@@ -50,17 +58,17 @@ export function findEngineConflicts(answer: string, opts: { hasProfile?: boolean
       const allowed = new Set(subs.flatMap((sc) => fees[sc] ?? []));
       if (allowed.size > 0) {
         for (const a of amounts(s)) {
-          if (!allowed.has(a)) out.push({ kind: "fee", sentence: s, detail: `AUD ${a.toLocaleString("en-AU")} is not an engine fee for subclass ${subs.join("/")} (engine: ${[...allowed].map((n) => n.toLocaleString("en-AU")).join(", ")})` });
+          if (!allowed.has(a)) out.push({ kind: "fee", sentence: s, detail: `AUD ${a.toLocaleString("en-AU")} is not an engine fee for subclass ${subs.join("/")} (engine: ${[...allowed].map((n) => n.toLocaleString("en-AU")).join(", ")})`, subclasses: subs.filter((sc) => (fees[sc] ?? []).length > 0) });
         }
       }
     }
 
     // Gates.
     if (subs.some((sc) => ["189", "190", "491"].includes(sc)) && NO_SKILLS_ASSESSMENT.test(s)) {
-      out.push({ kind: "gate", sentence: s, detail: "189 / 190 / 491 require a suitable (positive) skills assessment (gate matrix)" });
+      out.push({ kind: "gate", sentence: s, detail: "189 / 190 / 491 require a suitable (positive) skills assessment (gate matrix)", subclasses: subs.filter((sc) => ["189", "190", "491"].includes(sc)), topic: "skills_assessment" });
     }
     if (subs.includes("191") && MIN_INCOME.test(s) && !NEGATED_INCOME.test(s)) {
-      out.push({ kind: "gate", sentence: s, detail: "subclass 191 has no minimum income requirement (ATO notices for 3 income years only)" });
+      out.push({ kind: "gate", sentence: s, detail: "subclass 191 has no minimum income requirement (ATO notices for 3 income years only)", subclasses: ["191"], topic: "income_191" });
     }
 
     // State availability without the engine's per-state result.

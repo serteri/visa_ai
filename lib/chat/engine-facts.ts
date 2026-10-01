@@ -28,6 +28,11 @@ export type LiveStateData = {
   stateIntelligence?: Record<string, { status?: string }>;
 };
 
+/** The VAC row per subclass, as the report shows it (for correction blocks). */
+export function engineFeeRow(subclass: string): VacRow | undefined {
+  return FEES[subclass]?.vac;
+}
+
 /** Fee figures per subclass (every amount the report can quote for that subclass). */
 export function engineFeeTable(): Record<string, number[]> {
   const out: Record<string, number[]> = {};

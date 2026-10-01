@@ -168,6 +168,11 @@ jobs:
       - name: Chat credits, premium path, citations and restore flow
         run: npm run test:chat-credits
 
+      # Visible corrections (fee / gate / state conflicts appended to the same message, en/tr/zh-Hans), the knowledge-index
+      # audit classification, the quick profile card for free visitors, and the credit-balance header. No model, no DB.
+      - name: Chat corrections, index audit, free quick profile, balance header
+        run: npm run test:chat-followup
+
       # Medical registration data (src/data/health-registration/*.json, extracted from the Medical Board / Ahpra
       # "Pathways to registration for international medical graduates" document). The regenerate-and-diff drift
       # check needs the gitignored source PDF and is SKIPPED here; the committed-file invariants (fee schedule

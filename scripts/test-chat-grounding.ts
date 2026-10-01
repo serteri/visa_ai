@@ -120,8 +120,9 @@ async function main() {
     const badBody = (await bad.json()) as { errors?: Record<string, string> };
     t("intake options and experience-years rule reused", bad.status === 400 && Boolean(badBody.errors?.englishLevel) && Boolean(badBody.errors?.offshoreExperienceYears));
     const freeVisitor = { ...qpDeps, getVisitor: async () => ({ id: "free", messageCount: 1, premiumCredits: 0 }) };
-    const notPremium = await saveQuickProfile(new Request("https://x.test", { method: "POST", body: JSON.stringify({ fields: STUDENT }) }), freeVisitor);
-    t("only a paying visitor can save a quick profile", notPremium.status === 403);
+    const freeSave = await saveQuickProfile(new Request("https://x.test", { method: "POST", body: JSON.stringify({ fields: STUDENT }) }), freeVisitor);
+    t("a free visitor can save a quick profile too (engine only, no model call)", freeSave.status === 200);
+    store.delete("free");
 
     const ok = await post(STUDENT);
     const okBody = (await ok.json()) as { ok?: boolean; points?: number; gates?: Record<string, string> };

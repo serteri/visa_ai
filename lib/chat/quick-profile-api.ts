@@ -9,8 +9,25 @@ import { inputToQuickProfile, isMissingTableError, quickProfileToInput, validate
  * GET  /api/chat/profile  -> whether to show the card: { premium, hasReport, profile (fields for editing) | null }
  * POST /api/chat/profile  -> validate the card (intake rules), run the REPORT engine, store input + result against
  *                            the visitor, answer with the engine's headline results.
- * Only a paying visitor (credits > 0) can save a profile; the chat uses it only on the premium path.
+ * Any visitor can save a profile (the card is shown to everyone without a linked report); no model call is made,
+ * only the report engine runs. Both paths of the chat read the stored result as engine facts.
  */
+
+/** The compact engine result shown under the card (points, gate status per visa, states open for the occupation). */
+export type EngineResultSummary = {
+  points: number | null;
+  gates: Record<string, string>;
+  states: { "190": string[]; "491": string[] } | null;
+};
+
+export function summarizeEngineResult(report: Partial<ReadinessReport> | null | undefined): EngineResultSummary {
+  const avail = report?.stateNominationTracker?.nominationAvailability;
+  return {
+    points: report?.pointsEstimate?.estimatedPoints ?? null,
+    gates: Object.fromEntries(Object.entries(report?.visaGates ?? {}).map(([visa, g]) => [visa, g.status])),
+    states: avail ? { "190": avail["190"] ?? [], "491": avail["491"] ?? [] } : null,
+  };
+}
 
 export interface QuickProfileDeps {
   getVisitor(req: Request): Promise<ChatVisitorLike>;
@@ -39,6 +56,7 @@ export async function getQuickProfile(req: Request, deps: QuickProfileDeps): Pro
     hasReport: Boolean(linked),
     available,
     profile: stored ? inputToQuickProfile((stored.inputJson ?? {}) as Partial<ReadinessInput>) : null,
+    result: stored ? summarizeEngineResult(stored.reportJson as Partial<ReadinessReport>) : null,
   });
 }
 
@@ -46,7 +64,6 @@ export async function saveQuickProfile(req: Request, deps: QuickProfileDeps): Pr
   const visitor = await deps.getVisitor(req);
   const body = (await req.json().catch(() => ({}))) as { locale?: string; fields?: Record<string, unknown> };
   const locale = asLocale(body.locale);
-  if (visitor.premiumCredits <= 0) return Response.json({ error: "premium_required" }, { status: 403 });
 
   const v = validateQuickProfile(body.fields ?? {}, locale);
   if (!v.ok) return Response.json({ error: "invalid", errors: v.errors }, { status: 400 });
@@ -61,9 +78,5 @@ export async function saveQuickProfile(req: Request, deps: QuickProfileDeps): Pr
     if (isMissingTableError(err)) return Response.json({ error: "profile_unavailable" }, { status: 503 });
     throw err;
   }
-  return Response.json({
-    ok: true,
-    points: report.pointsEstimate?.estimatedPoints ?? null,
-    gates: Object.fromEntries(Object.entries(report.visaGates ?? {}).map(([visa, g]) => [visa, g.status])),
-  });
+  return Response.json({ ok: true, ...summarizeEngineResult(report) });
 }

@@ -6,6 +6,7 @@ import { prisma } from "@/lib/prisma";
 import { getVisitorContext } from "@/lib/visitor-tracking";
 
 import { CHAT_MODEL_ID, EMBEDDING_MODEL_ID, getPremiumChatModelId } from "./config";
+import { correctedUIStreamResponse } from "./corrected-stream";
 import { prismaCreditStore } from "./credits";
 import { dropSupersededChunks } from "./document-versions";
 import { getStateIntelligenceMap, getStateNominationConfigMap } from "@/lib/state-intelligence";
@@ -140,9 +141,11 @@ export function realChatDeps(): ChatDeps {
         onAbort: () => opts.onFailure(),
       });
       const metadata = opts.sources || opts.profileSource !== undefined ? { sources: opts.sources, profileSource: opts.profileSource ?? null } : undefined;
-      return result.toUIMessageStreamResponse(
-        metadata ? { messageMetadata: ({ part }) => (part.type === "start" ? metadata : undefined) } : undefined,
-      );
+      const uiStream = result.toUIMessageStream({
+        sendFinish: false,
+        ...(metadata ? { messageMetadata: ({ part }) => (part.type === "start" ? metadata : undefined) } : {}),
+      });
+      return correctedUIStreamResponse(uiStream, opts.correct);
     },
   };
 }

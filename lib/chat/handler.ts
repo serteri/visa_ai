@@ -10,6 +10,7 @@ import {
   PREMIUM_PRIMARY_CHUNK_COUNT,
 } from "./config";
 import { findEngineConflicts, type EngineConflict } from "./answer-check";
+import { buildCorrections, detectAnswerLocale, type Correction } from "./corrections";
 import type { CreditStore } from "./credits";
 import { buildEngineFacts, type LiveStateData } from "./engine-facts";
 import { loadChatProfile, type ProfileStore } from "./profile";
@@ -33,6 +34,11 @@ export interface StreamRequest {
   profileSource?: "report" | "quick" | null;
   /** The finished answer text. */
   onFinish: (text: string) => Promise<void>;
+  /**
+   * Called with the finished answer before the stream closes: the correction blocks (fee / gate / state-availability
+   * conflicts, with the engine's fact and source) to append to the same message. Also logs the conflicts.
+   */
+  correct?: (text: string) => Correction[];
   /** The model call failed or the client went away before a reply: nothing was delivered. */
   onFailure: () => Promise<void>;
 }
@@ -96,11 +102,14 @@ export async function handleChat(req: Request, deps: ChatDeps): Promise<Response
   };
 
   // Every finished answer is checked against the engine data (fees, gates, state claims, repeated disclaimers).
-  const check = (text: string, opts: { premium: boolean; hasProfile: boolean }) => {
+  const requestLocale = (body as { locale?: string }).locale;
+  const check = (text: string, opts: { premium: boolean; hasProfile: boolean }): Correction[] => {
     const conflicts = findEngineConflicts(text, { hasProfile: opts.hasProfile });
-    if (conflicts.length === 0) return;
+    if (conflicts.length === 0) return [];
     if (deps.reportConflicts) deps.reportConflicts(conflicts, { premium: opts.premium });
     else console.warn("[chat_engine_conflict]", JSON.stringify({ premium: opts.premium, conflicts: conflicts.map((c) => ({ kind: c.kind, detail: c.detail })) }));
+    const locale = requestLocale === "tr" || requestLocale === "zh-Hans" || requestLocale === "en" ? requestLocale : detectAnswerLocale(text);
+    return buildCorrections(conflicts, locale);
   };
 
   try {
@@ -111,14 +120,20 @@ export async function handleChat(req: Request, deps: ChatDeps): Promise<Response
     const engineFacts = buildEngineFacts(live);
 
     if (!premium) {
-      const chunks = await deps.retrieve(searchString, { primary: FREE_PRIMARY_CHUNK_COUNT, occupation: OCCUPATION_LIST_CHUNK_COUNT });
-      const guidance = isStudentVisaContext(undefined, lastUserText) ? buildStudentVisaGuidance() : undefined;
+      const [chunks, profile] = await Promise.all([
+        deps.retrieve(searchString, { primary: FREE_PRIMARY_CHUNK_COUNT, occupation: OCCUPATION_LIST_CHUNK_COUNT }),
+        // A free visitor's quick profile card (or linked report) gives the same engine facts the premium path uses.
+        loadChatProfile(deps.profiles, deps.quickProfiles, visitor.id).catch(() => null),
+      ]);
+      const guidance = isStudentVisaContext(profile?.input.currentVisaSubclass, lastUserText)
+        ? buildStudentVisaGuidance(profile?.input.currentVisaSubclass === "500" ? profile.input : undefined)
+        : undefined;
       return await deps.stream({
         modelId: CHAT_MODEL_ID,
-        system: buildSystemPrompt(chunks, { engineFacts, guidance }),
+        system: buildSystemPrompt(chunks, { engineFacts, guidance, ...(profile ? { profile: { summary: profile.summary, source: profile.source } } : {}) }),
         messages,
-        onFinish: async (text) => {
-          check(text, { premium: false, hasProfile: false });
+        correct: (text) => check(text, { premium: false, hasProfile: Boolean(profile) }),
+        onFinish: async () => {
           await deps.credits.recordFreeMessage(visitor.id);
         },
         onFailure: async () => {},
@@ -148,7 +163,8 @@ export async function handleChat(req: Request, deps: ChatDeps): Promise<Response
       messages,
       sources: catalogRefs(catalog),
       profileSource: profile?.source ?? null,
-      onFinish: async (text) => check(text, { premium: true, hasProfile: Boolean(profile) }),
+      correct: (text) => check(text, { premium: true, hasProfile: Boolean(profile) }),
+      onFinish: async () => {},
       onFailure: refundOnce,
     });
   } catch (err) {

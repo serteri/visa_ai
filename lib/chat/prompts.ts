@@ -28,9 +28,15 @@ export type PromptExtras = {
   engineFacts: string;
   /** e.g. buildStudentVisaGuidance() for a subclass 500 holder. */
   guidance?: string;
+  /** FREE path only: the visitor's own engine result (quick profile card or linked report), when there is one. */
+  profile?: { summary: string; source: "report" | "quick" };
 };
 
 const extrasBlock = (x: PromptExtras) => `${x.engineFacts}\n\n${x.guidance ? `${x.guidance}\n\n` : ""}`;
+
+/** The free path's profile block: engine facts about THIS visitor, no citation or "general answers" rules. */
+const freeProfileBlock = (p: NonNullable<PromptExtras["profile"]>) =>
+  `[KULLANICI PROFİLİ]:\n${p.summary}\n\nBu profil yalnızca şu an seninle konuşan kullanıcıya aittir (${p.source === "quick" ? "sohbet içindeki hızlı profil kartı" : "kendi LogiVisa raporu"}) ve LogiVisa rapor motorunun sonucudur. Puan, vize kapıları ve uygun eyaletler için bunu kullan; profilde olmayan bir bilgiyi kullanıcı hakkında uydurma.\n\n`;
 
 /** FREE path system prompt: the guardrails, the engine facts (and guidance), then the retrieved references. */
 export function buildSystemPrompt(chunks: RetrievedChunk[], extras: PromptExtras): string {
@@ -39,7 +45,7 @@ export function buildSystemPrompt(chunks: RetrievedChunk[], extras: PromptExtras
       ? chunks.map((chunk, i) => `[${i + 1}] ${chunk.content}`).join("\n\n")
       : "No matching reference material was found for this question.";
 
-  return `${GUARDRAILS_TEXT}${extrasBlock(extras)}[REFERANS BİLGİLERİ]:
+  return `${GUARDRAILS_TEXT}${extrasBlock(extras)}${extras.profile ? freeProfileBlock(extras.profile) : ""}[REFERANS BİLGİLERİ]:
 ${chunkContents}
 `;
 }
