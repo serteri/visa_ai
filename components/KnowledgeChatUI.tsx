@@ -11,10 +11,22 @@ import { Textarea } from "@/components/ui/textarea";
 import { ChatRestoreCredits } from "@/components/ChatRestoreCredits";
 import { renderCitations } from "@/lib/chat/citations";
 import type { SourceRef } from "@/lib/chat/types";
-import { useTranslation } from "@/contexts/language-context";
+import { ChatQuickProfileCard } from "@/components/ChatQuickProfileCard";
+import type { QuickProfileFields } from "@/lib/chat/quick-profile";
+import { useLanguage, useTranslation } from "@/contexts/language-context";
 import { cn } from "@/lib/utils";
 
 const FREE_LIMIT_ERROR_CODE = "limit_reached";
+
+const QP_TEXT = {
+  edit: { en: "Edit my profile", tr: "Profilimi düzenle", zh: "编辑我的资料" },
+  cta: {
+    en: "Want every section — points, visa requirements, states, costs and a plan — in one PDF?",
+    tr: "Tüm bölümleri — puan, vize şartları, eyaletler, maliyetler ve plan — tek bir PDF'te mi istiyorsunuz?",
+    zh: "想要把所有内容——分数、签证要求、州、费用和计划——整合到一份 PDF 中吗？",
+  },
+  ctaLink: { en: "Get the full report", tr: "Tam raporu alın", zh: "获取完整报告" },
+};
 const PREMIUM_UPGRADE_PATH = "/pricing";
 
 interface KnowledgeChatUIProps {
@@ -47,6 +59,18 @@ export function KnowledgeChatUI({ className, restoreToken }: KnowledgeChatUIProp
   // that merely opens the link cannot use up the one-time token.
   const [restoreState, setRestoreState] = useState<"idle" | "working" | "done" | "failed">("idle");
   const [restoredCredits, setRestoredCredits] = useState(0);
+  // Quick profile card (premium visitor without a linked report): /api/chat/profile says whether to show it.
+  const { language } = useLanguage();
+  const [quick, setQuick] = useState<{ premium: boolean; hasReport: boolean; available: boolean; profile: Partial<QuickProfileFields> | null } | null>(null);
+  const [editingProfile, setEditingProfile] = useState(false);
+  const loadQuickProfile = () =>
+    fetch("/api/chat/profile")
+      .then((res) => (res.ok ? res.json() : null))
+      .then((data) => setQuick(data))
+      .catch(() => setQuick(null));
+  useEffect(() => {
+    void loadQuickProfile();
+  }, [restoreState]);
 
   useEffect(() => {
     fetch("/api/visitor")
@@ -203,29 +227,62 @@ export function KnowledgeChatUI({ className, restoreToken }: KnowledgeChatUIProp
         </p>
       )}
       <div className="flex-1 space-y-3 overflow-y-auto p-4">
-        {messages.map((message) => {
+        {quick?.premium && !quick.hasReport && quick.available && (!quick.profile || editingProfile) && (
+          <ChatQuickProfileCard
+            locale={language}
+            initial={quick.profile}
+            onSaved={() => {
+              setEditingProfile(false);
+              void loadQuickProfile();
+            }}
+            onCancel={quick.profile ? () => setEditingProfile(false) : undefined}
+          />
+        )}
+        {quick?.premium && !quick.hasReport && quick.profile && !editingProfile && (
+          <button type="button" onClick={() => setEditingProfile(true)} className="text-xs text-muted-foreground underline-offset-2 hover:underline">
+            {QP_TEXT.edit[language === "tr" ? "tr" : language === "zh-Hans" ? "zh" : "en"]}
+          </button>
+        )}
+        {messages.map((message, index) => {
           const rawText = message.parts
             .filter((part) => part.type === "text")
             .map((part) => part.text)
             .join("\n");
           // Premium answers carry [S1]-style markers; the document / page shown comes from the retrieval metadata
           // the server sent with the message, and a marker not in that list is dropped.
-          const sources = (message.metadata as { sources?: SourceRef[] } | undefined)?.sources;
+          const meta = message.metadata as { sources?: SourceRef[]; profileSource?: "report" | "quick" | null } | undefined;
+          const sources = meta?.sources;
           const text = message.role === "assistant" && sources ? renderCitations(rawText, sources) : rawText;
           const isUser = message.role === "user";
+          // One-line CTA to the full report, once: after the first answer personalised from the quick profile card.
+          const firstQuickAnswer =
+            message.role === "assistant" &&
+            meta?.profileSource === "quick" &&
+            messages.findIndex((m) => m.role === "assistant" && (m.metadata as { profileSource?: string } | undefined)?.profileSource === "quick") === index;
+          const lang = language === "tr" ? "tr" : language === "zh-Hans" ? "zh" : "en";
 
           return (
-            <div key={message.id} className={cn("flex", isUser ? "justify-end" : "justify-start")}>
-              <div
-                className={cn(
-                  "max-w-[80%] rounded-2xl px-4 py-2 text-sm leading-relaxed whitespace-pre-wrap",
-                  isUser
-                    ? "bg-primary text-primary-foreground"
-                    : "bg-muted text-foreground",
-                )}
-              >
-                {text}
+            <div key={message.id} className="space-y-1">
+              <div className={cn("flex", isUser ? "justify-end" : "justify-start")}>
+                <div
+                  className={cn(
+                    "max-w-[80%] rounded-2xl px-4 py-2 text-sm leading-relaxed whitespace-pre-wrap",
+                    isUser
+                      ? "bg-primary text-primary-foreground"
+                      : "bg-muted text-foreground",
+                  )}
+                >
+                  {text}
+                </div>
               </div>
+              {firstQuickAnswer && !isBusy && (
+                <p className="text-xs text-muted-foreground" data-testid="chat-full-report-cta">
+                  {QP_TEXT.cta[lang]}{" "}
+                  <a href={`/${language}/full-check`} className="font-medium text-primary underline-offset-2 hover:underline">
+                    {QP_TEXT.ctaLink[lang]}
+                  </a>
+                </p>
+              )}
             </div>
           );
         })}

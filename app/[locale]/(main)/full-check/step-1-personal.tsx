@@ -18,33 +18,10 @@ import { isPartnerFamilySponsorship, activeCountries, countryLabels, countryVisa
 import { useTranslation } from "@/contexts/language-context";
 import { renderVisaPathwayOptions } from "./full-check-waitlist-form";
 import { SituationFields } from "./situation-fields";
+import { INTAKE_COUNTRIES } from "@/lib/intake/fields";
 
-const COUNTRIES = [
-  { code: "AU", label: { en: "Australia", tr: "Avustralya", "zh-Hans": "澳大利亚" } },
-  { code: "TR", label: { en: "Turkey", tr: "Türkiye", "zh-Hans": "土耳其" } },
-  { code: "IN", label: { en: "India", tr: "Hindistan", "zh-Hans": "印度" } },
-  { code: "CN", label: { en: "China", tr: "Çin", "zh-Hans": "中国" } },
-  { code: "GB", label: { en: "United Kingdom", tr: "Birleşik Krallık", "zh-Hans": "英国" } },
-  { code: "US", label: { en: "United States", tr: "Amerika Birleşik Devletleri", "zh-Hans": "美国" } },
-  { code: "CA", label: { en: "Canada", tr: "Kanada", "zh-Hans": "加拿大" } },
-  { code: "NZ", label: { en: "New Zealand", tr: "Yeni Zelanda", "zh-Hans": "新西兰" } },
-  { code: "PK", label: { en: "Pakistan", tr: "Pakistan", "zh-Hans": "巴基斯坦" } },
-  { code: "BD", label: { en: "Bangladesh", tr: "Bangladeş", "zh-Hans": "孟加拉国" } },
-  { code: "NP", label: { en: "Nepal", tr: "Nepal", "zh-Hans": "尼泊尔" } },
-  { code: "PH", label: { en: "Philippines", tr: "Filipinler", "zh-Hans": "菲律宾" } },
-  { code: "VN", label: { en: "Vietnam", tr: "Vietnam", "zh-Hans": "越南" } },
-  { code: "ID", label: { en: "Indonesia", tr: "Endonezya", "zh-Hans": "印度尼西亚" } },
-  { code: "MY", label: { en: "Malaysia", tr: "Malezya", "zh-Hans": "马来西亚" } },
-  { code: "SG", label: { en: "Singapore", tr: "Singapur", "zh-Hans": "新加坡" } },
-  { code: "ZA", label: { en: "South Africa", tr: "Güney Afrika", "zh-Hans": "南非" } },
-  { code: "BR", label: { en: "Brazil", tr: "Brezilya", "zh-Hans": "巴西" } },
-  { code: "MX", label: { en: "Mexico", tr: "Meksika", "zh-Hans": "墨西哥" } },
-  { code: "DE", label: { en: "Germany", tr: "Almanya", "zh-Hans": "德国" } },
-  { code: "FR", label: { en: "France", tr: "Fransa", "zh-Hans": "法国" } },
-  { code: "IT", label: { en: "Italy", tr: "İtalya", "zh-Hans": "意大利" } },
-  { code: "ES", label: { en: "Spain", tr: "İspanya", "zh-Hans": "西班牙" } },
-  { code: "OTHER", label: { en: "Other", tr: "Diğer", "zh-Hans": "其他" } },
-] as const;
+// Shared with the in-chat quick profile card (lib/intake/fields.ts).
+const COUNTRIES = INTAKE_COUNTRIES;
 
 interface Step1Props {
   locale: string;

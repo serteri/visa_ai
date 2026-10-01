@@ -27,6 +27,7 @@ import {
 } from "@/lib/state-intelligence";
 import { canonicalizeOccupationInput, resolveOccupationDisplayName } from "@/lib/readiness/occupation-eligibility";
 import { computeInternalLeadTier } from "@/lib/readiness/internal-lead-tier";
+import { AU_STATE_CODES, isAuStateCode, isEnglishLevel, isQualificationLevel, parseExperienceYears } from "@/lib/intake/fields";
 import type { ReadinessInput, ReadinessReport } from "@/lib/readiness/types";
 import { generatePremiumStrategy } from "@/lib/ai/generate-premium-strategy";
 import { retrieveVisaContext } from "@/lib/ai/retrieve-visa-context";
@@ -131,16 +132,14 @@ export type AdminResetState = {
   deletedCount?: number;
 };
 
-const optionalExperienceYearsSchema = z.preprocess(
-  (value) => {
-    if (value === null || value === undefined) return undefined;
-    const normalized = String(value).trim();
-    if (!normalized) return undefined;
-    const parsed = Number(normalized);
-    return Number.isFinite(parsed) ? parsed : value;
+// The experience-years rule (empty = not entered, else 0-50) lives in lib/intake/fields.ts, shared with the in-chat
+// quick profile card; safeParse keeps the call sites below unchanged.
+const optionalExperienceYearsSchema = {
+  safeParse(value: unknown): { success: true; data: number | undefined } | { success: false } {
+    const r = parseExperienceYears(value);
+    return r.ok ? { success: true, data: r.value } : { success: false };
   },
-  z.number().min(0).max(50).optional()
-);
+};
 
 const optionalYesNoSchema = z.preprocess(
   (value) => {
@@ -699,9 +698,7 @@ export async function submitFullCheckWaitlist(
     if (raw) migrationGoals = JSON.parse(raw);
   } catch { /* ignore malformed JSON */ }
   const preferredStateRaw = String(formData.get("preferredState") ?? "").trim();
-  const preferredState = ["NSW", "VIC", "QLD", "SA", "WA", "TAS", "NT", "ACT"].includes(preferredStateRaw)
-    ? preferredStateRaw
-    : undefined;
+  const preferredState = isAuStateCode(preferredStateRaw) ? preferredStateRaw : undefined;
   const rawTargetCountry = String(formData.get("targetCountry") ?? "").trim();
   const mappedVisas = getVisaSubclassesForGoals(
     migrationGoals as MigrationGoalId[],
@@ -720,26 +717,10 @@ export async function submitFullCheckWaitlist(
   const occupationRaw = String(formData.get("occupation") ?? "").trim();
   const occupation = canonicalizeOccupationInput(occupationRaw);
   const englishLevelRaw = String(formData.get("englishLevel") ?? "").trim();
-  const englishLevelOptions = ["none", "competent", "proficient", "superior"];
-  const englishLevel = englishLevelOptions.includes(englishLevelRaw) ? englishLevelRaw : "";
+  const englishLevel = isEnglishLevel(englishLevelRaw) ? englishLevelRaw : "";
   const qualificationLevelRaw = String(formData.get("qualificationLevel") ?? "").trim();
-  const qualificationLevels: NonNullable<ReadinessInput["qualificationLevel"]>[] = [
-    "High School",
-    "Bachelor's Degree",
-    "Master's Degree (Coursework)",
-    "Master's Degree (Research)",
-    "PhD/Doctorate",
-    "PhD",
-    "Bachelor",
-    "Diploma",
-    "Certificate",
-    "Other",
-  ];
-  const qualificationLevel = qualificationLevels.includes(
-    qualificationLevelRaw as NonNullable<ReadinessInput["qualificationLevel"]>
-  )
-    ? (qualificationLevelRaw as ReadinessInput["qualificationLevel"])
-    : undefined;
+  // Field values shared with the in-chat quick profile card (lib/intake/fields.ts).
+  const qualificationLevel = isQualificationLevel(qualificationLevelRaw) ? qualificationLevelRaw : undefined;
   const annualSalaryAudRaw = String(formData.get("annualSalaryAud") ?? "").trim();
   const annualSalaryAud = annualSalaryAudRaw ? Number(annualSalaryAudRaw) : undefined;
   // Skills assessment status — captured from the form radio button
@@ -836,7 +817,7 @@ export async function submitFullCheckWaitlist(
       : undefined;
   const residenceStateRaw = String(formData.get("residenceState") ?? "").trim();
   const residenceState = String(formData.get("currentCountry") ?? "").trim() === "AU"
-    ? (["NSW", "VIC", "QLD", "SA", "WA", "TAS", "NT", "ACT"] as const).find((v) => v === residenceStateRaw)
+    ? AU_STATE_CODES.find((v) => v === residenceStateRaw)
     : undefined;
   const applicationStageRaw = String(formData.get("applicationStage") ?? "").trim();
   const applicationStage = (["planning", "skills_assessment_in_progress", "eoi_submitted", "invited"] as const).find((v) => v === applicationStageRaw) ?? "planning";

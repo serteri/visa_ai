@@ -55,6 +55,17 @@ const PARTNER_POINTS: Record<PartnerOption, number> = {
   none_or_unsure: 0,
 };
 
+/** The per-factor tables above, read-only, for quoting the points test (the AI assistant's engine facts). */
+export const POINTS_TABLES = {
+  age: AGE_POINTS,
+  english: ENGLISH_POINTS,
+  overseasEmployment: OVERSEAS_EMPLOYMENT_POINTS,
+  australianEmployment: AUSTRALIAN_EMPLOYMENT_POINTS,
+  education: EDUCATION_POINTS,
+  partner: PARTNER_POINTS,
+  minimumThreshold: MINIMUM_THRESHOLD,
+} as const;
+
 export function calculateAustraliaPoints(input: AustraliaPointsInput): AustraliaPointsResult {
   const age = AGE_POINTS[input.age];
   const english = ENGLISH_POINTS[input.english];

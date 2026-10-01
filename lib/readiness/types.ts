@@ -130,6 +130,8 @@ export type ReadinessInput = {
   residenceState?: AuStateCode;
   /** Where the applicant is in the process; wording only, never eligibility. Undefined = "planning". */
   applicationStage?: ApplicationStage;
+  /** The visa the applicant holds now (AI assistant quick profile: "500", "485", "none", ...). Context only. */
+  currentVisaSubclass?: string;
 };
 
 export type EmployerSponsorshipStatus = "none" | "job_offer" | "sponsored_482";

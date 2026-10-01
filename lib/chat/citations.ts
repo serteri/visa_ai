@@ -1,3 +1,4 @@
+import { citationLabel, humanSourceName } from "./source-names";
 import type { RetrievedChunk, SourceRef } from "./types";
 
 /**
@@ -7,13 +8,14 @@ import type { RetrievedChunk, SourceRef } from "./types";
  * document or page that was not retrieved for that message.
  */
 
-function usableSource(metadata: unknown): { source: string; page?: number } | null {
+function usableSource(metadata: unknown): { source: string; title: string; page?: number } | null {
   if (!metadata || typeof metadata !== "object") return null;
   const m = metadata as Record<string, unknown>;
   const source = typeof m.source === "string" ? m.source.trim() : "";
   if (!source) return null;
   const page = typeof m.page === "number" && Number.isInteger(m.page) && m.page > 0 ? m.page : undefined;
-  return { source, ...(page !== undefined ? { page } : {}) };
+  const category = typeof m.category === "string" ? m.category : undefined;
+  return { source, title: humanSourceName(source, category), ...(page !== undefined ? { page } : {}) };
 }
 
 /** Ids in retrieval order; chunks without a source in their metadata get no id (they cannot be cited). */
@@ -25,8 +27,9 @@ export function buildSourceCatalog(chunks: RetrievedChunk[]): Array<SourceRef | 
   });
 }
 
+/** "Home Affairs – Subclass 491, p. 1": the publisher and document, never the file name. */
 export function sourceLabel(ref: SourceRef): string {
-  return ref.page !== undefined ? `${ref.source}, p.${ref.page}` : ref.source;
+  return citationLabel(ref);
 }
 
 /** The chunks as the premium prompt shows them: id + document/page header, or an explicit "not citable" header. */

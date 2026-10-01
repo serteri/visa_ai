@@ -42,6 +42,10 @@ balances (counts and balances only, through `withProdReadOnly`).
 `chat_restore_tokens`, `chat_restore_requests`) with `CREATE TABLE IF NOT EXISTS`. It writes to production, so it needs an explicit
 go-ahead, and it must run before the code that reads those tables is deployed.
 
+`scripts/add-chat-profile-table.ts` creates `chat_visitor_profiles` (the AI assistant's quick profile card) with
+`CREATE TABLE IF NOT EXISTS`. It writes to production, so it needs an explicit go-ahead. Until it has run, saving the
+card returns `profile_unavailable` and chat answers are unaffected.
+
 `scripts/smoke-prod-report.ts` also targets production, but only over HTTPS (the live site, Stripe Checkout and the
 PDF route). It opens no database connection; see [smoke-prod-report.md](smoke-prod-report.md).
 

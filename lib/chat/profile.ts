@@ -1,5 +1,7 @@
 import type { ReadinessInput, ReadinessReport } from "@/lib/readiness/types";
 
+import { isMissingTableError, type QuickProfileStore } from "./quick-profile";
+
 /**
  * The compact profile that goes into the PREMIUM system prompt. It is built from exactly one stored report and only
  * for a visitor who proved (restore link) that they control the report's email -- see loadVisitorProfile.
@@ -23,12 +25,16 @@ export function buildProfileSummary(
   reportJson: unknown,
   inputJson: unknown,
   createdAt?: Date,
+  origin: "report" | "quick" = "report",
 ): string | null {
   if (!reportJson || typeof reportJson !== "object") return null;
   const report = reportJson as Partial<ReadinessReport>;
   const input = (inputJson && typeof inputJson === "object" ? inputJson : {}) as Partial<ReadinessInput>;
   const lines: string[] = [];
 
+  if (input.currentVisaSubclass) {
+    lines.push(`Current visa: ${input.currentVisaSubclass === "none" ? "no Australian visa / outside Australia" : input.currentVisaSubclass === "other" ? "another visa" : `subclass ${clip(input.currentVisaSubclass, 8)}`}`);
+  }
   const occupation = clip(input.occupation ?? report.occupationIndication?.occupation, 120);
   const code = clip(report.premiumSections?.historicalInvitationTrends?.occupationCode, 12) || clip(input.nocCode, 12);
   if (occupation) lines.push(`Occupation: ${occupation}${code ? ` (code ${code})` : " (code not recorded)"}`);
@@ -67,20 +73,49 @@ export function buildProfileSummary(
   if (gaps.length) lines.push(`Benchmark gaps: ${gaps.slice(0, 5).join(" | ")}`);
 
   if (lines.length === 0) return null;
-  const header = `Source: the visitor's own stored LogiVisa report${createdAt ? ` (generated ${createdAt.toISOString().slice(0, 10)})` : ""}.`;
+  const header = origin === "quick"
+    ? `Source: the LogiVisa report engine, run on the visitor's quick profile card${createdAt ? ` (saved ${createdAt.toISOString().slice(0, 10)})` : ""}.`
+    : `Source: the visitor's own stored LogiVisa report${createdAt ? ` (generated ${createdAt.toISOString().slice(0, 10)})` : ""}.`;
   return [header, ...lines].join("\n").slice(0, MAX_SUMMARY_CHARS);
 }
+
+export type LoadedProfile = { summary: string; source: "report" | "quick"; input: Partial<ReadinessInput> };
 
 /**
  * The summary for THIS visitor only: reports are looked up by the visitor's own verified emails, never by anything
  * else. A visitor with no verified email, or whose email has no report, gets null (general answers).
  */
 export async function loadVisitorProfile(store: ProfileStore, visitorId: string): Promise<string | null> {
+  return (await loadLinkedReport(store, visitorId))?.summary ?? null;
+}
+
+/** The visitor's linked report (by a verified email), summarised; null without one. */
+export async function loadLinkedReport(store: ProfileStore, visitorId: string): Promise<LoadedProfile | null> {
   const emails = await store.verifiedEmailsForVisitor(visitorId);
   let newest: { reportJson: unknown; inputJson: unknown; createdAt: Date } | null = null;
   for (const email of emails) {
     const row = await store.latestReportForEmail(email);
     if (row && (!newest || row.createdAt > newest.createdAt)) newest = row;
   }
-  return newest ? buildProfileSummary(newest.reportJson, newest.inputJson, newest.createdAt) : null;
+  if (!newest) return null;
+  const summary = buildProfileSummary(newest.reportJson, newest.inputJson, newest.createdAt, "report");
+  return summary ? { summary, source: "report", input: (newest.inputJson ?? {}) as Partial<ReadinessInput> } : null;
+}
+
+/**
+ * The profile the premium answer uses: the linked report when there is one, otherwise the quick profile card's engine
+ * result. A missing quick-profile table (not created yet) reads as "no quick profile".
+ */
+export async function loadChatProfile(store: ProfileStore, quick: QuickProfileStore | undefined, visitorId: string): Promise<LoadedProfile | null> {
+  const linked = await loadLinkedReport(store, visitorId);
+  if (linked || !quick) return linked;
+  let row: Awaited<ReturnType<QuickProfileStore["get"]>> = null;
+  try {
+    row = await quick.get(visitorId);
+  } catch (err) {
+    if (!isMissingTableError(err)) throw err;
+  }
+  if (!row) return null;
+  const summary = buildProfileSummary(row.reportJson, row.inputJson, row.updatedAt, "quick");
+  return summary ? { summary, source: "quick", input: (row.inputJson ?? {}) as Partial<ReadinessInput> } : null;
 }

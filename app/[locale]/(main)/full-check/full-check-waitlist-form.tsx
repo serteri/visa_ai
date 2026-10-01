@@ -23,7 +23,8 @@ import { LeadMagnetForm } from "@/components/LeadMagnetForm";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { Badge } from "@/components/ui/badge";
 import nocListRaw from "@/src/data/countries/ca/noc-list.json";
-import anzscoListRaw from "@/src/data/anzsco-list.json";
+import { getLocalizedAnzscoTitle, resolveAnzscoEntry, searchAnzsco, type AnzscoEntry } from "@/lib/intake/anzsco-search";
+import { AU_ENGLISH_LEVEL_OPTIONS, EDUCATION_OPTIONS, optionLabel } from "@/lib/intake/fields";
 import Fuse from "fuse.js";
 
 import { Step1Personal } from "./step-1-personal";
@@ -37,7 +38,6 @@ function showsCourseFields(visaInterest: string): boolean {
 }
 
 type NocEntry = { code: string; title: string; teer: number };
-type AnzscoEntry = { code: string; title: string; title_tr?: string; title_zh?: string; keywords?: string[]; isOnSkilledList?: boolean };
 
 const NOC_ALIAS_MAP_STATIC: Record<string, string[]> = {
   physician: ["doctor", "medical doctor", "doc", "gp", "surgeon", "pediatrician", "psychiatrist", "internist", "specialist", "md", "family doctor"],
@@ -88,56 +88,7 @@ function searchNoc(query: string): NocEntry[] {
   return merged.slice(0, 14);
 }
 
-const ANZSCO_INDEX = (anzscoListRaw as any[]).map((row) => ({ code: row.code, title: row.title_en || row.title || "", title_tr: row.title_tr, title_zh: row.title_zh, keywords: row.keywords || [] })) as AnzscoEntry[];
-const ANZSCO_SEARCH_ALIAS_MAP: Record<string, string[]> = { doktor: ["pratisyen hekim", "uzman hekim"], doctor: ["general practitioner", "medical practitioners"], hekim: ["pratisyen hekim", "uzman hekim"] };
-
-function foldLookupValue(v?: string): string {
-  return (v ?? "").trim().toLowerCase().replace(/[ıİ]/g, "i").replace(/[şŞ]/g, "s").replace(/[ğĞ]/g, "g").replace(/[çÇ]/g, "c").replace(/[öÖ]/g, "o").replace(/[üÜ]/g, "u").normalize("NFD").replace(/[̀-ͯ]/g, "").replace(/[^\p{L}\p{N}]+/gu, " ").trim();
-}
-
-function getLocalizedAnzscoTitle(entry: AnzscoEntry, locale: string): string {
-  if (locale === "tr") return entry.title_tr ?? entry.title;
-  if (locale === "zh-Hans") return entry.title_zh ?? entry.title;
-  return entry.title;
-}
-
-function resolveAnzscoEntry(value?: string): AnzscoEntry | undefined {
-  const trimmed = (value ?? "").trim();
-  if (!trimmed) return undefined;
-  const explicitCode = trimmed.match(/(\d{6})/)?.[1];
-  if (explicitCode) { const m = ANZSCO_INDEX.find((e) => e.code === explicitCode); if (m) return m; }
-  const folded = foldLookupValue(trimmed);
-  if (!folded) return undefined;
-  return ANZSCO_INDEX.find((e) => [e.title, e.title_tr, e.title_zh, `${e.title} (${e.code})`, `${e.title_tr ?? ""} (${e.code})`, `${e.title_zh ?? ""} (${e.code})`].some((c) => foldLookupValue(c) === folded));
-}
-
-function searchAnzsco(query: string, locale: string): AnzscoEntry[] {
-  const fq = foldLookupValue(query);
-  if (fq.length < 2) return [];
-  const aliasTerms = ANZSCO_SEARCH_ALIAS_MAP[fq] ?? [];
-  const searchTerms = [fq, ...aliasTerms.map((t) => foldLookupValue(t)).filter(Boolean)];
-  const maxResults = locale === "tr" || locale === "zh-Hans" ? 80 : 14;
-  return ANZSCO_INDEX.map((entry) => {
-    const lt = getLocalizedAnzscoTitle(entry, locale);
-    const flt = foldLookupValue(lt), fe = foldLookupValue(entry.title), fc = foldLookupValue(entry.code);
-    let best = Infinity;
-    for (const term of searchTerms) {
-      if (!term) continue;
-      if (fc === term) best = Math.min(best, 0);
-      if (flt === term) best = Math.min(best, 1);
-      if (fe === term) best = Math.min(best, 2);
-      if (flt.startsWith(term)) best = Math.min(best, 3);
-      if (fe.startsWith(term)) best = Math.min(best, 4);
-      if (flt.includes(term)) best = Math.min(best, 5);
-      if (fe.includes(term)) best = Math.min(best, 6);
-      if (entry.keywords?.some((kw) => foldLookupValue(kw).includes(term))) best = Math.min(best, 7);
-    }
-    return { entry, score: best };
-  }).filter(({ score }) => Number.isFinite(score)).sort((a, b) => a.score - b.score).slice(0, maxResults).map(({ entry }) => {
-    const record = findOccupationRecord(entry.code);
-    return { ...entry, isOnSkilledList: record ? getSkilledListMembership(record.anzsco_code).length > 0 : false };
-  });
-}
+// ANZSCO occupation search: shared with the in-chat quick profile card (lib/intake/anzsco-search.ts).
 
 function trackGaEvent(name: string, params?: Record<string, string | number | boolean | null | undefined>) {
   if (typeof window === "undefined") return;
@@ -326,20 +277,10 @@ export function FullCheckWaitlistForm({
     { value: "clb8", label: "CLB 8" },
     { value: "clb9", label: "CLB 9" },
     { value: "clb10", label: "CLB 10" },
-  ] : [
-    { value: "none", label: txt("Test almadım", "No test", "未测试") },
-    { value: "competent", label: txt("Competent (IELTS 6)", "Competent (IELTS 6)", "胜任 (雅思6)") },
-    { value: "proficient", label: txt("Proficient (IELTS 7)", "Proficient (IELTS 7)", "熟练 (雅思7)") },
-    { value: "superior", label: txt("Superior (IELTS 8+)", "Superior (IELTS 8+)", "优秀 (雅思8+)") },
-  ];
+  ] : AU_ENGLISH_LEVEL_OPTIONS.map((o) => ({ value: o.value, label: optionLabel(o, locale) }));
 
-  const educationOptions = [
-    { value: "High School", label: txt("Lise", "High School", "高中") },
-    { value: "Diploma", label: txt("Diploma / Trade", "Diploma / Trade", "文凭/技工") },
-    { value: "Bachelor", label: txt("Lisans", "Bachelor's Degree", "学士") },
-    { value: "Master's Degree (Research)", label: txt("Yüksek Lisans (Araştırma)", "Master's (Research)", "研究型硕士") },
-    { value: "PhD", label: txt("Doktora", "PhD/Doctorate", "博士") },
-  ];
+  // Shared with the in-chat quick profile card (lib/intake/fields.ts).
+  const educationOptions = EDUCATION_OPTIONS.map((o) => ({ value: o.value, label: optionLabel(o, locale) }));
 
   const sponsorFamilyOptions = selectedCountry === "CA" ? [
     { value: "Single / No Spouse", label: txt("Bekar / Eş Yok", "Single / No Spouse", "单身") },

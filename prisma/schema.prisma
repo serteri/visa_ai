@@ -834,6 +834,19 @@ model ChatCreditLink {
   @@map("chat_credit_links")
 }
 
+// The in-chat quick profile card (components/ChatQuickProfileCard.tsx): the intake fields a premium visitor without a
+// linked report entered, and the report engine's result for them. One row per visitor; editing replaces it.
+// Created by scripts/add-chat-profile-table.ts (production write: needs an explicit go-ahead before deploy).
+model ChatVisitorProfile {
+  visitorId  String   @id @map("visitor_id")
+  inputJson  Json     @map("input_json")
+  reportJson Json     @map("report_json")
+  createdAt  DateTime @default(now()) @map("created_at")
+  updatedAt  DateTime @updatedAt @map("updated_at")
+
+  @@map("chat_visitor_profiles")
+}
+
 // One-time, expiring restore links. Only the SHA-256 of the token is stored.
 model ChatRestoreToken {
   id        String    @id @default(uuid())

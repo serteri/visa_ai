@@ -7,8 +7,13 @@ import { getVisitorContext } from "@/lib/visitor-tracking";
 
 import { CHAT_MODEL_ID, EMBEDDING_MODEL_ID, getPremiumChatModelId } from "./config";
 import { prismaCreditStore } from "./credits";
+import { dropSupersededChunks } from "./document-versions";
+import { getStateIntelligenceMap, getStateNominationConfigMap } from "@/lib/state-intelligence";
+
+import type { LiveStateData } from "./engine-facts";
 import type { ChatDeps } from "./handler";
 import type { ProfileStore } from "./profile";
+import type { QuickProfileStore } from "./quick-profile";
 import type { RetrievedChunk } from "./types";
 
 // These 4 files are occupation-code lookup tables (ANZSCO/ROL/STSOL rows), not visa-detail content -- each row
@@ -51,23 +56,38 @@ async function retrieve(searchString: string, counts: { primary: number; occupat
   // $queryRaw (tagged template, not $queryRawUnsafe) so the vector literal and source list are bound as parameters
   // rather than interpolated into the SQL string. Two separate queries (see OCCUPATION_LIST_SOURCES above) so the
   // occupation-list noise can never fill more than its reserved slots.
+  // Superseded document versions (lib/chat/document-versions.ts) are never retrieved: extra candidates are fetched
+  // and the older versions dropped before taking the usual number, so the answer only sees the latest document.
+  const over = (n: number) => n * SUPERSEDED_OVERFETCH;
   const [primaryChunks, occupationListChunks] = await Promise.all([
     prisma.$queryRaw<RetrievedChunk[]>`
       SELECT content, metadata
       FROM document_chunks
       WHERE metadata->>'source' NOT IN (${Prisma.join(OCCUPATION_LIST_SOURCES)})
       ORDER BY embedding <=> ${vectorLiteral}::vector
-      LIMIT ${counts.primary}
+      LIMIT ${over(counts.primary)}
     `,
     prisma.$queryRaw<RetrievedChunk[]>`
       SELECT content, metadata
       FROM document_chunks
       WHERE metadata->>'source' IN (${Prisma.join(OCCUPATION_LIST_SOURCES)})
       ORDER BY embedding <=> ${vectorLiteral}::vector
-      LIMIT ${counts.occupation}
+      LIMIT ${over(counts.occupation)}
     `,
   ]);
-  return [...primaryChunks, ...occupationListChunks];
+  return selectLatestChunks(primaryChunks, occupationListChunks, counts);
+}
+
+/** How many candidates are fetched per kept chunk, so dropping superseded versions still leaves enough. */
+const SUPERSEDED_OVERFETCH = 3;
+
+/** Drops superseded document versions, then keeps the usual number of each kind, in similarity order. */
+export function selectLatestChunks(
+  primary: RetrievedChunk[],
+  occupation: RetrievedChunk[],
+  counts: { primary: number; occupation: number },
+): RetrievedChunk[] {
+  return [...dropSupersededChunks(primary).slice(0, counts.primary), ...dropSupersededChunks(occupation).slice(0, counts.occupation)];
 }
 
 export const prismaProfileStore: ProfileStore = {
@@ -84,11 +104,29 @@ export const prismaProfileStore: ProfileStore = {
   },
 };
 
+export const prismaQuickProfileStore: QuickProfileStore = {
+  async get(visitorId) {
+    return prisma.chatVisitorProfile.findUnique({ where: { visitorId }, select: { inputJson: true, reportJson: true, updatedAt: true } });
+  },
+  async save(visitorId, input, report) {
+    const data = { inputJson: JSON.parse(JSON.stringify(input)), reportJson: JSON.parse(JSON.stringify(report)) };
+    await prisma.chatVisitorProfile.upsert({ where: { visitorId }, create: { visitorId, ...data }, update: data });
+  },
+};
+
+/** The live admin / scraper state status, read the same way the report's intake action reads it. */
+export async function liveStateData(): Promise<LiveStateData> {
+  const [stateIntelligence, stateNominationConfig] = await Promise.all([getStateIntelligenceMap(), getStateNominationConfigMap()]);
+  return { stateIntelligence, stateNominationConfig } as LiveStateData;
+}
+
 export function realChatDeps(): ChatDeps {
   return {
     getVisitor: (req) => getVisitorContext(req),
     credits: prismaCreditStore(prisma),
     profiles: prismaProfileStore,
+    quickProfiles: prismaQuickProfileStore,
+    liveState: liveStateData,
     premiumModelId: getPremiumChatModelId(),
     expandQuery: expandQueryKeywords,
     retrieve,
@@ -97,14 +135,13 @@ export function realChatDeps(): ChatDeps {
         model: openai.chat(opts.modelId),
         system: opts.system,
         messages: await convertToModelMessages(opts.messages),
-        onFinish: () => opts.onFinish(),
+        onFinish: ({ text }) => opts.onFinish(text),
         onError: () => opts.onFailure(),
         onAbort: () => opts.onFailure(),
       });
+      const metadata = opts.sources || opts.profileSource !== undefined ? { sources: opts.sources, profileSource: opts.profileSource ?? null } : undefined;
       return result.toUIMessageStreamResponse(
-        opts.sources
-          ? { messageMetadata: ({ part }) => (part.type === "start" ? { sources: opts.sources } : undefined) }
-          : undefined,
+        metadata ? { messageMetadata: ({ part }) => (part.type === "start" ? metadata : undefined) } : undefined,
       );
     },
   };

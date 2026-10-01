@@ -7,8 +7,10 @@ export interface RetrievedChunk {
 export interface SourceRef {
   /** "S1", "S2", ... -- the marker the model writes after a claim and the client resolves. */
   id: string;
-  /** Source document (file name) from the chunk metadata. */
+  /** Source document (file name) from the chunk metadata. Never shown to the reader. */
   source: string;
+  /** Human-readable publisher and document ("Home Affairs – Subclass 491"), from lib/chat/source-names.ts. */
+  title?: string;
   /** Page from the chunk metadata; absent for sources with no pages (spreadsheets, markdown). */
   page?: number;
 }

@@ -15,7 +15,8 @@ import { DEFAULT_PREMIUM_CHAT_MODEL, CHAT_MODEL_ID, getPremiumChatModelId } from
 import type { CreditStore } from "../lib/chat/credits";
 import { handleChat, type ChatDeps, type ChatVisitorLike, type StreamRequest } from "../lib/chat/handler";
 import { buildProfileSummary, loadVisitorProfile, type ProfileStore } from "../lib/chat/profile";
-import { buildSystemPrompt } from "../lib/chat/prompts";
+import { buildEngineFacts } from "../lib/chat/engine-facts";
+import { GUARDRAILS_TEXT, buildSystemPrompt } from "../lib/chat/prompts";
 import {
   RESTORE_MAX_PER_EMAIL,
   RESTORE_MAX_PER_IP,
@@ -246,10 +247,14 @@ async function main() {
   // ── 2. free path unchanged ───────────────────────────────────────────────
   section("2. Free path unchanged");
   {
+    // The free prompt now also carries the report engine's facts (one source of truth, lib/chat/engine-facts.ts):
+    // guardrails, then [ENGINE FACTS], then the references -- no profile, no citation rules.
     const sample = [{ content: "Fee is AUD 4,640.", metadata: {} }, { content: "Age limit 44.", metadata: {} }];
-    const sha = (s: string) => createHash("sha256").update(s).digest("hex");
-    check(sha(buildSystemPrompt(sample)) === "e173ec236fba61f62f739ab75b3ded3053a8c689aaf5479e2008667113f8e924", "free system prompt is byte-identical to the one app/api/knowledge-chat produced before this change (golden hash)");
-    check(sha(buildSystemPrompt([])) === "bc40474257a7873f2a68331e9c688be100997f31e14ca783614b796925bff5d8", "free system prompt with no references is byte-identical too");
+    const facts = buildEngineFacts();
+    const p = buildSystemPrompt(sample, { engineFacts: facts });
+    check(p.startsWith(GUARDRAILS_TEXT) && p.includes(facts) && p.indexOf(facts) < p.lastIndexOf("[REFERANS BİLGİLERİ]:") && p.includes("[1] Fee is AUD 4,640.") && p.includes("[2] Age limit 44."), "free system prompt: guardrails, engine facts, then the numbered references");
+    check(buildSystemPrompt([], { engineFacts: facts }).includes("No matching reference material was found for this question."), "free system prompt with no references says so");
+    void createHash;
 
     const w = new World();
     w.visitor("v1", { messageCount: 2, premiumCredits: 0 });
@@ -259,8 +264,8 @@ async function main() {
     check(res.status === 200 && c.modelId === "gpt-4o-mini", "free message uses gpt-4o-mini");
     check(c.retrieval.primary === 8 && c.retrieval.occupation === 2, "free retrieval depth stays 8 + 2");
     check(c.sources === undefined && !c.system.includes("[KULLANICI PROFİLİ]") && !c.system.includes("PREMIUM KAYNAK"), "free path: no sources metadata, no profile, no citation rules");
-    check(c.system === buildSystemPrompt(CHUNKS), "free path sends exactly buildSystemPrompt(chunks)");
-    await c.onFinish();
+    check(c.system === buildSystemPrompt(CHUNKS, { engineFacts: buildEngineFacts() }), "free path sends exactly buildSystemPrompt(chunks, engine facts)");
+    await c.onFinish("");
     check(w.visitors.get("v1")!.messageCount === 3 && w.visitors.get("v1")!.premiumCredits === 0, "free message counts once, after the reply");
     w.visitor("v1", { messageCount: 5 });
     const blocked = await handleChat(req([userMsg("hi")]), deps);
@@ -289,7 +294,8 @@ async function main() {
     check(c.system.includes("benchmark 85") && c.system.includes("gap 5"), "profile: benchmark gaps");
     check(!c.system.includes("answers are general") && !c.system.includes("yanıtların genel olduğunu"), "matched profile: no 'general answers' note");
     check(c.sources?.length === 3 && c.sources[0].id === "S1" && c.sources[0].source === "Subclass 189.pdf" && c.sources[0].page === 7, "premium sends the citation catalogue from the retrieved chunk metadata");
-    check(c.system.includes("[S1] (Subclass 189.pdf, p.7)") && c.system.includes("[S3] (Skilled occupation list.xlsx)") && c.system.includes("[no citable source]"), "premium references carry id + document/page, and unciteable chunks are marked");
+    // Readable source names (lib/chat/source-names.ts), never file names.
+    check(c.system.includes("[S1] (Home Affairs – Subclass 189, p. 7)") && c.system.includes("[S3] (Home Affairs – Skilled occupation list)") && c.system.includes("[no citable source]") && !/\[S\d+\] \([^)]*\.(pdf|xlsx)/i.test(c.system), "premium references carry id + readable document name/page, and unciteable chunks are marked");
     check(c.system.includes("PREMIUM KAYNAK KURALLARI"), "premium prompt has the citation rules");
   }
   {
@@ -342,7 +348,7 @@ async function main() {
     const v = validateCitations(answer, refs);
     check(v.valid.join() === "S1,S2,S3" && v.invalid.join() === "S9", "validator flags a marker that is not in the retrieved set (S9) and accepts the rest");
     const rendered = renderCitations(answer, refs);
-    check(rendered.includes("[Subclass 189.pdf, p.7]") && rendered.includes("[Points test.pdf, p.2]") && rendered.includes("[Skilled occupation list.xlsx]"), "rendered citations show the retrieved document and page");
+    check(rendered.includes("[Home Affairs – Subclass 189, p. 7]") && rendered.includes("[Points test, p. 2]") && rendered.includes("[Home Affairs – Skilled occupation list]") && !/\.(pdf|xlsx)\b/i.test(rendered), "rendered citations show the readable document name and page (no file names)");
     check(!rendered.includes("S9") && !/\[S\d+\]/.test(rendered), "an invented marker is dropped, never shown as a source");
     check(!/\[S\d+\]/.test(renderCitations("Fee [S1]", [])), "with no retrieved sources every marker is dropped");
     // a page the model might type itself is never trusted: only ids are resolved

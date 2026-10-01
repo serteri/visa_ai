@@ -83,6 +83,12 @@ jobs:
       - name: Webhook grants only on paid / no_payment_required / async succeeded
         run: npm run test:webhook-payment-status
 
+      # AI assistant grounding: only the latest version of a knowledge document is retrieved (manifest drift check
+      # SKIPPED here -- data/knowledge is gitignored), engine facts in both prompts, fee / gate / state / disclaimer
+      # conflicts flagged, quick profile card -> report engine -> prompt, readable citation names, subclass 500 guidance.
+      - name: AI assistant grounding (one source of truth with the report)
+        run: npm run test:chat-grounding
+
       # Real occupation <-> state occupation-list matching (lib/state-nomination/occupation-match.ts) over
       # the git-committed src/data/state-occupation-lists/*.json -- pure data/function tests, no database.
       - name: Occupation <-> state occupation-list match tests
