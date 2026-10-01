@@ -8,6 +8,9 @@ import { Lock } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
+import { ChatRestoreCredits } from "@/components/ChatRestoreCredits";
+import { renderCitations } from "@/lib/chat/citations";
+import type { SourceRef } from "@/lib/chat/types";
 import { useTranslation } from "@/contexts/language-context";
 import { cn } from "@/lib/utils";
 
@@ -16,6 +19,8 @@ const PREMIUM_UPGRADE_PATH = "/pricing";
 
 interface KnowledgeChatUIProps {
   className?: string;
+  /** From ?restore=<token> on the page URL (the emailed "Restore my credits" link). */
+  restoreToken?: string;
 }
 
 function isLimitReachedError(error: Error): boolean {
@@ -27,7 +32,7 @@ function isLimitReachedError(error: Error): boolean {
   }
 }
 
-export function KnowledgeChatUI({ className }: KnowledgeChatUIProps) {
+export function KnowledgeChatUI({ className, restoreToken }: KnowledgeChatUIProps) {
   const { t } = useTranslation();
   const [input, setInput] = useState("");
   const [isLimitReached, setIsLimitReached] = useState(false);
@@ -38,6 +43,10 @@ export function KnowledgeChatUI({ className }: KnowledgeChatUIProps) {
   const [vipCode, setVipCode] = useState("");
   const [vipCodeError, setVipCodeError] = useState<string | null>(null);
   const [isUnlockingVip, setIsUnlockingVip] = useState(false);
+  // "Restore my credits" link target (?restore=<token>): confirmed only by an explicit click, so a mail scanner
+  // that merely opens the link cannot use up the one-time token.
+  const [restoreState, setRestoreState] = useState<"idle" | "working" | "done" | "failed">("idle");
+  const [restoredCredits, setRestoredCredits] = useState(0);
 
   useEffect(() => {
     fetch("/api/visitor")
@@ -50,6 +59,31 @@ export function KnowledgeChatUI({ className }: KnowledgeChatUIProps) {
         // visitorId; the /pricing redirect path doesn't need one.
       });
   }, []);
+
+  const handleRestoreConfirm = async () => {
+    if (!restoreToken) return;
+    setRestoreState("working");
+    try {
+      const res = await fetch("/api/chat/restore/confirm", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ token: restoreToken }),
+      });
+      const data = (await res.json().catch(() => ({}))) as { ok?: boolean; credits?: number };
+      if (!res.ok || !data.ok) {
+        setRestoreState("failed");
+        return;
+      }
+      setRestoredCredits(data.credits ?? 0);
+      setRestoreState("done");
+      setIsLimitReached(false);
+      const url = new URL(window.location.href);
+      url.searchParams.delete("restore");
+      window.history.replaceState(null, "", url.toString());
+    } catch {
+      setRestoreState("failed");
+    }
+  };
 
   const transport = useMemo(
     () => new DefaultChatTransport({ api: "/api/knowledge-chat" }),
@@ -147,12 +181,37 @@ export function KnowledgeChatUI({ className }: KnowledgeChatUIProps) {
         className,
       )}
     >
+      {restoreToken && restoreState !== "done" && (
+        <div className="space-y-2 border-b border-border bg-muted/50 p-3 text-center text-sm">
+          <p>
+            {restoreState === "failed"
+              ? t("chat.restore.invalidLink", "This restore link is invalid, expired or already used. Request a new one.")
+              : t("chat.restore.confirmPrompt", "Restore your credits on this device?")}
+          </p>
+          {restoreState !== "failed" && (
+            <Button size="sm" onClick={handleRestoreConfirm} disabled={restoreState === "working"}>
+              {restoreState === "working"
+                ? t("chat.verifying", "Verifying...")
+                : t("chat.restore.confirmButton", "Restore credits to this device")}
+            </Button>
+          )}
+        </div>
+      )}
+      {restoreState === "done" && (
+        <p role="status" className="border-b border-border bg-muted/50 p-3 text-center text-sm">
+          {t("chat.restore.done", "Credits restored. Credits available now: {count}").replace("{count}", String(restoredCredits))}
+        </p>
+      )}
       <div className="flex-1 space-y-3 overflow-y-auto p-4">
         {messages.map((message) => {
-          const text = message.parts
+          const rawText = message.parts
             .filter((part) => part.type === "text")
             .map((part) => part.text)
             .join("\n");
+          // Premium answers carry [S1]-style markers; the document / page shown comes from the retrieval metadata
+          // the server sent with the message, and a marker not in that list is dropped.
+          const sources = (message.metadata as { sources?: SourceRef[] } | undefined)?.sources;
+          const text = message.role === "assistant" && sources ? renderCitations(rawText, sources) : rawText;
           const isUser = message.role === "user";
 
           return (
@@ -213,6 +272,12 @@ export function KnowledgeChatUI({ className }: KnowledgeChatUIProps) {
         </Button>
       </form>
 
+      {!isLimitReached && (
+        <div className="border-t border-border px-3 py-2 text-center">
+          <ChatRestoreCredits />
+        </div>
+      )}
+
       {isLimitReached && (
         <div className="absolute inset-0 flex flex-col items-center justify-center gap-4 bg-background/80 p-6 text-center backdrop-blur-sm">
           <div className="flex h-12 w-12 items-center justify-center rounded-full bg-primary/10 text-primary">
@@ -272,6 +337,8 @@ export function KnowledgeChatUI({ className }: KnowledgeChatUIProps) {
                 </Button>
               </div>
             )}
+
+            <ChatRestoreCredits />
           </div>
         </div>
       )}

@@ -144,6 +144,14 @@ jobs:
       - name: Nomination availability in 190 / 491 friction
         run: npm run test:nomination-availability
 
+      # Paid chat (lib/chat/*): one credit per message (isPremium never bypasses), refunds, free path byte-identical,
+      # premium model / retrieval depth / profile / citations, citations only from retrieved chunk metadata, the
+      # profile belongs to the requesting visitor, and the restore-by-email flow (valid, expired, reused, rate limit,
+      # identical response for unknown emails). Handler, restore and citation code are real; stores, model and mailer
+      # are in-memory fakes -- no database, no network.
+      - name: Chat credits, premium path, citations and restore flow
+        run: npm run test:chat-credits
+
       # Medical registration data (src/data/health-registration/*.json, extracted from the Medical Board / Ahpra
       # "Pathways to registration for international medical graduates" document). The regenerate-and-diff drift
       # check needs the gitignored source PDF and is SKIPPED here; the committed-file invariants (fee schedule

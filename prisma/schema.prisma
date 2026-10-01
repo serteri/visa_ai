@@ -787,9 +787,9 @@ model ChatVisitor {
   messageCount   Int           @default(0) @map("message_count")
   isPremium      Boolean       @default(false) @map("is_premium")
   // Pay-as-you-go credit balance from one-time Stripe purchases (see
-  // app/[locale]/pricing). Decremented per premium message once the free
-  // messageCount limit is hit; isPremium above stays reserved for a
-  // separate unlimited/subscription grant.
+  // app/[locale]/pricing). Every message sent while this is > 0 is a premium
+  // message and costs 1 credit (lib/chat/handler.ts). isPremium no longer
+  // grants anything: it is not read by the chat route.
   premiumCredits Int           @default(0) @map("premium_credits")
   createdAt      DateTime      @default(now()) @map("created_at")
   updatedAt      DateTime      @updatedAt @map("updated_at")
@@ -801,6 +801,62 @@ model ChatVisitor {
   @@index([ipAddress, userAgent])
   @@index([fingerprint])
   @@map("chat_visitors")
+}
+
+// ── AI Chatbot: purchased credits <-> checkout email, restore-by-email ─────
+// Created by scripts/add-chat-credit-tables.ts (CREATE TABLE IF NOT EXISTS), not by `prisma db push`.
+
+// One row per credited Stripe Checkout session: idempotency for webhook redelivery plus an audit trail.
+model ChatCreditPurchase {
+  id              String   @id @default(uuid())
+  stripeSessionId String   @unique @map("stripe_session_id")
+  email           String?
+  visitorId       String   @map("visitor_id")
+  credits         Int
+  createdAt       DateTime @default(now()) @map("created_at")
+
+  @@index([email])
+  @@map("chat_credit_purchases")
+}
+
+// Which visitors have held credits bought with an email. verified = the visitor proved it controls the inbox
+// (opened a restore link); a bare checkout email is typed by the buyer and is NOT proof of ownership, so only
+// verified links unlock the stored-report profile in premium answers.
+model ChatCreditLink {
+  id        String   @id @default(uuid())
+  email     String
+  visitorId String   @map("visitor_id")
+  verified  Boolean  @default(false)
+  createdAt DateTime @default(now()) @map("created_at")
+
+  @@unique([email, visitorId])
+  @@index([visitorId])
+  @@map("chat_credit_links")
+}
+
+// One-time, expiring restore links. Only the SHA-256 of the token is stored.
+model ChatRestoreToken {
+  id        String    @id @default(uuid())
+  tokenHash String    @unique @map("token_hash")
+  email     String
+  expiresAt DateTime  @map("expires_at")
+  usedAt    DateTime? @map("used_at")
+  createdAt DateTime  @default(now()) @map("created_at")
+
+  @@map("chat_restore_tokens")
+}
+
+// Every restore request (known email or not) -- the rate limiter counts these, so limiting cannot leak whether an
+// email has credits.
+model ChatRestoreRequest {
+  id        String   @id @default(uuid())
+  email     String
+  ipAddress String?  @map("ip_address")
+  createdAt DateTime @default(now()) @map("created_at")
+
+  @@index([email, createdAt])
+  @@index([ipAddress, createdAt])
+  @@map("chat_restore_requests")
 }
 
 model ChatSession {

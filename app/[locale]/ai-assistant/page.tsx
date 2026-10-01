@@ -9,6 +9,7 @@ import { KnowledgeChatUI } from "@/components/KnowledgeChatUI";
 
 type PageProps = {
   params: Promise<{ locale: string }>;
+  searchParams?: Promise<{ restore?: string | string[] }>;
 };
 
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
@@ -30,8 +31,11 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 // Still lives under [locale] (not a top-level app/ai-assistant route) so it
 // resolves through proxy.ts's locale rewrite like every other page instead
 // of 404ing -- see the "Rewrite all clean English paths" block in proxy.ts.
-export default async function AiAssistantPage({ params }: PageProps) {
+export default async function AiAssistantPage({ params, searchParams }: PageProps) {
   const { locale } = await params;
+  // The emailed "Restore my credits" link lands here as ?restore=<token>; the chat UI confirms it on a click.
+  const restoreParam = (await searchParams)?.restore;
+  const restoreToken = typeof restoreParam === "string" && restoreParam ? restoreParam : undefined;
   const translations = await getTranslations(locale as Locale);
 
   return (
@@ -59,7 +63,7 @@ export default async function AiAssistantPage({ params }: PageProps) {
           </p>
         </header>
         <main className="mx-auto max-w-4xl px-4 pb-10 sm:pb-16">
-          <KnowledgeChatUI className="h-[75vh]" />
+          <KnowledgeChatUI className="h-[75vh]" restoreToken={restoreToken} />
         </main>
       </div>
     </LanguageProvider>

@@ -35,6 +35,13 @@ Scripts that read production:
 | `scripts/render-persona-pdfs.ts --live-state` | `StateNominationConfig` and `StateIntelligence` | fails with a clear message |
 | `scripts/test-result-page-pdf-parity.tsx`, part 2 | stored report `b0d20f74` and the live state config (in memory only) | part 2 prints SKIPPED |
 
+`scripts/report-premium-visitors.ts` is the read-only report of `chat_visitors` rows with `is_premium = true` and their credit
+balances (counts and balances only, through `withProdReadOnly`).
+
+`scripts/add-chat-credit-tables.ts` creates the four additive chat-credit tables (`chat_credit_purchases`, `chat_credit_links`,
+`chat_restore_tokens`, `chat_restore_requests`) with `CREATE TABLE IF NOT EXISTS`. It writes to production, so it needs an explicit
+go-ahead, and it must run before the code that reads those tables is deployed.
+
 `scripts/smoke-prod-report.ts` also targets production, but only over HTTPS (the live site, Stripe Checkout and the
 PDF route). It opens no database connection; see [smoke-prod-report.md](smoke-prod-report.md).
 
