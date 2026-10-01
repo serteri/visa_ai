@@ -78,6 +78,11 @@ jobs:
       - name: Credit-package checkout promotion codes (A$0 still credits the package)
         run: npm run test:credit-checkout-promo
 
+      # Webhook payment-status gate for chat credits and the report unlock (real handler, stubbed edges): paid and
+      # no_payment_required grant on completed; unpaid waits for async_payment_succeeded; async_payment_failed never grants.
+      - name: Webhook grants only on paid / no_payment_required / async succeeded
+        run: npm run test:webhook-payment-status
+
       # Real occupation <-> state occupation-list matching (lib/state-nomination/occupation-match.ts) over
       # the git-committed src/data/state-occupation-lists/*.json -- pure data/function tests, no database.
       - name: Occupation <-> state occupation-list match tests

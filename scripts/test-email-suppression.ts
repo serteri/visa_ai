@@ -158,6 +158,8 @@ async function main() {
       customer_email: spec.email,
       customer_details: { email: spec.email, name: "Test Person" },
       amount_total: spec.amountTotal ?? 2199,
+      // A completed session as Stripe sends it: paid, or nothing to pay after a 100% promotion code.
+      payment_status: (spec.amountTotal ?? 2199) === 0 ? "no_payment_required" : "paid",
       currency: "aud",
       total_details: { amount_tax: 0 },
       metadata: {
@@ -275,7 +277,7 @@ async function main() {
     const before = failures;
     reset();
     sessionFixtures.set("cs_lookup_fail", {});
-    const payload = JSON.stringify({ id: "evt_lf", object: "event", type: "checkout.session.completed", data: { object: { id: "cs_lookup_fail", object: "checkout.session", customer_email: CUSTOMER, customer_details: { email: CUSTOMER }, amount_total: 2199, currency: "aud", total_details: { amount_tax: 0 }, metadata: { productType: "premium", email: CUSTOMER, assessmentId: "rep-1", leadId: "rep-1" } } } });
+    const payload = JSON.stringify({ id: "evt_lf", object: "event", type: "checkout.session.completed", data: { object: { id: "cs_lookup_fail", object: "checkout.session", customer_email: CUSTOMER, customer_details: { email: CUSTOMER }, amount_total: 2199, payment_status: "paid", currency: "aud", total_details: { amount_tax: 0 }, metadata: { productType: "premium", email: CUSTOMER, assessmentId: "rep-1", leadId: "rep-1" } } } });
     failStripeLookup = true;
     const header = probe.webhooks.generateTestHeaderString({ payload, secret: process.env.STRIPE_WEBHOOK_SECRET! });
     const { NextRequest } = await import("next/server");

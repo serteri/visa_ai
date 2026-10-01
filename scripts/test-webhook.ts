@@ -66,6 +66,7 @@ async function main() {
         id: sessionId,
         object: "checkout.session",
         amount_total: AMOUNT_TOTAL_CENTS,
+        payment_status: "paid",
         currency: "usd",
         customer_email: "webhook-test@example.com",
         customer_details: { email: "webhook-test@example.com", name: "Webhook Test Customer" },

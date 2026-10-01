@@ -373,15 +373,50 @@ export async function POST(request: NextRequest) {
       return new Response("OK", { status: 200 });
     }
 
-    // AI-assistant credit packages (checked before the reportId fallback --
-    // this checkout flow never sets reportId, so falling through to
-    // handleReportUnlock would just log a "Missing reportId" error).
-    if (metadata.visitorId) {
-      return handleCreditsPurchase(session);
+    // Chat credits and report unlock are granted only once the money is in: "paid", or "no_payment_required" (a
+    // 100% promotion code, total A$0). An async method (e.g. BECS direct debit) completes Checkout as "unpaid";
+    // that grant waits for checkout.session.async_payment_succeeded below.
+    if (!GRANTABLE_PAYMENT_STATUSES.has(session.payment_status)) {
+      console.warn("[stripe webhook] checkout completed but payment not yet received; waiting for async payment", {
+        sessionId: session.id,
+        paymentStatus: session.payment_status,
+      });
+      return new Response("Awaiting async payment", { status: 200 });
     }
+    return grantCreditsOrUnlock(stripe, session);
+  }
 
-    return handleReportUnlock(stripe, session);
+  // The async payment of an "unpaid" session cleared: grant now (the same handlers, so idempotency is unchanged).
+  if (event.type === "checkout.session.async_payment_succeeded") {
+    const session = event.data.object as Stripe.Checkout.Session;
+    if (!GRANTABLE_PAYMENT_STATUSES.has(session.payment_status)) {
+      console.error("[stripe webhook] async_payment_succeeded with a non-paid session; nothing granted", {
+        sessionId: session.id,
+        paymentStatus: session.payment_status,
+      });
+      return new Response("Payment not received", { status: 200 });
+    }
+    return grantCreditsOrUnlock(stripe, session);
+  }
+
+  // The async payment failed: nothing is granted, ever.
+  if (event.type === "checkout.session.async_payment_failed") {
+    const session = event.data.object as Stripe.Checkout.Session;
+    console.warn("[stripe webhook] async payment failed; nothing granted", { sessionId: session.id });
+    return new Response("OK", { status: 200 });
   }
 
   return new Response("OK", { status: 200 });
+}
+
+/** Payment statuses at which chat credits / a report unlock may be granted. "unpaid" never qualifies. */
+const GRANTABLE_PAYMENT_STATUSES = new Set<Stripe.Checkout.Session["payment_status"]>(["paid", "no_payment_required"]);
+
+/** Chat credits (metadata.visitorId) or, otherwise, the report unlock -- the two grants gated on payment_status. */
+function grantCreditsOrUnlock(stripe: Stripe, session: Stripe.Checkout.Session): Promise<Response> {
+  const metadata = (session.metadata || {}) as CheckoutSessionMeta;
+  // AI-assistant credit packages (checked before the reportId fallback -- this checkout flow never sets reportId,
+  // so falling through to handleReportUnlock would just log a "Missing reportId" error).
+  if (metadata.visitorId) return handleCreditsPurchase(session);
+  return handleReportUnlock(stripe, session);
 }

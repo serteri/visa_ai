@@ -309,7 +309,15 @@ async function main() {
     return { status: res.status, sent: [...sent], suppression: logs.filter((l) => l.startsWith("[email-suppression]")) };
   }
 
-  const eventFor = (session: unknown) => JSON.stringify({ id: `evt_local_${Date.now()}`, object: "event", type: "checkout.session.completed", data: { object: session } });
+  // A session created here is still open ("unpaid"); the replayed completion carries the status Stripe sends once
+  // it completes -- "no_payment_required" at A$0 (ADMINFREE), otherwise "paid" -- since the webhook grants only then.
+  const eventFor = (session: { amount_total?: number | null }) =>
+    JSON.stringify({
+      id: `evt_local_${Date.now()}`,
+      object: "event",
+      type: "checkout.session.completed",
+      data: { object: { ...session, payment_status: session.amount_total === 0 ? "no_payment_required" : "paid" } },
+    });
 
   if (promo) {
     let adminPayload: string;
