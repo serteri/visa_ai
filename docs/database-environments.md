@@ -33,6 +33,8 @@ Scripts that read production:
 | `scripts/audit-unlocked-reports.ts` | unlocked `user_reports` and `transactions` (counts and dates only) | fails with a clear message |
 | `scripts/render-persona-pdfs.ts --report <id>` | one `user_reports` row and the live state config | fails with a clear message |
 | `scripts/render-persona-pdfs.ts --live-state` | `StateNominationConfig` and `StateIntelligence` | fails with a clear message |
+| `scripts/clean-knowledge-index.ts` (dry run) | the indexed documents in `document_chunks` (source, category, chunk count), compared with `data/knowledge`; `--delete` writes through `DATABASE_URL` | fails with a clear message |
+| `scripts/seed-knowledge.ts` (dry run, the default) | which documents are already indexed, to list the files `--missing-only` / `--files` would index and their chunk count; `--execute` writes through `DATABASE_URL` and calls OpenAI | fails with a clear message |
 | `scripts/test-result-page-pdf-parity.tsx`, part 2 | stored report `b0d20f74` and the live state config (in memory only) | part 2 prints SKIPPED |
 
 `scripts/report-premium-visitors.ts` is the read-only report of `chat_visitors` rows with `is_premium = true` and their credit

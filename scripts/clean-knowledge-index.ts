@@ -13,6 +13,10 @@
  * manifest snapshot (src/data/knowledge-versions.json `paths`) and says so -- the real deletion refuses to run on
  * that fallback. Deletion uses DATABASE_URL (production: a write, run it only after reviewing the dry-run list) and
  * removes the chunks of every SUPERSEDED and ORPHANED document, in one transaction; current documents are never touched.
+ *
+ * Besides the indexed documents the audit lists the reverse: files on disk that are not indexed. Status "not_indexed" is
+ * "on disk, latest version, not indexed" (index them with scripts/seed-knowledge.ts --missing-only); "skipped" files are
+ * archive copies, older versions, unsupported types or copies of an indexed document.
  */
 import "dotenv/config";
 import { existsSync, readdirSync } from "node:fs";
@@ -20,15 +24,15 @@ import path from "node:path";
 
 import { PrismaClient } from "@prisma/client";
 
-import { classifyIndex, rowsToDelete, summarizeAudit, type DiskFile, type IndexedDoc } from "../lib/chat/index-audit";
-import { withProdReadOnly } from "./lib/prod-db";
+import { classifyIndex, findUnindexed, rowsToDelete, summarizeAudit, type DiskFile } from "../lib/chat/index-audit";
+import { readIndexedDocs } from "./lib/knowledge-index";
 
 const ROOT = path.join(process.cwd(), "data", "knowledge");
 
 function walk(dir: string, out: DiskFile[]) {
   for (const e of readdirSync(dir, { withFileTypes: true })) {
     if (e.isDirectory()) walk(path.join(dir, e.name), out);
-    else out.push({ name: e.name, category: path.basename(dir) });
+    else out.push({ name: e.name, category: path.basename(dir), path: path.relative(ROOT, path.join(dir, e.name)).split(path.sep).join("/") });
   }
 }
 
@@ -40,17 +44,7 @@ async function diskFiles(): Promise<{ files: DiskFile[]; origin: "data/knowledge
   }
   const { default: manifest } = await import("../src/data/knowledge-versions.json");
   const paths = (manifest as unknown as { paths: Record<string, string> }).paths;
-  return { files: Object.entries(paths).map(([name, rel]) => ({ name, category: rel.split("/").slice(-2, -1)[0] ?? "" })), origin: "manifest" };
-}
-
-async function readIndex(): Promise<IndexedDoc[]> {
-  return withProdReadOnly((tx) =>
-    tx.$queryRawUnsafe<IndexedDoc[]>(`
-      SELECT metadata->>'source' AS source, metadata->>'category' AS category, COUNT(*)::int AS chunks
-      FROM document_chunks
-      GROUP BY 1, 2
-      ORDER BY 1, 2`),
-  );
+  return { files: Object.entries(paths).map(([name, rel]) => ({ name, category: rel.split("/").slice(-2, -1)[0] ?? "", path: rel })), origin: "manifest" };
 }
 
 async function main() {
@@ -63,7 +57,7 @@ async function main() {
   const { files, origin } = await diskFiles();
   if (del && origin !== "data/knowledge") throw new Error("Refusing to delete: data/knowledge is not on disk here, so 'orphaned' cannot be trusted. Run where data/knowledge exists.");
 
-  const indexed = (await readIndex()).filter((r) => r.source);
+  const indexed = await readIndexedDocs();
   const rows = classifyIndex(indexed, files);
 
   console.log(`Disk listing: ${origin}${origin === "manifest" ? " (committed snapshot -- data/knowledge is not present here; orphan/superseded results are provisional)" : ""}; ${files.length} files`);
@@ -75,6 +69,16 @@ async function main() {
   const sum = summarizeAudit(rows);
   console.log("");
   for (const s of ["current", "superseded", "orphaned"] as const) console.log(`${s.padEnd(11)} ${String(sum[s].documents).padStart(4)} documents, ${String(sum[s].chunks).padStart(7)} chunks`);
+
+  // The other direction: files on disk that no indexed document covers.
+  const unindexed = findUnindexed(indexed, files);
+  const toIndex = unindexed.filter((r) => r.status === "not_indexed");
+  console.log(`\nON DISK, NOT INDEXED: ${unindexed.length} files (${toIndex.length} are the latest version and should be indexed)`);
+  console.log(["STATUS".padEnd(11), "LATEST", "FILE (folder)", "WHY"].join("  "));
+  for (const r of [...unindexed].sort((a, b) => a.status.localeCompare(b.status) || (a.path ?? a.name).localeCompare(b.path ?? b.name))) {
+    console.log([r.status.padEnd(11), (r.latest ? "yes" : "no").padEnd(6), `${r.path ?? r.name} (${r.category || "-"})`, r.reason].join("  "));
+  }
+  if (toIndex.length > 0) console.log(`Index them (dry run first): npx dotenv-cli -e .env.local -- tsx scripts/seed-knowledge.ts --missing-only`);
 
   const victims = rowsToDelete(rows);
   const total = victims.reduce((n, r) => n + r.chunks, 0);

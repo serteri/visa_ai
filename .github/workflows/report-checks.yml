@@ -89,6 +89,11 @@ jobs:
       - name: AI assistant grounding (one source of truth with the report)
         run: npm run test:chat-grounding
 
+      # Knowledge-index audit, reverse direction: which files on disk are not indexed (latest version, indexable, not
+      # archive, not a copy of an indexed document). Pure functions, no database.
+      - name: Knowledge-index audit (on disk, latest version, not indexed)
+        run: npm run test:index-audit
+
       # Real occupation <-> state occupation-list matching (lib/state-nomination/occupation-match.ts) over
       # the git-committed src/data/state-occupation-lists/*.json -- pure data/function tests, no database.
       - name: Occupation <-> state occupation-list match tests

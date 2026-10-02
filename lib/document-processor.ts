@@ -5,9 +5,10 @@ import * as XLSX from "xlsx";
 import { openai } from "@ai-sdk/openai";
 import { prisma } from "@/lib/prisma";
 import { Prisma } from "@prisma/client";
+import { INDEXABLE_EXTENSIONS } from "@/lib/chat/index-audit";
 
 const KNOWLEDGE_DIR = path.join(process.cwd(), "data", "knowledge");
-const SUPPORTED_EXTENSIONS = new Set([".pdf", ".xlsx", ".md", ".json"]);
+const SUPPORTED_EXTENSIONS = INDEXABLE_EXTENSIONS;
 const EMBEDDING_MODEL_ID = "text-embedding-3-small";
 // OpenAI batches embedding requests; keep well under its input-array limit.
 const EMBEDDING_BATCH_SIZE = 100;
@@ -18,6 +19,8 @@ export interface KnowledgeFile {
   /** Immediate parent folder name relative to data/knowledge, or "general" for root-level files. */
   category: string;
   ext: string;
+  /** Path relative to data/knowledge, with forward slashes. */
+  relativePath: string;
 }
 
 /** One unit of extracted text plus whatever locates it within the source file (page, sheet, ...). */
@@ -63,7 +66,7 @@ export async function scanKnowledgeFiles(dir: string = KNOWLEDGE_DIR): Promise<K
     const parentDir = path.dirname(absolutePath);
     const category = parentDir === KNOWLEDGE_DIR ? "general" : path.basename(parentDir);
 
-    files.push({ absolutePath, filename: entry.name, category, ext });
+    files.push({ absolutePath, filename: entry.name, category, ext, relativePath: path.relative(KNOWLEDGE_DIR, absolutePath).split(path.sep).join("/") });
   }
 
   return files;
@@ -216,15 +219,13 @@ export async function saveDocumentChunks(
 }
 
 /**
- * End-to-end pipeline for one knowledge-base file: extract -> chunk ->
- * embed -> store. Every chunk's metadata carries filename + category (plus
- * page/sheet when applicable) so retrieval-time citations can point back to
- * where the text came from.
+ * The extract + chunk half of the pipeline (no embedding, no database): the exact chunks, with their metadata, that
+ * processDocument would store. A dry run counts these, so its chunk count is what the real run writes.
  */
-export async function processDocument(file: KnowledgeFile): Promise<{ chunkCount: number }> {
+export async function buildChunkInputs(file: KnowledgeFile): Promise<DocumentChunkInput[]> {
   const segments = await extractTextSegments(file);
 
-  const chunkInputs: DocumentChunkInput[] = segments.flatMap((segment) =>
+  return segments.flatMap((segment) =>
     chunkText(segment.text).map((content) => ({
       content,
       metadata: {
@@ -235,6 +236,16 @@ export async function processDocument(file: KnowledgeFile): Promise<{ chunkCount
       },
     })),
   );
+}
+
+/**
+ * End-to-end pipeline for one knowledge-base file: extract -> chunk ->
+ * embed -> store. Every chunk's metadata carries filename + category (plus
+ * page/sheet when applicable) so retrieval-time citations can point back to
+ * where the text came from.
+ */
+export async function processDocument(file: KnowledgeFile): Promise<{ chunkCount: number }> {
+  const chunkInputs = await buildChunkInputs(file);
 
   if (chunkInputs.length === 0) return { chunkCount: 0 };
 
