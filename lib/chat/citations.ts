@@ -111,7 +111,9 @@ export function renderCitations(text: string, refs: SourceRef[]): string {
       const ref = byId.get(id);
       return ref ? ` [${sourceLabel(ref)}]` : "";
     })
-    .replace(/ {2,}/g, " ");
+    .replace(/ {2,}/g, " ")
+    // The same document and page cited twice in a row (two markers that resolve to one source) is shown once.
+    .replace(/( \[[^\]\n]+\])(?:[ ,;]*\1)+/g, "$1");
 }
 
 export function catalogRefs(catalog: Array<SourceRef | null>): SourceRef[] {

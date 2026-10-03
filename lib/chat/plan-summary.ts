@@ -1,7 +1,8 @@
-import { pointsClosureOf } from "@/lib/readiness/engine";
+import { pointsClosureOf, pointsIfEnglishMetOf } from "@/lib/readiness/engine";
 import { nominationBonusFor, type PathwaySubclass } from "@/lib/readiness/pathway-scores";
 import type { Locale, ReadinessInput, ReadinessReport } from "@/lib/readiness/types";
-import { closurePlanText, pathwayStatusLabel } from "@/lib/readiness/visa-gates";
+import { closurePlanText, evaluateVisaGates, pathwayStatusLabel } from "@/lib/readiness/visa-gates";
+import type { PathwayGates } from "@/lib/readiness/visa-gate-text";
 import { POINTS_TABLES } from "@/lib/points/calculate-australia-points";
 
 /**
@@ -26,6 +27,8 @@ export type PlanFacts = {
   ceiling?: number;
   /** 189 / 190 / 491: the recent invitation benchmark the same total is compared with (null: none for this occupation). */
   benchmarks?: Partial<Record<PathwaySubclass, { total: number; benchmark: number | null; asOf?: string }>>;
+  /** 189 / 190 / 491: the CURRENT score (nomination included, before a positive skills assessment): a gap quoted from it is also right. */
+  currentTotals?: Partial<Record<PathwaySubclass, number>>;
 };
 
 export type PlanSummary = { lead: string; facts: PlanFacts };
@@ -41,8 +44,13 @@ export function buildPlanSummary(reportJson: unknown, inputJson: unknown, locale
   const potential = typeof pe.potentialPoints === "number" && pe.potentialPoints !== points ? pe.potentialPoints : undefined;
   const own = potential ?? points;
 
+  // The gates are re-evaluated in the answer's language from the stored report's own numbers (points, closure plan, benchmarks,
+  // state availability), so the status labels AND the engine's step texts ("Complete a positive skills assessment with ACS",
+  // "Raise your points from 60 to at least 65 ...") are in the conversation language, not the language the report was saved in.
+  const stored = (report.visaGates ?? {}) as Record<string, PathwayGates>;
+  const gates = localizedGates(report, input, locale) ?? stored;
   const statuses: PlanFacts["statuses"] = {};
-  for (const [visa, g] of Object.entries(report.visaGates ?? {})) {
+  for (const [visa, g] of Object.entries(gates)) {
     if (g && typeof g.status === "string") statuses[visa] = { status: g.status, label: pathwayStatusLabel(g, locale), steps: Array.isArray(g.steps) ? g.steps.map(String) : [] };
   }
 
@@ -127,7 +135,7 @@ export function buildPlanSummary(reportJson: unknown, inputJson: unknown, locale
 
   // Short lines (the chat shows line breaks): points, one line per visa, then the gap plan.
   const lead = [s1, ...visaLines, s3].filter(Boolean).join("\n");
-  return { lead, facts: { points, ...(potential !== undefined ? { potential } : {}), statuses, scores, benchmarks, ...(ceiling !== undefined ? { ceiling } : {}) } };
+  return { lead, facts: { points, ...(potential !== undefined ? { potential } : {}), statuses, scores, benchmarks, currentTotals: { "189": points + nominationBonusFor("189"), "190": points + nominationBonusFor("190"), "491": points + nominationBonusFor("491") }, ...(ceiling !== undefined ? { ceiling } : {}) } };
 }
 
 /**
@@ -175,6 +183,60 @@ const ASKS_POSITION = new RegExp(
 );
 export const asksAboutPosition = (text: string): boolean => ASKS_POSITION.test(text);
 
+/**
+ * The question is about the visitor's own points, eligibility, chances or PR pathways (en / tr / zh-Hans). A question about
+ * a specific process ("482'den 186'ya kaç yılda geçerim?", "how long does the 190 take?") is not: it gets no summary
+ * (the facts still go to the model).
+ */
+const TOPIC_PROFILE = new RegExp(
+  [
+    "\\b(?:points?|score|scores|eligib\\w*|chances?|qualif\\w*|pathways?|PR|permanent residen\\w*|which visa|best visa|visa options|my options)\\b|\\bcan i (?:get|apply|qualify)\\b|\\bwhat (?:visa|visas|can i do)\\b",
+    "(?<![\\p{L}\\p{N}])(?:puan\\p{L}*|skor\\p{L}*|uygun\\p{L}*|şans\\p{L}*|oturum\\p{L}*|PR|hangi vize\\p{L}*|yol(?:lar)?(?:ım)?|seçenek\\p{L}*|başvurabilir\\p{L}*|hak kazan\\p{L}*)(?![\\p{L}\\p{N}])",
+    "积分|分数|得分|资格|机会|永居|永久居留|(?<![\\p{L}])PR(?![\\p{L}])|哪个签证|哪种签证|路径|选择|能否|可以申请|能申请",
+  ].join("|"),
+  "iu",
+);
+export const asksAboutProfileTopics = (text: string): boolean => asksAboutPosition(text) || TOPIC_PROFILE.test(text);
+
 export function shouldShowLead(opts: { fingerprint: string; lastShown: string | undefined; userText: string }): boolean {
+  // Only for a question about the visitor's own standing; then on the first answer / a changed profile, or whenever they ask where they stand.
+  if (!asksAboutProfileTopics(opts.userText)) return false;
   return opts.lastShown !== opts.fingerprint || asksAboutPosition(opts.userText);
+}
+
+function localizedGates(report: Partial<ReadinessReport>, input: ReadinessInput, locale: Locale): Record<string, PathwayGates> | undefined {
+  try {
+    const pe = report.pointsEstimate;
+    if (!pe) return undefined;
+    const closure = pointsClosureOf(pe, input, locale);
+    const tracker = report.stateNominationTracker;
+    const nomination =
+      tracker && !tracker.eligibilityBlocked && tracker.nominationAvailability && tracker.conditionBlocked
+        ? {
+            "190": { open: tracker.nominationAvailability["190"].length, blocked: tracker.conditionBlocked["190"] },
+            "491": { open: tracker.nominationAvailability["491"].length, blocked: tracker.conditionBlocked["491"] },
+          }
+        : undefined;
+    const scores = report.pathwayScores;
+    const evaluated = evaluateVisaGates(
+      input,
+      {
+        estimatedPoints: pe.estimatedPoints,
+        potentialPoints: pe.potentialPoints,
+        boosterGain: closure?.gain,
+        pointsIfEnglishMet: pointsIfEnglishMetOf(input, locale),
+        closurePlan: closure?.plan,
+        nomination,
+        invitation: scores
+          ? Object.fromEntries((["189", "190", "491"] as const).map((v) => [v, { score: scores[v].comparisonScore ?? scores[v].baseScore, benchmark: scores[v].benchmark }]))
+          : undefined,
+      },
+      locale,
+    );
+    // Only trust the re-evaluation when it reproduces the stored statuses (same engine, same inputs).
+    for (const [v, g] of Object.entries(report.visaGates ?? {})) if (evaluated[v] && evaluated[v].status !== g.status) return undefined;
+    return evaluated;
+  } catch {
+    return undefined;
+  }
 }

@@ -5770,7 +5770,7 @@ function buildProgressionPathways(
 
 /** The most the applicant's own boosters can add (no nomination; alternatives such as the partner options count once). */
 /** The points total as if the English test were taken at Competent (same table, same inputs). */
-function pointsIfEnglishMetOf(input: ReadinessInput, locale: Locale): number {
+export function pointsIfEnglishMetOf(input: ReadinessInput, locale: Locale): number {
   return calculateAustraliaPoints(buildBaselineAuCalcInput(input, locale).calc).total189;
 }
 

@@ -10,7 +10,7 @@ import {
   PREMIUM_PRIMARY_CHUNK_COUNT,
 } from "./config";
 import { findEngineConflicts, type EngineConflict } from "./answer-check";
-import { buildCorrections, conversationLocale, type Correction } from "./corrections";
+import { buildCorrections, capCorrections, conversationLocale, type Correction } from "./corrections";
 import { buildPlanSummary, lastShownLeadFingerprint, profileFingerprint, shouldShowLead, type PlanFacts } from "./plan-summary";
 import type { CreditStore } from "./credits";
 import { buildEngineFacts, type LiveStateData } from "./engine-facts";
@@ -18,6 +18,10 @@ import { loadChatProfile, type ProfileStore } from "./profile";
 import type { QuickProfileStore } from "./quick-profile";
 import { buildStudentVisaGuidance, isStudentVisaContext } from "./visa-guidance";
 import type { RetrievedChunk, SourceRef } from "./types";
+import type { Locale } from "@/lib/readiness/types";
+
+/** Correction blocks shown under one answer. */
+export const MAX_CORRECTIONS = 2;
 
 export interface ChatVisitorLike {
   id: string;
@@ -31,6 +35,8 @@ export interface StreamRequest {
   messages: UIMessage[];
   /** Premium only: the catalogue sent to the client as message metadata. Undefined on the free path. */
   sources?: SourceRef[];
+  /** The conversation language: the client shows the "full report" link and call to action in it. */
+  locale?: Locale;
   /** Premium only: where the profile came from ("quick" -> the client shows the one-line full-report CTA once). */
   profileSource?: "report" | "quick" | null;
   /** The finished answer text. */
@@ -66,6 +72,8 @@ export interface ChatDeps {
   /** Where engine conflicts in a finished answer are reported (default: console.warn). */
   reportConflicts?(conflicts: EngineConflict[], ctx: { premium: boolean }): void;
 }
+
+const groundingOf = (facts: string, chunks: RetrievedChunk[]) => `${facts}\n${chunks.map((c) => c.content).join("\n")}`;
 
 function getMessageText(message: UIMessage): string {
   return message.parts
@@ -124,20 +132,32 @@ export async function handleChat(req: Request, deps: ChatDeps): Promise<Response
       // The summary opens the first answer; later it is shown again only for a changed profile or a question about the visitor's position.
       const fingerprint = profileFingerprint(profile as { summary: string; source: string });
       const show = shouldShowLead({ fingerprint, lastShown: lastShownLeadFingerprint(messages), userText: lastUserText });
-      return { ...plan, fingerprint, show };
+      const lastShown = lastShownLeadFingerprint(messages);
+      const earlier = !show && lastShown === fingerprint;
+      return { ...plan, fingerprint, show, earlier, withheld: !show && !earlier };
     } catch (err) {
       console.error("[knowledge-chat] plan summary failed; answering without the opening summary", err);
       return null;
     }
   };
-  const check = (text: string, opts: { premium: boolean; hasProfile: boolean; plan?: PlanFacts }): Correction[] => {
+  const check = (text: string, opts: { premium: boolean; hasProfile: boolean; plan?: PlanFacts; groundingText?: string }): Correction[] => {
     const gateStatus = opts.plan ? Object.fromEntries(Object.entries(opts.plan.statuses).map(([v, s]) => [v, s.status])) : undefined;
-    const conflicts = findEngineConflicts(text, { hasProfile: opts.hasProfile, gateStatus, ceiling: opts.plan?.ceiling, benchmarks: opts.plan?.benchmarks });
+    const conflicts = findEngineConflicts(text, {
+      hasProfile: opts.hasProfile,
+      gateStatus,
+      ceiling: opts.plan?.ceiling,
+      benchmarks: opts.plan?.benchmarks,
+      currentTotals: opts.plan?.currentTotals,
+      groundingText: opts.groundingText,
+    });
     if (conflicts.length === 0) return [];
     if (deps.reportConflicts) deps.reportConflicts(conflicts, { premium: opts.premium });
     else console.warn("[chat_engine_conflict]", JSON.stringify({ premium: opts.premium, conflicts: conflicts.map((c) => ({ kind: c.kind, detail: c.detail })) }));
     const locale = answerLocale(text);
-    return buildCorrections(conflicts, locale, { plan: opts.plan });
+    // At most two correction blocks per answer, the most serious first; the rest are logged.
+    const { shown, dropped } = capCorrections(buildCorrections(conflicts, locale, { plan: opts.plan }), MAX_CORRECTIONS);
+    if (dropped.length > 0) console.warn("[chat_correction_dropped]", JSON.stringify(dropped.map((d) => ({ kind: d.kind, text: d.text }))));
+    return shown;
   };
 
   try {
@@ -159,10 +179,11 @@ export async function handleChat(req: Request, deps: ChatDeps): Promise<Response
       const plan = planFor(profile);
       return await deps.stream({
         modelId: CHAT_MODEL_ID,
-        system: buildSystemPrompt(chunks, { engineFacts, guidance, ...(profile ? { profile: { summary: profile.summary, source: profile.source, lead: plan?.lead, leadShownEarlier: plan ? !plan.show : undefined } } : {}) }),
+        system: buildSystemPrompt(chunks, { engineFacts, guidance, ...(profile ? { profile: { summary: profile.summary, source: profile.source, lead: plan?.lead, leadShownEarlier: plan ? plan.earlier : undefined, leadWithheld: plan ? plan.withheld : undefined } } : {}) }),
         messages,
+        locale: convLocale,
         ...(plan?.show ? { lead: plan.lead, leadFingerprint: plan.fingerprint } : {}),
-        correct: (text) => check(text, { premium: false, hasProfile: Boolean(profile), plan: plan?.facts }),
+        correct: (text) => check(text, { premium: false, hasProfile: Boolean(profile), plan: plan?.facts, groundingText: groundingOf(engineFacts, chunks) }),
         onFinish: async () => {
           await deps.credits.recordFreeMessage(visitor.id);
         },
@@ -189,15 +210,17 @@ export async function handleChat(req: Request, deps: ChatDeps): Promise<Response
         profile: profile?.summary ?? null,
         profileSource: profile?.source,
         lead: plan?.lead,
-        leadShownEarlier: plan ? !plan.show : undefined,
+        leadShownEarlier: plan ? plan.earlier : undefined,
+        leadWithheld: plan ? plan.withheld : undefined,
         isFirstAnswer: !messages.some((m) => m.role === "assistant"),
         extras: { engineFacts, guidance },
       }),
       messages,
+      locale: convLocale,
       sources: catalogRefs(catalog),
       profileSource: profile?.source ?? null,
       ...(plan?.show ? { lead: plan.lead, leadFingerprint: plan.fingerprint } : {}),
-      correct: (text) => check(text, { premium: true, hasProfile: Boolean(profile), plan: plan?.facts }),
+      correct: (text) => check(text, { premium: true, hasProfile: Boolean(profile), plan: plan?.facts, groundingText: groundingOf(engineFacts, chunks) }),
       onFinish: async () => {},
       onFailure: refundOnce,
     });

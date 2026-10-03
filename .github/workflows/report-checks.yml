@@ -194,6 +194,11 @@ jobs:
       - name: Chat summary language, benchmarks, ceiling wording, WA condition, 191 citations
         run: npm run test:chat-benchmarks
 
+      # Golden-set follow-up: block ids, paragraph-level sufficiency, correction cap, gap figures, localised corrections,
+      # summary relevance, 191 income, duplicate citations.
+      - name: Chat golden-set checks
+        run: npm run test:chat-golden
+
       # Medical registration data (src/data/health-registration/*.json, extracted from the Medical Board / Ahpra
       # "Pathways to registration for international medical graduates" document). The regenerate-and-diff drift
       # check needs the gitignored source PDF and is SKIPPED here; the committed-file invariants (fee schedule

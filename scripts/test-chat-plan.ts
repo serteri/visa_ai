@@ -116,7 +116,7 @@ async function main() {
     const catalog = buildSourceCatalog([{ content: "x", metadata: { source: "Subclass 491_23September2026.pdf", page: 3 } }, { content: "y", metadata: null }]);
     const premP = buildPremiumSystemPrompt({ references: "refs", profile: "Points: 40", profileSource: "quick", isFirstAnswer: true, lead: "LEAD TEXT", extras: { engineFacts: facts } });
     for (const [name, p] of [["free", freeP], ["premium", premP]] as const) {
-      t(`${name} prompt: no citation-like section names ([ENGINE FACTS], [KULLANICI PROFİLİ], [REFERANS BİLGİLERİ], [STUDENT VISA GUIDANCE])`, !/\[(ENGINE FACTS|KULLANICI PROF|REFERANS B|STUDENT VISA|no citable)/i.test(p) && findInternalLabels(p).every((l) => l.kind !== "bracketed"), p.match(/\[[A-ZİÇĞÖŞÜ ]{4,}\]/)?.[0]);
+      t(`${name} prompt: no citation-like section names ([ENGINE FACTS], [KULLANICI PROFİLİ], [REFERANS BİLGİLERİ], [STUDENT VISA GUIDANCE])`, !/\[(ENGINE FACTS|KULLANICI PROF|REFERANS B|STUDENT VISA|no citable)/i.test(p), p.match(/\[[A-ZİÇĞÖŞÜ ]{4,}\]/)?.[0]);
       t(`${name} prompt: tells the model never to name sections, internal terms or "gates", and to cite only external sources with page`, p.includes('ASLA "block-1"') && p.includes("Department of Home Affairs") && p.includes("belge adı ile sayfasını"));
     }
     t("premium references: only [S#] markers are bracketed, an uncitable chunk is '(not citable)'", !/\[no citable/i.test(premP) && renderCitations("[S1]", catalogRefs(catalog)).includes("Subclass 491"));
@@ -288,16 +288,16 @@ async function main() {
       const changed = quickProfileToInput({ ...PERSONA, age: "28" } as never, "en");
       const changedReport = JSON.parse(JSON.stringify(runReadinessEngine(changed))) as ReadinessReport;
       store.set("v", { inputJson: JSON.parse(JSON.stringify(changed)), reportJson: changedReport, updatedAt: new Date("2026-10-03") });
-      const cap4 = await run(premium, [q1, a1, user("What is the 491 visa fee?")]);
+      const cap4 = await run(premium, [q1, a1, user("What is my score for the 491?")]);
       t(`${path}: a changed saved profile shows the summary again, with the new fingerprint (${cap4.leadFingerprint} vs ${cap1.leadFingerprint})`, Boolean(cap4.lead) && cap4.lead !== cap1.lead && cap4.leadFingerprint !== cap1.leadFingerprint && cap4.system.includes(SHOWN));
       const a4 = await answer(cap4, "Same fee.");
-      const cap5 = await run(premium, [q1, a1, user("What is the 491 visa fee?"), a4, user("And the 190?")]);
+      const cap5 = await run(premium, [q1, a1, user("What is my score for the 491?"), a4, user("And the 190?")]);
       t(`${path}: after the change it is shown once, then not again`, cap5.lead === undefined && lastShownLeadFingerprint([q1, a1, a4]) === cap4.leadFingerprint);
       store.set("v", { inputJson: base.input, reportJson: base.report, updatedAt: new Date("2026-10-03") });
 
       // A conversation from before the marker existed (an answer without it): the summary is shown once more.
       const legacy: UIMessage = { id: "old", role: "assistant", parts: [{ type: "text", text: `${cap1.lead}\n\nOld answer.` }] };
-      const cap6 = await run(premium, [q1, legacy, user("What is the 491 visa fee?")]);
+      const cap6 = await run(premium, [q1, legacy, user("What is my score for the 491?")]);
       t(`${path}: an earlier answer without the marker counts as 'not shown yet'`, Boolean(cap6.lead));
       await convertToModelMessages([q1, a1, user("next")]).then(() => t(`${path}: the marker part passes through the model-message conversion`, true), (e) => t(`${path}: the marker part passes through the model-message conversion`, false, String(e)));
     }

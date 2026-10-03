@@ -140,7 +140,7 @@ export function realChatDeps(): ChatDeps {
         onError: () => opts.onFailure(),
         onAbort: () => opts.onFailure(),
       });
-      const metadata = opts.sources || opts.profileSource !== undefined ? { sources: opts.sources, profileSource: opts.profileSource ?? null } : undefined;
+      const metadata = opts.sources || opts.profileSource !== undefined || opts.locale ? { sources: opts.sources, profileSource: opts.profileSource ?? null, locale: opts.locale } : undefined;
       const uiStream = result.toUIMessageStream({
         sendFinish: false,
         ...(metadata ? { messageMetadata: ({ part }) => (part.type === "start" ? metadata : undefined) } : {}),

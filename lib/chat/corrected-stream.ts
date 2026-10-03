@@ -1,6 +1,7 @@
 import { createUIMessageStream, createUIMessageStreamResponse, type UIMessage, type UIMessageChunk } from "ai";
 
 import type { Correction } from "./corrections";
+import { InternalLabelStripper } from "./internal-labels";
 
 /**
  * Forwards the model's UI message stream as it arrives (without its closing "finish"), and once the answer is
@@ -23,10 +24,22 @@ export function correctedUIStreamResponse(chunks: AsyncIterable<UIMessageChunk>,
         // Marks this answer as the one that showed the summary for this profile (lib/chat/plan-summary.ts shouldShowLead).
         if (leadFingerprint) writer.write({ type: "data-lead", data: { fp: leadFingerprint } });
       };
+      // Internal block ids (any form) never reach the stored message: the model's text is stripped as it streams.
+      const strippers = new Map<string, InternalLabelStripper>();
+      const stripperFor = (id: string) => strippers.get(id) ?? strippers.set(id, new InternalLabelStripper()).get(id)!;
       for await (const chunk of chunks) {
         // The engine's opening summary goes right after the message starts; the answer check sees only the model's text.
         if (chunk.type !== "start") writeLead();
-        if (chunk.type === "text-delta") text += chunk.delta;
+        if (chunk.type === "text-delta") {
+          text += chunk.delta; // the raw text: the check still reports what the model wrote
+          const clean = stripperFor(chunk.id).push(chunk.delta);
+          if (clean) writer.write({ ...chunk, delta: clean } as never);
+          continue;
+        }
+        if (chunk.type === "text-end") {
+          const rest = stripperFor(chunk.id).flush();
+          if (rest) writer.write({ type: "text-delta", id: chunk.id, delta: rest } as never);
+        }
         writer.write(chunk as never);
         if (chunk.type === "start") writeLead();
       }

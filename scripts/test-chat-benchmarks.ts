@@ -71,13 +71,13 @@ async function main() {
       await handleChat(new Request("https://x.test", { method: "POST", body: JSON.stringify({ ...(locale ? { locale } : {}), messages: [{ id: "m", role: "user", parts: [{ type: "text", text: userText }] }] }) }), deps);
       return captured!;
     };
-    const tr = await lead("500 vizesindeyim, 491 için ne yapmalıyım?", "en");
+    const tr = await lead("500 vizesindeyim, 491 için puanım yeterli mi?", "en");
     t("a Turkish question on an English page (client language en): the summary is Turkish", (tr.lead ?? "").startsWith("Şu an 40 puanınız var") && !/Your estimate|You have 40/.test(tr.lead ?? ""), tr.lead);
-    const zh = await lead("我现在持500签证，491怎么办？", "en");
+    const zh = await lead("我现在持500签证，我的积分和资格怎么样？", "en");
     t("a Chinese question on an English page: the summary is Chinese", (zh.lead ?? "").startsWith("您目前有 40 分"), zh.lead);
-    const enq = await lead("What can I do for the 491?", "tr");
+    const enq = await lead("What can I do for the 491, what are my chances?", "tr");
     t("an English question on a Turkish page: the summary is English", (enq.lead ?? "").startsWith("You have 40 points now"), enq.lead);
-    const none = await lead("491?", "tr");
+    const none = await lead("491 PR?", "tr");
     t("no language cue in the message: the client's language (tr)", (none.lead ?? "").startsWith("Şu an 40 puanınız var"), none.lead);
     t("the corrections follow the same language", buildCorrections(findEngineConflicts("Subclass 491 can be lodged without a skills assessment."), conversationLocale(["491 vizesi için ne yapmalıyım?"], "en"), {}).every((c) => /^Düzeltme:/.test(c.text)));
     t("conversationLocale: newest clearly-non-English message wins; falls back to the client, then en", conversationLocale(["What is 491?", "Peki ya 190 nasıl?"], "en") === "tr" && conversationLocale(["491?"], "zh-Hans") === "zh-Hans" && conversationLocale(["What is 491?"], "tr") === "en" && conversationLocale(["hi"], undefined) === "en");

@@ -17,7 +17,7 @@ import type { PlanFacts } from "./plan-summary";
  * additionally stripped where the answer is shown (lib/chat/internal-labels.ts).
  */
 
-export type Correction = { kind: "fee" | "gate" | "state_availability" | "visa_name" | "trt_period" | "experience_points" | "age_limit" | "status_wording" | "max_potential" | "benchmark_sufficiency" | "state_condition"; text: string };
+export type Correction = { kind: "fee" | "gate" | "state_availability" | "visa_name" | "trt_period" | "experience_points" | "age_limit" | "status_wording" | "max_potential" | "gap_figure" | "benchmark_sufficiency" | "state_condition"; text: string };
 
 const T = (l: Locale, en: string, tr: string, zh: string) => (l === "tr" ? tr : l === "zh-Hans" ? zh : en);
 const aud = (n: number) => `AUD ${n.toLocaleString("en-AU")}`;
@@ -188,6 +188,26 @@ export function buildCorrections(conflicts: EngineConflict[], locale: Locale, ct
                 "更正：“最大潜力”不是您的 LogiVisa 结果中的数字，请勿依赖。",
               ),
       });
+    } else if (c.kind === "gap_figure") {
+      for (const sc of c.subclasses ?? []) {
+        const b = ctx.plan?.benchmarks?.[sc as "189" | "190" | "491"];
+        if (!b) continue;
+        const short = Math.max(0, 65 - b.total);
+        const nom = sc === "189" ? "" : T(locale, " including the nomination the visa requires", " (bu vizenin gerektirdiği adaylık dahil)", "（含该签证所需的提名）");
+        const minimum = short > 0 ? T(locale, `${short} short of the 65 minimum`, `65 asgari puanın ${short} altında`, `距 65 分最低要求差 ${short} 分`) : T(locale, "meets the 65 minimum", "65 asgari puanı karşılıyor", "达到 65 分最低要求");
+        const recent = b.benchmark === null ? "" : b.benchmark - b.total > 0
+          ? `${locale === "zh-Hans" ? "，" : ", "}${T(locale, `${b.benchmark - b.total} below the recent invitation level of ${b.benchmark}`, `son davet seviyesi olan ${b.benchmark}'in ${b.benchmark - b.total} puan altında`, `比近期邀请水平 ${b.benchmark} 分低 ${b.benchmark - b.total} 分`)}`
+          : `${locale === "zh-Hans" ? "，" : ", "}${T(locale, `not below the recent invitation level of ${b.benchmark}`, `son davet seviyesi ${b.benchmark}'in altında değil`, `不低于近期邀请水平 ${b.benchmark} 分`)}`;
+        add(`gap:${sc}`, {
+          kind: "gap_figure",
+          text: T(
+            locale,
+            `Correction: for subclass ${sc} your score${nom} is ${b.total}: ${minimum}${recent}.`,
+            `Düzeltme: ${sc} alt sınıfı için puanınız${nom} ${b.total}: ${minimum}${recent}.`,
+            `更正：子类 ${sc} 的分数${nom}为 ${b.total} 分：${minimum}${recent}。`,
+          ),
+        });
+      }
     } else if (c.kind === "benchmark_sufficiency") {
       for (const sc of c.subclasses ?? []) {
         const b = ctx.plan?.benchmarks?.[sc as "189" | "190" | "491"];
@@ -231,4 +251,32 @@ export function buildCorrections(conflicts: EngineConflict[], locale: Locale, ct
     }
   }
   return [...out.values()];
+}
+
+/**
+ * At most `max` correction blocks per answer, the most serious first: stated numbers and eligibility (fees, gap figures,
+ * points, benchmark / sufficiency, status wording) before requirement and naming issues. The rest are returned as
+ * `dropped` for the log.
+ */
+const SEVERITY: Correction["kind"][] = [
+  "fee",
+  "gap_figure",
+  "experience_points",
+  "max_potential",
+  "benchmark_sufficiency",
+  "status_wording",
+  "gate",
+  "age_limit",
+  "trt_period",
+  "state_availability",
+  "state_condition",
+  "visa_name",
+];
+export function capCorrections(corrections: Correction[], max = 2): { shown: Correction[]; dropped: Correction[] } {
+  const rank = (c: Correction) => {
+    const i = SEVERITY.indexOf(c.kind);
+    return i < 0 ? SEVERITY.length : i;
+  };
+  const ordered = corrections.map((c, i) => ({ c, i })).sort((a, b) => rank(a.c) - rank(b.c) || a.i - b.i).map((x) => x.c);
+  return { shown: ordered.slice(0, max), dropped: ordered.slice(max) };
 }

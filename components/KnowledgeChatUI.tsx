@@ -271,7 +271,7 @@ export function KnowledgeChatUI({ className, restoreToken }: KnowledgeChatUIProp
             .join("\n");
           // Premium answers carry [S1]-style markers; the document / page shown comes from the retrieval metadata
           // the server sent with the message, and a marker not in that list is dropped.
-          const meta = message.metadata as { sources?: SourceRef[]; profileSource?: "report" | "quick" | null } | undefined;
+          const meta = message.metadata as { sources?: SourceRef[]; profileSource?: "report" | "quick" | null; locale?: string } | undefined;
           const sources = meta?.sources;
           // Bracketed internal prompt labels that slipped into the answer are never shown (the correction block says so).
           const text = message.role === "assistant" ? stripInternalLabels(sources ? renderCitations(rawText, sources) : rawText) : rawText;
@@ -286,7 +286,9 @@ export function KnowledgeChatUI({ className, restoreToken }: KnowledgeChatUIProp
             message.role === "assistant" &&
             meta?.profileSource === "quick" &&
             messages.findIndex((m) => m.role === "assistant" && (m.metadata as { profileSource?: string } | undefined)?.profileSource === "quick") === index;
-          const lang = language === "tr" ? "tr" : language === "zh-Hans" ? "zh" : "en";
+          // The call to action follows the language of the conversation (sent with the answer), not the page language.
+          const msgLocale = meta?.locale === "tr" || meta?.locale === "zh-Hans" || meta?.locale === "en" ? meta.locale : language;
+          const lang = msgLocale === "tr" ? "tr" : msgLocale === "zh-Hans" ? "zh" : "en";
 
           return (
             <div key={message.id} className="space-y-1">
@@ -310,7 +312,7 @@ export function KnowledgeChatUI({ className, restoreToken }: KnowledgeChatUIProp
               {firstQuickAnswer && !isBusy && (
                 <p className="text-xs text-muted-foreground" data-testid="chat-full-report-cta">
                   {QP_TEXT.cta[lang]}{" "}
-                  <a href={`/${language}/full-check`} className="font-medium text-primary underline-offset-2 hover:underline">
+                  <a href={`/${msgLocale}/full-check`} className="font-medium text-primary underline-offset-2 hover:underline">
                     {QP_TEXT.ctaLink[lang]}
                   </a>
                 </p>

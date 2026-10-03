@@ -29,10 +29,12 @@ export type EngineConflictKind =
   | "status_wording"
   | "max_potential"
   | "benchmark_sufficiency"
-  | "state_condition";
+  | "state_condition"
+  | "gap_figure"
+  | "state_specifics";
 
 /** Conflicts that are only logged: no visible correction block (not a factual error in what the visitor was told). */
-export const LOG_ONLY_KINDS: ReadonlySet<EngineConflictKind> = new Set<EngineConflictKind>(["repeated_disclaimer", "internal_label"]);
+export const LOG_ONLY_KINDS: ReadonlySet<EngineConflictKind> = new Set<EngineConflictKind>(["repeated_disclaimer", "internal_label", "state_specifics"]);
 
 export type EngineConflict = {
   kind: EngineConflictKind;
@@ -54,6 +56,10 @@ export type CheckOptions = {
   ceiling?: number;
   /** 189 / 190 / 491: the visitor's score (nomination included) and the recent invitation benchmark, from the engine. */
   benchmarks?: Partial<Record<"189" | "190" | "491", { total: number; benchmark: number | null; asOf?: string }>>;
+  /** The visitor's CURRENT score per visa (nomination included, before a positive skills assessment): a gap quoted from it is also right. */
+  currentTotals?: Partial<Record<"189" | "190" | "491", number>>;
+  /** The engine facts and the retrieved chunks' text: a state-condition duration must appear here, or it is logged. */
+  groundingText?: string;
 };
 
 const SENTENCE_SPLIT = /(?<=[.!?。！？])\s+|\n+/;
@@ -71,7 +77,7 @@ function subclasses(sentence: string): string[] {
 
 const NO_SKILLS_ASSESSMENT =
   /without (?:a |an )?(?:suitable |positive |valid )?skills? assessment|no skills? assessment (?:is )?(?:needed|required)|(?:may|can) (?:proceed|apply|be lodged)[^.]{0,40}without[^.]{0,30}assessment|beceri değerlendirme\S*(?:\s+\S+){0,3}\s+olmadan|beceri değerlendirme\S* (?:gerekmez|şart değil|gerekmeden)|değerlendirme(?:si)? olmadan (?:da )?(?:başvur|ilerle|devam)|无需技能评估|不需要技能评估|没有技能评估也/i;
-const MIN_INCOME = /minimum income|income threshold|income requirement|asgari gelir|minimum gelir|gelir şartı|gelir eşiği|最低收入|收入门槛|收入要求/i;
+const MIN_INCOME = /minimum income|income threshold|income requirement|compliant income|income test|(?:meet|satisfy|show|prove)\w* (?:the |an )?income|asgari gelir|minimum gelir|gelir şartı|gelir koşul\w*|gelir testi|gelir eşiği|uyumlu gelir|最低收入|收入门槛|收入要求|收入标准|符合收入|收入测试/i;
 const NEGATED_INCOME = /\b(no|not|without|none)\b[^.]{0,30}(minimum income|income (?:threshold|requirement))|(asgari|minimum) gelir (şartı )?(yok|bulunmuyor|aranmaz)|gelir şartı (yok|bulunmuyor|aranmaz)|没有最低收入|无最低收入|不设最低收入|无收入要求/i;
 const MOST_STATES = /\b(most|all|many|every) (?:australian )?(?:states|state and territor)|çoğu eyalet|tüm eyalet|birçok eyalet|bütün eyalet|大多数州|所有州|多数州|大部分州/i;
 const DISCLAIMER =
@@ -120,15 +126,52 @@ const YEARS_N = /\b(\d{1,2})\s*(?:\+\s*)?(?:years?|yıl|yıllık)|\b(\d{1,2})\s*
 // "+5", "5 points", "5 puan", "5 分"
 const POINTS_CLAIM = /\+\s*(\d{1,2})\b|\b(\d{1,2})\s*(?:points?|puan)\b|\b(\d{1,2})\s*分/gi;
 
+// A points gap stated in the answer (en / tr / zh): "10 points short", "5 puan eksik", "还差10分".
+const GAP_CLAIM = new RegExp(
+  [
+    "(?<!\\d)(\\d{1,3})\\s*(?:more\\s+)?(?:points?\\s*)?(?:short|below|under|away|missing|to go|behind)",
+    "short (?:of [^.]{0,40}?)?by (\\d{1,3})",
+    "(?<!\\d)(\\d{1,3})[- ]points?\\s+(?:gap|shortfall|deficit)",
+    "needs? (?:another |an additional )?(\\d{1,3}) (?:more )?points?",
+    "(?<!\\d)(\\d{1,3})\\s*puan\\s*(?:eksi[kğ]\\p{L}*|altında|açık|daha|farkı|geride)",
+    "(?<!\\d)(\\d{1,3}) puanlık (?:bir )?(?:açık|fark|eksik)",
+    "(?:还差|差|低于?|不足|缺|少)\\s*(\\d{1,3})\\s*分",
+    "(?<!\\d)(\\d{1,3})\\s*分(?:的)?(?:差距|缺口|不足)",
+  ].join("|"),
+  "giu",
+);
+const MIN_TARGET = /\b65\b|minimum|asgari|最低/i;
+const STATE_WORDS = /\b(?:WA|NSW|VIC|QLD|SA|TAS|NT|ACT)\b|western australia|new south wales|victoria|queensland|south australia|tasmania|northern territory|canberra|batı avustralya|西澳|新南威尔士|维多利亚|昆士兰|南澳|塔斯马尼亚|北领地|首都领地/i;
+const STATE_CONDITION_WORDS = /\b(?:live|living|resid\w*|work(?:ing)?|employ\w*|stud(?:y|ied|ying))\b|ikamet|yaşa\w*|çalış\w*|eğitim|居住|工作|学习|留学/iu;
+const NUMBER_WORDS: Record<string, number> = { one: 1, two: 2, three: 3, four: 4, five: 5, six: 6, seven: 7, eight: 8, nine: 9, ten: 10, twelve: 12, bir: 1, iki: 2, "üç": 3, "dört": 4, "beş": 5, "altı": 6, yedi: 7, sekiz: 8, dokuz: 9, on: 10 };
+const DURATION = /(?<![\p{L}\p{N}])(\d{1,2}|one|two|three|four|five|six|seven|eight|nine|ten|twelve|bir|iki|üç|dört|beş|altı|yedi|sekiz|dokuz|on)[\s-]*(months?|years?|ay(?:lık)?|yıl(?:lık)?)(?![\p{L}])|(\d{1,2})\s*(个月|年)/giu;
+/** "6 months" / "altı ay" / "6个月" -> "6m"; years -> "y". */
+function durationKeys(text: string): Set<string> {
+  const out = new Set<string>();
+  for (const m of text.matchAll(DURATION)) {
+    const n = m[3] ?? m[1];
+    const unit = (m[4] ?? m[2]).toLowerCase();
+    const num = /^\d+$/.test(n) ? Number(n) : NUMBER_WORDS[n.toLowerCase()];
+    if (num === undefined) continue;
+    out.add(`${num}${/^(month|ay|个月)/.test(unit) ? "m" : "y"}`);
+  }
+  return out;
+}
+
 export function findEngineConflicts(answer: string, opts: CheckOptions = {}): EngineConflict[] {
   const fees = engineFeeTable();
   const out: EngineConflict[] = [];
-  const sentences = answer.split(SENTENCE_SPLIT).map((s) => s.trim()).filter(Boolean);
+  // Sentences with the paragraph (blank-line block) each one sits in: some checks read the whole paragraph.
+  const items = answer
+    .split(/\n\s*\n/)
+    .flatMap((para) => para.split(SENTENCE_SPLIT).map((x) => ({ s: x.trim(), para })))
+    .filter((x) => x.s);
+  const sentences = items.map((x) => x.s);
   let disclaimers = 0;
   // An answer that states the job / contract / employment requirement anywhere (for WA or 190) is not advising a bare move.
   const jobRequirementStated = sentences.some((x) => JOB_WORDS.test(x) && (WA_WORDS.test(x) || /\b190\b/.test(x)));
 
-  for (const s of sentences) {
+  for (const { s, para } of items) {
     const subs = subclasses(s);
 
     // Fees: an amount in a fee sentence must be one of the engine's figures for a subclass the sentence names.
@@ -209,7 +252,11 @@ export function findEngineConflicts(answer: string, opts: CheckOptions = {}): En
     if (opts.benchmarks && ENOUGH.test(s) && !NOT_ENOUGH.test(s) && !BENCH_WORDS.test(s)) {
       const below = subs.filter((sc) => {
         const b = opts.benchmarks?.[sc as "189" | "190" | "491"];
-        return b && b.benchmark !== null && b.total < b.benchmark;
+        if (!b || b.benchmark === null || b.total >= b.benchmark) return false;
+        // The same paragraph already states this visa's recent benchmark or the gap to it: not a claim of sufficiency.
+        const gap = b.benchmark - b.total;
+        const stated = new RegExp(`(?<!\\d)(?:${b.benchmark}|${gap})(?!\\d)`).test(para) || BENCH_WORDS.test(para);
+        return !stated;
       });
       if (below.length > 0) {
         out.push({ kind: "benchmark_sufficiency", sentence: s, detail: `subclass ${below.join("/")}: the score is below the recent invitation benchmark (${below.map((sc) => { const b = opts.benchmarks![sc as "189" | "190" | "491"]!; return `${b.total} vs ${b.benchmark}`; }).join(", ")}), so it is not "enough"`, subclasses: below });
@@ -219,6 +266,34 @@ export function findEngineConflicts(answer: string, opts: CheckOptions = {}): En
     // WA 190: moving to WA is not what meets the stream -- a six-month WA employment contract is.
     if (WA_WORDS.test(s) && MOVE_WORDS.test(s) && !JOB_WORDS.test(s) && !jobRequirementStated && (subs.includes("190") || /\b190\b/.test(answer))) {
       out.push({ kind: "state_condition", sentence: s, detail: "WA's General stream for subclass 190 requires a full-time WA employment contract of at least six months; moving to WA does not meet it", subclasses: ["190"] });
+    }
+
+    // A stated points gap (to the 65 minimum or to the recent benchmark) must be the engine's gap, nomination included.
+    if (opts.benchmarks) {
+      const gapSubs = subs.filter((sc) => opts.benchmarks?.[sc as "189" | "190" | "491"]);
+      const claims = Array.from(s.matchAll(GAP_CLAIM), (m) => Number(m.slice(1).find((x) => x !== undefined))).filter((n) => Number.isFinite(n) && n > 0);
+      if (gapSubs.length > 0 && claims.length > 0) {
+        const benchTarget = BENCH_WORDS.test(s) || gapSubs.some((sc) => { const b = opts.benchmarks![sc as "189" | "190" | "491"]!; return b.benchmark !== null && new RegExp(`(?<!\\d)${b.benchmark}(?!\\d)`).test(s); });
+        const minTarget = MIN_TARGET.test(s);
+        const valid = new Set<number>();
+        for (const sc of gapSubs) {
+          const b = opts.benchmarks![sc as "189" | "190" | "491"]!;
+          const totals = [b.total, opts.currentTotals?.[sc as "189" | "190" | "491"]].filter((x): x is number => typeof x === "number");
+          for (const total of totals) {
+            if (!benchTarget || minTarget) valid.add(Math.max(0, 65 - total));
+            if ((benchTarget || !minTarget) && b.benchmark !== null) valid.add(Math.max(0, b.benchmark - total));
+          }
+        }
+        const wrong = claims.filter((c) => !valid.has(c));
+        if (wrong.length > 0) out.push({ kind: "gap_figure", sentence: s, detail: `stated gap ${wrong.join(", ")} is not the engine's (valid: ${[...valid].join(", ")}) for subclass ${gapSubs.join("/")}`, subclasses: gapSubs });
+      }
+    }
+
+    // State-condition specifics (durations) that appear neither in the state facts nor in the retrieved chunks: logged only.
+    if (opts.groundingText !== undefined && STATE_WORDS.test(s) && STATE_CONDITION_WORDS.test(s)) {
+      const grounded = durationKeys(opts.groundingText);
+      const unsupported = [...durationKeys(s)].filter((k) => !grounded.has(k));
+      if (unsupported.length > 0) out.push({ kind: "state_specifics", sentence: s, detail: `state-condition duration(s) ${unsupported.join(", ")} not found in the state facts or the retrieved sources` });
     }
 
     if (DISCLAIMER.test(s)) disclaimers++;

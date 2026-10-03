@@ -69,19 +69,73 @@ export type InternalLabel = { kind: "bracketed" | "term"; match: string };
 
 export function findInternalLabels(text: string): InternalLabel[] {
   const out: InternalLabel[] = [];
-  for (const m of text.matchAll(BRACKETED)) out.push({ kind: "bracketed", match: m[0] });
-  const rest = text.replace(BRACKETED, " ");
+  for (const m of text.matchAll(BLOCK_GROUP)) out.push({ kind: "bracketed", match: m[0] });
+  const noGroups = text.replace(BLOCK_GROUP, " ");
+  for (const m of noGroups.matchAll(BRACKETED)) out.push({ kind: "bracketed", match: m[0] });
+  const rest = noGroups.replace(BRACKETED, " ");
   for (const m of rest.matchAll(BRACKETED_CAPS)) out.push({ kind: "bracketed", match: m[0] });
   for (const m of rest.replace(BRACKETED_CAPS, " ").matchAll(INTERNAL_TERMS)) out.push({ kind: "term", match: m[0] });
   return out;
 }
 
-/** Removes bracketed internal labels and tidies what they leave behind. Citation markers ([S1]) are untouched. */
+/** A bracketed / parenthesised group that mentions a block id anywhere in it: "[block-1, block-4]", "(see block-1, state requirements)". */
+const BLOCK_GROUP = /[\[(【（][^\])】）\n]*?\bblock[- ]?\d\b[^\])】）\n]*?[\])】）]:?/giu;
+/** A bare block id, with the ids chained to it ("block-1 and block-2", "block-1, block-4"). */
+const BLOCK_BARE = /\bblock[- ]?\d\b(?:\s*(?:,|;|&|and|ve|和|与)\s*block[- ]?\d\b)*/giu;
+
+/**
+ * Removes internal labels in every form: bracketed names, a bracketed or parenthesised group that names a block id
+ * ("[block-1, block-4]", "(see block-1, state requirements)"), and a bare block id; tidies what they leave behind.
+ * Citation markers ([S1]) and rendered citations are untouched.
+ */
 export function stripInternalLabels(text: string): string {
   return text
+    .replace(BLOCK_GROUP, "")
     .replace(BRACKETED, "")
     .replace(BRACKETED_CAPS, "")
-    .replace(/\(\s*\)/g, "")
+    .replace(BLOCK_BARE, "")
+    .replace(/\(\s*\)|\[\s*\]/g, "")
     .replace(/[ \t]{2,}/g, " ")
-    .replace(/ +([.,;:!?])/g, "$1");
+    .replace(/ +([.,;:!?。，；：！？])/g, "$1")
+    .replace(/([(\[]) +/g, "$1");
+}
+
+/**
+ * Streaming version: strips as text arrives. A label can be split across deltas ("[block-" + "1]"), so the tail that
+ * could still be the start of a label (an unclosed bracket / parenthesis of a short length, or a partial "block-N") is
+ * held back until it is complete or can no longer be a label. flush() releases what is left at the end of the part.
+ */
+export class InternalLabelStripper {
+  private pending = "";
+  private last = "";
+  push(delta: string): string {
+    const text = this.pending + delta;
+    const hold = holdIndex(text);
+    const safe = text.slice(0, hold);
+    this.pending = text.slice(hold);
+    return this.emit(stripInternalLabels(safe));
+  }
+  flush(): string {
+    const rest = this.pending;
+    this.pending = "";
+    return this.emit(stripInternalLabels(rest));
+  }
+  /** No doubled space where a removed label sat between two deltas. */
+  private emit(out: string): string {
+    const clean = this.last === " " && out.startsWith(" ") ? out.slice(1) : out;
+    if (clean) this.last = clean[clean.length - 1];
+    return clean;
+  }
+}
+
+function holdIndex(text: string): number {
+  // An unclosed group opener near the end: hold from it (a real label group is short and has no line break).
+  for (const open of ["[", "(", "【", "（"]) {
+    const i = text.lastIndexOf(open);
+    if (i >= 0 && text.length - i <= 80 && !/[\])】）\n]/.test(text.slice(i + 1))) return i;
+  }
+  // A partial bare id at the very end: "b", "bl", "block", "block-", "block-1" (a following delta may complete it).
+  const m = text.match(/(?:^|[^\p{L}\p{N}])(b(?:l(?:o(?:c(?:k(?:[- ]\d?)?)?)?)?)?)$/iu);
+  if (m) return text.length - m[1].length;
+  return text.length;
 }

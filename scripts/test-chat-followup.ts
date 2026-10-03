@@ -116,7 +116,7 @@ async function main() {
       };
       await handleChat(new Request("https://x.test", { method: "POST", body: JSON.stringify({ locale: "tr", messages: [{ id: "m", role: "user", parts: [{ type: "text", text: "491 ücreti?" }] }] }) }), deps);
       const out = streamReq!.correct!(BAD_EN);
-      t(`${premium ? "premium" : "free"} path: corrections returned (client language tr wins), conflicts still logged`, out.length === 4 && out[0].text.startsWith("Düzeltme:") && logged.length === 1 && logged[0] === `${premium}:fee,gate,gate,state_availability`, JSON.stringify({ logged, n: out.length }));
+      t(`${premium ? "premium" : "free"} path: corrections returned (client language tr wins), conflicts still logged`, out.length === 2 && out[0].kind === "fee" && out[0].text.startsWith("Düzeltme:") && logged.length === 1 && logged[0] === `${premium}:fee,gate,gate,state_availability`, JSON.stringify({ logged, n: out.length }));
     }
   }
 
