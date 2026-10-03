@@ -10,7 +10,9 @@ import { findInternalLabels } from "./internal-labels";
  *                      requirement the gate matrix does not have (a minimum income for 191);
  *   state_availability an occupation said to be in demand in "most / all states" -- availability per state comes
  *                      only from the engine's tracker for the visitor's profile;
- *   repeated_disclaimer more than one "not in my sources / general knowledge" statement in one answer.
+ *   repeated_disclaimer more than one "not in my sources / general knowledge" statement in one answer;
+ *   internal_label     internal prompt vocabulary in the answer ("engine facts", "gates", bracketed section names).
+ * repeated_disclaimer and internal_label are LOG_ONLY_KINDS: reported, never corrected on screen.
  * Used on every finished answer (logged, see lib/chat/handler.ts) and by the tests.
  */
 
@@ -26,6 +28,9 @@ export type EngineConflictKind =
   | "age_limit"
   | "status_wording"
   | "max_potential";
+
+/** Conflicts that are only logged: no visible correction block (not a factual error in what the visitor was told). */
+export const LOG_ONLY_KINDS: ReadonlySet<EngineConflictKind> = new Set<EngineConflictKind>(["repeated_disclaimer", "internal_label"]);
 
 export type EngineConflict = {
   kind: EngineConflictKind;

@@ -36,20 +36,26 @@ export type PromptExtras = {
   /** e.g. buildStudentVisaGuidance() for a subclass 500 holder. */
   guidance?: string;
   /** FREE path only: the visitor's own engine result (quick profile card or linked report), when there is one. */
-  profile?: { summary: string; source: "report" | "quick"; lead?: string };
+  profile?: { summary: string; source: "report" | "quick"; lead?: string; leadShownEarlier?: boolean };
 };
 
 const extrasBlock = (x: PromptExtras) => `${x.engineFacts}\n\n${x.guidance ? `${x.guidance}\n\n` : ""}`;
 
-/** The opening summary the chat shows at the top of a personalised answer (lib/chat/plan-summary.ts), and the length rules. */
-const leadBlock = (lead?: string) =>
-  lead
-    ? `\nblock-5 (kullanıcıya yanıtın EN ÜSTÜNDE zaten gösterilen özet -- sen yazma, tekrar etme, onunla çelişme, onun yerine geçme; yalnızca üzerine ekle):\n${lead}\n\nUZUNLUK: Özetten sonra ilgili her vize için EN FAZLA bir kısa bölüm, sonra eylem planı. Aynı şartı veya rakamı tekrar anlatma; gereksiz giriş ve genel bilgi ekleme.\n`
-    : "";
+/**
+ * The opening summary (lib/chat/plan-summary.ts) and the length rules. Shown at the top of the answer on the first
+ * answer of a conversation and when the saved profile changes or the visitor asks about their position; otherwise it
+ * was shown earlier and the model may refer back to it briefly, never repeat it.
+ */
+const leadBlock = (lead?: string, shownEarlier?: boolean) =>
+  !lead
+    ? ""
+    : shownEarlier
+      ? `\nblock-5 (bu özet bu konuşmada kullanıcıya daha önce gösterildi ve profil değişmedi -- bu yanıtta TEKRAR ETME, yeniden yazma veya yeniden hesaplama; gerekirse "yukarıdaki özetteki gibi" diye kısaca atıf yapabilirsin; onunla çelişme):\n${lead}\n\nUZUNLUK: Yalnızca sorulan soruyu yanıtla; puanı, vize durumlarını veya aynı rakamları yeniden anlatma; gereksiz giriş ve genel bilgi ekleme.\n`
+      : `\nblock-5 (kullanıcıya yanıtın EN ÜSTÜNDE zaten gösterilen özet -- sen yazma, tekrar etme, onunla çelişme, onun yerine geçme; yalnızca üzerine ekle):\n${lead}\n\nUZUNLUK: Özetten sonra ilgili her vize için EN FAZLA bir kısa bölüm, sonra eylem planı. Aynı şartı veya rakamı tekrar anlatma; gereksiz giriş ve genel bilgi ekleme.\n`;
 
 /** The free path's profile block: engine facts about THIS visitor, no citation or "general answers" rules. */
 const freeProfileBlock = (p: NonNullable<PromptExtras["profile"]>) =>
-  `block-2:\n${p.summary}\n\nBu profil yalnızca şu an seninle konuşan kullanıcıya aittir (${p.source === "quick" ? "sohbet içindeki hızlı profil kartı" : "kendi LogiVisa raporu"}) ve LogiVisa rapor motorunun sonucudur. Puan, vize şartları ve uygun eyaletler için bunu kullan; profilde olmayan bir bilgiyi kullanıcı hakkında uydurma.\n${leadBlock(p.lead)}\n`;
+  `block-2:\n${p.summary}\n\nBu profil yalnızca şu an seninle konuşan kullanıcıya aittir (${p.source === "quick" ? "sohbet içindeki hızlı profil kartı" : "kendi LogiVisa raporu"}) ve LogiVisa rapor motorunun sonucudur. Puan, vize şartları ve uygun eyaletler için bunu kullan; profilde olmayan bir bilgiyi kullanıcı hakkında uydurma.\n${leadBlock(p.lead, p.leadShownEarlier)}\n`;
 
 /** FREE path system prompt: the guardrails, the engine facts (and guidance), then the retrieved references. */
 export function buildSystemPrompt(chunks: RetrievedChunk[], extras: PromptExtras): string {
@@ -71,6 +77,8 @@ export function buildPremiumSystemPrompt(opts: {
   profileSource?: "report" | "quick";
   /** The opening summary shown at the top of the answer (from the engine), when a profile exists. */
   lead?: string;
+  /** The summary was already shown earlier in this conversation (same profile): refer back briefly, do not repeat it. */
+  leadShownEarlier?: boolean;
   /** True only for the first assistant answer of the conversation: the "general answers" note is said once. */
   isFirstAnswer: boolean;
   extras: PromptExtras;
@@ -82,7 +90,7 @@ export function buildPremiumSystemPrompt(opts: {
     ? `block-2:
 ${opts.profile}
 
-Profil kuralları: Bu profil yalnızca şu an seninle konuşan kullanıcıya aittir ve ${origin} gelir. Yanıtları bu profile göre kişiselleştir (meslek, puan, vize şartları, uygun eyaletler, eşik farkları); profildeki puan, şart sonucu ve eyalet listesini AYNEN kullan, yeniden hesaplama. Bir vizenin durumu "Not eligible now" (Şu anda uygun değil) ise bunu açıkça söyle ve o vizeyi önerme; "Next step required" ise "uygun değil" deme, gereken adımı söyle. Profilde olmayan bir bilgiyi kullanıcı hakkında uydurma. Profil motor verisidir, resmi kaynak değildir: resmi kaynak iddiaları için aşağıdaki kaynak kurallarını kullan.${leadBlock(opts.lead)}`
+Profil kuralları: Bu profil yalnızca şu an seninle konuşan kullanıcıya aittir ve ${origin} gelir. Yanıtları bu profile göre kişiselleştir (meslek, puan, vize şartları, uygun eyaletler, eşik farkları); profildeki puan, şart sonucu ve eyalet listesini AYNEN kullan, yeniden hesaplama. Bir vizenin durumu "Not eligible now" (Şu anda uygun değil) ise bunu açıkça söyle ve o vizeyi önerme; "Next step required" ise "uygun değil" deme, gereken adımı söyle. Profilde olmayan bir bilgiyi kullanıcı hakkında uydurma. Profil motor verisidir, resmi kaynak değildir: resmi kaynak iddiaları için aşağıdaki kaynak kurallarını kullan.${leadBlock(opts.lead, opts.leadShownEarlier)}`
     : `block-2: Bu kullanıcı için bir LogiVisa raporu veya hızlı profil yok.
 ${
   opts.isFirstAnswer

@@ -110,3 +110,52 @@ export function buildPlanSummary(reportJson: unknown, inputJson: unknown, locale
   const lead = [s1, s2, s3].filter(Boolean).join(" ");
   return { lead, facts: { points, ...(potential !== undefined ? { potential } : {}), statuses, scores, ...(ceiling !== undefined ? { ceiling } : {}) } };
 }
+
+/**
+ * When the opening summary is shown. It opens the FIRST answer of a conversation and is shown again only when the saved
+ * profile has changed since it was last shown, or when the visitor asks about their position; any other answer may refer
+ * back to it briefly but must not repeat it. "Last shown" is read from the conversation itself: the answer that carried
+ * the summary also carries a `data-lead` part with the profile's fingerprint (lib/chat/corrected-stream.ts), and the
+ * client sends the whole conversation back with every message.
+ */
+
+/** FNV-1a of the profile summary and its source: stable across languages and requests, changes when the saved profile does. */
+export function profileFingerprint(profile: { summary: string; source: string }): string {
+  let h = 0x811c9dc5;
+  for (const ch of `${profile.source}\n${profile.summary}`) {
+    h ^= ch.codePointAt(0)!;
+    h = Math.imul(h, 0x01000193) >>> 0;
+  }
+  return h.toString(16).padStart(8, "0");
+}
+
+/** The fingerprint carried by the most recent assistant answer that showed the summary, or undefined (none shown yet). */
+export function lastShownLeadFingerprint(messages: ReadonlyArray<{ role: string; parts: ReadonlyArray<{ type: string; data?: unknown }> }>): string | undefined {
+  for (let i = messages.length - 1; i >= 0; i--) {
+    if (messages[i].role !== "assistant") continue;
+    for (const part of messages[i].parts) {
+      const fp = part.type === "data-lead" ? (part.data as { fp?: unknown } | undefined)?.fp : undefined;
+      if (typeof fp === "string") return fp;
+    }
+  }
+  return undefined;
+}
+
+/** The visitor asks where they stand (their score, status, eligibility, chances, situation) -- English / Turkish / Chinese. */
+const ASKS_POSITION = new RegExp(
+  [
+    "\\bwhere (?:do|am) i stand\\b",
+    "\\bmy (?:current )?(?:position|standing|status|score|points|situation|eligibility|chances|profile)\\b",
+    "\\bam i eligible\\b",
+    "\\bhow (?:am i|do i) (?:doing|look)\\b",
+    "\\b(?:summar(?:y|ise|ize)|recap) (?:of )?my\\b",
+    "durumum|konumum|neredeyim|puanım|puanim|skorum|uygun muyum|şansım",
+    "我的(?:情况|位置|处境|分数|得分|积分|状态|资格|条件|机会|档案)|我(?:符合|有资格)|我现在(?:在哪|处于)",
+  ].join("|"),
+  "iu",
+);
+export const asksAboutPosition = (text: string): boolean => ASKS_POSITION.test(text);
+
+export function shouldShowLead(opts: { fingerprint: string; lastShown: string | undefined; userText: string }): boolean {
+  return opts.lastShown !== opts.fingerprint || asksAboutPosition(opts.userText);
+}
