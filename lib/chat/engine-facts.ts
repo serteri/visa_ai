@@ -165,6 +165,7 @@ export function buildEngineFacts(live: LiveStateData = {}): string {
     "",
     "Skills assessment (assessing authority) fees, per authority and PATHWAY (the report's registry; the fee depends on the pathway, so always name the pathway and never quote one pathway's fee for another; if the visitor's pathway is not in their profile, give the pathway names with their fees):",
     ...authorityFeeLines(),
+    "- ACS states all its fees excluding GST (guide p.1) and does not say who pays GST; the report applies its own rule (the same as for AIMS and Engineers Australia): an applicant in Australia sees the GST-inclusive figure (x1.10), one outside Australia the GST-exclusive figure. The ACS guide states no processing time: say \"not stated in the ACS guide\", never a number of weeks.",
     "",
     "Mandatory requirements per visa (the report's gate matrix, from the Home Affairs pages):",
     ...gateLines(),

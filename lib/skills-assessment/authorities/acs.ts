@@ -1,10 +1,11 @@
 import type { SkillsAssessmentAuthority, LocalizedString } from "../types";
+import { ACS_PROCESSING_NOT_STATED, acsAppealFees, acsRegistryFees } from "../acs-fees";
 
 /**
  * Australian Computer Society (ACS)
  * Source: ACS Migration Skills Assessment — official guide
  * Fee increase effective 3 November 2025
- * Verified: 2025-11-03
+ * Fees and the GST rule: src/data/skills-assessment/acs-fees.json via ../acs-fees.ts (verified against the guide 2026-10-03)
  *
  * Multilanguage support: EN, TR, ZH-Hans
  * Largest occupation set of any authority (35 ICT/CS/Cyber Security roles).
@@ -13,7 +14,7 @@ export const acsAuthority: SkillsAssessmentAuthority = {
   authorityId: "ACS",
   authorityName: "Australian Computer Society",
   country: "AU",
-  lastVerified: "2025-11-03",
+  lastVerified: "2026-10-03",
   sourceDocument:
     "ACS Migration Skills Assessment — official guide, fee increase effective 3 November 2025",
   notes: [
@@ -104,7 +105,8 @@ export const acsAuthority: SkillsAssessmentAuthority = {
         tr: "Avustralya'da lisans veya üzeri, BT/Veri Bilimi dalı, ilgili meslek ile yakından ilişkili",
         "zh-Hans": "澳洲学士学位或以上，IT/数据科学专业，与提名职业密切相关",
       },
-      fees: [{ label: { en: "Post Australian Study Assessment", tr: "Avustralya Eğitimi Sonrası Değerlendirme", "zh-Hans": "澳洲留学后评估" }, amountAUD: 1136 }],
+      fees: acsRegistryFees("acs_post_australian_study", { en: "Post Australian Study Assessment", tr: "Avustralya Eğitimi Sonrası Değerlendirme", "zh-Hans": "澳洲留学后评估" }),
+      processingNotStated: ACS_PROCESSING_NOT_STATED,
       documentRequirements: [
         {
           en: "Two forms of photo identification (one must be current passport) plus evidence of name change if applicable.",
@@ -145,8 +147,8 @@ export const acsAuthority: SkillsAssessmentAuthority = {
         "zh-Hans": "通用技能评估",
       },
       requiresPriorAssessment: false,
-      fees: [{ label: { en: "General Skills Assessment", tr: "Genel Beceri Değerlendirmesi", "zh-Hans": "通用技能评估" }, amountAUD: 1498 }],
-      processingTimeWeeks: { standard: 12 },
+      fees: acsRegistryFees("acs_general_skills", { en: "General Skills Assessment", tr: "Genel Beceri Değerlendirmesi", "zh-Hans": "通用技能评估" }),
+      processingNotStated: ACS_PROCESSING_NOT_STATED,
       documentRequirements: [
         {
           en: "Two forms of photo identification plus evidence of name change if applicable.",
@@ -202,8 +204,8 @@ export const acsAuthority: SkillsAssessmentAuthority = {
         "zh-Hans": "先前学习认可 (RPL)",
       },
       minWorkExperienceYears: 6,
-      fees: [{ label: { en: "RPL Assessment", tr: "RPL Değerlendirmesi", "zh-Hans": "RPL评估" }, amountAUD: 625 }],
-      processingTimeWeeks: { standard: 12 },
+      fees: acsRegistryFees("acs_rpl", { en: "RPL Assessment", tr: "RPL Değerlendirmesi", "zh-Hans": "RPL评估" }),
+      processingNotStated: ACS_PROCESSING_NOT_STATED,
       documentRequirements: [
         {
           en: "Two forms of photo identification plus evidence of name change if applicable.",
@@ -254,8 +256,8 @@ export const acsAuthority: SkillsAssessmentAuthority = {
         "zh-Hans": "仅资格评估——临时毕业（职业后工作流）",
       },
       eligibleFor: ["AU"],
-      fees: [{ label: { en: "Qualification Only Assessment", tr: "Yalnızca Nitelik Değerlendirmesi", "zh-Hans": "仅资格评估" }, amountAUD: 625 }],
-      processingTimeWeeks: { standard: 12 },
+      fees: acsRegistryFees("acs_temporary_graduate", { en: "Temporary Graduate (Qualification Only) Assessment", tr: "Temporary Graduate (Yalnızca Nitelik) Değerlendirmesi", "zh-Hans": "临时毕业生（仅资格）评估" }),
+      processingNotStated: ACS_PROCESSING_NOT_STATED,
       documentRequirements: [
         {
           en: "Two forms of photo identification plus evidence of name change if applicable.",
@@ -296,8 +298,8 @@ export const acsAuthority: SkillsAssessmentAuthority = {
         "zh-Hans": "仅资格评估——专业年计划注册",
       },
       eligibleFor: ["AU"],
-      fees: [{ label: { en: "Qualification Only Assessment", tr: "Yalnızca Nitelik Değerlendirmesi", "zh-Hans": "仅资格评估" }, amountAUD: 625 }],
-      processingTimeWeeks: { standard: 12 },
+      fees: acsRegistryFees("acs_qualification_only", { en: "Qualification Only Assessment", tr: "Yalnızca Nitelik Değerlendirmesi", "zh-Hans": "仅资格评估" }),
+      processingNotStated: ACS_PROCESSING_NOT_STATED,
       documentRequirements: [
         {
           en: "Two forms of photo identification plus evidence of name change if applicable.",
@@ -324,4 +326,5 @@ export const acsAuthority: SkillsAssessmentAuthority = {
       ],
     },
   ],
+  fees: acsAppealFees(),
 };

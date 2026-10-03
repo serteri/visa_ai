@@ -240,6 +240,10 @@ jobs:
       - name: AIMS skills assessment fees (drift + invariants)
         run: npm run test:aims-fees
 
+      # ACS fees per pathway (excl. GST as the guide states, incl. GST by the report's location rule), appeals, no processing time.
+      - name: ACS fees (registry, provenance, tool page, chat facts, GST rule)
+        run: npm run test:acs-fees
+
       - name: ADC skills assessment (drift + invariants; no amount stated) and CASA scope
         run: npm run test:adc-fees
 

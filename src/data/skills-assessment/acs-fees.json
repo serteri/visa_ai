@@ -1,0 +1,124 @@
+{
+  "sourceDocument": "data/knowledge/Skill Assessments/Australian Computer Society Incorporated/Australian Computer Society Incorporated.pdf",
+  "sourceTitle": "ACS Migration Skills Assessment — official guide, fee increase effective 3 November 2025",
+  "sourcePageCount": 33,
+  "sourceFileMtime": "2026-08-01",
+  "extractedDate": "2026-10-03",
+  "generatedBy": "transcribed by hand from the output of scripts/inventory-acs-source.ts, which the repository owner ran locally against the PDF above (the script and the PDF are not in the repository); there is no generator for this file",
+  "currency": "AUD",
+  "feesExclGst": true,
+  "effectiveFrom": "2025-11-03",
+  "gstRule": {
+    "gstRate": 0.1,
+    "statedByAcs": false,
+    "rule": "The ACS guide states every fee excluding GST (p.1) and does not say who pays GST. The report applies the rule it applies for AIMS and Engineers Australia: an applicant in Australia sees the GST-inclusive figure (excl. GST x 1.10), one outside Australia the GST-exclusive figure; no country given -> in Australia.",
+    "appliedBy": "the report (lib/skills-assessment/acs-fees.ts), not stated by ACS"
+  },
+  "fees": [
+    {
+      "id": "acs_post_australian_study",
+      "pathway": "POST_AU_STUDY",
+      "name": "Post Australian Study",
+      "feeExclGstAud": 1136,
+      "previousFeeExclGstAud": 1100,
+      "pages": [
+        1,
+        15
+      ],
+      "quotes": [
+        "p.1 fee table (columns \"Current Fees (excl GST)\" / \"New Fee (excl GST)\", effective 3rd November 2025): Post Australian Study $1,100 → $1,136",
+        "p.15: \"The application fee for the Post Australian Study Application pathway is $1,136\""
+      ]
+    },
+    {
+      "id": "acs_general_skills",
+      "pathway": "GENERAL_SKILLS",
+      "name": "General Skills",
+      "feeExclGstAud": 1498,
+      "previousFeeExclGstAud": 1450,
+      "pages": [
+        1,
+        19
+      ],
+      "quotes": [
+        "p.1 fee table (columns \"Current Fees (excl GST)\" / \"New Fee (excl GST)\", effective 3rd November 2025): General Skills $1,450 → $1,498",
+        "p.19: \"The application fee for the General Skills assessment pathway is $1,498\""
+      ]
+    },
+    {
+      "id": "acs_rpl",
+      "pathway": "RPL",
+      "name": "Recognition of Prior Learning",
+      "feeExclGstAud": 625,
+      "previousFeeExclGstAud": 605,
+      "pages": [
+        1,
+        21
+      ],
+      "quotes": [
+        "p.1 fee table (columns \"Current Fees (excl GST)\" / \"New Fee (excl GST)\", effective 3rd November 2025): Recognition of Prior Learning $605 → $625",
+        "p.21: \"The application fee for the RPL assessment pathway is $625\""
+      ]
+    },
+    {
+      "id": "acs_qualification_only",
+      "pathway": "QUALIFICATION_ONLY",
+      "name": "Qualification Only",
+      "feeExclGstAud": 625,
+      "previousFeeExclGstAud": null,
+      "pages": [
+        22
+      ],
+      "quotes": [
+        "p.22: \"The application fee for the Qualification Only Assessment pathway is $625\""
+      ]
+    },
+    {
+      "id": "acs_temporary_graduate",
+      "pathway": "QUALIFICATION_ONLY_TG485",
+      "name": "Temporary Graduate",
+      "feeExclGstAud": 625,
+      "previousFeeExclGstAud": 605,
+      "pages": [
+        1
+      ],
+      "quotes": [
+        "p.1 fee table (columns \"Current Fees (excl GST)\" / \"New Fee (excl GST)\", effective 3rd November 2025): Temporary Graduate $605 → $625"
+      ]
+    },
+    {
+      "id": "acs_appeal_level_1",
+      "pathway": "APPEAL_1",
+      "name": "Appeal Level 1",
+      "feeExclGstAud": 516,
+      "previousFeeExclGstAud": 500,
+      "pages": [
+        1
+      ],
+      "quotes": [
+        "p.1 fee table (columns \"Current Fees (excl GST)\" / \"New Fee (excl GST)\", effective 3rd November 2025): Appeal Level 1 $500 → $516"
+      ]
+    },
+    {
+      "id": "acs_appeal_level_2",
+      "pathway": "APPEAL_2",
+      "name": "Appeal Level 2",
+      "feeExclGstAud": 620,
+      "previousFeeExclGstAud": 600,
+      "pages": [
+        1
+      ],
+      "quotes": [
+        "p.1 fee table (columns \"Current Fees (excl GST)\" / \"New Fee (excl GST)\", effective 3rd November 2025): Appeal Level 2 $600 → $620"
+      ]
+    }
+  ],
+  "processing": {
+    "statedInDocument": false,
+    "note": "No processing-time statement was found anywhere in the document (inventory output); the report and the tool page say \"Not stated in the ACS guide\"."
+  },
+  "notStated": [
+    "who pays GST",
+    "processing time"
+  ]
+}

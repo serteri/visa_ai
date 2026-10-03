@@ -72,7 +72,11 @@ export function buildProfileSummary(
   // Residence and the assessment fee only add to a profile that already has report content (an empty report stays empty).
   const fee = lines.length > 0 ? visitorAuthorityFee(input) : undefined;
   if (lines.length > 0) lines.push(...residenceLines(residenceFacts(input)));
-  if (fee) lines.push(`Skills assessment fee in the visitor's report: ${fee.authority} (${fee.authorityId}), ${fee.pathway} pathway, AUD ${fee.amountAUD.toLocaleString("en-AU")}${fee.estimated ? " (estimate pending verification)" : ""}. Other pathways of the same authority cost differently: name the pathway whenever you quote an assessment fee.`);
+  if (fee) {
+    const money = (n: number) => `AUD ${n.toLocaleString("en-AU", { minimumFractionDigits: Number.isInteger(n) ? 0 : 2, maximumFractionDigits: 2 })}`;
+    const gst = fee.otherGstAmountAUD === undefined ? "" : fee.otherGstAmountAUD < fee.amountAUD ? ` incl. GST (applying from within Australia; ${money(fee.otherGstAmountAUD)} excl. GST, as the authority states it)` : ` excl. GST (applying from outside Australia; ${money(fee.otherGstAmountAUD)} incl. GST)`;
+    lines.push(`Skills assessment fee in the visitor's report: ${fee.authority} (${fee.authorityId}), ${fee.pathway} pathway, ${money(fee.amountAUD)}${gst}${fee.estimated ? " (estimate pending verification)" : ""}. Other pathways of the same authority cost differently: name the pathway whenever you quote an assessment fee.`);
+  }
 
   const blocked = report.stateNominationTracker?.conditionBlocked;
   if (blocked) {

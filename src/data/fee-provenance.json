@@ -296,8 +296,8 @@
       "value": 1498,
       "currency": "AUD",
       "effective_from": "2025-11-03",
-      "last_verified": "2026-09-22",
-      "source": "data/knowledge/Skill Assessments/Australian Computer Society Incorporated/Australian Computer Society Incorporated.pdf -- \"Application fee\" (General Skills pathway): \"The application fee for the General Skills assessment pathway is $1,498.\"",
+      "last_verified": "2026-10-03",
+      "source": "data/knowledge/Skill Assessments/Australian Computer Society Incorporated/Australian Computer Society Incorporated.pdf -- verified 2026-10-03 against the output of scripts/inventory-acs-source.ts run by the repository owner against the PDF (33 pages, file mtime 2026-08-01; the script and the PDF are not in the repository): p.19: \"The application fee for the General Skills assessment pathway is $1,498\"; p.1 fee table (excl GST, effective 3rd November 2025): General Skills $1,450 → $1,498.",
       "locations": [
         "lib/skills-assessment/authorities/acs.ts:pathways[GENERAL_SKILLS].fees[0].amountAUD"
       ]
@@ -497,8 +497,8 @@
       "value": 1498,
       "currency": "AUD",
       "effective_from": "2025-11-03",
-      "last_verified": "2026-09-24",
-      "source": "lib/skills-assessment/authorities/acs.ts pathways[GENERAL_SKILLS].fees[0].amountAUD (same figure as provenance fact acs_general_skills_assessment_fee, verified 2026-09-22) -- data/knowledge/Skill Assessments/Australian Computer Society Incorporated/Australian Computer Society Incorporated.pdf p.19: \"The application fee for the General Skills assessment pathway is $1,498\". The tool page reads the same registry figure the report shows; the page reference was located in the source document, the figure was not re-extracted.",
+      "last_verified": "2026-10-03",
+      "source": "lib/skills-assessment/authorities/acs.ts pathways[GENERAL_SKILLS].fees[1].amountAUD (excl. GST; src/data/skills-assessment/acs-fees.json) -- data/knowledge/Skill Assessments/Australian Computer Society Incorporated/Australian Computer Society Incorporated.pdf -- verified 2026-10-03 against the output of scripts/inventory-acs-source.ts run by the repository owner against the PDF (33 pages, file mtime 2026-08-01; the script and the PDF are not in the repository): p.19: \"The application fee for the General Skills assessment pathway is $1,498\"; p.1 fee table: General Skills $1,450 → $1,498. The tool page and the report read the same registry figure (excl. GST; src/data/skills-assessment/acs-fees.json).",
       "locations": [
         "src/data/assessing-bodies.json:assessingBodies.ACS.fee",
         "app/[locale]/(main)/tools/skills-assessment/SkillsAssessmentClient.tsx (Assessment Fee tile)"
@@ -510,8 +510,8 @@
       "value": 1136,
       "currency": "AUD",
       "effective_from": "2025-11-03",
-      "last_verified": "2026-09-24",
-      "source": "lib/skills-assessment/authorities/acs.ts pathways[POST_AU_STUDY].fees[0].amountAUD -- data/knowledge/Skill Assessments/Australian Computer Society Incorporated/Australian Computer Society Incorporated.pdf p.15: \"The application fee for the Post Australian Study Application pathway is $1,136\". The tool page reads the same registry figure the report shows; the page reference was located in the source document, the figure was not re-extracted.",
+      "last_verified": "2026-10-03",
+      "source": "lib/skills-assessment/authorities/acs.ts pathways[POST_AU_STUDY].fees[1].amountAUD (excl. GST; src/data/skills-assessment/acs-fees.json) -- data/knowledge/Skill Assessments/Australian Computer Society Incorporated/Australian Computer Society Incorporated.pdf -- verified 2026-10-03 against the output of scripts/inventory-acs-source.ts run by the repository owner against the PDF (33 pages, file mtime 2026-08-01; the script and the PDF are not in the repository): p.15: \"The application fee for the Post Australian Study Application pathway is $1,136\"; p.1 fee table: Post Australian Study $1,100 → $1,136.",
       "locations": [
         "src/data/assessing-bodies.json:assessingBodies.ACS.fee",
         "app/[locale]/(main)/tools/skills-assessment/SkillsAssessmentClient.tsx (Assessment Fee tile)"
@@ -523,8 +523,8 @@
       "value": 625,
       "currency": "AUD",
       "effective_from": "2025-11-03",
-      "last_verified": "2026-09-24",
-      "source": "lib/skills-assessment/authorities/acs.ts pathways[RPL | QUALIFICATION_ONLY_TG485 | QUALIFICATION_ONLY_PY].fees[0].amountAUD -- data/knowledge/Skill Assessments/Australian Computer Society Incorporated/Australian Computer Society Incorporated.pdf pp.21-22: \"The application fee for the RPL assessment pathway is $625 ... The application fee for the Qualification Only Assessment pathway is $625\". The tool page reads the same registry figure the report shows; the page reference was located in the source document, the figure was not re-extracted.",
+      "last_verified": "2026-10-03",
+      "source": "lib/skills-assessment/authorities/acs.ts pathways[RPL | QUALIFICATION_ONLY_TG485 | QUALIFICATION_ONLY_PY].fees[1].amountAUD (excl. GST; src/data/skills-assessment/acs-fees.json) -- data/knowledge/Skill Assessments/Australian Computer Society Incorporated/Australian Computer Society Incorporated.pdf -- verified 2026-10-03 against the output of scripts/inventory-acs-source.ts run by the repository owner against the PDF (33 pages, file mtime 2026-08-01; the script and the PDF are not in the repository): p.21: \"The application fee for the RPL assessment pathway is $625\"; p.22: \"The application fee for the Qualification Only Assessment pathway is $625\"; p.1 fee table: Recognition of Prior Learning $605 → $625, Temporary Graduate $605 → $625.",
       "locations": [
         "src/data/assessing-bodies.json:assessingBodies.ACS.fee",
         "app/[locale]/(main)/tools/skills-assessment/SkillsAssessmentClient.tsx (Assessment Fee tile)"
@@ -1794,6 +1794,112 @@
       "locations": [
         "lib/skills-assessment/authorities/*.ts",
         "src/data/occupations.json"
+      ]
+    },
+    {
+      "id": "acs_post_australian_study_fee",
+      "description": "ACS Post Australian Study pathway fee, excl. GST (the report adds 10% GST for an applicant in Australia: 1,249.60)",
+      "value": 1136,
+      "currency": "AUD",
+      "effective_from": "2025-11-03",
+      "last_verified": "2026-10-03",
+      "source": "data/knowledge/Skill Assessments/Australian Computer Society Incorporated/Australian Computer Society Incorporated.pdf -- verified 2026-10-03 against the output of scripts/inventory-acs-source.ts run by the repository owner against the PDF (33 pages, file mtime 2026-08-01; the script and the PDF are not in the repository): p.15: \"The application fee for the Post Australian Study Application pathway is $1,136\"; p.1 fee table: Post Australian Study $1,100 → $1,136.",
+      "locations": [
+        "src/data/skills-assessment/acs-fees.json",
+        "lib/skills-assessment/authorities/acs.ts:pathways[POST_AU_STUDY].fees"
+      ]
+    },
+    {
+      "id": "acs_rpl_fee",
+      "description": "ACS Recognition of Prior Learning pathway fee, excl. GST (the report adds 10% GST for an applicant in Australia: 687.50)",
+      "value": 625,
+      "currency": "AUD",
+      "effective_from": "2025-11-03",
+      "last_verified": "2026-10-03",
+      "source": "data/knowledge/Skill Assessments/Australian Computer Society Incorporated/Australian Computer Society Incorporated.pdf -- verified 2026-10-03 against the output of scripts/inventory-acs-source.ts run by the repository owner against the PDF (33 pages, file mtime 2026-08-01; the script and the PDF are not in the repository): p.21: \"The application fee for the RPL assessment pathway is $625\"; p.1 fee table: Recognition of Prior Learning $605 → $625.",
+      "locations": [
+        "src/data/skills-assessment/acs-fees.json",
+        "lib/skills-assessment/authorities/acs.ts:pathways[RPL].fees"
+      ]
+    },
+    {
+      "id": "acs_qualification_only_fee",
+      "description": "ACS Qualification Only pathway fee, excl. GST (Professional Year; the report adds 10% GST for an applicant in Australia: 687.50)",
+      "value": 625,
+      "currency": "AUD",
+      "effective_from": "2025-11-03",
+      "last_verified": "2026-10-03",
+      "source": "data/knowledge/Skill Assessments/Australian Computer Society Incorporated/Australian Computer Society Incorporated.pdf -- verified 2026-10-03 against the output of scripts/inventory-acs-source.ts run by the repository owner against the PDF (33 pages, file mtime 2026-08-01; the script and the PDF are not in the repository): p.22: \"The application fee for the Qualification Only Assessment pathway is $625\".",
+      "locations": [
+        "src/data/skills-assessment/acs-fees.json",
+        "lib/skills-assessment/authorities/acs.ts:pathways[QUALIFICATION_ONLY_PY].fees"
+      ]
+    },
+    {
+      "id": "acs_temporary_graduate_fee",
+      "description": "ACS Temporary Graduate (Qualification Only for the 485) fee, excl. GST (the report adds 10% GST for an applicant in Australia: 687.50)",
+      "value": 625,
+      "currency": "AUD",
+      "effective_from": "2025-11-03",
+      "last_verified": "2026-10-03",
+      "source": "data/knowledge/Skill Assessments/Australian Computer Society Incorporated/Australian Computer Society Incorporated.pdf -- verified 2026-10-03 against the output of scripts/inventory-acs-source.ts run by the repository owner against the PDF (33 pages, file mtime 2026-08-01; the script and the PDF are not in the repository): p.1 fee table (columns \"Current Fees (excl GST)\" / \"New Fee (excl GST)\", effective 3rd November 2025): Temporary Graduate $605 → $625.",
+      "locations": [
+        "src/data/skills-assessment/acs-fees.json",
+        "lib/skills-assessment/authorities/acs.ts:pathways[QUALIFICATION_ONLY_TG485].fees"
+      ]
+    },
+    {
+      "id": "acs_appeal_level_1_fee",
+      "description": "ACS Appeal Level 1 fee, excl. GST (the report adds 10% GST for an applicant in Australia: 567.60)",
+      "value": 516,
+      "currency": "AUD",
+      "effective_from": "2025-11-03",
+      "last_verified": "2026-10-03",
+      "source": "data/knowledge/Skill Assessments/Australian Computer Society Incorporated/Australian Computer Society Incorporated.pdf -- verified 2026-10-03 against the output of scripts/inventory-acs-source.ts run by the repository owner against the PDF (33 pages, file mtime 2026-08-01; the script and the PDF are not in the repository): p.1 fee table: Appeal Level 1 $500 → $516.",
+      "locations": [
+        "src/data/skills-assessment/acs-fees.json",
+        "lib/skills-assessment/authorities/acs.ts:fees (authority-level)"
+      ]
+    },
+    {
+      "id": "acs_appeal_level_2_fee",
+      "description": "ACS Appeal Level 2 fee, excl. GST (the report adds 10% GST for an applicant in Australia: 682.00)",
+      "value": 620,
+      "currency": "AUD",
+      "effective_from": "2025-11-03",
+      "last_verified": "2026-10-03",
+      "source": "data/knowledge/Skill Assessments/Australian Computer Society Incorporated/Australian Computer Society Incorporated.pdf -- verified 2026-10-03 against the output of scripts/inventory-acs-source.ts run by the repository owner against the PDF (33 pages, file mtime 2026-08-01; the script and the PDF are not in the repository): p.1 fee table: Appeal Level 2 $600 → $620.",
+      "locations": [
+        "src/data/skills-assessment/acs-fees.json",
+        "lib/skills-assessment/authorities/acs.ts:fees (authority-level)"
+      ]
+    },
+    {
+      "id": "acs_gst_rule",
+      "description": "Who pays GST on ACS fees: NOT stated by ACS. Every ACS fee is stated excl. GST (p.1 header \"(excl GST)\"). The report applies the rule it uses for AIMS and Engineers Australia: an applicant in Australia sees the GST-inclusive figure (x1.10, e.g. General Skills 1,498 -> 1,647.80), one outside Australia the GST-exclusive figure; no country -> in Australia. The rule is applied by the report, not stated by ACS.",
+      "value": null,
+      "currency": "AUD",
+      "effective_from": "2025-11-03",
+      "last_verified": "2026-10-03",
+      "source": "needs human verification of the rule itself (the guide is silent on who pays GST) -- the excl. GST statement is from data/knowledge/Skill Assessments/Australian Computer Society Incorporated/Australian Computer Society Incorporated.pdf p.1, verified 2026-10-03 against the output of scripts/inventory-acs-source.ts run by the repository owner against the PDF (33 pages, file mtime 2026-08-01; the script and the PDF are not in the repository)",
+      "locations": [
+        "src/data/skills-assessment/acs-fees.json",
+        "lib/skills-assessment/acs-fees.ts:acsRegistryFees",
+        "lib/skills-assessment/engine: selectPrimaryFee (applicantLocation)"
+      ]
+    },
+    {
+      "id": "acs_processing_time",
+      "description": "ACS processing time: not stated in the ACS guide (no processing-time statement was found anywhere in the 33-page document). The report and the tool page say \"Not stated in the ACS guide\"; the former unsourced \"12 wk\" is removed.",
+      "value": null,
+      "unit": "weeks",
+      "currency": "AUD",
+      "effective_from": "2025-11-03",
+      "last_verified": "2026-10-03",
+      "source": "data/knowledge/Skill Assessments/Australian Computer Society Incorporated/Australian Computer Society Incorporated.pdf -- verified 2026-10-03 against the output of scripts/inventory-acs-source.ts run by the repository owner against the PDF (33 pages, file mtime 2026-08-01; the script and the PDF are not in the repository): no processing-time statement found",
+      "locations": [
+        "lib/skills-assessment/authorities/acs.ts:pathways[*].processingNotStated",
+        "src/data/assessing-bodies.json:assessingBodies.ACS.processingTime"
       ]
     }
   ]

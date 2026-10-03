@@ -263,7 +263,7 @@ async function main() {
     const figureChecks: Array<[string, RegExp]> = [
       ["189 VAC 6,135", /6,135/],
       ["190/491 VAC 6,140", /6,140/],
-      ["ACS/skills fee", /1,498|530|900/],
+      ["ACS/skills fee", /1,647\.80|1,498|530|900/],
       ["second instalment 4,885", /4,885/],
       ["second instalment 4,890", /4,890/],
       ["191 income: ATO notices of assessment", /notices of assessment/],
@@ -320,7 +320,8 @@ async function main() {
       const text = await extractPdfText(pdfBytes);
 
       // (A3) Estimated total renders in the PDF and reflects the computed sum.
-      const totalRe = /Estimated total[^0-9]*([0-9,]+)-([0-9,]+)|预计总计[^0-9]*([0-9,]+)-([0-9,]+)|Tahmini toplam[^0-9]*([0-9,]+)[.,]([0-9]{3})?-?/i;
+      // Amounts may carry cents (an ACS fee incl. GST: 1,647.80), so the digits group allows "." and ",".
+      const totalRe = /Estimated total[^0-9]*([0-9,.]+)-([0-9,.]+)|预计总计[^0-9]*([0-9,.]+)-([0-9,.]+)|Tahmini toplam[^0-9]*([0-9,.]+)-?/i;
       if (!totalRe.test(text)) {
         anyFailure = true;
         console.error(`  ❌ FAILED: "Estimated total" wording not found in ${persona.name}/${locale} PDF text`);

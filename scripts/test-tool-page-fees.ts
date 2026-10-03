@@ -65,12 +65,12 @@ const fail = (m: string) => {
 };
 
 /** Every number in a string ("AUD 5,233–5,633" -> [5233, 5633]; "6–8 weeks" -> [6, 8]). */
-const numbers = (s: string) => [...s.matchAll(/\d[\d,]*/g)].map((m) => Number(m[0].replace(/,/g, "")));
+const numbers = (s: string) => [...s.matchAll(/\d[\d,]*(?:\.\d+)?/g)].map((m) => Number(m[0].replace(/,/g, "")));
 const same = (a: number[], b: number[]) => JSON.stringify([...new Set(a)].sort((x, y) => x - y)) === JSON.stringify([...new Set(b)].sort((x, y) => x - y));
 const allText = (v: Localized | undefined) => (v === undefined ? [] : typeof v === "string" ? [v] : [v.en, v.tr, v["zh-Hans"]]);
 function noteFiguresWithin(label: string, note: Localized | undefined, allowed: number[]) {
   for (const text of allText(note)) {
-    const stray = numbers(text).filter((n) => n >= 100 && !allowed.includes(n) && n !== 2026);
+    const stray = numbers(text).filter((n) => n >= 100 && !allowed.includes(n) && n !== 2026 && n !== 2025);
     if (stray.length) fail(`${label}: fee note states figures the report's data does not (${stray.join(", ")}): "${text}"`);
   }
 }
@@ -161,14 +161,19 @@ console.log("\n==================== ACS, TRA, CPA, CA ANZ, IPA, AACA, OTC (tool 
       file: "acs",
       authority: acsAuthority,
       shown: [
-        { pathwayId: "GENERAL_SKILLS", index: 0, factId: "tool_page_acs_general_skills_fee" },
-        { pathwayId: "POST_AU_STUDY", index: 0, factId: "tool_page_acs_post_au_study_fee" },
-        { pathwayId: "RPL", index: 0, factId: "tool_page_acs_rpl_qualification_only_fee" },
+        // Index 1 = the fee excluding GST, as ACS states it (index 0 = the GST-inclusive figure the report shows in Australia).
+        { pathwayId: "GENERAL_SKILLS", index: 1, factId: "tool_page_acs_general_skills_fee" },
+        { pathwayId: "POST_AU_STUDY", index: 1, factId: "tool_page_acs_post_au_study_fee" },
+        { pathwayId: "RPL", index: 1, factId: "tool_page_acs_rpl_qualification_only_fee" },
       ],
-      note: [],
+      note: [
+        { pathwayId: "GENERAL_SKILLS", index: 0, factId: "" },
+        { pathwayId: "POST_AU_STUDY", index: 0, factId: "" },
+        { pathwayId: "RPL", index: 0, factId: "" },
+      ],
       // The report resolves the ACS pathway from the profile (resolveACSPathway): any pathway's fee can appear.
       reportPathways: acsAuthority.pathways.map((p) => p.pathwayId),
-      time: { kind: "unsourced", pathwayId: "GENERAL_SKILLS", registryWeeks: 12, why: "the ACS guide states no processing time" },
+      time: { kind: "unsourced", pathwayId: "GENERAL_SKILLS", registryWeeks: undefined, why: "the ACS guide states no processing time" },
     },
     {
       key: "TRA",
@@ -240,11 +245,11 @@ console.log("\n==================== ACS, TRA, CPA, CA ANZ, IPA, AACA, OTC (tool 
     const toolFees = numbers(body.fee ?? "");
     if (!same(toolFees, shown as number[])) fail(`${c.key}: tool fee "${body.fee}" != registry ${shown.join(" / ")}`);
     for (const id of c.reportPathways) {
-      const reportFee = firstFee(pathway(a, id));
+      const reportFee = c.key === "ACS" ? pathway(a, id).fees[1]?.amountAUD : firstFee(pathway(a, id));
       if (reportFee !== undefined && !toolFees.includes(reportFee)) fail(`${c.key}: the report shows AUD ${reportFee} (${id}) but the tool fee "${body.fee}" does not`);
     }
     // Fee note: only registry figures of this authority, and every noted figure in every locale.
-    const registryFees = a.pathways.flatMap((p) => p.fees.map((f) => f.amountAUD).filter((v): v is number => typeof v === "number"));
+    const registryFees = [...a.pathways.flatMap((p) => p.fees), ...(a.fees ?? [])].map((f) => f.amountAUD).filter((v): v is number => typeof v === "number");
     noteFiguresWithin(c.key, body.feeNote, registryFees);
     for (const v of noted as number[]) if (!allText(body.feeNote).every((t) => numbers(t).includes(v))) fail(`${c.key}: fee note must state AUD ${v} in every locale`);
 
@@ -280,6 +285,7 @@ console.log("\n==================== ACS, TRA, CPA, CA ANZ, IPA, AACA, OTC (tool 
 
     // Provenance: one fact per figure shown, with the registry value, the registry file and a document page.
     for (const r of [...c.shown, ...c.note]) {
+      if (!r.factId) continue; // a figure computed by the report (ACS: excl. GST x 1.10), not a fact in the manifest
       const f = facts.find((x) => x.id === r.factId);
       if (!f) { fail(`fee-provenance.json has no "${r.factId}"`); continue; }
       if (f.value !== reg(a, r) || !f.last_verified || !f.source?.includes(`lib/skills-assessment/authorities/${c.file}.ts`) || !/ pp?\.\d/.test(f.source)) {

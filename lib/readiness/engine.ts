@@ -27,12 +27,14 @@ import {
   resolveACSPathway,
   selectPrimaryFee,
   alsoAssessedBy,
+  applicantLocationFor,
   resolveLocalized,
   resolveLocalizedArray,
 } from "@/lib/skills-assessment";
 import { resolveAssessingAuthority } from "@/lib/skills-assessment/resolve-authority";
 import type { ApplicantLocation } from "@/lib/skills-assessment/types";
 import { OSAP_FEES, resolveTraProgram, type TraProgram } from "@/lib/skills-assessment/tra-osap";
+import { acsNote } from "@/lib/skills-assessment/acs-fees";
 import { eaAmountLabel, eaNote, resolveEngineersAustraliaAssessment } from "@/lib/skills-assessment/engineers-australia-fees";
 import {
   anzscoCodeFromOccupation,
@@ -5449,12 +5451,14 @@ function buildFinancialRoadmap(
         : eaAssessment
           ? eaAmountLabel(eaAssessment, locale as "en" | "tr" | "zh-Hans")
           : (primaryFee?.amountAUD !== undefined
-          ? `AUD ${primaryFee.amountAUD.toLocaleString("en-AU")} ${feeQualifiers ? `(${feeQualifiers})` : ""}`
+          ? `AUD ${primaryFee.amountAUD.toLocaleString("en-AU", { minimumFractionDigits: Number.isInteger(primaryFee.amountAUD) ? 0 : 2, maximumFractionDigits: 2 })} ${feeQualifiers ? `(${feeQualifiers})` : ""}`
           : (primaryFee?.label ? resolveLocalized(primaryFee.label, locale) : "")).trim() + (feeIsEstimate ? ` (${estimateQualifier(locale)})` : "");
       const alsoNote = alsoAssessedByNote(authority, alsoAssessedBy(input.occupation), locale);
-      const traNote = [traProgram ? traProgramNote(traProgram, locale) : eaAssessment ? eaNote(eaAssessment, locale as "en" | "tr" | "zh-Hans") : "", alsoNote].filter(Boolean).join(" ");
+      const traNote = [traProgram ? traProgramNote(traProgram, locale) : eaAssessment ? eaNote(eaAssessment, locale as "en" | "tr" | "zh-Hans") : authority.authorityId === "ACS" ? acsNote(locale as "en" | "tr" | "zh-Hans", applicantLocationFor(input.currentCountry)) : "", alsoNote].filter(Boolean).join(" ");
       const processing = primaryPathway.processingTimeWeeks?.label
         ? resolveLocalized(primaryPathway.processingTimeWeeks.label, locale)
+        : primaryPathway.processingNotStated && !primaryPathway.processingTimeWeeks
+        ? resolveLocalized(primaryPathway.processingNotStated, locale)
         : primaryPathway.processingTimeWeeks
         ? `${primaryPathway.processingTimeWeeks.standard} wk${primaryPathway.processingTimeWeeks.ifIncomplete ? ` (${primaryPathway.processingTimeWeeks.ifIncomplete} wk if incomplete)` : ""}`
         : "";
@@ -5479,8 +5483,8 @@ function buildFinancialRoadmap(
           ? feeLabel
           : feeLabel,
         explanation: isTr
-          ? `Otorite: ${authority.authorityName}. Varsayılan yol: ${pathwayName}.${primaryPathway.processingTimeWeeks ? ` İşlem süresi: ${processing}.` : ""}${primaryPathway.minWorkExperienceMonths ? ` Minimum iş deneyimi: ${primaryPathway.minWorkExperienceMonths} ay.` : primaryPathway.minWorkExperienceYears ? ` Minimum iş deneyimi: ${primaryPathway.minWorkExperienceYears} yıl.` : ""} ${notesText ? "Notlar: " + notesText : ""}${traNote ? ` ${traNote}` : ""} Kaynak: ${authority.sourceDocument} (last verified ${authority.lastVerified}).`
-          : `Assessing authority: ${authority.authorityName}. Default pathway: ${pathwayName}.${primaryPathway.processingTimeWeeks ? ` Processing time: ${processing}.` : ""}${primaryPathway.minWorkExperienceMonths ? ` Min work experience: ${primaryPathway.minWorkExperienceMonths} months.` : primaryPathway.minWorkExperienceYears ? ` Min work experience: ${primaryPathway.minWorkExperienceYears} years.` : ""} ${notesText ? "Notes: " + notesText : ""}${traNote ? ` ${traNote}` : ""} Source: ${authority.sourceDocument} (last verified ${authority.lastVerified}).`,
+          ? `Otorite: ${authority.authorityName}. Varsayılan yol: ${pathwayName}.${primaryPathway.processingTimeWeeks || primaryPathway.processingNotStated ? ` İşlem süresi: ${processing}.` : ""}${primaryPathway.minWorkExperienceMonths ? ` Minimum iş deneyimi: ${primaryPathway.minWorkExperienceMonths} ay.` : primaryPathway.minWorkExperienceYears ? ` Minimum iş deneyimi: ${primaryPathway.minWorkExperienceYears} yıl.` : ""} ${notesText ? "Notlar: " + notesText : ""}${traNote ? ` ${traNote}` : ""} Kaynak: ${authority.sourceDocument} (last verified ${authority.lastVerified}).`
+          : `Assessing authority: ${authority.authorityName}. Default pathway: ${pathwayName}.${primaryPathway.processingTimeWeeks || primaryPathway.processingNotStated ? ` Processing time: ${processing}.` : ""}${primaryPathway.minWorkExperienceMonths ? ` Min work experience: ${primaryPathway.minWorkExperienceMonths} months.` : primaryPathway.minWorkExperienceYears ? ` Min work experience: ${primaryPathway.minWorkExperienceYears} years.` : ""} ${notesText ? "Notes: " + notesText : ""}${traNote ? ` ${traNote}` : ""} Source: ${authority.sourceDocument} (last verified ${authority.lastVerified}).`,
         kind: "skills_assessment",
         amountMin: osap ? osap.amountMin : eaAssessment ? eaAssessment.amountMin : primaryFee?.amountAUD,
         amountMax: osap ? osap.amountMax : eaAssessment ? eaAssessment.amountMax : primaryFee?.amountAUD,
@@ -5501,8 +5505,8 @@ function buildFinancialRoadmap(
           ? "AUD 530–900+ (kuruma ve mesleğe göre)"
           : "AUD $530–$900+ (varies by authority and occupation)",
         explanation: isTr
-          ? "Değerlendirme kurumu ANZSCO meslek koduna göre belirlenir: BT/ICT rolleri (ANZSCO Major Group 26) → ACS (AUD 530–665, 6–12 hafta); Mühendislik → Engineers Australia (AUD 735–900, 4–10 hafta); Sağlık meslekleri → AHPRA (AUD 890+, lisans gereklidir); Muhasebe → CPA Australia, CAANZ veya IPA (AUD 600–800); Genel meslekler → VETASSESS (AUD 850, 10–16 hafta). Değerlendirme genellikle noterli belge kopyaları, iş referans mektupları ve resmi transkriptleri kapsar. ACS değerlendirmeleri için, son 8 yıl içinde en az 1 yıl BT ile ilgili iş deneyimi zorunludur. Bazı değerlendirme kurumları tekrar başvuru için indirimli ücret uygular."
-          : "The assessing authority is determined by your ANZSCO occupation code: IT/ICT roles (ANZSCO Major Group 26) → ACS (AUD $530–$665, 6–12 weeks); Engineering → Engineers Australia (AUD $735–$900, 4–10 weeks); Healthcare professions → AHPRA (AUD $890+, requires registration); Accounting → CPA Australia, CAANZ, or IPA (AUD $600–$800); General professional and trade occupations → VETASSESS (AUD $850, 10–16 weeks). All assessments require certified copies of qualifications, official transcripts, and detailed employment reference letters specifying duties, dates, and hours worked. ACS requires a minimum of 1 year of relevant IT work experience in the past 8 years. Negative assessment outcomes can be challenged or a re-assessment sought, which incurs additional fees (typically 50–80% of the original charge).",
+          ? "Değerlendirme kurumu ANZSCO meslek koduna göre belirlenir: BT/ICT rolleri (ANZSCO Major Group 26) → ACS (AUD 625–1.498 KDV hariç, yola göre; ACS kılavuzu işlem süresi belirtmez); Mühendislik → Engineers Australia (AUD 735–900, 4–10 hafta); Sağlık meslekleri → AHPRA (AUD 890+, lisans gereklidir); Muhasebe → CPA Australia, CAANZ veya IPA (AUD 600–800); Genel meslekler → VETASSESS (AUD 850, 10–16 hafta). Değerlendirme genellikle noterli belge kopyaları, iş referans mektupları ve resmi transkriptleri kapsar. ACS değerlendirmeleri için, son 8 yıl içinde en az 1 yıl BT ile ilgili iş deneyimi zorunludur. Bazı değerlendirme kurumları tekrar başvuru için indirimli ücret uygular."
+          : "The assessing authority is determined by your ANZSCO occupation code: IT/ICT roles (ANZSCO Major Group 26) → ACS (AUD $625–$1,498 excl. GST by pathway; the ACS guide states no processing time); Engineering → Engineers Australia (AUD $735–$900, 4–10 weeks); Healthcare professions → AHPRA (AUD $890+, requires registration); Accounting → CPA Australia, CAANZ, or IPA (AUD $600–$800); General professional and trade occupations → VETASSESS (AUD $850, 10–16 weeks). All assessments require certified copies of qualifications, official transcripts, and detailed employment reference letters specifying duties, dates, and hours worked. ACS requires a minimum of 1 year of relevant IT work experience in the past 8 years. Negative assessment outcomes can be challenged or a re-assessment sought, which incurs additional fees (typically 50–80% of the original charge).",
         kind: "skills_assessment",
         amountMin: 530,
         amountMax: 900,

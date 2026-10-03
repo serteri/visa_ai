@@ -31,7 +31,7 @@ export type Correction = { kind: "fee" | "gate" | "state_availability" | "visa_n
 };
 
 const T = (l: Locale, en: string, tr: string, zh: string) => (l === "tr" ? tr : l === "zh-Hans" ? zh : en);
-const aud = (n: number) => `AUD ${n.toLocaleString("en-AU")}`;
+const aud = (n: number) => `AUD ${n.toLocaleString("en-AU", { minimumFractionDigits: Number.isInteger(n) ? 0 : 2, maximumFractionDigits: 2 })}`;
 
 /**
  * The language of the conversation: what the visitor writes in, not the site language the page happened to be in. The
@@ -245,15 +245,23 @@ export function buildCorrections(conflicts: EngineConflict[], locale: Locale, ct
       const authority = getAuthorityById(c.authority);
       const rows = authorityFeeRows(locale).filter((r) => r.authorityId === c.authority);
       if (!authority || rows.length === 0) continue;
-      const seen = new Set<string>();
-      const list = rows
-        .filter((r) => (seen.has(`${r.pathway}|${r.amountAUD}`) ? false : (seen.add(`${r.pathway}|${r.amountAUD}`), true)))
-        .slice(0, 8)
-        .map((r) => `${r.pathway} ${aud(r.amountAUD)}${r.estimated ? T(locale, " (estimate pending verification)", " (doğrulama bekleyen tahmin)", "（待核实的估算）") : ""}`)
+      // One entry per pathway; a fee priced by location shows both GST columns.
+      const byPathway = new Map<string, typeof rows>();
+      for (const r of rows) byPathway.set(r.pathway, [...(byPathway.get(r.pathway) ?? []), r]);
+      const estimate = T(locale, " (estimate pending verification)", " (doğrulama bekleyen tahmin)", "（待核实的估算）");
+      const list = [...byPathway.entries()]
+        .slice(0, 12)
+        .map(([pathway, rs]) => {
+          const amounts = [...new Map(rs.map((r) => [`${r.applicantLocation ?? ""}|${r.amountAUD}`, r])).values()].map((r) => {
+            const gst = r.applicantLocation === "onshore" ? T(locale, " incl. GST in Australia", " Avustralya içinde KDV dahil", " 澳洲境内含 GST") : r.applicantLocation === "offshore" ? T(locale, " excl. GST outside Australia", " Avustralya dışında KDV hariç", " 澳洲境外不含 GST") : "";
+            return `${aud(r.amountAUD)}${gst}${r.estimated ? estimate : ""}`;
+          });
+          return `${pathway} ${amounts.join(" / ")}`;
+        })
         .join("; ");
       const mine = visitorAuthorityFee(ctx.input ?? {}, locale);
       const yours = mine && mine.authorityId === c.authority ? T(locale, ` For your profile the report uses the ${mine.pathway} pathway: ${aud(mine.amountAUD)}.`, ` Profilinizde rapor ${mine.pathway} yolunu kullanır: ${aud(mine.amountAUD)}.`, ` 针对您的资料，报告采用 ${mine.pathway} 途径：${aud(mine.amountAUD)}。`) : "";
-      const pages = c.authority === "ACS" ? T(locale, ", pp. 15, 19, 21-22", ", s. 15, 19, 21-22", "，第 15、19、21-22 页") : "";
+      const pages = c.authority === "ACS" ? T(locale, ", pp. 1, 15, 19, 21, 22", ", s. 1, 15, 19, 21, 22", "，第 1、15、19、21、22 页") : "";
       const src = `${authority.sourceDocument}${pages}`;
       add(`authority:${c.authority}`, {
         kind: "authority_fee",

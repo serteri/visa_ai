@@ -20,6 +20,8 @@ export type AuthorityFeeRow = {
   label: string;
   amountAUD: number;
   estimated: boolean;
+  /** Where the applicant applies from, for a fee priced by location (onshore = incl. GST, offshore = excl. GST). */
+  applicantLocation?: string;
 };
 
 const L = (s: Parameters<typeof resolveLocalized>[0], locale: Locale): string => resolveLocalized(s, locale) as string;
@@ -27,7 +29,7 @@ const L = (s: Parameters<typeof resolveLocalized>[0], locale: Locale): string =>
 function rowsOf(a: SkillsAssessmentAuthority, pathwayId: string, pathway: string, fees: AuthorityFee[], locale: Locale): AuthorityFeeRow[] {
   return fees
     .filter((f) => typeof f.amountAUD === "number" && f.amountAUD > 0)
-    .map((f) => ({ authorityId: a.authorityId, authority: a.authorityName, pathwayId, pathway, label: L(f.label, locale), amountAUD: f.amountAUD as number, estimated: f.estimated === true }));
+    .map((f) => ({ authorityId: a.authorityId, authority: a.authorityName, pathwayId, pathway, label: L(f.label, locale), amountAUD: f.amountAUD as number, estimated: f.estimated === true, ...(f.applicantLocation ? { applicantLocation: f.applicantLocation } : {}) }));
 }
 
 export function authorityFeeRows(locale: Locale = "en"): AuthorityFeeRow[] {
@@ -39,23 +41,31 @@ export function authorityFeeRows(locale: Locale = "en"): AuthorityFeeRow[] {
       for (const p of s.pathways) out.push(...rowsOf(a, p.pathwayId, `${L(s.serviceName, locale)} -- ${L(p.name, locale)}`, p.fees, locale));
       out.push(...rowsOf(a, s.serviceId, L(s.serviceName, locale), s.fees ?? [], locale));
     }
-    out.push(...rowsOf(a, "authority", "all pathways", a.fees ?? [], locale));
+    for (const f of a.fees ?? []) out.push(...rowsOf(a, "authority", L(f.label, locale), [f], locale));
   }
   return out;
 }
 
-const fmt = (n: number) => `AUD ${n.toLocaleString("en-AU")}`;
+const fmt = (n: number) => `AUD ${n.toLocaleString("en-AU", { minimumFractionDigits: Number.isInteger(n) ? 0 : 2, maximumFractionDigits: 2 })}`;
 
 /** One line per authority listing each pathway's fee (figures marked "estimate" are unverified placeholders). */
 export function authorityFeeLines(): string[] {
   const byAuthority = new Map<string, AuthorityFeeRow[]>();
   for (const r of authorityFeeRows()) byAuthority.set(r.authorityId, [...(byAuthority.get(r.authorityId) ?? []), r]);
   return [...byAuthority.values()].map((rows) => {
-    const parts: string[] = [];
+    // One entry per pathway (and fee label); a fee priced by location lists both GST columns.
+    const groups = new Map<string, AuthorityFeeRow[]>();
     for (const r of rows) {
-      const part = `${r.pathway}${r.label && r.label !== r.pathway && !r.pathway.includes(r.label) ? ` (${r.label})` : ""} ${fmt(r.amountAUD)}${r.estimated ? " (estimate pending verification)" : ""}`;
-      if (!parts.includes(part)) parts.push(part);
+      const name = `${r.pathway}${r.label && r.label !== r.pathway && !r.pathway.includes(r.label) ? ` (${r.label})` : ""}`;
+      groups.set(name, [...(groups.get(name) ?? []), r]);
     }
+    const parts = [...groups.entries()].map(([name, rs]) => {
+      const amounts = [...new Map(rs.map((r) => [`${r.applicantLocation ?? ""}|${r.amountAUD}`, r])).values()].map((r) => {
+        const where = r.applicantLocation === "onshore" ? " incl. GST if applying from within Australia" : r.applicantLocation === "offshore" ? " excl. GST if applying from outside Australia" : r.applicantLocation ? ` (${r.applicantLocation})` : "";
+        return `${fmt(r.amountAUD)}${where}${r.estimated ? " (estimate pending verification)" : ""}`;
+      });
+      return `${name} ${amounts.join(" / ")}`;
+    });
     return `- ${rows[0].authority} (${rows[0].authorityId}): ${parts.join("; ")}`;
   });
 }
@@ -97,7 +107,15 @@ export function pathwaysMentioned(authorityId: string, text: string): AuthorityF
   return authorityFeeRows().filter((r) => r.authorityId === authorityId && hit(r));
 }
 
-export type VisitorAuthorityFee = { authorityId: string; authority: string; pathway: string; amountAUD: number; estimated: boolean };
+export type VisitorAuthorityFee = {
+  authorityId: string;
+  authority: string;
+  pathway: string;
+  amountAUD: number;
+  estimated: boolean;
+  /** The same fee in the other GST column (incl. <-> excl.), also correct for the pathway. */
+  otherGstAmountAUD?: number;
+};
 
 /**
  * The visitor's own assessing authority and fee, as the report's Financial Roadmap resolves it. ACS: the pathway comes
@@ -120,7 +138,8 @@ export function visitorAuthorityFee(input: Partial<ReadinessInput>, locale: Loca
     }
     const fee = pathway && selectPrimaryFee(pathway, input.currentCountry);
     if (!pathway || !fee || typeof fee.amountAUD !== "number") return undefined;
-    return { authorityId: authority.authorityId, authority: authority.authorityName, pathway: L(pathway.name, locale), amountAUD: fee.amountAUD, estimated: fee.estimated === true };
+    const twin = pathway.fees.find((f) => f.applicantLocation && f.applicantLocation !== fee.applicantLocation && typeof f.amountAUD === "number" && f.label === fee.label);
+    return { authorityId: authority.authorityId, authority: authority.authorityName, pathway: L(pathway.name, locale), amountAUD: fee.amountAUD, estimated: fee.estimated === true, ...(twin ? { otherGstAmountAUD: twin.amountAUD } : {}) };
   } catch {
     return undefined;
   }

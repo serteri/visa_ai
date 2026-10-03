@@ -106,10 +106,14 @@ const SENTENCE_SPLIT = /(?<=[.!?。！？])(?<!\b(?:approx|e\.g|i\.e|vs|etc|incl
 const SUBCLASS = /(?:subclass|alt sınıf|vize|visa|子类)?\s*\b(189|190|191|482|485|491|500|186|820|801)\b/gi;
 const FEE_WORDS = /\b(fee|fees|charge|charges|cost|costs|vac|application charge)\b|ücret|harç|maliyet|başvuru bedeli|费用|申请费|签证费/i;
 // AUD 4,910 / A$4,910 / $4,910 / 4.910 AUD / 4,910 AUD / 4910 澳元
-const AMOUNT = /(?:AUD|A\$|\$)\s?(\d{1,3}(?:[.,]\d{3})+|\d{3,6})|(\d{1,3}(?:[.,]\d{3})+|\d{3,6})\s?(?:AUD|avustralya doları|澳元)/gi;
+const AMOUNT = /(?:AUD|A\$|\$)\s?(\d{1,3}(?:[.,]\d{3})+(?:[.,]\d{1,2})?(?!\d)|\d{3,6}(?:[.,]\d{1,2})?(?!\d))|(\d{1,3}(?:[.,]\d{3})+(?:[.,]\d{1,2})?(?!\d)|\d{3,6}(?:[.,]\d{1,2})?(?!\d))\s?(?:AUD|avustralya doları|澳元)/gi;
 
 function amounts(sentence: string): number[] {
-  return Array.from(sentence.matchAll(AMOUNT), (m) => Number((m[1] ?? m[2]).replace(/[.,]/g, ""))).filter((n) => n >= 100);
+  return Array.from(sentence.matchAll(AMOUNT), (m) => {
+    const raw = m[1] ?? m[2];
+    const cents = raw.match(/[.,](\d{1,2})$/); // "1,647.80" / "1.647,80": two decimals, not a thousands group
+    return cents ? Number(`${raw.slice(0, -cents[0].length).replace(/[.,]/g, "")}.${cents[1]}`) : Number(raw.replace(/[.,]/g, ""));
+  }).filter((n) => n >= 100);
 }
 function subclasses(sentence: string): string[] {
   return [...new Set(Array.from(sentence.matchAll(SUBCLASS), (m) => m[1]))];
@@ -240,7 +244,7 @@ export function findEngineConflicts(answer: string, opts: CheckOptions = {}): En
             if (FEE_WORDS.test(s)) out.push({ kind: "authority_fee", sentence: s, detail: `AUD ${a.toLocaleString("en-AU")} is not a ${id} assessment fee (registry: ${[...own].sort((x, y) => x - y).map((n) => n.toLocaleString("en-AU")).join(", ")})`, authority: id });
           } else if (named.length > 0 && !named.some((r) => r.amountAUD === a)) {
             out.push({ kind: "authority_fee", sentence: s, detail: `AUD ${a.toLocaleString("en-AU")} is not the ${id} fee for the ${named.map((r) => r.pathway).join(" / ")} pathway (${named.map((r) => r.amountAUD.toLocaleString("en-AU")).join(", ")})`, authority: id });
-          } else if (named.length === 0 && opts.visitorAuthorityFee?.authorityId === id && opts.visitorAuthorityFee.amountAUD !== a && FEE_WORDS.test(s)) {
+          } else if (named.length === 0 && opts.visitorAuthorityFee?.authorityId === id && opts.visitorAuthorityFee.amountAUD !== a && opts.visitorAuthorityFee.otherGstAmountAUD !== a && FEE_WORDS.test(s)) {
             out.push({ kind: "authority_fee", sentence: s, detail: `AUD ${a.toLocaleString("en-AU")} quoted for ${id} without naming a pathway; the visitor's report shows AUD ${opts.visitorAuthorityFee.amountAUD.toLocaleString("en-AU")} (${opts.visitorAuthorityFee.pathway})`, authority: id });
           }
         }

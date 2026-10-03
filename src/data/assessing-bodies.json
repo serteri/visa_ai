@@ -6,21 +6,21 @@
         "website": "https://www.acs.org.au/msa",
       "fee": "AUD 1,498 / AUD 1,136 / AUD 625",
       "feeNote": {
-        "en": "AUD 1,498: General Skills assessment (e.g. an overseas IT qualification). AUD 1,136: Post Australian Study (Australian bachelor's degree or higher plus work experience). AUD 625: Recognition of Prior Learning (no IT qualification, 6+ years' experience) or Qualification Only. Your report shows the figure for your profile.",
-        "tr": "AUD 1,498: General Skills değerlendirmesi (ör. yurt dışı BT niteliği). AUD 1,136: Post Australian Study (Avustralya'da lisans veya üzeri + iş deneyimi). AUD 625: Önceki Öğrenmenin Tanınması (BT niteliği yok, 6+ yıl deneyim) veya Qualification Only. Raporunuz profilinize uyan tutarı gösterir.",
-        "zh-Hans": "AUD 1,498：通用技能评估（如海外 IT 学历）。AUD 1,136：澳洲留学后评估（澳洲学士或以上学历加工作经验）。AUD 625：先前学习认可 RPL（无 IT 学历、6 年以上经验）或仅资格评估。您的报告会显示适用于您情况的金额。"
+        "en": "AUD 1,498: General Skills assessment (e.g. an overseas IT qualification). AUD 1,136: Post Australian Study (Australian bachelor's degree or higher plus work experience). AUD 625: Recognition of Prior Learning (no IT qualification, 6+ years' experience), Temporary Graduate or Qualification Only. ACS states all fees excl. GST (effective 3 November 2025) and does not say who pays GST; the report applies GST for applicants in Australia (x1.10: 1,647.80 / 1,249.60 / 687.50) and none for applicants outside Australia - that rule is the report's, not ACS's. Appeals (excl. GST): Level 1 AUD 516, Level 2 AUD 620. Your report shows the figure for your profile.",
+        "tr": "AUD 1,498: General Skills değerlendirmesi (ör. yurt dışı BT niteliği). AUD 1,136: Post Australian Study (Avustralya'da lisans veya üzeri + iş deneyimi). AUD 625: Önceki Öğrenmenin Tanınması (BT niteliği yok, 6+ yıl deneyim), Temporary Graduate veya Qualification Only. ACS tüm ücretleri KDV (GST) hariç belirtir (3 Kasım 2025'ten geçerli) ve KDV'yi kimin ödediğini belirtmez; rapor Avustralya içinden başvuranlara KDV ekler (x1.10: 1,647.80 / 1,249.60 / 687.50), dışından başvuranlara eklemez - bu kural ACS'nin değil raporundur. Temyiz (KDV hariç): Seviye 1 AUD 516, Seviye 2 AUD 620. Raporunuz profilinize uyan tutarı gösterir.",
+        "zh-Hans": "AUD 1,498：通用技能评估（如海外 IT 学历）。AUD 1,136：澳洲留学后评估（澳洲学士或以上学历加工作经验）。AUD 625：先前学习认可 RPL（无 IT 学历、6 年以上经验）、临时毕业生或仅资格评估。ACS 公布的所有费用均不含 GST（2025 年 11 月 3 日起生效），并未说明 GST 由谁承担；报告对在澳洲境内申请的人加计 GST（x1.10：1,647.80 / 1,249.60 / 687.50），对境外申请的人不加计——该规则由报告采用，并非 ACS 规定。申诉（不含 GST）：一级 AUD 516，二级 AUD 620。您的报告会显示适用于您情况的金额。"
       },
       "processingTime": {
-        "en": "Not stated",
-        "tr": "Belirtilmemiş",
-        "zh-Hans": "未注明"
+        "en": "Not stated in the ACS guide",
+        "tr": "ACS kılavuzunda belirtilmemiş",
+        "zh-Hans": "ACS 指南中未说明"
       },
       "processingNote": {
-        "en": "ACS does not publish a processing time; confirm with ACS.",
-        "tr": "ACS bir işlem süresi yayımlamıyor; ACS ile teyit edin.",
-        "zh-Hans": "ACS 未公布处理时间；请向 ACS 确认。"
+        "en": "The ACS guide states no processing time; confirm with ACS.",
+        "tr": "ACS kılavuzu bir işlem süresi belirtmiyor; ACS ile teyit edin.",
+        "zh-Hans": "ACS 指南未说明处理时间；请向 ACS 确认。"
       },
-      "source": "ACS Migration Skills Assessment — official guide, fee increase effective 3 November 2025, pp.15, 19, 21–22",
+      "source": "ACS Migration Skills Assessment — official guide, fee increase effective 3 November 2025, pp.1, 15, 19, 21–22",
       "description": "Assesses ICT professionals for skilled migration visa applications.",
       "color": "blue"
     },

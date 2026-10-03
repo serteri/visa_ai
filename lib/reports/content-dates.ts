@@ -10,7 +10,7 @@ import { STATE_RULES } from "@/lib/state-nomination/state-rules-config";
  * than a dated data source. Bump it in any commit that changes what a recomputed report shows; scripts/test-content-
  * dates.ts fails if it is in the future or older than the latest data-source date below.
  */
-export const REPORT_CONTENT_DEPLOY_DATE = "2026-10-01";
+export const REPORT_CONTENT_DEPLOY_DATE = "2026-10-03";
 
 type SourceDate = { source: string; date: string };
 

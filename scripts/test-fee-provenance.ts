@@ -189,7 +189,8 @@ checkSecondInstalment("491", "second_instalment_491");
 {
   const fact = findFact("acs_general_skills_assessment_fee");
   const pathway = acsAuthority.pathways.find((p) => p.pathwayId === "GENERAL_SKILLS");
-  const feeVal = pathway?.fees.find((f) => typeof f.amountAUD === "number")?.amountAUD;
+  // ACS states its fees excl. GST; the registry carries that figure (offshore) and the GST-inclusive one the report shows in Australia (onshore).
+  const feeVal = pathway?.fees.find((f) => f.applicantLocation === "offshore")?.amountAUD;
   if (fact.value !== feeVal) {
     fail(`ACS General Skills Assessment fee disagrees: manifest=${fact.value}, acs.ts=${feeVal}`);
   } else {

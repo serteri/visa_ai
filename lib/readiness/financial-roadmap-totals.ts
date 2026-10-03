@@ -168,7 +168,8 @@ export function formatEstimatedTotalLine(
   terminal = ""
 ): string {
   const numLocale = locale === "tr" ? "tr-TR" : "en-AU";
-  const range = `AUD ${total.min.toLocaleString(numLocale)}-${total.max.toLocaleString(numLocale)}`;
+  const amountText = (v: number) => v.toLocaleString(numLocale, { minimumFractionDigits: Number.isInteger(v) ? 0 : 2, maximumFractionDigits: 2 });
+  const range = `AUD ${amountText(total.min)}-${amountText(total.max)}`;
   const gaps = total.complete ? "" : describeTotalGaps(total, locale);
   const estimated =
     total.estimatedKinds.length > 0
@@ -277,7 +278,7 @@ export function computePartnerTotalAud(financialRoadmap: readonly FinancialRoadm
 }
 
 function formatAud(value: number, locale: "en" | "tr" | "zh-Hans"): string {
-  return `AUD ${value.toLocaleString(locale === "tr" ? "tr-TR" : "en-AU")}`;
+  return `AUD ${value.toLocaleString(locale === "tr" ? "tr-TR" : "en-AU", { minimumFractionDigits: Number.isInteger(value) ? 0 : 2, maximumFractionDigits: 2 })}`;
 }
 
 /** "one partner and no children" / "1 partner and 2 children", in the reader's language. */
@@ -301,7 +302,7 @@ function describeApplicantCounts(total: PartnerTotal, locale: "en" | "tr" | "zh-
  * punctuation right after the range, as in formatEstimatedTotalLine.
  */
 export function formatPartnerTotalLine(total: PartnerTotal, locale: "en" | "tr" | "zh-Hans", terminal = ""): string {
-  const range = `${formatAud(total.min, locale)}-${total.max.toLocaleString(locale === "tr" ? "tr-TR" : "en-AU")}`;
+  const range = `${formatAud(total.min, locale)}-${total.max.toLocaleString(locale === "tr" ? "tr-TR" : "en-AU", { minimumFractionDigits: Number.isInteger(total.max) ? 0 : 2, maximumFractionDigits: 2 })}`;
   const counts = describeApplicantCounts(total, locale);
   const partial = !total.primary.complete;
   const estimated =

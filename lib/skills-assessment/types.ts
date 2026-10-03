@@ -104,6 +104,8 @@ export interface SkillsAssessmentPathway {
   minAcademicLevel?: string;
   fees: AuthorityFee[];
   processingTimeWeeks?: ProcessingTime;
+  /** Shown as the processing time when the source document states none (never a guessed figure). */
+  processingNotStated?: LocalizedString;
   documentRequirements: LocalizedString[];
   competencyAssessment?: CompetencyAssessment;
   /** Additional context-specific notes (policy changes, caveats). */

@@ -72,18 +72,18 @@ async function main() {
   section("1. assessing-authority fees per pathway");
   {
     const rows = authorityFeeRows().filter((r) => r.authorityId === "ACS");
-    const amount = (id: string) => rows.find((r) => r.pathwayId === id)?.amountAUD;
-    t("registry: ACS General Skills 1,498 / Post Australian Study 1,136 / RPL 625 / Qualification Only 625", amount("GENERAL_SKILLS") === 1498 && amount("POST_AU_STUDY") === 1136 && amount("RPL") === 625 && amount("QUALIFICATION_ONLY_TG485") === 625 && amount("QUALIFICATION_ONLY_PY") === 625, JSON.stringify(rows.map((r) => [r.pathwayId, r.amountAUD])));
+    const amount = (id: string) => rows.find((r) => r.pathwayId === id && r.applicantLocation === "offshore")?.amountAUD; // excl. GST, as ACS states it
+    t("registry (excl. GST): ACS General Skills 1,498 / Post Australian Study 1,136 / RPL 625 / Qualification Only 625", amount("GENERAL_SKILLS") === 1498 && amount("POST_AU_STUDY") === 1136 && amount("RPL") === 625 && amount("QUALIFICATION_ONLY_TG485") === 625 && amount("QUALIFICATION_ONLY_PY") === 625, JSON.stringify(rows.map((r) => [r.pathwayId, r.amountAUD])));
     const prov = JSON.parse(readFileSync("src/data/fee-provenance.json", "utf8")).facts as Array<{ id: string; value: number; source: string }> | Record<string, { value: number; source: string }>;
     const list = Array.isArray(prov) ? prov : Object.entries(prov).map(([id, v]) => ({ id, ...v }));
     const src = (id: string) => list.find((f) => f.id === id)?.source ?? "";
-    t("provenance: General Skills 1,498 quoted from the ACS document; Post Australian Study p.15 1,136; RPL / Qualification Only pp.21-22 625", /\$1,498/.test(src("acs_general_skills_assessment_fee")) && /p\.15/.test(src("tool_page_acs_post_au_study_fee")) && /1,136/.test(src("tool_page_acs_post_au_study_fee")) && /pp\.21-22/.test(src("tool_page_acs_rpl_qualification_only_fee")) && /\$625/.test(src("tool_page_acs_rpl_qualification_only_fee")));
+    t("provenance: General Skills 1,498 quoted from the ACS document; Post Australian Study p.15 1,136; RPL / Qualification Only pp.21-22 625", /\$1,498/.test(src("acs_general_skills_assessment_fee")) && /p\.15/.test(src("tool_page_acs_post_au_study_fee")) && /1,136/.test(src("tool_page_acs_post_au_study_fee")) && /p\.21/.test(src("tool_page_acs_rpl_qualification_only_fee")) && /p\.22/.test(src("tool_page_acs_rpl_qualification_only_fee")) && /\$625/.test(src("tool_page_acs_rpl_qualification_only_fee")));
     const facts = buildEngineFacts();
     t("engine facts list the authority fees per pathway for every authority with an AUD fee", authorityFeeLines().length >= 14 && facts.includes("Australian Computer Society (ACS):") && /General Skills[^;]*AUD 1,498/.test(facts) && /RPL[^;]*AUD 625/.test(facts) && /Engineers Australia[^\n]*AUD 315/.test(facts), facts.split("\n").filter((l) => l.includes("(ACS)")).join(" | "));
     t("an unverified placeholder fee is marked as an estimate (general authority)", /VETASSESS \/ General Professional Authority \(GENERAL\)[^\n]*estimate pending verification/.test(facts));
-    t("the visitor's own ACS pathway: overseas Bachelor's, no assessment -> General Skills 1,498", visitor?.authorityId === "ACS" && visitor.amountAUD === 1498 && /General Skills/.test(visitor.pathway), JSON.stringify(visitor));
+    t("the visitor's own ACS pathway: overseas Bachelor's, no assessment, in Australia -> General Skills 1,647.80 (1,498 excl. GST)", visitor?.authorityId === "ACS" && visitor.amountAUD === 1647.8 && /General Skills/.test(visitor.pathway), JSON.stringify(visitor));
     const summary = buildProfileSummary(en.report, en.input, undefined, "quick") ?? "";
-    t("the profile block names the visitor's pathway and fee", /Skills assessment fee in the visitor's report: Australian Computer Society \(ACS\), General Skills Assessment pathway, AUD 1,498/.test(summary), summary);
+    t("the profile block names the visitor's pathway and fee", /Skills assessment fee in the visitor's report: Australian Computer Society \(ACS\), General Skills Assessment pathway, AUD 1,647.80 incl\. GST \(applying from within Australia; AUD 1,498 excl\. GST/.test(summary), summary);
 
     const opts = { hasProfile: true, visitorAuthorityFee: visitor };
     t('golden: "approx. AUD 625 for the RPL pathway" is the RPL fee: not a conflict', !kinds("The ACS fee is approx. AUD 625 for the RPL pathway.", opts).includes("authority_fee"));
@@ -91,7 +91,7 @@ async function main() {
     t("625 quoted for ACS without a pathway is flagged for this visitor (the report shows 1,498)", kinds("The ACS skills assessment fee is AUD 625.", opts).includes("authority_fee"));
     t("without a profile the same sentence is not flagged (625 is an ACS fee)", !kinds("The ACS skills assessment fee is AUD 625.", { hasProfile: false }).includes("authority_fee"));
     t("an amount that is no ACS fee is flagged", kinds("The ACS assessment fee is AUD 2,000.", opts).includes("authority_fee"));
-    t("the report's own figure is fine", !kinds("The ACS assessment fee for your profile is AUD 1,498.", opts).includes("authority_fee"));
+    t("the report's own figure is fine, in either GST column", !kinds("The ACS assessment fee for your profile is AUD 1,647.80.", opts).includes("authority_fee") && !kinds("The ACS assessment fee for your profile is AUD 1,498.", opts).includes("authority_fee"));
     t("another authority: Engineers Australia 315 ok, 999 flagged", !kinds("The Engineers Australia assessment fee starts at AUD 315.", opts).includes("authority_fee") && kinds("The Engineers Australia assessment fee is AUD 999.", opts).includes("authority_fee"));
     t("tr / zh phrasings are checked too", kinds("ACS beceri değerlendirme ücreti AUD 2.000 civarındadır.", opts).includes("authority_fee") && kinds("ACS 技能评估费用为 2000 澳元。", opts).includes("authority_fee"));
     t("an assessment fee is not reported as a visa application charge", !kinds("For subclass 491 the ACS assessment fee is AUD 1,498.", opts).includes("fee"), JSON.stringify(kinds("For subclass 491 the ACS assessment fee is AUD 1,498.", opts)));
@@ -100,7 +100,7 @@ async function main() {
       const c = findEngineConflicts("The ACS skills assessment fee is AUD 625.", opts).filter((x) => x.kind === "authority_fee");
       const fix = buildCorrections(c, l, { input: loc.input })[0];
       const lang: Record<Locale, RegExp> = { en: /^Correction: the Australian Computer Society fee depends on the assessment pathway/, tr: /^Düzeltme: Australian Computer Society ücreti değerlendirme yoluna göre/, "zh-Hans": /^更正：Australian Computer Society 的费用取决于评估途径/ };
-      t(`${l}: the correction lists the pathways with fees, the ACS pages and the visitor's pathway`, !!fix && lang[l].test(fix.text) && fix.text.includes("AUD 1,498") && fix.text.includes("AUD 1,136") && fix.text.includes("AUD 625") && /15[,、] ?19[,、] ?21-22/.test(fix.text) && /AUD 1,498[.。]/.test(fix.text), fix?.text);
+      t(`${l}: the correction lists the pathways with fees, the ACS pages and the visitor's pathway`, !!fix && lang[l].test(fix.text) && fix.text.includes("AUD 1,498") && fix.text.includes("AUD 1,136") && fix.text.includes("AUD 625") && /1[,、] ?15[,、] ?19[,、] ?21[,、] ?22/.test(fix.text) && /AUD 1,647\.80[.。]/.test(fix.text), fix?.text);
     }
   }
 
