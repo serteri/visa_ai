@@ -1,7 +1,7 @@
 import { evaluateVisaGates } from "@/lib/readiness/visa-gates";
 import type { Locale } from "@/lib/readiness/types";
 
-import type { EngineConflict } from "./answer-check";
+import { LOG_ONLY_KINDS, type EngineConflict } from "./answer-check";
 import { AGE_LIMIT, TRT_EMPLOYMENT, VISA_NAMES, engineFeeRow, gateRowCitation } from "./engine-facts";
 import type { PlanFacts } from "./plan-summary";
 
@@ -9,10 +9,15 @@ import type { PlanFacts } from "./plan-summary";
  * Visible corrections. When the answer check (lib/chat/answer-check.ts) flags a fee, gate or state-availability
  * conflict in a finished answer, the chat appends a short correction block to the same answer: the engine's correct
  * fact with its source. Every fact comes from the data the report uses (fee table, gate matrix with its Home Affairs
- * page, the state tracker rule) -- never from the model. A repeated disclaimer is only logged, not corrected.
+ * page, the state tracker rule) -- never from the model.
+ *
+ * Correction blocks are for FACTUAL conflicts only: fees, gate / eligibility labels, state availability, visa names,
+ * periods (186 TRT), points bands, the age limit and the ceiling figure. LOG_ONLY_KINDS (a repeated disclaimer, internal
+ * prompt vocabulary such as "gates" / "engine facts") are logged and never get a block; bracketed internal labels are
+ * additionally stripped where the answer is shown (lib/chat/internal-labels.ts).
  */
 
-export type Correction = { kind: "fee" | "gate" | "state_availability" | "internal_label" | "visa_name" | "trt_period" | "experience_points" | "age_limit" | "status_wording" | "max_potential"; text: string };
+export type Correction = { kind: "fee" | "gate" | "state_availability" | "visa_name" | "trt_period" | "experience_points" | "age_limit" | "status_wording" | "max_potential"; text: string };
 
 const T = (l: Locale, en: string, tr: string, zh: string) => (l === "tr" ? tr : l === "zh-Hans" ? zh : en);
 const aud = (n: number) => `AUD ${n.toLocaleString("en-AU")}`;
@@ -36,6 +41,7 @@ export function buildCorrections(conflicts: EngineConflict[], locale: Locale, ct
   };
 
   for (const c of conflicts) {
+    if (LOG_ONLY_KINDS.has(c.kind)) continue;
     if (c.kind === "fee") {
       for (const sc of c.subclasses ?? []) {
         const vac = engineFeeRow(sc);
@@ -78,16 +84,6 @@ export function buildCorrections(conflicts: EngineConflict[], locale: Locale, ct
           `Correction: subclass 191 has no minimum income requirement; you provide ATO notices of assessment for 3 income years (${src}).`,
           `Düzeltme: 191 alt sınıfında asgari gelir şartı yoktur; 3 gelir yılı için ATO değerlendirme bildirimlerini sunarsınız (${src}).`,
           `更正：子类 191 没有最低收入要求；您需提供 3 个收入年度的 ATO 评估通知（${src}）。`,
-        ),
-      });
-    } else if (c.kind === "internal_label") {
-      add("internal", {
-        kind: "internal_label",
-        text: T(
-          locale,
-          "Correction: any mention of internal section names or terms (for example \"engine facts\", \"gates\", \"reference data\") is not a source and can be ignored. Official sources are cited by document and page; your figures come from your LogiVisa result.",
-          "Düzeltme: iç bölüm adlarına veya terimlere (ör. \"engine facts\", \"kapılar\", \"referans verileri\") yapılan göndermeler kaynak değildir, dikkate almayın. Resmi kaynaklar belge ve sayfa olarak gösterilir; rakamlarınız LogiVisa sonucunuzdan gelir.",
-          "更正：任何对内部栏目名称或术语（例如“引擎事实”“关卡”“参考数据”）的提及都不是来源，可以忽略。官方来源以文件名和页码标注；您的数字来自您的 LogiVisa 结果。",
         ),
       });
     } else if (c.kind === "visa_name") {

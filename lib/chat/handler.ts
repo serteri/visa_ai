@@ -11,7 +11,7 @@ import {
 } from "./config";
 import { findEngineConflicts, type EngineConflict } from "./answer-check";
 import { buildCorrections, detectAnswerLocale, type Correction } from "./corrections";
-import { buildPlanSummary, type PlanFacts } from "./plan-summary";
+import { buildPlanSummary, lastShownLeadFingerprint, profileFingerprint, shouldShowLead, type PlanFacts } from "./plan-summary";
 import type { CreditStore } from "./credits";
 import { buildEngineFacts, type LiveStateData } from "./engine-facts";
 import { loadChatProfile, type ProfileStore } from "./profile";
@@ -40,8 +40,13 @@ export interface StreamRequest {
    * conflicts, with the engine's fact and source) to append to the same message. Also logs the conflicts.
    */
   correct?: (text: string) => Correction[];
-  /** The engine's opening summary (points, status per visa, nomination-inclusive scores, gap plan), shown at the top of the answer. */
+  /**
+   * The engine's opening summary (points, status per visa, nomination-inclusive scores, gap plan), shown at the top of
+   * the answer. Set only when it is due: the first answer, a changed profile, or the visitor asking about their position.
+   */
   lead?: string;
+  /** The saved profile's fingerprint; written with the summary so later requests know it was shown. */
+  leadFingerprint?: string;
   /** The model call failed or the client went away before a reply: nothing was delivered. */
   onFailure: () => Promise<void>;
 }
@@ -107,10 +112,15 @@ export async function handleChat(req: Request, deps: ChatDeps): Promise<Response
   // Every finished answer is checked against the engine data (fees, gates, state claims, repeated disclaimers).
   const requestLocale = (body as { locale?: string }).locale;
   const answerLocale = (text: string) => (requestLocale === "tr" || requestLocale === "zh-Hans" || requestLocale === "en" ? requestLocale : detectAnswerLocale(text));
-  const planFor = (profile: { report: unknown; input: object } | null) => {
+  const planFor = (profile: { report: unknown; input: object; summary: string; source: string } | null) => {
     if (!profile) return null;
     try {
-      return buildPlanSummary(profile.report, profile.input, answerLocale(lastUserText));
+      const plan = buildPlanSummary(profile.report, profile.input, answerLocale(lastUserText));
+      if (!plan) return null;
+      // The summary opens the first answer; later it is shown again only for a changed profile or a question about the visitor's position.
+      const fingerprint = profileFingerprint(profile as { summary: string; source: string });
+      const show = shouldShowLead({ fingerprint, lastShown: lastShownLeadFingerprint(messages), userText: lastUserText });
+      return { ...plan, fingerprint, show };
     } catch (err) {
       console.error("[knowledge-chat] plan summary failed; answering without the opening summary", err);
       return null;
@@ -145,9 +155,9 @@ export async function handleChat(req: Request, deps: ChatDeps): Promise<Response
       const plan = planFor(profile);
       return await deps.stream({
         modelId: CHAT_MODEL_ID,
-        system: buildSystemPrompt(chunks, { engineFacts, guidance, ...(profile ? { profile: { summary: profile.summary, source: profile.source, lead: plan?.lead } } : {}) }),
+        system: buildSystemPrompt(chunks, { engineFacts, guidance, ...(profile ? { profile: { summary: profile.summary, source: profile.source, lead: plan?.lead, leadShownEarlier: plan ? !plan.show : undefined } } : {}) }),
         messages,
-        ...(plan ? { lead: plan.lead } : {}),
+        ...(plan?.show ? { lead: plan.lead, leadFingerprint: plan.fingerprint } : {}),
         correct: (text) => check(text, { premium: false, hasProfile: Boolean(profile), plan: plan?.facts }),
         onFinish: async () => {
           await deps.credits.recordFreeMessage(visitor.id);
@@ -175,13 +185,14 @@ export async function handleChat(req: Request, deps: ChatDeps): Promise<Response
         profile: profile?.summary ?? null,
         profileSource: profile?.source,
         lead: plan?.lead,
+        leadShownEarlier: plan ? !plan.show : undefined,
         isFirstAnswer: !messages.some((m) => m.role === "assistant"),
         extras: { engineFacts, guidance },
       }),
       messages,
       sources: catalogRefs(catalog),
       profileSource: profile?.source ?? null,
-      ...(plan ? { lead: plan.lead } : {}),
+      ...(plan?.show ? { lead: plan.lead, leadFingerprint: plan.fingerprint } : {}),
       correct: (text) => check(text, { premium: true, hasProfile: Boolean(profile), plan: plan?.facts }),
       onFinish: async () => {},
       onFailure: refundOnce,

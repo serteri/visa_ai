@@ -145,7 +145,7 @@ export function realChatDeps(): ChatDeps {
         sendFinish: false,
         ...(metadata ? { messageMetadata: ({ part }) => (part.type === "start" ? metadata : undefined) } : {}),
       });
-      return correctedUIStreamResponse(uiStream, opts.correct, opts.lead);
+      return correctedUIStreamResponse(uiStream, opts.correct, opts.lead, opts.leadFingerprint);
     },
   };
 }
