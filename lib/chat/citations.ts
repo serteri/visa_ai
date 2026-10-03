@@ -38,7 +38,7 @@ export function formatPremiumReferences(chunks: RetrievedChunk[], catalog: Array
   return chunks
     .map((chunk, i) => {
       const ref = catalog[i];
-      return ref ? `[${ref.id}] (${sourceLabel(ref)})\n${chunk.content}` : `[no citable source]\n${chunk.content}`;
+      return ref ? `[${ref.id}] (${sourceLabel(ref)})\n${chunk.content}` : `(not citable)\n${chunk.content}`;
     })
     .join("\n\n");
 }

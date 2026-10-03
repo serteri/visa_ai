@@ -1,4 +1,5 @@
-import { engineFeeTable } from "./engine-facts";
+import { AGE_LIMIT, DIRECT_ENTRY_EXPERIENCE_YEARS, TRT_EMPLOYMENT, VISA_NAMES, employmentPointsFor, engineFeeTable } from "./engine-facts";
+import { findInternalLabels } from "./internal-labels";
 
 /**
  * Flags statements in an AI assistant answer that contradict the engine data the report uses (lib/chat/
@@ -13,14 +14,37 @@ import { engineFeeTable } from "./engine-facts";
  * Used on every finished answer (logged, see lib/chat/handler.ts) and by the tests.
  */
 
+export type EngineConflictKind =
+  | "fee"
+  | "gate"
+  | "state_availability"
+  | "repeated_disclaimer"
+  | "internal_label"
+  | "visa_name"
+  | "trt_period"
+  | "experience_points"
+  | "age_limit"
+  | "status_wording"
+  | "max_potential";
+
 export type EngineConflict = {
-  kind: "fee" | "gate" | "state_availability" | "repeated_disclaimer";
+  kind: EngineConflictKind;
   sentence: string;
   detail: string;
   /** The subclasses the flagged sentence names (fee / gate conflicts): what the correction block is about. */
   subclasses?: string[];
   /** gate: which requirement was contradicted. */
   topic?: "skills_assessment" | "income_191";
+  /** experience_points: what the answer claimed about which employment, years and points. */
+  experience?: { location: "overseas" | "australian"; years: number; correct: number };
+};
+
+export type CheckOptions = {
+  hasProfile?: boolean;
+  /** The visitor's status per visa (engine keys: "next_step_required", "not_eligible_now", ...), when a profile exists. */
+  gateStatus?: Record<string, string>;
+  /** The engine's highest score the visitor's own actions can reach (before nomination), when known. */
+  ceiling?: number;
 };
 
 const SENTENCE_SPLIT = /(?<=[.!?。！？])\s+|\n+/;
@@ -44,7 +68,24 @@ const MOST_STATES = /\b(most|all|many|every) (?:australian )?(?:states|state and
 const DISCLAIMER =
   /not (?:in|covered by) (?:my|the) (?:system|sources|references|knowledge base)|general knowledge|genel bilgi(?:ler)?(?:im)?(?:le)?|sistemimde(?:ki)?|kaynaklarımda|referanslarda (?:yer )?al(?:mıyor|madığı)|resmi kaynaktan doğrulanmadı|一般知识|系统中没有|资料中没有|未经官方来源核实/i;
 
-export function findEngineConflicts(answer: string, opts: { hasProfile?: boolean } = {}): EngineConflict[] {
+const WRONG_VISA_NAME: Record<string, RegExp> = {
+  "482": /temporary skill shortage|\bTSS\b|geçici (?:beceri|nitelikli iş gücü) açığı|temporary skills? shortage|临时技能短缺|临时技术短缺/i,
+};
+const TRT_CONTEXT = /\b482\b|\bTRT\b|temporary residence transition|geçici oturum geçiş|sponsored|sponsorlu|临时居留过渡|担保雇佣/i;
+const THREE_YEARS = /\b(?:3|three)[\s-]*years?\b|\b3 yıl|\büç yıl|3\s*年|三年/i;
+const LAST_THREE_YEARS = /(?:last|past|previous|within|in the)\s+(?:3|three)\s*years?|son\s+3\s*yıl|过去\s*3\s*年|最近\s*3\s*年|3\s*年内/i;
+const MIN_AGE_45 = new RegExp(`(?:minimum|min\\.?|lowest|at least)\\s+age[^.]{0,30}\\b${AGE_LIMIT}\\b|\\b${AGE_LIMIT}\\b[^.]{0,30}(?:minimum|lowest) age|(?:asgari|en az|minimum)\\s+yaş[^.]{0,25}\\b${AGE_LIMIT}\\b|\\b${AGE_LIMIT}\\b[^.]{0,25}(?:asgari|minimum)\\s+yaş|最低年龄[^。]{0,10}${AGE_LIMIT}|${AGE_LIMIT}[^。]{0,10}最低年龄`, "i");
+const NOT_ELIGIBLE = /\bnot eligible\b|\bineligible\b|\bnot qualify|uygun değil|uygun olmayan|şartları karşılamıyor|hak kazanamaz|不符合|没有资格|不合格/i;
+const MAX_POTENTIAL = /maximum potential|maximum possible (?:score|points)|maximum achievable|maksimum potansiyel|en yüksek potansiyel|maksimum (?:olası|mümkün) puan|最大潜力|最高潜力|最高可能(?:分|得分)/i;
+const EXPERIENCE_WORDS = /experience|employment|work|deneyim|çalışma|工作|经验|经历/i;
+const AUSTRALIAN_WORDS = /australian|in australia|avustralya'?da|avustralya deneyim|澳大利亚(?:境内|本地)?/i;
+const OVERSEAS_WORDS = /overseas|offshore|outside australia|abroad|yurt ?dışı|avustralya dışı|海外|境外/i;
+const YEAR_RANGE = /\d\s*[-–—]\s*\d\s*(?:years?|yıl|年)|\d\s*(?:to|ila)\s*\d\s*years/i;
+const YEARS_N = /\b(\d{1,2})\s*(?:\+\s*)?(?:years?|yıl|yıllık)|\b(\d{1,2})\s*年/i;
+// "+5", "5 points", "5 puan", "5 分"
+const POINTS_CLAIM = /\+\s*(\d{1,2})\b|\b(\d{1,2})\s*(?:points?|puan)\b|\b(\d{1,2})\s*分/gi;
+
+export function findEngineConflicts(answer: string, opts: CheckOptions = {}): EngineConflict[] {
   const fees = engineFeeTable();
   const out: EngineConflict[] = [];
   const sentences = answer.split(SENTENCE_SPLIT).map((s) => s.trim()).filter(Boolean);
@@ -76,8 +117,50 @@ export function findEngineConflicts(answer: string, opts: { hasProfile?: boolean
       out.push({ kind: "state_availability", sentence: s, detail: "occupation demand per state comes only from the engine's State Nomination Tracker for the visitor's profile" });
     }
 
+    // Visa names.
+    for (const sc of subs) {
+      if (VISA_NAMES[sc] && WRONG_VISA_NAME[sc]?.test(s)) out.push({ kind: "visa_name", sentence: s, detail: `subclass ${sc} is the ${VISA_NAMES[sc]} visa, not the name used here`, subclasses: [sc] });
+    }
+
+    // 186 Temporary Residence Transition: sponsored employment period (engine: ${TRT_EMPLOYMENT.years} years within the last ${TRT_EMPLOYMENT.withinYears}).
+    if (subs.includes("186") && TRT_CONTEXT.test(s) && THREE_YEARS.test(s) && !LAST_THREE_YEARS.test(s) && !/direct entry|doğrudan giriş|直接入境/i.test(s)) {
+      out.push({ kind: "trt_period", sentence: s, detail: `the 186 Temporary Residence Transition stream needs ${TRT_EMPLOYMENT.years} years of sponsored employment (in the last ${TRT_EMPLOYMENT.withinYears}), not 3 years (Direct Entry's ${DIRECT_ENTRY_EXPERIENCE_YEARS} years of experience is a different stream)`, subclasses: ["186"] });
+    }
+
+    // Points for years of skilled employment (the report's points table): the figures stated right after the years.
+    if (EXPERIENCE_WORDS.test(s) && !YEAR_RANGE.test(s)) {
+      const yearsMatch = s.match(YEARS_N);
+      const years = yearsMatch ? Number(yearsMatch[1] ?? yearsMatch[2]) : NaN;
+      const location = AUSTRALIAN_WORDS.test(s) && !OVERSEAS_WORDS.test(s) ? "australian" : OVERSEAS_WORDS.test(s) && !AUSTRALIAN_WORDS.test(s) ? "overseas" : undefined;
+      if (Number.isFinite(years) && location && yearsMatch && yearsMatch.index !== undefined) {
+        const tail = s.slice(yearsMatch.index + yearsMatch[0].length).split(/;|；|\band\b|\bve\b|\bwhile\b|\bwhereas\b/i)[0];
+        const claims = [...new Set(Array.from(tail.matchAll(POINTS_CLAIM), (m) => Number(m[1] ?? m[2] ?? m[3])).filter((c) => c <= 20))];
+        const correct = employmentPointsFor(location, years);
+        if (correct !== undefined && claims.length > 0 && !(claims.length === 1 && claims[0] === correct)) {
+          out.push({ kind: "experience_points", sentence: s, detail: `${years} years of ${location === "australian" ? "Australian" : "overseas"} skilled employment = ${correct} points in the points table (answer says ${claims.join(" / ")})`, experience: { location, years, correct } });
+        }
+      }
+    }
+
+    // Age: 45 is an upper limit.
+    if (MIN_AGE_45.test(s)) out.push({ kind: "age_limit", sentence: s, detail: `${AGE_LIMIT} is an upper limit (under ${AGE_LIMIT} when invited / applying), not a minimum age` });
+
+    // "Not eligible" where the engine's status is "Next step required".
+    if (opts.gateStatus && NOT_ELIGIBLE.test(s)) {
+      const wrong = subs.filter((sc) => opts.gateStatus?.[sc] === "next_step_required");
+      if (wrong.length > 0) out.push({ kind: "status_wording", sentence: s, detail: `subclass ${wrong.join("/")} is "Next step required" in the engine, not "not eligible"`, subclasses: wrong });
+    }
+
+    // "Maximum potential" is only the engine's closable ceiling.
+    if (MAX_POTENTIAL.test(s)) {
+      const nums = Array.from(s.matchAll(/\b(\d{2,3})\b/g), (m) => Number(m[1]));
+      if (opts.ceiling === undefined || !nums.includes(opts.ceiling)) out.push({ kind: "max_potential", sentence: s, detail: opts.ceiling === undefined ? '"maximum potential" is not an engine figure' : `"maximum potential" is only the engine's ceiling, ${opts.ceiling}` });
+    }
+
     if (DISCLAIMER.test(s)) disclaimers++;
   }
+  const labels = findInternalLabels(answer);
+  if (labels.length > 0) out.push({ kind: "internal_label", sentence: "", detail: `internal prompt labels in the answer: ${[...new Set(labels.map((l) => l.match))].join(", ")}` });
   if (disclaimers > 1) {
     out.push({ kind: "repeated_disclaimer", sentence: "", detail: `${disclaimers} "not in my sources / general knowledge" statements (at most one per answer)` });
   }

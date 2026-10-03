@@ -493,7 +493,7 @@ const FACTOR_LABEL: Record<Exclude<PointsClosureFactor["id"], "experience">, [st
  * How the gap closes and roughly how long it takes, naming only the factors of the plan (the same factors the
  * closable ceiling uses): "closes with Proficient English (+10) and 3 more years of skilled experience (+5), about 3 years".
  */
-function closurePlanText(plan: PointsClosurePlan, short: number, locale: Locale): string {
+export function closurePlanText(plan: PointsClosurePlan, short: number, locale: Locale): string {
   const li = locale === "tr" ? 1 : locale === "zh-Hans" ? 2 : 0;
   const part = (f: PointsClosureFactor) => {
     const label =

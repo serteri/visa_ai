@@ -10,6 +10,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { ChatRestoreCredits } from "@/components/ChatRestoreCredits";
 import { renderCitations } from "@/lib/chat/citations";
+import { stripInternalLabels } from "@/lib/chat/internal-labels";
 import type { SourceRef } from "@/lib/chat/types";
 import { ChatQuickProfileCard } from "@/components/ChatQuickProfileCard";
 import { ChatQuickResult } from "@/components/ChatQuickResult";
@@ -272,7 +273,8 @@ export function KnowledgeChatUI({ className, restoreToken }: KnowledgeChatUIProp
           // the server sent with the message, and a marker not in that list is dropped.
           const meta = message.metadata as { sources?: SourceRef[]; profileSource?: "report" | "quick" | null } | undefined;
           const sources = meta?.sources;
-          const text = message.role === "assistant" && sources ? renderCitations(rawText, sources) : rawText;
+          // Bracketed internal prompt labels that slipped into the answer are never shown (the correction block says so).
+          const text = message.role === "assistant" ? stripInternalLabels(sources ? renderCitations(rawText, sources) : rawText) : rawText;
           const isUser = message.role === "user";
           // Correction blocks appended to this answer after it streamed (the engine's fact and its source).
           const corrections = message.parts

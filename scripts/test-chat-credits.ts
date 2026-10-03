@@ -248,11 +248,11 @@ async function main() {
   section("2. Free path unchanged");
   {
     // The free prompt now also carries the report engine's facts (one source of truth, lib/chat/engine-facts.ts):
-    // guardrails, then [ENGINE FACTS], then the references -- no profile, no citation rules.
+    // guardrails, then the figures block, then the references -- no profile, no citation rules.
     const sample = [{ content: "Fee is AUD 4,640.", metadata: {} }, { content: "Age limit 44.", metadata: {} }];
     const facts = buildEngineFacts();
     const p = buildSystemPrompt(sample, { engineFacts: facts });
-    check(p.startsWith(GUARDRAILS_TEXT) && p.includes(facts) && p.indexOf(facts) < p.lastIndexOf("[REFERANS BİLGİLERİ]:") && p.includes("[1] Fee is AUD 4,640.") && p.includes("[2] Age limit 44."), "free system prompt: guardrails, engine facts, then the numbered references");
+    check(p.startsWith(GUARDRAILS_TEXT) && p.includes(facts) && p.indexOf(facts) < p.lastIndexOf("block-3:") && p.includes("[1] Fee is AUD 4,640.") && p.includes("[2] Age limit 44."), "free system prompt: guardrails, engine facts, then the numbered references");
     check(buildSystemPrompt([], { engineFacts: facts }).includes("No matching reference material was found for this question."), "free system prompt with no references says so");
     void createHash;
 
@@ -263,7 +263,7 @@ async function main() {
     const c = captured[0];
     check(res.status === 200 && c.modelId === "gpt-4o-mini", "free message uses gpt-4o-mini");
     check(c.retrieval.primary === 8 && c.retrieval.occupation === 2, "free retrieval depth stays 8 + 2");
-    check(c.sources === undefined && !c.system.includes("[KULLANICI PROFİLİ]") && !c.system.includes("PREMIUM KAYNAK"), "free path: no sources metadata, no profile, no citation rules");
+    check(c.sources === undefined && !c.system.includes("block-2:") && !c.system.includes("PREMIUM KAYNAK"), "free path: no sources metadata, no profile, no citation rules");
     check(c.system === buildSystemPrompt(CHUNKS, { engineFacts: buildEngineFacts() }), "free path sends exactly buildSystemPrompt(chunks, engine facts)");
     await c.onFinish("");
     check(w.visitors.get("v1")!.messageCount === 3 && w.visitors.get("v1")!.premiumCredits === 0, "free message counts once, after the reply");
@@ -289,13 +289,13 @@ async function main() {
     check(c.retrieval.primary === 12 && c.retrieval.occupation === 2, "premium retrieval depth is 12 + 2");
     check(c.system.includes("UNIQUE-OCC-A") && c.system.includes("261313"), "profile: occupation and code");
     check(c.system.includes("Age 25/30") && c.system.includes("English 10/20") && c.system.includes("Points: 75"), "profile: points breakdown");
-    check(c.system.includes("189: not_eligible_now") && c.system.includes("Positive skills assessment") && c.system.includes("190: conditional"), "profile: gate result per visa");
+    check(c.system.includes("189: Not eligible now") && c.system.includes("Positive skills assessment") && c.system.includes("190: Conditional"), "profile: gate result per visa");
     check(c.system.includes("VIC, SA") && c.system.includes("TAS"), "profile: available states");
     check(c.system.includes("benchmark 85") && c.system.includes("gap 5"), "profile: benchmark gaps");
     check(!c.system.includes("answers are general") && !c.system.includes("yanıtların genel olduğunu"), "matched profile: no 'general answers' note");
     check(c.sources?.length === 3 && c.sources[0].id === "S1" && c.sources[0].source === "Subclass 189.pdf" && c.sources[0].page === 7, "premium sends the citation catalogue from the retrieved chunk metadata");
     // Readable source names (lib/chat/source-names.ts), never file names.
-    check(c.system.includes("[S1] (Home Affairs – Subclass 189, p. 7)") && c.system.includes("[S3] (Home Affairs – Skilled occupation list)") && c.system.includes("[no citable source]") && !/\[S\d+\] \([^)]*\.(pdf|xlsx)/i.test(c.system), "premium references carry id + readable document name/page, and unciteable chunks are marked");
+    check(c.system.includes("[S1] (Home Affairs – Subclass 189, p. 7)") && c.system.includes("[S3] (Home Affairs – Skilled occupation list)") && c.system.includes("(not citable)") && !/\[S\d+\] \([^)]*\.(pdf|xlsx)/i.test(c.system), "premium references carry id + readable document name/page, and unciteable chunks are marked");
     check(c.system.includes("PREMIUM KAYNAK KURALLARI"), "premium prompt has the citation rules");
   }
   {
@@ -307,7 +307,7 @@ async function main() {
     const [first, second] = captured;
     check(first.system.includes("yanıtların genel olduğunu") || first.system.includes("İLK yanıtında"), "no report: the first answer is told to say once that answers are general and suggest a report");
     check(!second.system.includes("İLK yanıtında") && second.system.includes("tekrarlama"), "no report: later answers are told not to repeat it");
-    check(!first.system.includes("[KULLANICI PROFİLİ]:\nSource:"), "no report: no profile block");
+    check(!first.system.includes("block-2:\nSource:"), "no report: no profile block");
   }
   {
     // an unverified purchase email must not unlock a stored report

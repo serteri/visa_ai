@@ -5790,7 +5790,7 @@ type ClosureCombo = { gain: number; t: number; factors: PointsClosureFactor[]; r
  * which the potential score assumes; the age bracket is recomputed each year). `gain` is the most they can add (the
  * closable ceiling); `plan(short)` is the quickest, then smallest, combination of those same factors that closes it.
  */
-function pointsClosureOf(pe: PointsEstimate | undefined, input: ReadinessInput, locale: Locale): { gain: number; plan: (short: number) => PointsClosurePlan | undefined } | undefined {
+export function pointsClosureOf(pe: PointsEstimate | undefined, input: ReadinessInput, locale: Locale): { gain: number; baseTotal: number; plan: (short: number) => PointsClosurePlan | undefined } | undefined {
   const actions = pe?.actionPlan?.actions;
   if (!actions) return undefined;
   const b = buildBaselineAuCalcInput(input, locale);
@@ -5857,6 +5857,8 @@ function pointsClosureOf(pe: PointsEstimate | undefined, input: ReadinessInput, 
   combos.sort((x, y) => x.rank - y.rank || x.pref - y.pref || x.gain - y.gain);
   return {
     gain: Math.max(0, best),
+    /** The score the closable ceiling is added to: the baseline total (no nomination). */
+    baseTotal,
     plan: (short: number) => {
       const c = combos.find((x) => x.gain >= short && x.factors.length > 0);
       if (!c) return undefined;

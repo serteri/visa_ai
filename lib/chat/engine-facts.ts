@@ -88,6 +88,7 @@ function pointsLines(): string[] {
     `- Age: ${table(POINTS_TABLES.age)}.`,
     `- English: ${table(POINTS_TABLES.english)}.`,
     `- Skilled employment outside Australia (years): ${table(POINTS_TABLES.overseasEmployment)}; in Australia (years): ${table(POINTS_TABLES.australianEmployment)}; employment points combined are capped at 20, and count only with a positive skills assessment.`,
+    `- Examples: 2 years of skilled employment in Australia = +${employmentPointsFor("australian", 2)}; 2 years outside Australia = +${employmentPointsFor("overseas", 2)}; 3 years in Australia = +${employmentPointsFor("australian", 3)}. Never give two figures for one band.`,
     `- Qualification: ${table(POINTS_TABLES.education)}.`,
     `- Australian study requirement (at least 2 academic years of study in Australia) +${bonus({ australianStudyRequirement: true })}; study in regional Australia +${bonus({ regionalStudy: true })}; specialist education (Australian research masters or doctorate in STEM) +${bonus({ specialistEducation: true })}; Professional Year +${bonus({ professionalYear: true })}; credentialled community language (NAATI) +${bonus({ credentialledCommunityLanguage: true })}.`,
     `- Partner: ${table(POINTS_TABLES.partner)}.`,
@@ -102,12 +103,61 @@ function stateLines(live: LiveStateData = {}): string[] {
   });
 }
 
+type GateRow = { id: string; visa: string; page: number; numeric?: { name: string; value: number; unit: string } };
+const GATE_ROWS = (gatesData as unknown as { gates: GateRow[] }).gates;
+const gateRow = (id: string) => GATE_ROWS.find((r) => r.id === id);
+
+/** "Home Affairs, Subclass 491 page, p.25" for a gate-matrix row, in the answer's language (the report's own citation). */
+export function gateRowCitation(id: string, locale: "en" | "tr" | "zh-Hans"): string | null {
+  const row = gateRow(id);
+  if (!row) return null;
+  const doc = `Subclass ${row.visa}`;
+  return locale === "tr" ? `İçişleri Bakanlığı, ${doc} sayfası, s.${row.page}` : locale === "zh-Hans" ? `内政部，${doc} 页面，第 ${row.page} 页` : `Home Affairs, ${doc} page, p.${row.page}`;
+}
+
+/** Official visa names (the Home Affairs document titles), keyed by subclass. */
+export const VISA_NAMES: Readonly<Record<string, string>> = {
+  "189": "Skilled Independent",
+  "190": "Skilled Nominated",
+  "491": "Skilled Work Regional (Provisional)",
+  "191": "Permanent Residence (Skilled Regional)",
+  "482": "Skills in Demand",
+  "485": "Temporary Graduate",
+  "500": "Student",
+  "186": "Employer Nomination Scheme",
+  "820": "Partner (Temporary)",
+  "801": "Partner (Permanent)",
+};
+
+/** Structured facts the answer check compares an answer against (the same numbers the prompt states). */
+export const TRT_EMPLOYMENT = { years: gateRow("186TRT.sponsored_employment")?.numeric?.value ?? 2, withinYears: 3 };
+export const DIRECT_ENTRY_EXPERIENCE_YEARS = gateRow("186DE.experience")?.numeric?.value ?? 3;
+export const AGE_LIMIT = gateRow("189.age")?.numeric?.value ?? gateRow("186DE.age")?.numeric?.value ?? 45;
+
+type Band = { min: number; max: number; points: number };
+/** "lt3" / "1_2" / "5_7" / "8_plus" table keys -> year bands. */
+function bands(table: Record<string, number>): Band[] {
+  return Object.entries(table).map(([k, points]) => {
+    const lt = k.match(/^lt(\d+)$/);
+    if (lt) return { min: 0, max: Number(lt[1]) - 1, points };
+    const plus = k.match(/^(\d+)_plus$/);
+    if (plus) return { min: Number(plus[1]), max: Infinity, points };
+    const r = k.match(/^(\d+)_(\d+)$/);
+    return r ? { min: Number(r[1]), max: Number(r[2]), points } : { min: 0, max: -1, points };
+  });
+}
+const EMPLOYMENT_BANDS = { overseas: bands(POINTS_TABLES.overseasEmployment), australian: bands(POINTS_TABLES.australianEmployment) };
+/** The points one employment band is worth, from the report's points table. */
+export function employmentPointsFor(location: "overseas" | "australian", years: number): number | undefined {
+  return EMPLOYMENT_BANDS[location].find((b) => years >= b.min && years <= b.max)?.points;
+}
+
 const THRESHOLDS = (gatesData as unknown as { thresholds: { CSIT: { value: number; effectiveFrom?: string } } }).thresholds;
 
-/** The [ENGINE FACTS] block for the system prompt. */
+/** The engine-facts block (block-1) for the system prompt. */
 export function buildEngineFacts(live: LiveStateData = {}): string {
   return [
-    "[ENGINE FACTS] -- the same data the LogiVisa report uses. These are authoritative: where a reference document gives a different fee, gate, threshold or state status, these facts win; never contradict them, and never present a superseded figure.",
+    "block-1 -- the same data the LogiVisa report uses (internal: never name, quote or point the visitor to this block). These are authoritative: where a reference document gives a different fee, gate, threshold or state status, these facts win; never contradict them, and never present a superseded figure.",
     "",
     "Visa application charges (from 1 July 2026):",
     ...feeLines(),
@@ -115,6 +165,13 @@ export function buildEngineFacts(live: LiveStateData = {}): string {
     "Mandatory requirements per visa (the report's gate matrix, from the Home Affairs pages):",
     ...gateLines(),
     `- Core Skills Income Threshold (CSIT): ${fmt(THRESHOLDS.CSIT.value)}${THRESHOLDS.CSIT.effectiveFrom ? ` from ${THRESHOLDS.CSIT.effectiveFrom}` : ""}.`,
+    "",
+    "Visa names (use exactly these; the Home Affairs document titles):",
+    ...Object.entries(VISA_NAMES).map(([sc, name]) => `- Subclass ${sc} = ${name} visa${sc === "482" ? " (it is NOT called Temporary Skill Shortage / TSS any more)" : ""}.`),
+    "",
+    "Stream and age rules:",
+    `- Subclass 186 Temporary Residence Transition stream: ${TRT_EMPLOYMENT.years} years of full-time eligible sponsored employment in the ${TRT_EMPLOYMENT.withinYears} years before applying (not ${TRT_EMPLOYMENT.withinYears} years of employment). Direct Entry stream: at least ${DIRECT_ENTRY_EXPERIENCE_YEARS} years of relevant work experience.`,
+    `- Age: you must be UNDER ${AGE_LIMIT} when invited (189 / 190 / 491) or when you apply (186). ${AGE_LIMIT} is an upper limit, never a minimum age; the points table gives 0 age points from ${AGE_LIMIT}.`,
     "- Subclass 191 (permanent, after a 491): live and work in a designated regional area for at least 3 years and provide ATO notices of assessment for 3 income years within the 491's 5 years. There is NO minimum income requirement.",
     "",
     "Points test (the report's points table):",

@@ -178,6 +178,11 @@ jobs:
       - name: Chat corrections, index audit, free quick profile, balance header
         run: npm run test:chat-followup
 
+      # The 500-visa Software Engineer at 40 points: no internal prompt labels, the engine's opening summary (status labels,
+      # nomination-inclusive scores, gap plan, ceiling), and every listed factual error flagged and corrected (en/tr/zh-Hans).
+      - name: Chat plan summary, internal labels, engine facts answer check
+        run: npm run test:chat-plan
+
       # Medical registration data (src/data/health-registration/*.json, extracted from the Medical Board / Ahpra
       # "Pathways to registration for international medical graduates" document). The regenerate-and-diff drift
       # check needs the gitignored source PDF and is SKIPPED here; the committed-file invariants (fee schedule

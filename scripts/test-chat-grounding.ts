@@ -30,6 +30,7 @@ import { getQuickProfile, saveQuickProfile, type QuickProfileDeps } from "../lib
 import { humanSourceName } from "../lib/chat/source-names";
 import type { RetrievedChunk } from "../lib/chat/types";
 import type { ReadinessInput, ReadinessReport } from "../lib/readiness/types";
+import { pathwayStatusLabel } from "../lib/readiness/visa-gates";
 import { runReadinessEngine } from "../src/lib/readiness-engine";
 
 let failures = 0;
@@ -153,14 +154,14 @@ async function main() {
     await handleChat(new Request("https://x.test", { method: "POST", body: JSON.stringify({ messages: [{ id: "m1", role: "user", parts: [{ type: "text", text: question }] }] }) }), chatDeps);
     const sys = captured[0]?.system ?? "";
     const pe = report?.pointsEstimate;
-    t("the prompt carries the engine's points breakdown", Boolean(pe) && sys.includes(`Points: ${pe!.estimatedPoints}`) && sys.includes("/30"), sys.slice(sys.indexOf("[KULLANICI PROFİLİ]"), sys.indexOf("[KULLANICI PROFİLİ]") + 600));
-    t("... the gate result per visa", Object.entries(report?.visaGates ?? {}).every(([v, g]) => sys.includes(`${v}: ${g.status}`)));
+    t("the prompt carries the engine's points breakdown", Boolean(pe) && sys.includes(`Points: ${pe!.estimatedPoints}`) && sys.includes("/30"), sys.slice(sys.indexOf("block-2:"), sys.indexOf("block-2:") + 600));
+    t("... the gate result per visa", Object.entries(report?.visaGates ?? {}).every(([v, g]) => sys.includes(`${v}: ${pathwayStatusLabel(g, "en")}`)));
     const avail = report?.stateNominationTracker?.nominationAvailability;
     t("... the available states", Boolean(avail) && sys.includes("States open for this occupation: 190 ->"));
     t("... the current visa, and the profile is marked as the engine run on the quick profile card", sys.includes("Current visa: subclass 500") && sys.includes("quick profile card") && captured[0]?.profileSource === "quick");
-    t("5. subclass 500: the prompt requires the Australian-study points factors", sys.includes("[STUDENT VISA GUIDANCE]") && /Australian study requirement: \+5/.test(sys) && /Study in regional Australia: \+5/.test(sys) && /Professional Year: \+5/.test(sys) && /Specialist education: \+10/.test(sys));
+    t("5. subclass 500: the prompt requires the Australian-study points factors", sys.includes("block-4 (internal") && /Australian study requirement: \+5/.test(sys) && /Study in regional Australia: \+5/.test(sys) && /Professional Year: \+5/.test(sys) && /Specialist education: \+10/.test(sys));
     t("5. ... and the 485 gates from the gate matrix, evaluated for this profile", sys.includes("35 or under when applying") && sys.includes("An eligible degree (Bachelor or above) awarded in the last 6 months") && sys.includes("Study with a CRICOS-registered Australian provider") && sys.includes("An English test result from the last 12 months") && /In Australia when applying: met/.test(sys));
-    t("the engine facts are in the premium prompt too", sys.includes("[ENGINE FACTS]") && sys.includes("Subclass 491: main applicant AUD 6,140"));
+    t("the engine facts are in the premium prompt too", sys.includes("block-1 --") && sys.includes("Subclass 491: main applicant AUD 6,140"));
 
     // Free path: a 500 question still gets the study guidance and the engine facts (no profile).
     const freeCaptured: StreamRequest[] = [];
@@ -173,7 +174,7 @@ async function main() {
       },
     });
     const fsys = freeCaptured[0]?.system ?? "";
-    t("free path: engine facts and the 500 guidance (general 485 gates, no profile)", fsys.includes("[ENGINE FACTS]") && fsys.includes("[STUDENT VISA GUIDANCE]") && fsys.includes("- 35 or under when applying") && !fsys.includes("[KULLANICI PROFİLİ]:"));
+    t("free path: engine facts and the 500 guidance (general 485 gates, no profile)", fsys.includes("block-1 --") && fsys.includes("block-4 (internal") && fsys.includes("- 35 or under when applying") && !fsys.includes("block-2:"));
   }
 
   section("4. citation display");

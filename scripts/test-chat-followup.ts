@@ -199,13 +199,13 @@ async function main() {
     await ask(mkDeps(free));
     const withProfile = captured[0];
     t("free path: model stays gpt-4o-mini, no citation catalogue, no credit spent", withProfile.modelId === "gpt-4o-mini" && withProfile.sources === undefined);
-    t("free path with a quick profile: the prompt carries the engine's points, gates and states", withProfile.system.includes("[KULLANICI PROFİLİ]:") && withProfile.system.includes(`Points: ${saved?.pointsEstimate?.estimatedPoints}`) && withProfile.system.includes("Visa gate results:") && withProfile.system.includes("States open for this occupation:") && !withProfile.system.includes("PREMIUM KAYNAK"));
+    t("free path with a quick profile: the prompt carries the engine's points, gates and states", withProfile.system.includes("block-2:") && withProfile.system.includes(`Points: ${saved?.pointsEstimate?.estimatedPoints}`) && withProfile.system.includes("Status by visa (LogiVisa labels):") && withProfile.system.includes("States open for this occupation:") && !withProfile.system.includes("PREMIUM KAYNAK"));
     await ask(mkDeps({ id: "free-2", messageCount: 0, premiumCredits: 0 }));
     const without = captured[1];
     const refs = [{ content: "Visa application charge AUD 6,140.", metadata: { source: "x.pdf" } }];
-    t("free path without a profile: unchanged (exactly the engine-facts prompt, no profile block)", !without.system.includes("[KULLANICI PROFİLİ]") && without.system === buildSystemPrompt(refs, { engineFacts: buildEngineFacts({}) }));
+    t("free path without a profile: unchanged (exactly the engine-facts prompt, no profile block)", !without.system.includes("block-2:") && without.system === buildSystemPrompt(refs, { engineFacts: buildEngineFacts({}) }));
     // Another visitor never sees this visitor's profile.
-    t("another visitor's prompt does not contain this visitor's result", !without.system.includes("Visa gate results:"));
+    t("another visitor's prompt does not contain this visitor's result", !without.system.includes("Status by visa"));
   }
 
   section("4. credit balance in the chat header");

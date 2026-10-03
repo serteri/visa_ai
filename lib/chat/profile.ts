@@ -1,4 +1,5 @@
 import type { ReadinessInput, ReadinessReport } from "@/lib/readiness/types";
+import { pathwayStatusLabel } from "@/lib/readiness/visa-gates";
 
 import { isMissingTableError, type QuickProfileStore } from "./quick-profile";
 
@@ -54,9 +55,9 @@ export function buildProfileSummary(
       .filter(([, g]) => g && typeof g.status === "string")
       .map(([visa, g]) => {
         const failed = (g.notMet ?? []).slice(0, 2).map((x) => clip(x.label, 70)).filter(Boolean);
-        return `${visa}: ${g.status}${failed.length ? ` [${failed.join("; ")}]` : ""}`;
+        return `${visa}: ${pathwayStatusLabel(g, "en")}${failed.length ? ` [${failed.join("; ")}]` : ""}`;
       });
-    if (rows.length) lines.push(`Visa gate results: ${rows.join(" | ")}`);
+    if (rows.length) lines.push(`Status by visa (LogiVisa labels): ${rows.join(" | ")}`);
   }
 
   const avail = report.stateNominationTracker?.nominationAvailability;
@@ -79,7 +80,7 @@ export function buildProfileSummary(
   return [header, ...lines].join("\n").slice(0, MAX_SUMMARY_CHARS);
 }
 
-export type LoadedProfile = { summary: string; source: "report" | "quick"; input: Partial<ReadinessInput> };
+export type LoadedProfile = { summary: string; source: "report" | "quick"; input: Partial<ReadinessInput>; /** The stored engine report (for the opening summary). */ report: unknown };
 
 /**
  * The summary for THIS visitor only: reports are looked up by the visitor's own verified emails, never by anything
@@ -99,7 +100,7 @@ export async function loadLinkedReport(store: ProfileStore, visitorId: string): 
   }
   if (!newest) return null;
   const summary = buildProfileSummary(newest.reportJson, newest.inputJson, newest.createdAt, "report");
-  return summary ? { summary, source: "report", input: (newest.inputJson ?? {}) as Partial<ReadinessInput> } : null;
+  return summary ? { summary, source: "report", input: (newest.inputJson ?? {}) as Partial<ReadinessInput>, report: newest.reportJson } : null;
 }
 
 /**
@@ -117,5 +118,5 @@ export async function loadChatProfile(store: ProfileStore, quick: QuickProfileSt
   }
   if (!row) return null;
   const summary = buildProfileSummary(row.reportJson, row.inputJson, row.updatedAt, "quick");
-  return summary ? { summary, source: "quick", input: (row.inputJson ?? {}) as Partial<ReadinessInput> } : null;
+  return summary ? { summary, source: "quick", input: (row.inputJson ?? {}) as Partial<ReadinessInput>, report: row.reportJson } : null;
 }
