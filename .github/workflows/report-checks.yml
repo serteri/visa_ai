@@ -189,6 +189,11 @@ jobs:
       - name: Chat plan summary, internal labels, engine facts answer check
         run: npm run test:chat-plan
 
+      # Summary in the conversation language, benchmarks in the summary and "enough" corrections, unambiguous points wording
+      # and the ceiling check (tr / zh), the WA 190 contract fact and "move to WA" check, 191 citations, the 491 child fee.
+      - name: Chat summary language, benchmarks, ceiling wording, WA condition, 191 citations
+        run: npm run test:chat-benchmarks
+
       # Medical registration data (src/data/health-registration/*.json, extracted from the Medical Board / Ahpra
       # "Pathways to registration for international medical graduates" document). The regenerate-and-diff drift
       # check needs the gitignored source PDF and is SKIPPED here; the committed-file invariants (fee schedule

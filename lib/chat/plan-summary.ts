@@ -24,6 +24,8 @@ export type PlanFacts = {
   scores: Partial<Record<PathwaySubclass, { base: number; bonus: number; total: number; short: number }>>;
   /** Highest score the visitor's own actions can reach (before any nomination), when the engine can compute it. */
   ceiling?: number;
+  /** 189 / 190 / 491: the recent invitation benchmark the same total is compared with (null: none for this occupation). */
+  benchmarks?: Partial<Record<PathwaySubclass, { total: number; benchmark: number | null; asOf?: string }>>;
 };
 
 export type PlanSummary = { lead: string; facts: PlanFacts };
@@ -64,25 +66,45 @@ export function buildPlanSummary(reportJson: unknown, inputJson: unknown, locale
   const sep = locale === "zh-Hans" ? "；" : "; ";
   const stop = locale === "zh-Hans" ? "。" : ".";
   const byVisa = visas.map((v) => `${v} – ${statuses[v].label}`).join(sep);
+  const potentialNote = potential !== undefined;
   const s1 = T(
     locale,
-    `Your estimate is ${points} points${potential !== undefined ? ` (${potential} with a positive skills assessment)` : ""}${byVisa ? `; by visa: ${byVisa}` : ""}.`,
-    `Tahmini puanınız ${points}${potential !== undefined ? ` (olumlu beceri değerlendirmesiyle ${potential})` : ""}${byVisa ? `; vize bazında: ${byVisa}` : ""}.`,
-    `您的预估分数是 ${points} 分${potential !== undefined ? `（获得正面技能评估后为 ${potential} 分）` : ""}${byVisa ? `；按签证：${byVisa}` : ""}。`,
+    `You have ${points} points now${potentialNote ? `; ${potential} once a positive skills assessment lets you claim your qualification and experience points` : ""}${byVisa ? `; by visa: ${byVisa}` : ""}.`,
+    `Şu an ${points} puanınız var${potentialNote ? `; olumlu bir beceri değerlendirmesi nitelik ve deneyim puanlarınızı almanızı sağladığında ${potential}` : ""}${byVisa ? `; vize bazında: ${byVisa}` : ""}.`,
+    `您目前有 ${points} 分${potentialNote ? `；获得正面技能评估、可以申报学历和工作经验加分后为 ${potential} 分` : ""}${byVisa ? `；按签证：${byVisa}` : ""}。`,
   );
 
+  // Each points-tested visa: the sum (nomination included for 190 / 491), the 65 minimum AND the recent invitation level.
+  const benchmarks: NonNullable<PlanFacts["benchmarks"]> = {};
   const arithmetic = (["189", "190", "491"] as const)
     .filter((v) => statuses[v])
     .map((v) => {
       const s = scores[v]!;
+      const ps = report.pathwayScores?.[v];
+      const benchmark = typeof ps?.benchmark === "number" ? ps.benchmark : null;
+      benchmarks[v] = { total: s.total, benchmark, ...(ps?.benchmarkAsOf ? { asOf: ps.benchmarkAsOf } : {}) };
       const sum = s.bonus > 0 ? `${s.base} + ${s.bonus} = ${s.total}` : `${s.total}`;
-      const verdict = s.short > 0
-        ? T(locale, `${s.short} short of ${THRESHOLD}`, `${THRESHOLD} için ${s.short} puan eksik`, `距 ${THRESHOLD} 分差 ${s.short} 分`)
-        : T(locale, `meets ${THRESHOLD}`, `${THRESHOLD} puanı karşılıyor`, `达到 ${THRESHOLD} 分`);
-      return `${v}: ${sum} (${verdict})`;
+      const minimum = s.short > 0
+        ? T(locale, `${s.short} short of the ${THRESHOLD} minimum`, `${THRESHOLD} asgari puanın ${s.short} altında`, `距 ${THRESHOLD} 分最低要求差 ${s.short} 分`)
+        : T(locale, `meets the ${THRESHOLD} minimum`, `${THRESHOLD} asgari puanı karşılıyor`, `达到 ${THRESHOLD} 分最低要求`);
+      const gap = benchmark === null ? null : benchmark - s.total;
+      const recent =
+        benchmark === null
+          ? ""
+          : gap! > 0
+            ? T(locale, `${gap} below the recent invitation level of ${benchmark}`, `son davet seviyesi olan ${benchmark}'in ${gap} puan altında`, `比近期邀请水平 ${benchmark} 分低 ${gap} 分`)
+            : gap === 0
+              ? T(locale, `equal to the recent invitation level of ${benchmark}`, `son davet seviyesi ${benchmark} ile eşit`, `与近期邀请水平 ${benchmark} 分持平`)
+              : T(locale, `above the recent invitation level of ${benchmark}`, `son davet seviyesi ${benchmark}'in üzerinde`, `高于近期邀请水平 ${benchmark} 分`);
+      return `${v}: ${sum} — ${minimum}${recent ? `${locale === "zh-Hans" ? "，" : ", "}${recent}` : ""}`;
     });
   const s2 = arithmetic.length
-    ? `${T(locale, "With the nomination each visa requires", "Her vizenin gerektirdiği adaylıkla", "计入各签证所需的提名后")}${locale === "zh-Hans" ? "：" : ": "}${arithmetic.join(sep)}${stop}`
+    ? `${T(
+        locale,
+        `With the nomination each visa requires${potentialNote ? " and the points a positive skills assessment unlocks" : ""}`,
+        `Her vizenin gerektirdiği adaylıkla${potentialNote ? " ve olumlu beceri değerlendirmesinin açtığı puanlarla" : ""}`,
+        `计入各签证所需的提名${potentialNote ? "和正面技能评估带来的加分" : ""}后`,
+      )}${locale === "zh-Hans" ? "：" : ": "}${arithmetic.join(sep)}${stop}`
     : "";
 
   const plans: string[] = [];
@@ -108,7 +130,7 @@ export function buildPlanSummary(reportJson: unknown, inputJson: unknown, locale
   const s3 = s3Parts.length ? `${T(locale, "Closing the gap", "Açığı kapatma", "补足差距")}${locale === "zh-Hans" ? "：" : " — "}${s3Parts.join(sep)}${stop}` : "";
 
   const lead = [s1, s2, s3].filter(Boolean).join(" ");
-  return { lead, facts: { points, ...(potential !== undefined ? { potential } : {}), statuses, scores, ...(ceiling !== undefined ? { ceiling } : {}) } };
+  return { lead, facts: { points, ...(potential !== undefined ? { potential } : {}), statuses, scores, benchmarks, ...(ceiling !== undefined ? { ceiling } : {}) } };
 }
 
 /**

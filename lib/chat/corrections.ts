@@ -17,7 +17,7 @@ import type { PlanFacts } from "./plan-summary";
  * additionally stripped where the answer is shown (lib/chat/internal-labels.ts).
  */
 
-export type Correction = { kind: "fee" | "gate" | "state_availability" | "visa_name" | "trt_period" | "experience_points" | "age_limit" | "status_wording" | "max_potential"; text: string };
+export type Correction = { kind: "fee" | "gate" | "state_availability" | "visa_name" | "trt_period" | "experience_points" | "age_limit" | "status_wording" | "max_potential" | "benchmark_sufficiency" | "state_condition"; text: string };
 
 const T = (l: Locale, en: string, tr: string, zh: string) => (l === "tr" ? tr : l === "zh-Hans" ? zh : en);
 const aud = (n: number) => `AUD ${n.toLocaleString("en-AU")}`;
@@ -25,8 +25,29 @@ const aud = (n: number) => `AUD ${n.toLocaleString("en-AU")}`;
 /** The language of the answer, when the client did not say: Chinese characters, then Turkish letters/words, else English. */
 export function detectAnswerLocale(text: string): Locale {
   if (/[一-鿿]/.test(text)) return "zh-Hans";
-  if (/[çğıöşüÇĞİÖŞÜ]|\b(vize|için|olarak|gerekir|başvuru)\b/i.test(text)) return "tr";
+  if (/[çğıöşüÇĞİÖŞÜ]|\b(vize|vizesi|için|olarak|gerekir|başvuru|nedir|nasıl|neden|mı|mi|mu|mü|ve|bir|ama|puan|puanım|yılında|yaşında)\b/i.test(text)) return "tr";
   return "en";
+}
+
+/**
+ * The language of the conversation: what the visitor writes in, not the site language the page happened to be in. The
+ * newest user message that is clearly Chinese or Turkish wins; a message that detects as English falls back to the
+ * client's language, then to English. A Turkish question on an English page is answered -- and summarised -- in Turkish.
+ */
+export function conversationLocale(userTexts: readonly string[], requested?: string): Locale {
+  for (let i = userTexts.length - 1; i >= 0; i--) {
+    const l = detectAnswerLocale(userTexts[i]);
+    if (l !== "en") return l;
+    // Clearly English (several English function words, no Turkish / Chinese cue): English on a Turkish page stays English.
+    if (looksEnglish(userTexts[i])) return "en";
+  }
+  return requested === "tr" || requested === "zh-Hans" || requested === "en" ? requested : "en";
+}
+
+const ENGLISH_WORDS = /\b(?:the|what|how|can|could|should|would|do|does|is|are|am|my|i|for|to|of|and|with|visa|options?|which|when|where|why|need|get|apply)\b/gi;
+/** At least two distinct English function words: a message in English, not just a number or a subclass. */
+function looksEnglish(text: string): boolean {
+  return new Set(Array.from(text.matchAll(ENGLISH_WORDS), (m) => m[0].toLowerCase())).size >= 2;
 }
 
 function gateSource(subclass: string, id: string, locale: Locale): string | null {
@@ -166,6 +187,35 @@ export function buildCorrections(conflicts: EngineConflict[], locale: Locale, ct
                 'Düzeltme: "maksimum potansiyel" LogiVisa sonucunuzdaki bir rakam değildir; buna güvenmeyin.',
                 "更正：“最大潜力”不是您的 LogiVisa 结果中的数字，请勿依赖。",
               ),
+      });
+    } else if (c.kind === "benchmark_sufficiency") {
+      for (const sc of c.subclasses ?? []) {
+        const b = ctx.plan?.benchmarks?.[sc as "189" | "190" | "491"];
+        if (!b || b.benchmark === null) continue;
+        const gap = b.benchmark - b.total;
+        const asOf = b.asOf ? T(locale, `, as of ${b.asOf}`, `, ${b.asOf} itibarıyla`, `，截至 ${b.asOf}`) : "";
+        const src = T(locale, `recent invitation data in your LogiVisa report${asOf}`, `LogiVisa raporunuzdaki son davet verileri${asOf}`, `您的 LogiVisa 报告中的近期邀请数据${asOf}`);
+        const nom = sc === "189" ? "" : T(locale, " including the nomination the visa requires", " (bu vizenin gerektirdiği adaylık dahil)", "（含该签证所需的提名）");
+        add(`bench:${sc}`, {
+          kind: "benchmark_sufficiency",
+          text: T(
+            locale,
+            `Correction: for subclass ${sc} your score${nom} is ${b.total}, ${gap} below the recent invitation level of ${b.benchmark} (${src}); meeting the minimum is not the same as being invited.`,
+            `Düzeltme: ${sc} alt sınıfı için puanınız${nom} ${b.total}; son davet seviyesi olan ${b.benchmark}'in ${gap} puan altında (${src}); asgari puanı karşılamak davet edilmekle aynı şey değildir.`,
+            `更正：子类 ${sc} 的分数${nom}为 ${b.total} 分，比近期邀请水平 ${b.benchmark} 分低 ${gap} 分（${src}）；满足最低要求不等于会获邀。`,
+          ),
+        });
+      }
+    } else if (c.kind === "state_condition") {
+      const src = T(locale, "WA State Nominated Migration Program 2025-26, p. 5, 9", "WA State Nominated Migration Program 2025-26, s. 5, 9", "WA State Nominated Migration Program 2025-26，第 5、9 页");
+      add("wa190", {
+        kind: "state_condition",
+        text: T(
+          locale,
+          `Correction: Western Australia's General stream for subclass 190 requires a full-time WA employment contract of at least six months in your occupation; moving to WA does not meet it (${src}). Subclass 491 does not require the contract.`,
+          `Düzeltme: Batı Avustralya'nın subclass 190 Genel akışı, mesleğinizde en az altı ay süreli tam zamanlı bir WA iş sözleşmesi gerektirir; WA'ya taşınmak bunu karşılamaz (${src}). Subclass 491 için sözleşme gerekmez.`,
+          `更正：西澳 subclass 190 一般类别要求持有您职业的全职西澳雇佣合同，期限至少六个月；搬到西澳并不满足该要求（${src}）。subclass 491 不要求该合同。`,
+        ),
       });
     } else if (c.kind === "state_availability") {
       const src = T(locale, "LogiVisa State Nomination Tracker", "LogiVisa Eyalet Adaylık Takipçisi", "LogiVisa 州提名追踪器");

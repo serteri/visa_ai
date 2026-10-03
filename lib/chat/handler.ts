@@ -10,7 +10,7 @@ import {
   PREMIUM_PRIMARY_CHUNK_COUNT,
 } from "./config";
 import { findEngineConflicts, type EngineConflict } from "./answer-check";
-import { buildCorrections, detectAnswerLocale, type Correction } from "./corrections";
+import { buildCorrections, conversationLocale, type Correction } from "./corrections";
 import { buildPlanSummary, lastShownLeadFingerprint, profileFingerprint, shouldShowLead, type PlanFacts } from "./plan-summary";
 import type { CreditStore } from "./credits";
 import { buildEngineFacts, type LiveStateData } from "./engine-facts";
@@ -111,7 +111,11 @@ export async function handleChat(req: Request, deps: ChatDeps): Promise<Response
 
   // Every finished answer is checked against the engine data (fees, gates, state claims, repeated disclaimers).
   const requestLocale = (body as { locale?: string }).locale;
-  const answerLocale = (text: string) => (requestLocale === "tr" || requestLocale === "zh-Hans" || requestLocale === "en" ? requestLocale : detectAnswerLocale(text));
+  // The conversation language is what the visitor writes in (a Turkish question on an English page gets a Turkish
+  // summary, corrections and answer); the client's language is the fallback.
+  const userTexts = messages.filter((m) => m.role === "user").map((m) => getMessageText(m));
+  const convLocale = conversationLocale(userTexts, requestLocale);
+  const answerLocale = (text: string) => (void text, convLocale);
   const planFor = (profile: { report: unknown; input: object; summary: string; source: string } | null) => {
     if (!profile) return null;
     try {
@@ -128,7 +132,7 @@ export async function handleChat(req: Request, deps: ChatDeps): Promise<Response
   };
   const check = (text: string, opts: { premium: boolean; hasProfile: boolean; plan?: PlanFacts }): Correction[] => {
     const gateStatus = opts.plan ? Object.fromEntries(Object.entries(opts.plan.statuses).map(([v, s]) => [v, s.status])) : undefined;
-    const conflicts = findEngineConflicts(text, { hasProfile: opts.hasProfile, gateStatus, ceiling: opts.plan?.ceiling });
+    const conflicts = findEngineConflicts(text, { hasProfile: opts.hasProfile, gateStatus, ceiling: opts.plan?.ceiling, benchmarks: opts.plan?.benchmarks });
     if (conflicts.length === 0) return [];
     if (deps.reportConflicts) deps.reportConflicts(conflicts, { premium: opts.premium });
     else console.warn("[chat_engine_conflict]", JSON.stringify({ premium: opts.premium, conflicts: conflicts.map((c) => ({ kind: c.kind, detail: c.detail })) }));

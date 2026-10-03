@@ -57,10 +57,49 @@ export function validateCitations(text: string, refs: SourceRef[]): { valid: str
   return { valid, invalid };
 }
 
+/** The visa subclass a source document is about ("... (subclass 191).pdf", "Subclass 491 ...", "Student visa_class_500"), if any. */
+export function sourceSubclass(source: string): string | undefined {
+  return source.match(/subclass(?:es)?[\s_-]*(\d{3})/i)?.[1] ?? source.match(/class[\s_]*(\d{3})/i)?.[1];
+}
+
+const MENTION = /(?:subclass|alt sınıf|vize|visa|子类)?\s*\b(189|190|191|482|485|491|500|186|820|801)\b/gi;
+
+/**
+ * A claim about subclass N is cited to subclass N's document: when a sentence is about one or more subclasses and a
+ * marker in it points at a retrieved document about ANOTHER subclass (a 191 statement tagged with the 189 page), the
+ * marker is moved to the retrieved document of the subclass the sentence is about; with none retrieved the marker is
+ * dropped rather than left pointing at the wrong document. Sentences about no subclass, and documents that are about
+ * no subclass (lists, state documents), are left alone.
+ */
+export function alignCitationsToSubclass(text: string, refs: SourceRef[]): string {
+  const bySubclass = new Map<string, SourceRef>();
+  for (const r of refs) {
+    const sc = sourceSubclass(r.source);
+    if (sc && !bySubclass.has(sc)) bySubclass.set(sc, r);
+  }
+  const byId = new Map(refs.map((r) => [r.id, r]));
+  // Splitting with a capture group keeps the separators, so the text is rebuilt exactly.
+  return text
+    .split(/((?<=[.!?。！？])\s+|\n+)/)
+    .map((piece, i) => {
+      if (i % 2 === 1) return piece; // a separator
+      const mentioned = [...new Set(Array.from(piece.matchAll(MENTION), (m) => m[1]))];
+      if (mentioned.length === 0) return piece;
+      return piece.replace(MARKER, (m, id: string) => {
+        const ref = byId.get(id);
+        const sc = ref ? sourceSubclass(ref.source) : undefined;
+        if (!ref || !sc || mentioned.includes(sc)) return m;
+        const target = mentioned.map((x) => bySubclass.get(x)).find(Boolean);
+        return target ? `[${target.id}]` : "";
+      });
+    })
+    .join("");
+}
+
 /** Client-side: [S2] -> "[document, p.4]" from the metadata the server sent; markers not in the catalogue vanish. */
 export function renderCitations(text: string, refs: SourceRef[]): string {
   const byId = new Map(refs.map((r) => [r.id, r]));
-  return text
+  return alignCitationsToSubclass(text, refs)
     .replace(MARKER, (_m, id: string) => {
       const ref = byId.get(id);
       return ref ? ` [${sourceLabel(ref)}]` : "";

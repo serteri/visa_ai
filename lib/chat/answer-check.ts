@@ -27,7 +27,9 @@ export type EngineConflictKind =
   | "experience_points"
   | "age_limit"
   | "status_wording"
-  | "max_potential";
+  | "max_potential"
+  | "benchmark_sufficiency"
+  | "state_condition";
 
 /** Conflicts that are only logged: no visible correction block (not a factual error in what the visitor was told). */
 export const LOG_ONLY_KINDS: ReadonlySet<EngineConflictKind> = new Set<EngineConflictKind>(["repeated_disclaimer", "internal_label"]);
@@ -50,6 +52,8 @@ export type CheckOptions = {
   gateStatus?: Record<string, string>;
   /** The engine's highest score the visitor's own actions can reach (before nomination), when known. */
   ceiling?: number;
+  /** 189 / 190 / 491: the visitor's score (nomination included) and the recent invitation benchmark, from the engine. */
+  benchmarks?: Partial<Record<"189" | "190" | "491", { total: number; benchmark: number | null; asOf?: string }>>;
 };
 
 const SENTENCE_SPLIT = /(?<=[.!?。！？])\s+|\n+/;
@@ -81,7 +85,30 @@ const THREE_YEARS = /\b(?:3|three)[\s-]*years?\b|\b3 yıl|\büç yıl|3\s*年|�
 const LAST_THREE_YEARS = /(?:last|past|previous|within|in the)\s+(?:3|three)\s*years?|son\s+3\s*yıl|过去\s*3\s*年|最近\s*3\s*年|3\s*年内/i;
 const MIN_AGE_45 = new RegExp(`(?:minimum|min\\.?|lowest|at least)\\s+age[^.]{0,30}\\b${AGE_LIMIT}\\b|\\b${AGE_LIMIT}\\b[^.]{0,30}(?:minimum|lowest) age|(?:asgari|en az|minimum)\\s+yaş[^.]{0,25}\\b${AGE_LIMIT}\\b|\\b${AGE_LIMIT}\\b[^.]{0,25}(?:asgari|minimum)\\s+yaş|最低年龄[^。]{0,10}${AGE_LIMIT}|${AGE_LIMIT}[^。]{0,10}最低年龄`, "i");
 const NOT_ELIGIBLE = /\bnot eligible\b|\bineligible\b|\bnot qualify|uygun değil|uygun olmayan|şartları karşılamıyor|hak kazanamaz|不符合|没有资格|不合格/i;
-const MAX_POTENTIAL = /maximum potential|maximum possible (?:score|points)|maximum achievable|maksimum potansiyel|en yüksek potansiyel|maksimum (?:olası|mümkün) puan|最大潜力|最高潜力|最高可能(?:分|得分)/i;
+// The only figure that may be called a maximum / ceiling is the engine's closable ceiling (en / tr / zh).
+const MAX_POTENTIAL = new RegExp(
+  [
+    "maximum potential|potential maximum|maximum possible|maximum achievable|maximum (?:attainable )?(?:score|points?|total)|max(?:imum)? score|highest (?:possible|potential|achievable) (?:score|points?)|score ceiling|points? ceiling|upper limit of (?:your )?points",
+    "maksimum potansiyel|potansiyel maksimum|en yüksek potansiyel|(?:maksimum|azami|tavan) (?:olası |mümkün |potansiyel )?(?:puan|skor)|en yüksek (?:olası |mümkün )?(?:puan|skor)|ulaşabileceğiniz (?:maksimum|en yüksek)",
+    "最大潜力|最高潜力|潜在最高|潜在最大|最高可能|(?:最高|最多)(?:可达|能达到|可以达到|可得)|(?:最高|最大)(?:可达|可能|潜在)?(?:积分|分数|得分|分)|(?:积分|分数)(?:上限|天花板)|最多(?:可达|能达到|可以达到)\s*\d+\s*分",
+  ].join("|"),
+  "i",
+);
+// "55 is enough", "sufficient", "meets the requirements" ... for a points-tested visa (en / tr / zh).
+const ENOUGH = new RegExp(
+  [
+    "\\b(?:enough|sufficient|adequate|competitive|strong enough|good enough)\\b|meets? (?:all )?(?:the )?(?:requirements?|criteria|threshold|bar)\\b|(?:above|over|exceeds?) (?:the )?(?:65|minimum|threshold)",
+    "yeterli(?:dir|siniz)?\\b|yeterince|rekabetçi|şartları karşılıyor|koşulları karşılıyor|gereklilikleri karşılıyor|65(?:'i| puanı)? (?:aşıyor|geçiyor)|barajı (?:aşıyor|geçiyor|karşılıyor)",
+    "足够|够了|满足(?:所有)?(?:要求|条件)|达标|具有竞争力|有竞争力|超过\\s*65|已(?:经)?达到(?:要求|门槛)",
+  ].join("|"),
+  "i",
+);
+const NOT_ENOUGH = /\b(?:not|isn't|aren't|n't|never|no longer|less than|short of|below|insufficient)\b|yeterli değil|yetersiz|yeterli olmay|altında|eksik|不够|不足|不达标|低于|还差|差\s*\d/i;
+const BENCH_WORDS = /\b(?:benchmark|invitation level|invitation|recent|invited|competitive cut|cut-?off)\b|davet|son dönem|referans|邀请|基准|参考分|近期|分数线/i;
+// Advice to "move to / live in WA" as the way to meet WA's 190 (the contract is what the stream requires).
+const WA_WORDS = /\bWA\b|western australia|batı avustralya|西澳/i;
+const MOVE_WORDS = /\b(?:move|moving|relocat\w*|live|living|reside|residing|settle|settling|shift)\b|taşın\w*|yerleş\w*|yaşa\w*|ikamet|搬(?:到|去|家)?|迁(?:往|到)|移居|居住|定居/i;
+const JOB_WORDS = /\b(?:job|employment|employer|contract|work(?:ing)? (?:offer|contract)|sponsor\w*)\b|\biş\b|iş (?:teklifi|sözleşme\w*)|sözleşme|işveren|工作|雇佣|合同|雇主|录用|聘用/i;
 const EXPERIENCE_WORDS = /experience|employment|work|deneyim|çalışma|工作|经验|经历/i;
 const AUSTRALIAN_WORDS = /australian|in australia|avustralya'?da|avustralya deneyim|澳大利亚(?:境内|本地)?/i;
 const OVERSEAS_WORDS = /overseas|offshore|outside australia|abroad|yurt ?dışı|avustralya dışı|海外|境外/i;
@@ -156,10 +183,32 @@ export function findEngineConflicts(answer: string, opts: CheckOptions = {}): En
       if (wrong.length > 0) out.push({ kind: "status_wording", sentence: s, detail: `subclass ${wrong.join("/")} is "Next step required" in the engine, not "not eligible"`, subclasses: wrong });
     }
 
-    // "Maximum potential" is only the engine's closable ceiling.
-    if (MAX_POTENTIAL.test(s)) {
-      const nums = Array.from(s.matchAll(/\b(\d{2,3})\b/g), (m) => Number(m[1]));
-      if (opts.ceiling === undefined || !nums.includes(opts.ceiling)) out.push({ kind: "max_potential", sentence: s, detail: opts.ceiling === undefined ? '"maximum potential" is not an engine figure' : `"maximum potential" is only the engine's ceiling, ${opts.ceiling}` });
+    // Only the engine's closable ceiling may be called a maximum: the figure stated with the phrase must be that ceiling.
+    const mp = s.match(MAX_POTENTIAL);
+    if (mp && mp.index !== undefined) {
+      // Totals only (a single category's maximum -- English 20, age 30 -- is not the visitor's ceiling).
+      const figures = (text: string) => Array.from(text.matchAll(/(?<!\d|\d[.,])(\d{2,3})(?!\d|[.,]\d|\s*(?:%|years?|yıl|年|AUD))/g), (m) => Number(m[1])).filter((n) => n >= 40);
+      const after = figures(s.slice(mp.index + mp[0].length));
+      const stated = after.length > 0 ? after[0] : figures(s)[0];
+      const categoryOnly = /\b(?:english|age|employment|education|qualification|partner|naati|community language|professional year)\b|yaş|i̇ngilizce|ingilizce|eğitim|deneyim|ortak|英语|年龄|学历|经验|伴侣/i.test(s) && stated === undefined;
+      const wrong = categoryOnly ? false : opts.ceiling === undefined ? true : stated !== undefined && stated !== opts.ceiling;
+      if (wrong) out.push({ kind: "max_potential", sentence: s, detail: opts.ceiling === undefined ? '"maximum potential" is not an engine figure' : `only the engine's ceiling, ${opts.ceiling}, may be called a maximum${stated !== undefined ? ` (the answer says ${stated})` : ""}` });
+    }
+
+    // A score said to be enough / sufficient while it is below the recent invitation benchmark.
+    if (opts.benchmarks && ENOUGH.test(s) && !NOT_ENOUGH.test(s) && !BENCH_WORDS.test(s)) {
+      const below = subs.filter((sc) => {
+        const b = opts.benchmarks?.[sc as "189" | "190" | "491"];
+        return b && b.benchmark !== null && b.total < b.benchmark;
+      });
+      if (below.length > 0) {
+        out.push({ kind: "benchmark_sufficiency", sentence: s, detail: `subclass ${below.join("/")}: the score is below the recent invitation benchmark (${below.map((sc) => { const b = opts.benchmarks![sc as "189" | "190" | "491"]!; return `${b.total} vs ${b.benchmark}`; }).join(", ")}), so it is not "enough"`, subclasses: below });
+      }
+    }
+
+    // WA 190: moving to WA is not what meets the stream -- a six-month WA employment contract is.
+    if (WA_WORDS.test(s) && MOVE_WORDS.test(s) && !JOB_WORDS.test(s) && (subs.includes("190") || /\b190\b/.test(answer))) {
+      out.push({ kind: "state_condition", sentence: s, detail: "WA's General stream for subclass 190 requires a full-time WA employment contract of at least six months; moving to WA does not meet it", subclasses: ["190"] });
     }
 
     if (DISCLAIMER.test(s)) disclaimers++;

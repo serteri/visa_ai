@@ -66,6 +66,12 @@ export function buildProfileSummary(
     lines.push(`States open for this occupation: 190 -> ${fmt(avail["190"])}; 491 -> ${fmt(avail["491"])}`);
   }
 
+  const blocked = report.stateNominationTracker?.conditionBlocked;
+  if (blocked) {
+    const rows = (["190", "491"] as const).flatMap((sub) => (blocked[sub] ?? []).map((b) => `${sub} -> ${b.code} (${b.reason})`));
+    if (rows.length) lines.push(`Not available on the visitor's answers (state stream condition unmet): ${rows.join("; ")}`);
+  }
+
   const gaps: string[] = [];
   for (const [visa, g] of Object.entries(gates ?? {})) {
     if (g?.belowBenchmark) gaps.push(`${visa}: score ${g.belowBenchmark.score} vs recent invitation benchmark ${g.belowBenchmark.benchmark}`);
