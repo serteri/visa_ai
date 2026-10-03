@@ -132,7 +132,7 @@ async function main() {
     t(`${l}: 490/191-style: 190 and 491 scores include the required nomination ("40 + 15 = 55", "40 + 5 = 45") and the gap to 65`, lead.includes("40 + 15 = 55") && lead.includes("40 + 5 = 45") && /10/.test(lead.slice(lead.indexOf("40 + 15 = 55"))) && lead.includes("65"), lead);
     const closure = pointsClosureOf(report.pointsEstimate, input, l)!;
     t(`${l}: the engine's gap plan (what closes it, how long) and its own ceiling (${closure.baseTotal + closure.gain}), nothing else`, lead.includes("Proficient") && (l === "en" ? lead.includes("no waiting time needed") : true) && lead.includes(String(closure.baseTotal + closure.gain)) && plan.facts.ceiling === closure.baseTotal + closure.gain, lead);
-    t(`${l}: three sentences, in the visitor's language, no internal label`, (lead.match(/[.。](?=\s|$)/g) ?? []).length === 3 && findInternalLabels(lead).length === 0, lead);
+    t(`${l}: short lines (points, one per visa, the gap plan), in the visitor's language, no internal label`, lead.split("\n").length === 6 && /^\d{3} – /.test(lead.split("\n")[1]) && !/^\d{3} – /.test(lead.split("\n")[0]) && findInternalLabels(lead).length === 0, lead);
   }
   {
     const { input, report } = personaFor("en");

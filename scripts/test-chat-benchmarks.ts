@@ -82,25 +82,25 @@ async function main() {
     t("the corrections follow the same language", buildCorrections(findEngineConflicts("Subclass 491 can be lodged without a skills assessment."), conversationLocale(["491 vizesi için ne yapmalıyım?"], "en"), {}).every((c) => /^Düzeltme:/.test(c.text)));
     t("conversationLocale: newest clearly-non-English message wins; falls back to the client, then en", conversationLocale(["What is 491?", "Peki ya 190 nasıl?"], "en") === "tr" && conversationLocale(["491?"], "zh-Hans") === "zh-Hans" && conversationLocale(["What is 491?"], "tr") === "en" && conversationLocale(["hi"], undefined) === "en");
     // The same summary exists in all three languages.
-    t("the summary is built in en, tr and zh-Hans with the same figures", LOCALES.every((l) => plan(l).lead.includes("491: 55 + 15 = 70") && plan(l).facts.benchmarks?.["491"]?.benchmark === 75));
+    t("the summary is built in en, tr and zh-Hans with the same figures", LOCALES.every((l) => plan(l).lead.includes(": 55 + 15 = 70") && plan(l).facts.benchmarks?.["491"]?.benchmark === 75));
   }
 
   section("2. benchmarks in the summary; 'enough' claims below the benchmark are corrected");
   {
     const e = plan("en").lead;
-    t("en: 491 — sum, the 65 minimum and the recent invitation level", e.includes("491: 55 + 15 = 70 — meets the 65 minimum, 5 below the recent invitation level of 75"), e);
-    t("en: 190 and 189 likewise (nomination included for 190 only)", e.includes("190: 55 + 5 = 60 — 5 short of the 65 minimum, 25 below the recent invitation level of 85") && e.includes("189: 55 — 10 short of the 65 minimum, 40 below the recent invitation level of 95"), e);
+    t("en: 491 — sum, the 65 minimum and the recent invitation level", e.includes("491 – Next step required: 55 + 15 = 70 — meets the 65 minimum, 5 below the recent invitation level of 75"), e);
+    t("en: 190 and 189 likewise (nomination included for 190 only)", e.includes("190 – Next step required: 55 + 5 = 60 — 5 short of the 65 minimum, 25 below the recent invitation level of 85") && e.includes("189 – Next step required: 55 — 10 short of the 65 minimum, 40 below the recent invitation level of 95"), e);
     const tr = plan("tr").lead;
     const zh = plan("zh-Hans").lead;
-    t("tr: 491 — sum, asgari 65 and the recent level", tr.includes("491: 55 + 15 = 70 — 65 asgari puanı karşılıyor, son davet seviyesi olan 75'in 5 puan altında"), tr);
-    t("zh-Hans: 491 — sum, minimum and the recent level", zh.includes("491: 55 + 15 = 70 — 达到 65 分最低要求，比近期邀请水平 75 分低 5 分"), zh);
+    t("tr: 491 — sum, asgari 65 and the recent level", tr.includes("491 – Sonraki adım gerekli: 55 + 15 = 70 — 65 asgari puanı karşılıyor, son davet seviyesi olan 75'in 5 puan altında"), tr);
+    t("zh-Hans: 491 — sum, minimum and the recent level", zh.includes("491 – 需先完成下一步: 55 + 15 = 70 — 达到 65 分最低要求，比近期邀请水平 75 分低 5 分"), zh);
     const { input, report } = personaFor("en");
     t("the engine's status labels are used", e.includes("189 – Next step required") && e.includes("491 – Next step required"));
     // "Eligible, but below recent invitation levels": the reference profile with a completed assessment.
     const ref = REVIEW_PERSONAS["ref-xyz-wa-job"] as ReadinessInput;
     const refReport = JSON.parse(JSON.stringify(runReadinessEngine({ ...ref, locale: "en" }))) as ReadinessReport;
     const refLead = buildPlanSummary(refReport, ref, "en")!.lead;
-    t("an eligible-but-below visa shows the engine's label and the figures (190: 70 + 5 = 75 vs 85)", refLead.includes("190 – Eligible, but below recent invitation levels (your 75 vs recent 85, 10 points short)") && refLead.includes("190: 70 + 5 = 75 — meets the 65 minimum, 10 below the recent invitation level of 85") && refLead.includes("491: 70 + 15 = 85 — meets the 65 minimum, above the recent invitation level of 75"), refLead);
+    t("an eligible-but-below visa shows the engine's label and the figures (190: 70 + 5 = 75 vs 85)", refLead.includes("190 – Eligible, but below recent invitation levels (your 75 vs recent 85, 10 points short)") && refLead.includes("190 – Eligible, but below recent invitation levels (your 75 vs recent 85, 10 points short): 70 + 5 = 75 — meets the 65 minimum, 10 below the recent invitation level of 85") && refLead.includes("491 – Eligible to pursue: 70 + 15 = 85 — meets the 65 minimum, above the recent invitation level of 75"), refLead);
     void input; void report;
 
     const facts = plan("en").facts;
@@ -130,9 +130,9 @@ async function main() {
   section("3. unambiguous points wording; only the engine ceiling is a maximum");
   {
     const lead = { en: plan("en").lead, tr: plan("tr").lead, "zh-Hans": plan("zh-Hans").lead };
-    t("en: '40 points now; 55 once a positive skills assessment lets you claim your qualification and experience points'", lead.en.startsWith("You have 40 points now; 55 once a positive skills assessment lets you claim your qualification and experience points;") && !lead.en.includes("(55 with"), lead.en);
-    t("tr: 'Şu an 40 puanınız var; olumlu bir beceri değerlendirmesi nitelik ve deneyim puanlarınızı almanızı sağladığında 55'", lead.tr.startsWith("Şu an 40 puanınız var; olumlu bir beceri değerlendirmesi nitelik ve deneyim puanlarınızı almanızı sağladığında 55;"), lead.tr);
-    t("zh-Hans: the 55 is tied to claiming the qualification and experience points", lead["zh-Hans"].startsWith("您目前有 40 分；获得正面技能评估、可以申报学历和工作经验加分后为 55 分；"), lead["zh-Hans"]);
+    t("en: '40 points now; 55 once a positive skills assessment lets you claim your qualification and experience points'", lead.en.startsWith("You have 40 points now; 55 once a positive skills assessment lets you claim your qualification and experience points.\n") && !lead.en.includes("(55 with"), lead.en);
+    t("tr: 'Şu an 40 puanınız var; olumlu bir beceri değerlendirmesi nitelik ve deneyim puanlarınızı almanızı sağladığında 55'", lead.tr.startsWith("Şu an 40 puanınız var; olumlu bir beceri değerlendirmesi nitelik ve deneyim puanlarınızı almanızı sağladığında 55.\n"), lead.tr);
+    t("zh-Hans: the 55 is tied to claiming the qualification and experience points", lead["zh-Hans"].startsWith("您目前有 40 分；获得正面技能评估、可以申报学历和工作经验加分后为 55 分。\n"), lead["zh-Hans"]);
     const ceiling = plan("en").facts.ceiling!;
     const opts = { hasProfile: true, ceiling };
     const bad = [
@@ -207,6 +207,64 @@ async function main() {
     const fix = buildCorrections(wrongFee, "en").find((c) => c.kind === "fee");
     t("the 189 figure (AUD 1,540) given for a 491 child is flagged and corrected to AUD 1,535", wrongFee.some((c) => c.kind === "fee") && !!fix && fix.text.includes("AUD 1,535 for each child under 18"), JSON.stringify(fix));
     t("the correct figure is not flagged", !kinds("The 491 additional applicant charge for each child under 18 is AUD 1,535.").includes("fee"));
+  }
+
+  section("6. follow-up: ceiling with words in between, citation after the full stop, WA negative case, line format");
+  {
+    // 1. The real Turkish answer: the engine ceiling was 105; 70 is the 491 score with the nomination.
+    const opts = { hasProfile: true, ceiling: 105 };
+    const real = "Azami kendi adımlarınızla ulaşabileceğiniz puan 70 olacaktır";
+    t(`flagged (exact sentence from the real answer, ceiling 105): "${real}"`, kinds(real, opts).includes("max_potential"), JSON.stringify(kinds(real, opts)));
+    const more = [
+      "Azami olarak kendi adımlarınızla ulaşabileceğiniz toplam puan 70 olur.",
+      "En yüksek, kendi çabanızla alabileceğiniz puan 70'tir.",
+      "The maximum score you can reach with your own steps is 70.",
+      "The highest total you can get on your own is 70 points.",
+      "您靠自己的行动最高能达到 70 分。",
+      "最多可以拿到 70 分。",
+    ];
+    for (const m of more) t(`flagged (a figure that is not the ceiling, words between keyword and figure): "${m}"`, kinds(m, opts).includes("max_potential"), JSON.stringify(kinds(m, opts)));
+    const okCeil = ["Azami kendi adımlarınızla ulaşabileceğiniz puan 105 olacaktır.", "The maximum score you can reach with your own steps is 105.", "您靠自己的行动最高能达到 105 分。", "Azami puan İngilizce için 20'dir."];
+    for (const m of okCeil) t(`not flagged: "${m}"`, !kinds(m, opts).includes("max_potential"), JSON.stringify(kinds(m, opts)));
+
+    // 2. Citation: the marker after the full stop, a 189 sentence tagged with the 491 page.
+    const refs: SourceRef[] = [
+      { id: "S1", source: "Skilled Independent visa (subclass 189) Points-tested stream_23_09_2026.pdf", page: 7 },
+      { id: "S2", source: "Subclass 491 Skilled Work Regional (Provisional) visa - Main applicant_23September2026.pdf", page: 10 },
+    ];
+    const cases: Array<[string, string]> = [
+      ["Subclass 189 için puan testine tabisiniz. [S2]", "marker after the full stop (Turkish)"],
+      ["Subclass 189 için puan testine tabisiniz [S2].", "marker before the full stop"],
+      ["Subclass 189 puan testine tabidir.\n[S2]", "marker on the next line"],
+      ["- Subclass 189 is points-tested. [S2]\n- Subclass 491 needs a nomination. [S2]", "bullets, each with its own marker"],
+    ];
+    for (const [txt, what] of cases) {
+      const out = renderCitations(txt, refs);
+      const first = out.split("\n- ")[0].replace(/\n/g, " ");
+      t(`a 189 sentence is cited to the 189 document, not 491 (${what})`, /189[^\n]*\[Home Affairs – Subclass 189[^\]]*p\. 7\]/.test(first) && !/\[[^\]]*491/.test(first), out);
+    }
+    const bullets = renderCitations(cases[3][0], refs);
+    t("... and the 491 bullet keeps its 491 citation", /Subclass 491 needs a nomination\. \[Home Affairs – Subclass 491, p\. 10\]/.test(bullets), bullets);
+    t("a marker after the full stop on a sentence about no subclass is untouched", alignCitationsToSubclass("Ücretler sık değişir. [S1]", refs) === "Ücretler sık değişir. [S1]");
+
+    // 3. The WA correction does not fire when the same answer states the job / contract requirement.
+    const negatives = [
+      "Sadece WA'da yaşamak veya taşınmak yeterli değildir; iş kontratı şarttır.",
+      "Subclass 190 için WA'ya taşınmak yetmez. WA'da en az altı aylık bir iş sözleşmesi gerekir.",
+      "Moving to WA is not enough for subclass 190; you need a job offer with an employment contract.",
+      "For subclass 190, living in WA does not qualify you. A WA employer contract is required.",
+      "仅仅搬到西澳不够，子类 190 需要工作合同。",
+      "要满足西澳的 190，搬到西澳是不够的。必须有西澳的雇佣合同。",
+    ];
+    for (const n of negatives) t(`not flagged (the job / contract requirement is stated): "${n.slice(0, 70)}"`, !kinds(n, { hasProfile: true }).includes("state_condition"), JSON.stringify(kinds(n, { hasProfile: true })));
+    t("still flagged: a bare 'move to WA' for 190 with no job requirement anywhere in the answer", kinds("WA'daki 190 için Batı Avustralya'ya taşınmalısınız. Subclass 190 eyalet adaylığıdır.", { hasProfile: true }).includes("state_condition"));
+
+    // 4. The summary as short lines.
+    for (const l of LOCALES) {
+      const lines = plan(l).lead.split("\n");
+      const label = { en: "Next step required", tr: "Sonraki adım gerekli", "zh-Hans": "需先完成下一步" }[l];
+      t(`${l}: one line for points, one line per visa (status, nomination-inclusive score, 65 minimum, recent level), one line for the gap plan`, lines.length === 6 && !/^\d{3} –/.test(lines[0]) && lines.slice(1, 4).map((x) => x.slice(0, 3)).join() === "189,190,491" && lines.slice(1, 4).every((x) => x.includes(`– ${label}: `) && /65/.test(x) && /(95|85|75)/.test(x)) && /^485 – /.test(lines[4]) && /189:/.test(lines[5]) && !/^\d{3} –/.test(lines[5]), JSON.stringify(lines));
+    }
   }
 
   console.log(`\n${failures === 0 ? "✅ ALL CHECKS PASSED" : `❌ ${failures} CHECK(S) FAILED`}`);

@@ -94,6 +94,9 @@ const MAX_POTENTIAL = new RegExp(
   ].join("|"),
   "i",
 );
+// A maximum-type keyword (en / tr / zh); with a points context in the sentence the figure after it must be the engine ceiling.
+const MAX_KEYWORD = /\b(?:maximum|max|highest|ceiling)\b|(?<![\p{L}])(?:maksimum|azami|en yüksek|tavan)(?![\p{L}])|最高|最大|最多/iu;
+const POINTS_CONTEXT = /\b(?:points?|score|reach|achieve)\b|(?<![\p{L}])(?:puan\p{L}*|skor\p{L}*|ulaş\p{L}*)|分|达到|可达/iu;
 // "55 is enough", "sufficient", "meets the requirements" ... for a points-tested visa (en / tr / zh).
 const ENOUGH = new RegExp(
   [
@@ -108,7 +111,7 @@ const BENCH_WORDS = /\b(?:benchmark|invitation level|invitation|recent|invited|c
 // Advice to "move to / live in WA" as the way to meet WA's 190 (the contract is what the stream requires).
 const WA_WORDS = /\bWA\b|western australia|batı avustralya|西澳/i;
 const MOVE_WORDS = /\b(?:move|moving|relocat\w*|live|living|reside|residing|settle|settling|shift)\b|taşın\w*|yerleş\w*|yaşa\w*|ikamet|搬(?:到|去|家)?|迁(?:往|到)|移居|居住|定居/i;
-const JOB_WORDS = /\b(?:job|employment|employer|contract|work(?:ing)? (?:offer|contract)|sponsor\w*)\b|\biş\b|iş (?:teklifi|sözleşme\w*)|sözleşme|işveren|工作|雇佣|合同|雇主|录用|聘用/i;
+const JOB_WORDS = /\b(?:job|employment|employer|contract|work(?:ing)? (?:offer|contract)|sponsor\w*)\b|(?<![\p{L}])(?:iş|işveren\p{L}*|kontrat\p{L}*|sözleşme\p{L}*)(?![\p{L}])|工作|雇佣|合同|雇主|录用|聘用/iu;
 const EXPERIENCE_WORDS = /experience|employment|work|deneyim|çalışma|工作|经验|经历/i;
 const AUSTRALIAN_WORDS = /australian|in australia|avustralya'?da|avustralya deneyim|澳大利亚(?:境内|本地)?/i;
 const OVERSEAS_WORDS = /overseas|offshore|outside australia|abroad|yurt ?dışı|avustralya dışı|海外|境外/i;
@@ -122,6 +125,8 @@ export function findEngineConflicts(answer: string, opts: CheckOptions = {}): En
   const out: EngineConflict[] = [];
   const sentences = answer.split(SENTENCE_SPLIT).map((s) => s.trim()).filter(Boolean);
   let disclaimers = 0;
+  // An answer that states the job / contract / employment requirement anywhere (for WA or 190) is not advising a bare move.
+  const jobRequirementStated = sentences.some((x) => JOB_WORDS.test(x) && (WA_WORDS.test(x) || /\b190\b/.test(x)));
 
   for (const s of sentences) {
     const subs = subclasses(s);
@@ -184,14 +189,19 @@ export function findEngineConflicts(answer: string, opts: CheckOptions = {}): En
     }
 
     // Only the engine's closable ceiling may be called a maximum: the figure stated with the phrase must be that ceiling.
-    const mp = s.match(MAX_POTENTIAL);
+    // The phrase can be a fixed one ("maximum potential") or a keyword with words between it and the figure ("Azami kendi
+    // adımlarınızla ulaşabileceğiniz puan 70 olacaktır"): both are judged by the figure stated in the same sentence.
+    const phrase = s.match(MAX_POTENTIAL);
+    const keyword = phrase ? null : s.match(MAX_KEYWORD);
+    const mp = phrase ?? (keyword && POINTS_CONTEXT.test(s) ? keyword : null);
     if (mp && mp.index !== undefined) {
       // Totals only (a single category's maximum -- English 20, age 30 -- is not the visitor's ceiling).
       const figures = (text: string) => Array.from(text.matchAll(/(?<!\d|\d[.,])(\d{2,3})(?!\d|[.,]\d|\s*(?:%|years?|yıl|年|AUD))/g), (m) => Number(m[1])).filter((n) => n >= 40);
       const after = figures(s.slice(mp.index + mp[0].length));
       const stated = after.length > 0 ? after[0] : figures(s)[0];
       const categoryOnly = /\b(?:english|age|employment|education|qualification|partner|naati|community language|professional year)\b|yaş|i̇ngilizce|ingilizce|eğitim|deneyim|ortak|英语|年龄|学历|经验|伴侣/i.test(s) && stated === undefined;
-      const wrong = categoryOnly ? false : opts.ceiling === undefined ? true : stated !== undefined && stated !== opts.ceiling;
+      // A bare keyword counts only with a stated total; a fixed phrase is wrong even without a figure when there is no ceiling.
+      const wrong = categoryOnly || (!phrase && stated === undefined) ? false : opts.ceiling === undefined ? true : stated !== undefined && stated !== opts.ceiling;
       if (wrong) out.push({ kind: "max_potential", sentence: s, detail: opts.ceiling === undefined ? '"maximum potential" is not an engine figure' : `only the engine's ceiling, ${opts.ceiling}, may be called a maximum${stated !== undefined ? ` (the answer says ${stated})` : ""}` });
     }
 
@@ -207,7 +217,7 @@ export function findEngineConflicts(answer: string, opts: CheckOptions = {}): En
     }
 
     // WA 190: moving to WA is not what meets the stream -- a six-month WA employment contract is.
-    if (WA_WORDS.test(s) && MOVE_WORDS.test(s) && !JOB_WORDS.test(s) && (subs.includes("190") || /\b190\b/.test(answer))) {
+    if (WA_WORDS.test(s) && MOVE_WORDS.test(s) && !JOB_WORDS.test(s) && !jobRequirementStated && (subs.includes("190") || /\b190\b/.test(answer))) {
       out.push({ kind: "state_condition", sentence: s, detail: "WA's General stream for subclass 190 requires a full-time WA employment contract of at least six months; moving to WA does not meet it", subclasses: ["190"] });
     }
 

@@ -65,13 +65,12 @@ export function buildPlanSummary(reportJson: unknown, inputJson: unknown, locale
 
   const sep = locale === "zh-Hans" ? "；" : "; ";
   const stop = locale === "zh-Hans" ? "。" : ".";
-  const byVisa = visas.map((v) => `${v} – ${statuses[v].label}`).join(sep);
   const potentialNote = potential !== undefined;
   const s1 = T(
     locale,
-    `You have ${points} points now${potentialNote ? `; ${potential} once a positive skills assessment lets you claim your qualification and experience points` : ""}${byVisa ? `; by visa: ${byVisa}` : ""}.`,
-    `Şu an ${points} puanınız var${potentialNote ? `; olumlu bir beceri değerlendirmesi nitelik ve deneyim puanlarınızı almanızı sağladığında ${potential}` : ""}${byVisa ? `; vize bazında: ${byVisa}` : ""}.`,
-    `您目前有 ${points} 分${potentialNote ? `；获得正面技能评估、可以申报学历和工作经验加分后为 ${potential} 分` : ""}${byVisa ? `；按签证：${byVisa}` : ""}。`,
+    `You have ${points} points now${potentialNote ? `; ${potential} once a positive skills assessment lets you claim your qualification and experience points` : ""}.`,
+    `Şu an ${points} puanınız var${potentialNote ? `; olumlu bir beceri değerlendirmesi nitelik ve deneyim puanlarınızı almanızı sağladığında ${potential}` : ""}.`,
+    `您目前有 ${points} 分${potentialNote ? `；获得正面技能评估、可以申报学历和工作经验加分后为 ${potential} 分` : ""}。`,
   );
 
   // Each points-tested visa: the sum (nomination included for 190 / 491), the 65 minimum AND the recent invitation level.
@@ -98,14 +97,11 @@ export function buildPlanSummary(reportJson: unknown, inputJson: unknown, locale
               : T(locale, `above the recent invitation level of ${benchmark}`, `son davet seviyesi ${benchmark}'in üzerinde`, `高于近期邀请水平 ${benchmark} 分`);
       return `${v}: ${sum} — ${minimum}${recent ? `${locale === "zh-Hans" ? "，" : ", "}${recent}` : ""}`;
     });
-  const s2 = arithmetic.length
-    ? `${T(
-        locale,
-        `With the nomination each visa requires${potentialNote ? " and the points a positive skills assessment unlocks" : ""}`,
-        `Her vizenin gerektirdiği adaylıkla${potentialNote ? " ve olumlu beceri değerlendirmesinin açtığı puanlarla" : ""}`,
-        `计入各签证所需的提名${potentialNote ? "和正面技能评估带来的加分" : ""}后`,
-      )}${locale === "zh-Hans" ? "：" : ": "}${arithmetic.join(sep)}${stop}`
-    : "";
+  // One short line per visa: status (the engine's label), the nomination-inclusive sum, the 65 minimum and the recent level.
+  const visaLines = (["189", "190", "491"] as const)
+    .filter((v) => statuses[v])
+    .map((v, i) => `${v} – ${statuses[v].label}: ${arithmetic[i].replace(/^\d{3}: /, "")}`);
+  if (visas.includes("485") && statuses["485"]) visaLines.push(`485 – ${statuses["485"].label}`);
 
   const plans: string[] = [];
   const seen = new Set<string>();
@@ -129,7 +125,8 @@ export function buildPlanSummary(reportJson: unknown, inputJson: unknown, locale
   const s3Parts = [plans.length ? plans.join(sep) : "", ceilingText].filter(Boolean);
   const s3 = s3Parts.length ? `${T(locale, "Closing the gap", "Açığı kapatma", "补足差距")}${locale === "zh-Hans" ? "：" : " — "}${s3Parts.join(sep)}${stop}` : "";
 
-  const lead = [s1, s2, s3].filter(Boolean).join(" ");
+  // Short lines (the chat shows line breaks): points, one line per visa, then the gap plan.
+  const lead = [s1, ...visaLines, s3].filter(Boolean).join("\n");
   return { lead, facts: { points, ...(potential !== undefined ? { potential } : {}), statuses, scores, benchmarks, ...(ceiling !== undefined ? { ceiling } : {}) } };
 }
 

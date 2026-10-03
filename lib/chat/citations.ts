@@ -78,12 +78,19 @@ export function alignCitationsToSubclass(text: string, refs: SourceRef[]): strin
     if (sc && !bySubclass.has(sc)) bySubclass.set(sc, r);
   }
   const byId = new Map(refs.map((r) => [r.id, r]));
-  // Splitting with a capture group keeps the separators, so the text is rebuilt exactly.
-  return text
-    .split(/((?<=[.!?。！？])\s+|\n+)/)
+  // Splitting with a capture group keeps the separators, so the text is rebuilt exactly. A marker written AFTER the full
+  // stop ("... vize. [S3]") or at the start of the next line belongs to the sentence before it: its subclasses are the
+  // ones the marker is checked against.
+  const pieces = text.split(/((?<=[.!?。！？])\s+|\n+)/);
+  let previousMentions: string[] = [];
+  return pieces
     .map((piece, i) => {
       if (i % 2 === 1) return piece; // a separator
-      const mentioned = [...new Set(Array.from(piece.matchAll(MENTION), (m) => m[1]))];
+      const own = [...new Set(Array.from(piece.matchAll(MENTION), (m) => m[1]))];
+      const leadingMarker = /^\s*(?:\[S\d+\][\s,;.]*)+/.test(piece);
+      const markersOnly = /^[\s,;.]*(?:\[S\d+\][\s,;.]*)*$/.test(piece);
+      const mentioned = markersOnly || (leadingMarker && own.length === 0) ? previousMentions : own;
+      if (!markersOnly && own.length > 0) previousMentions = own;
       if (mentioned.length === 0) return piece;
       return piece.replace(MARKER, (m, id: string) => {
         const ref = byId.get(id);
