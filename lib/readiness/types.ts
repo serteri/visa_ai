@@ -132,6 +132,10 @@ export type ReadinessInput = {
   applicationStage?: ApplicationStage;
   /** The visa the applicant holds now (AI assistant quick profile: "500", "485", "none", ...). Context only. */
   currentVisaSubclass?: string;
+  /** State or territory of the job offer / sponsor (state stream conditions); defaults to the preferred state, then the state of residence. */
+  employmentState?: AuStateCode;
+  /** State of the qualification when it was earned in Australia (state study conditions, e.g. WA Graduate stream); not asked by the intake. */
+  studyState?: AuStateCode;
 };
 
 export type EmployerSponsorshipStatus = "none" | "job_offer" | "sponsored_482";
@@ -701,6 +705,12 @@ export type StateNominationState = {
   occupationMatchNote?: string;
   /** WA: the stream conditions for the applicant's occupation (190 employment contract, Graduate study), shown in full. */
   streamNotes?: string[];
+  /**
+   * Subclasses this state cannot nominate the applicant for ON THEIR INTAKE because a sourced stream condition tied to
+   * employment or study in the state is not met (WA 190: "Requires a WA job offer"). The state stays available for the
+   * other subclass; nominationAvailability and every list built from it leave it out for this one.
+   */
+  unavailableFor?: Partial<Record<"190" | "491", { reason: string; kind: "employment" | "study"; detail: string; step: string }>>;
 };
 
 export type StateNominationTracker = {
@@ -711,6 +721,8 @@ export type StateNominationTracker = {
    * the tracker is blocked.
    */
   nominationAvailability?: { "190": string[]; "491": string[] };
+  /** Open states on the occupation's list that are left out of nominationAvailability for a subclass because of an unmet stream condition (code + the reason shown). */
+  conditionBlocked?: { "190": Array<{ code: string; reason: string; step: string }>; "491": Array<{ code: string; reason: string; step: string }> };
   topRecommendedStates: StateNominationState[];
   note: string;
   /** True only when the underlying 190/491 pathway is hard-ineligible for a

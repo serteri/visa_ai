@@ -1,4 +1,5 @@
 import livingCostsData from "@/src/data/living-costs.json";
+import { STATE_NAMES } from "@/lib/state-nomination/residence-rules";
 import visaTrendsData from "@/src/data/visa-trends.json";
 import { localizeText, localizeTrendDescription, localizeWaitWindow, t3 } from "@/src/lib/readiness/localization";
 import { resolveOccupationDisplayName } from "@/lib/readiness/occupation-eligibility";
@@ -258,6 +259,10 @@ function inferFamilyProfile(raw?: string): FamilyProfile {
   return "Single";
 }
 
+/** The capital whose living costs stand for a state (only cities the living-cost dataset has). */
+const STATE_LIVING_COST_CITY: Record<string, string> = { NSW: "Sydney", VIC: "Melbourne", QLD: "Brisbane", SA: "Adelaide", WA: "Perth" };
+const stateDisplayName = (code: string, localeIndex: 0 | 1 | 2) => STATE_NAMES[code.trim().toUpperCase()]?.[localeIndex] ?? code;
+
 function inferCity(input: {
   selectedCity?: string;
   mainGoal?: string;
@@ -396,6 +401,8 @@ type GanttProfile = {
   experienceNotProvided?: boolean;
   /** A positive skills assessment is already on file -- Step 2 does not tell the applicant to lodge one. */
   skillsAssessmentCompleted?: boolean;
+  /** Skills assessment completed, English at least Competent and points at least 65: the plan starts with the EOI itself. */
+  readyToLodge?: boolean;
 };
 
 function buildRawGanttSteps(
@@ -406,6 +413,40 @@ function buildRawGanttSteps(
   profile: GanttProfile = {}
 ): GanttSection {
   const raw = normalize(timeline);
+
+  // A ready profile has nothing left to prepare: the EOI goes in now (month 1 / quarter 1), then the nomination applications.
+  // The completed skills assessment is not scheduled as a future quarter. Profiles that still need steps keep their timeline.
+  if (country === "AU" && profile.readyToLodge) {
+    return {
+      timelineBand: "12+ months",
+      steps: [
+        {
+          step: 1,
+          title: "Submit your EOI now",
+          window: "Quarter 1",
+          description: "Your skills assessment is complete, your English meets the requirement and your points reach 65: submit your Expression of Interest (EOI) in SkillSelect in month 1.",
+        },
+        {
+          step: 2,
+          title: "State Nomination Applications",
+          window: "Quarter 1",
+          description: "While the EOI waits for an invitation, apply for nomination in the states open to you for 190 and 491 (see the State Nomination Tracker) and keep your assessment outcome letter and English result valid.",
+        },
+        {
+          step: 3,
+          title: "Invitation Window",
+          window: "Quarter 2",
+          description: "Invitations and nominations arrive in rounds; keep your EOI claims and evidence up to date until you are invited.",
+        },
+        {
+          step: 4,
+          title: "Visa Lodgement & Processing",
+          window: "Quarter 3",
+          description: "Finalize character/police clearances and medicals immediately upon receiving an Invitation to Apply (ITA).",
+        },
+      ],
+    };
+  }
 
   if (raw.includes("0-6") || raw.includes("0 to 6") || raw.includes("6 month")) {
     return {
@@ -728,6 +769,8 @@ export function generatePremiumSections(input: {
   locale?: Locale;
   occupation?: string;
   selectedCity?: string;
+  /** AU state or territory of residence (intake): the living-cost city is the one in that state when no city was chosen. */
+  residenceState?: string;
   familyStatus?: string;
   timeline?: string;
   hasGraduateVisaPathwayIntent?: boolean;
@@ -823,15 +866,21 @@ export function generatePremiumSections(input: {
   }
 
   const trend = matchTrendByOccupation(input.occupation);
-  const city = inferCity({
+  const inferredCity = inferCity({
     selectedCity: input.selectedCity,
     mainGoal: input.mainGoal,
     biggestConcern: input.biggestConcern,
   });
-  // No city chosen (none selected or named): the fallback city is only an example, and the label says so.
-  const cityIsDefault =
+  const noCityChosen =
     !(input.selectedCity?.trim() && SUPPORTED_CITIES.includes(input.selectedCity.trim())) &&
     !SUPPORTED_CITIES.some((c) => `${input.mainGoal ?? ""} ${input.biggestConcern ?? ""}`.toLowerCase().includes(c.toLowerCase()));
+  // No city chosen but the state of residence is known: the capital in that state (when the dataset has it), labelled as
+  // based on the applicant's state -- not the Sydney example.
+  const stateCity = noCityChosen ? STATE_LIVING_COST_CITY[(input.residenceState ?? "").trim().toUpperCase()] : undefined;
+  const city = stateCity && SUPPORTED_CITIES.includes(stateCity) ? stateCity : inferredCity;
+  const cityFromState = Boolean(stateCity && SUPPORTED_CITIES.includes(stateCity));
+  // No city chosen (none selected or named, no state): the fallback city is only an example, and the label says so.
+  const cityIsDefault = noCityChosen && !cityFromState;
   const familyProfile = inferFamilyProfile(input.familyStatus);
   const cityCosts = LIVING_DATA.cities[city] ?? LIVING_DATA.cities[LIVING_DATA.fallback_city];
   const monthly = cityCosts[familyProfile] ?? cityCosts[LIVING_DATA.fallback_profile];
@@ -855,6 +904,10 @@ export function generatePremiumSections(input: {
       englishAlreadySuperior: input.englishLevel === "superior",
       experienceNotProvided: input.experienceNotProvided === true,
       skillsAssessmentCompleted: input.skillsAssessmentCompleted === true,
+      readyToLodge:
+        input.skillsAssessmentCompleted === true &&
+        ["competent", "proficient", "superior"].includes((input.englishLevel ?? "").trim().toLowerCase()) &&
+        (input.estimatedPoints ?? 0) >= 65,
     }
   );
   const methodologyNote = localizeTrendDescription(
@@ -916,9 +969,11 @@ export function generatePremiumSections(input: {
   return {
     historicalInvitationTrends,
     livingCostProjection: {
-      city: cityIsDefault
-        ? `${getLocalizedCity(locale, city)} ${t3(locale, "(example city -- no city selected)", "(örnek şehir -- şehir seçilmedi)", "（示例城市——未选择城市）")}`
-        : getLocalizedCity(locale, city),
+      city: cityFromState
+        ? `${getLocalizedCity(locale, city)} ${t3(locale, `(based on your state: ${stateDisplayName(input.residenceState!, 0)})`, `(yaşadığınız eyalete göre: ${stateDisplayName(input.residenceState!, 1)})`, `（根据您居住的州：${stateDisplayName(input.residenceState!, 2)}）`)}`
+        : cityIsDefault
+          ? `${getLocalizedCity(locale, city)} ${t3(locale, "(example city -- no city selected)", "(örnek şehir -- şehir seçilmedi)", "（示例城市——未选择城市）")}`
+          : getLocalizedCity(locale, city),
       familyProfile: getLocalizedFamilyProfile(locale, familyProfile),
       currency: LIVING_DATA.currency,
       monthly,

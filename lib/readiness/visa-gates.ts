@@ -52,6 +52,12 @@ export type GateContext = {
    * closable ceiling (boosterGain) is computed from. Undefined when nothing closes it.
    */
   closurePlan?: (short: number) => PointsClosurePlan | undefined;
+  /**
+   * 190 / 491: how many states are open to the applicant, and which open states are left out only because a sourced
+   * stream condition (employment / study in the state) is unmet. No open state and at least one such blocked state =
+   * the nomination gate is not met, with the condition as its step.
+   */
+  nomination?: Partial<Record<"190" | "491", { open: number; blocked: Array<{ code: string; reason: string; step: string }> }>>;
 };
 
 /** One factor of a points closure plan; the gain is its points in that combination (experience: net of age). */
@@ -254,8 +260,26 @@ const skilled = (v: "189" | "190" | "491") => {
 skilled("189");
 skilled("190");
 skilled("491");
-EVAL["190.nomination"] = () => future("A state or territory nominates you after your EOI; a later step.", "Eyalet/bölge EOI'nizden sonra aday gösterir; sonraki bir adım.", "州或领地在您提交 EOI 后提名；属后续步骤。");
-EVAL["491.nomination"] = () => future("A state or territory nominates you (or an eligible relative sponsors you) after your EOI; a later step.", "Eyalet/bölge sizi aday gösterir (veya uygun bir akraba sponsor olur); sonraki bir adım.", "州或领地提名您（或合资格亲属担保）；属后续步骤。");
+const nominationGate = (visa: "190" | "491"): Evaluator => (_i, _f, c) => {
+  const n = c.nomination?.[visa];
+  if (n && n.open === 0 && n.blocked.length > 0) {
+    const why = n.blocked.map((b) => `${b.code}: ${b.reason}`).join("; ");
+    return {
+      status: "not_met",
+      kind: "actionable",
+      reason: [
+        `No state is available to you for ${visa} on your answers (${why}).`,
+        `Yanıtlarınıza göre ${visa} için size açık bir eyalet yok (${why}).`,
+        `根据您的答案，没有州对您开放 ${visa}（${why}）。`,
+      ],
+    };
+  }
+  return visa === "190"
+    ? future("A state or territory nominates you after your EOI; a later step.", "Eyalet/bölge EOI'nizden sonra aday gösterir; sonraki bir adım.", "州或领地在您提交 EOI 后提名；属后续步骤。")
+    : future("A state or territory nominates you (or an eligible relative sponsors you) after your EOI; a later step.", "Eyalet/bölge sizi aday gösterir (veya uygun bir akraba sponsor olur); sonraki bir adım.", "州或领地提名您（或合资格亲属担保）；属后续步骤。");
+};
+EVAL["190.nomination"] = nominationGate("190");
+EVAL["491.nomination"] = nominationGate("491");
 
 EVAL["186DE.age"] = (_i, f) => ageGate(f, 45);
 EVAL["186DE.occupation_csol"] = (_i, f) => csolGate(f);
@@ -456,6 +480,10 @@ function stepFor(row: GateRow, input: ReadinessInput, f: ReturnType<typeof facts
       `Puanınızı ${total} değerinden en az 65'e çıkarın (şu anda ${short} puan eksik${inc[1]}${basis[1]}${how ? `; ${how}` : ""}; puan iyileştirme ipuçlarına bakın)`,
       `将分数从 ${total} 分提高到至少 65 分（目前差 ${short} 分${inc[2]}${basis[2]}${how ? `；${how}` : ""}；见提分建议）`
     );
+  }
+  if (key === "nomination") {
+    const blocked = ctx.nomination?.[row.visa as "190" | "491"]?.blocked ?? [];
+    return blocked.length ? [...new Set(blocked.map((b) => b.step))].join("; ") : undefined;
   }
   if (key === "sponsor" || key === "employer_nomination") {
     return T(locale, "Find an employer willing to sponsor you", "Sizi sponsor etmeye istekli bir işveren bulun", "找到愿意担保您的雇主");

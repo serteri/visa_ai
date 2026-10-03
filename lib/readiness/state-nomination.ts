@@ -9,6 +9,7 @@ import {
 import { findOccupationRecord } from "@/lib/readiness/occupation-eligibility";
 import { occupationMatchLine } from "@/src/lib/readiness/localization";
 import { waStreamRequirementNotes } from "@/lib/state-nomination/wa-streams";
+import { streamConditionBlock } from "@/lib/state-nomination/stream-conditions";
 import { localizeStateNote } from "@/lib/state-nomination/state-note-translations";
 import { currentAdminStatus, resolveDisplayStatus } from "@/lib/state-nomination/state-status";
 import type {
@@ -656,6 +657,22 @@ export function calculateStateNominationTracker(
       residenceGap,
     });
 
+    const listedFor = (occupationResults ?? [])
+      .filter((r) => r.type === "MATCH" || (r.type === "NOT_APPLICABLE" && r.onNationalList))
+      .map((r) => r.subclass);
+    // A sourced stream condition tied to employment / study in the state that the intake does not meet makes the state
+    // unavailable for that subclass (not just a note): WA 190 needs a WA employment contract.
+    const unavailableFor: NonNullable<StateNominationState["unavailableFor"]> = {};
+    for (const sub of ["190", "491"] as const) {
+      if (!listedFor.includes(sub)) continue;
+      const block = streamConditionBlock(input, row.code, occupationAnzscoCode, sub, input.locale);
+      if (block) unavailableFor[sub] = block;
+    }
+    const conditionNotes = [...new Set(Object.values(unavailableFor).map((b) => b.detail))];
+    const unavailableSummary = (Object.entries(unavailableFor) as Array<["190" | "491", { reason: string }]>)
+      .map(([sub, b]) => t(input.locale, ` Not available for subclass ${sub} on your answers: ${b.reason}.`, ` Yanıtlarınıza göre subclass ${sub} için uygun değil: ${b.reason}.`, `根据您的答案，不适用于 subclass ${sub}：${b.reason}。`))
+      .join("");
+
     return {
       code: row.code,
       name: row.name,
@@ -664,10 +681,9 @@ export function calculateStateNominationTracker(
       isOpen,
       score,
       occupationListStatus: listStatus,
-      listedFor: (occupationResults ?? [])
-        .filter((r) => r.type === "MATCH" || (r.type === "NOT_APPLICABLE" && r.onNationalList))
-        .map((r) => r.subclass),
-      summary: buildSummary({
+      listedFor,
+      ...(Object.keys(unavailableFor).length > 0 ? { unavailableFor } : {}),
+      summary: `${buildSummary({
         locale: input.locale,
         row: effectiveRow,
         matchLevel,
@@ -677,14 +693,14 @@ export function calculateStateNominationTracker(
         pointsGap,
         englishGap,
         residenceGap,
-      }),
+      })}${unavailableSummary}`,
       // Notes go first so they're always within the PDF/UI's "first 2
       // requirements" note preview (see drawStateNominationTable in
       // lib/readiness/generate-pdf.ts). Order: admin-set customAiNote (top
       // priority, see StateNominationConfig), then the hand-verified
       // state-rules-config note, then the onshore/offshore rule override.
       ...(residence ? { residenceBlock: residence.block } : {}),
-      requirements: [adminConfig?.customAiNote, residence?.note, listNote, rule?.note ? localizeStateNote(input.locale, rule.note) : undefined, ruleOverrideNote, ...requirements].filter(
+      requirements: [adminConfig?.customAiNote, residence?.note, ...conditionNotes, listNote, rule?.note ? localizeStateNote(input.locale, rule.note) : undefined, ruleOverrideNote, ...requirements].filter(
         (item): item is string => Boolean(item)
       ),
       officialNote: intel?.officialNote,
@@ -704,12 +720,17 @@ export function calculateStateNominationTracker(
   );
 
   // Nomination availability per subclass: on the list for it AND open to this applicant's location.
-  const openFor = (sub: "190" | "491") => states.filter((st) => st.isOpen && (st.listedFor ?? []).includes(sub)).map((st) => st.code);
+  // A state whose stream condition (employment / study in the state) is unmet for that subclass is not available for it.
+  const openFor = (sub: "190" | "491") => states.filter((st) => st.isOpen && (st.listedFor ?? []).includes(sub) && !st.unavailableFor?.[sub]).map((st) => st.code);
   const nominationAvailability = { "190": openFor("190"), "491": openFor("491") };
+  const blockedFor = (sub: "190" | "491") =>
+    states.filter((st) => st.isOpen && (st.listedFor ?? []).includes(sub) && st.unavailableFor?.[sub]).map((st) => ({ code: st.code, reason: st.unavailableFor![sub]!.reason, step: st.unavailableFor![sub]!.step }));
+  const conditionBlocked = { "190": blockedFor("190"), "491": blockedFor("491") };
 
   return {
     states,
     nominationAvailability,
+    conditionBlocked,
     topRecommendedStates: states
       .filter((item) => item.matchLevel !== "low" && item.isOpen && item.occupationListStatus !== "not_listed")
       .slice(0, 2),
@@ -723,3 +744,25 @@ export function calculateStateNominationTracker(
     partialDataWarning: buildPartialDataWarning(input.locale, assessmentState),
   };
 }
+
+/**
+ * What the visa gates need from state availability before the full report exists: per subclass, how many states are
+ * open to this applicant and which are left out only because of an unmet stream condition. Availability does not depend
+ * on the points score, so the tracker is run with a neutral assessment state.
+ */
+export function nominationConditionContext(input: ReadinessInput): { "190": NominationContext; "491": NominationContext } | undefined {
+  try {
+    const stubComparison = (["190", "491"] as const).map((subclass) => ({ subclass, relevance: "possible" })) as unknown as PathwayComparison[];
+    const stubState = { estimatedPoints: undefined, fieldsPresent: { englishLevel: true } } as unknown as AssessmentState;
+    const tracker = calculateStateNominationTracker(input, stubComparison, stubState);
+    if (tracker.eligibilityBlocked || !tracker.nominationAvailability || !tracker.conditionBlocked) return undefined;
+    return {
+      "190": { open: tracker.nominationAvailability["190"].length, blocked: tracker.conditionBlocked["190"] },
+      "491": { open: tracker.nominationAvailability["491"].length, blocked: tracker.conditionBlocked["491"] },
+    };
+  } catch {
+    return undefined;
+  }
+}
+
+export type NominationContext = { open: number; blocked: Array<{ code: string; reason: string; step: string }> };

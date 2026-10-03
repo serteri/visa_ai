@@ -116,6 +116,22 @@ export function getPersonalizedFaq(
       answerZh += `评估过程需要8-12周。所需文件：工作经验证明信、学位证书、护照。`;
     }
 
+    if (!isCA && requirementMet) {
+      // The assessment is already done: no "how do I get one" -- what matters now is the outcome letter and its validity.
+      const who = authorityName ?? (isTr ? "değerlendirme kurumunuz" : isZh ? "您的评估机构" : "your assessing authority");
+      items.push({
+        question: isTr
+          ? `${profile.occupation} beceri değerlendirmesi sonuç mektubumun geçerliliği ve ne yapmalıyım?`
+          : isZh
+            ? `我的${profile.occupation}技能评估结果信的有效期是多久？我该怎么做？`
+            : `How long is my skills assessment outcome letter valid, and what should I do with it?`,
+        answer: isTr
+          ? `${profile.occupation} için beceri değerlendirmeniz tamamlandı. Davet alındığında uygun (olumlu) bir beceri değerlendirmesine sahip olduğunuzu beyan etmeniz gerekir (Home Affairs, Subclass 189 s.7; Subclass 190 s.17; Subclass 491 s.25). Sonuç mektubunun geçerlilik süresini mektupta ve ${who} kurallarında kontrol edin; davet alana kadar geçerli kalmasını sağlayın, mektubu EOI kanıtlarınızla birlikte saklayın ve süresi dolacaksa yenilemeyi önceden planlayın.${authorityNote ? ` ${authorityNote}` : ""}`
+          : isZh
+            ? `您的${profile.occupation}技能评估已完成。获邀时您需声明持有合适的（正面）技能评估（内政部，Subclass 189 第 7 页；Subclass 190 第 17 页；Subclass 491 第 25 页）。请在结果信和${who}的规定中核对有效期，确保在获邀前一直有效；将结果信与 EOI 证据一并保存，若即将到期请提前安排更新。${authorityNote ? `${authorityNote}` : ""}`
+            : `Your skills assessment for ${profile.occupation} is complete. You must declare a suitable (positive) skills assessment when you are invited (Home Affairs, Subclass 189 p.7; Subclass 190 p.17; Subclass 491 p.25). Check the validity period stated on your outcome letter and in ${who}'s rules, make sure it stays valid until you are invited, keep the letter with your EOI evidence, and plan a renewal early if it is about to expire.${authorityNote ? ` ${authorityNote}` : ""}`,
+      });
+    } else
     items.push({
       question: isCA
         ? (isTr

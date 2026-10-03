@@ -186,8 +186,12 @@ export function findRecommendationViolations(result: PremiumStrategyResult, repo
     if (!nextStep) lastPosition = Math.max(lastPosition, position);
 
     if (sub === "190" || sub === "491") {
-      if (!findOpenState(report, rec.state)) {
+      const open = findOpenState(report, rec.state);
+      if (!open) {
         violations.push({ path, message: `state "${rec.state}" is not an open nomination state for this applicant` });
+      } else if (!nextStep && open.unavailableFor?.[sub]) {
+        // e.g. WA for 190 without a WA job offer: the state is open, but not available to this applicant for this subclass.
+        violations.push({ path, message: `state "${rec.state}" is not available for subclass ${sub} on the applicant's answers: ${open.unavailableFor[sub]!.reason}` });
       }
     }
   });
@@ -225,6 +229,13 @@ export function deterministicRecommendations(report: ReadinessReport, locale: Lo
       "准备“递交就绪清单”中列出的材料。"
     ),
   ];
+  // A state is recommended for a subclass only if it is open, lists the occupation for it and the applicant meets its stream
+  // conditions on the intake (WA 190 needs a WA job); a pathway that is "Next step required" because of such a condition
+  // names that state with the step. Older stored reports without the per-subclass data fall back to the first open state.
+  const known = openStates.some((s) => s.listedFor !== undefined);
+  const availableFor = (sub: PathwaySubclass) =>
+    known ? openStates.find((s) => (s.listedFor ?? []).includes(sub as "190" | "491") && !s.unavailableFor?.[sub as "190" | "491"]) : openStates[0];
+  const anyFor = (sub: PathwaySubclass) => (known ? openStates.find((s) => (s.listedFor ?? []).includes(sub as "190" | "491")) : openStates[0]);
   const out: Recommendation[] = [];
   for (const sub of ranking.recommendable) {
     const score = ranking.entries.find((e) => e.subclass === sub)!.score;
@@ -232,8 +243,8 @@ export function deterministicRecommendations(report: ReadinessReport, locale: Lo
       out.push({ state: T(locale, "Federal (no nomination)", "Federal (adaylık yok)", "联邦（无需提名）"), subclass: sub, reason: describePathwayScore(score, locale), nextSteps: [steps[1]] });
       continue;
     }
-    const state = openStates[0];
-    if (!state) continue; // a nominated pathway cannot be recommended without an open state
+    const state = availableFor(sub);
+    if (!state) continue; // a nominated pathway cannot be recommended without an available state
     out.push({ state: state.name, subclass: sub, reason: describePathwayScore(score, locale), nextSteps: steps });
   }
   // Pathways that need an applicant step come after the ready ones, fewest steps remaining first, marked conditional.
@@ -242,7 +253,7 @@ export function deterministicRecommendations(report: ReadinessReport, locale: Lo
     .sort((a, b) => a.stepsRemaining - b.stepsRemaining);
   for (const g of pending) {
     const sub = g.visa as PathwaySubclass;
-    const state = sub === "189" ? undefined : openStates[0];
+    const state = sub === "189" ? undefined : availableFor(sub) ?? anyFor(sub);
     if (sub !== "189" && !state) continue;
     const cond = T(locale, "Available only once these steps are done", "Yalnızca bu adımlar tamamlanınca uygun olur", "仅在完成以下步骤后才可推进");
     out.push({

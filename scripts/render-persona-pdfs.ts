@@ -101,6 +101,48 @@ export const REVIEW_PERSONAS: Record<string, ReadinessInput> = {
     employerSponsorship: "none",
     applicationStage: "planning",
   },
+  // The non-personal intake answers of real report LVA-20261003-XYZ: Software Engineer 261313, 28, in Australia living in
+  // Queensland, Superior English, PhD earned outside Australia, partner without Functional English, a completed skills
+  // assessment, no experience entered, no employer sponsor (70 points). WA lists the occupation but its 190 General
+  // stream needs a WA job: WA is available for 491 only.
+  "ref-xyz-qld": {
+    locale: "en",
+    country: "AU",
+    mainGoal: "",
+    currentCountry: "AU",
+    passportCountry: "TR",
+    age: "28",
+    occupation: "Software Engineer (261313)",
+    occupationConfirmed: "yes",
+    englishLevel: "superior",
+    qualificationLevel: "PhD",
+    qualificationAwardedInAustralia: false,
+    sponsorOrFamily: "Partner / Dependants WITHOUT Functional English",
+    migrationGoals: ["direct_pr"],
+    residenceState: "QLD",
+    employerSponsorship: "none",
+    applicationStage: "planning",
+  },
+  // The same profile with a job offer in Western Australia (preferred state WA): WA stays available for 190.
+  "ref-xyz-wa-job": {
+    locale: "en",
+    country: "AU",
+    mainGoal: "",
+    currentCountry: "AU",
+    passportCountry: "TR",
+    age: "28",
+    occupation: "Software Engineer (261313)",
+    occupationConfirmed: "yes",
+    englishLevel: "superior",
+    qualificationLevel: "PhD",
+    qualificationAwardedInAustralia: false,
+    sponsorOrFamily: "Partner / Dependants WITHOUT Functional English",
+    migrationGoals: ["direct_pr"],
+    residenceState: "QLD",
+    preferredState: "WA",
+    employerSponsorship: "job_offer",
+    applicationStage: "planning",
+  },
   // An occupation on WA's 2025-26 lists (Civil Engineer 233211: Schedule 2 + Graduate, p.10), in Australia, with a
   // skills assessment and experience -- exercises the ranking with a confirmed WA list match and a score above 65.
   "wa-civil-engineer-au": {

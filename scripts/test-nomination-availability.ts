@@ -38,10 +38,11 @@ const real: ReadinessInput = {
 const RANK = ["LOW", "MEDIUM", "HIGH", "EXTREME"];
 
 const personas: Array<{ name: string; input: ReadinessInput; expect: Record<"190" | "491", string[]> }> = [
-  // In Australia: WA and ACT lists; TAS through the national list, open onshore only.
-  { name: "report b0d20f74 inputs (onshore)", input: real, expect: { "190": ["WA", "TAS", "ACT"], "491": ["WA", "TAS", "ACT"] } },
+  // In Australia: WA and ACT lists; TAS through the national list, open onshore only. WA is out for 190 (no WA job offer
+  // recorded: its General stream needs a six-month WA employment contract) but stays available for 491.
+  { name: "report b0d20f74 inputs (onshore)", input: real, expect: { "190": ["TAS", "ACT"], "491": ["WA", "TAS", "ACT"] } },
   // Offshore: TAS's program is onshore-only for this applicant.
-  { name: "offshore Software Engineer", input: { ...real, currentCountry: "IN", passportCountry: "IN" }, expect: { "190": ["WA", "ACT"], "491": ["WA", "ACT"] } },
+  { name: "offshore Software Engineer", input: { ...real, currentCountry: "IN", passportCountry: "IN" }, expect: { "190": ["ACT"], "491": ["WA", "ACT"] } },
   // Business Machine Mechanic 342311, offshore: on NT's list (closed) and the national list (TAS onshore-only, VIC closed).
   { name: "occupation on no open state's list", input: { ...real, currentCountry: "Turkey", occupation: "Business Machine Mechanic 342311", occupationConfirmed: "yes" }, expect: { "190": [], "491": [] } },
 ];

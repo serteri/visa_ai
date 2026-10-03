@@ -70,7 +70,7 @@ async function main() {
     const badgeTag = rows.map((p) => p.recommendationTag);
     const conflict = /HIGH POTENTIAL[^\n]*\n[^\n]*High Risk/.test(r.text) || /YÜKSEK POTANSİYEL[^\n]*\n[^\n]*Yüksek Risk/.test(r.text);
     const pct = rows.map((p) => p.matchPercentage);
-    t("3. no row is 'HIGH POTENTIAL' and 'High Risk' at once; 491 / 190 / 189 (different friction) have different figures and labels", !conflict && new Set(pct).size === rows.length && new Set(badgeTag).size === rows.length, JSON.stringify(rows.map((p) => [p.subclass, p.matchPercentage, p.recommendationTag])));
+    t("3. no row is 'HIGH POTENTIAL' and 'High Risk' at once; 491 / 190 / 189 (different friction) have different figures; 190 has no state available without a WA job offer, so it is high risk like 189", !conflict && new Set(pct).size === rows.length && badgeTag[0] === "🌟 Highly Recommended Pathway" && badgeTag.slice(1).every((x) => x === "⚠️ High Risk / Low Probability"), JSON.stringify(rows.map((p) => [p.subclass, p.matchPercentage, p.recommendationTag])));
     t("3. ranking order unchanged (the single ranking)", JSON.stringify(rows.map((p) => p.subclass)) === JSON.stringify(report.pathwayRanking?.entries.map((e) => e.subclass)));
 
     // 4.
@@ -93,11 +93,12 @@ async function main() {
 
     // 8.
     const lab = {
-      en: ["your 65 vs recent 95, 30 points short", "your 70 vs recent 85, 15 points short"],
-      tr: ["sizin puanınız 65, son davetler 95; 30 puan eksik", "sizin puanınız 70, son davetler 85; 15 puan eksik"],
-      "zh-Hans": ["您的 65 分，近期 95 分，差 30 分", "您的 70 分，近期 85 分，差 15 分"],
+      // 190 is no longer "eligible, but below": no state is available for it without a WA job offer (Next step required).
+      en: ["your 65 vs recent 95, 30 points short"],
+      tr: ["sizin puanınız 65, son davetler 95; 30 puan eksik"],
+      "zh-Hans": ["您的 65 分，近期 95 分，差 30 分"],
     }[L];
-    t("8. below-benchmark labels state score, benchmark and gap (190 with its nomination)", lab.every((x) => squash(text).includes(squash(x))), lab.filter((x) => !squash(text).includes(squash(x))).join(" | "));
+    t("8. below-benchmark labels state score, benchmark and gap (189; 190 is a next step because no state is available without a WA job offer)", lab.every((x) => squash(text).includes(squash(x))), lab.filter((x) => !squash(text).includes(squash(x))).join(" | "));
 
     // 9.
     const tr = report.stateNominationTracker!;

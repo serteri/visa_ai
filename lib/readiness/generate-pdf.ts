@@ -19,6 +19,7 @@ import { notoSansBoldBase64 } from "./pdf-font-bold";
 import { notoSansSCRegularBase64 } from "./pdf-font-sc";
 import { appendNominationStreamSuffix, buildCaRankedPathways, calculateRankedPathways } from "./ranked-pathways";
 import { renderPersonalizedContent } from "./pdf-personalized-content";
+import { frictionLegendLines } from "./friction-legend";
 import { getCommonPitfalls } from "./pdf-content/common-pitfalls";
 import { eoiUpdateNote, getLodgementSection } from "./pdf-content/lodgement";
 import { isLimitedRiskPlaceholder } from "./risk-rules";
@@ -4540,6 +4541,7 @@ export async function generateReadinessPDF(input: PDFGeneratorInput): Promise<Ui
         ? appendNominationStreamSuffix(baseName, report.nominationStream)
         : baseName;
       return {
+        subclass: item.subclass,
         visa: `${visaLabel} (${item.subclass})`,
         confidence: formatConfidenceLevel(item.confidenceLevel),
         frictionScore,
@@ -4560,20 +4562,16 @@ export async function generateReadinessPDF(input: PDFGeneratorInput): Promise<Ui
         return getFrictionColorByLabel(row.frictionScore);
       }
     );
-    // Only the levels actually shown in this report's rows get a definition
-    // line -- no point explaining EXTREME if nothing in this report is EXTREME.
+    // One legend line per points-tested pathway stating the actual cause of its level (the points gap, or the
+    // nomination-availability floor); other pathways get a definition per level present.
     const presentFrictionScores = Array.from(new Set(pathwayRows.map((row) => row.frictionScore))) as Array<
       "LOW" | "MEDIUM" | "HIGH" | "EXTREME" | "NOT_ASSESSED"
     >;
-    const frictionOrder: Record<"LOW" | "MEDIUM" | "HIGH" | "EXTREME" | "NOT_ASSESSED", number> = { NOT_ASSESSED: -1, LOW: 0, MEDIUM: 1, HIGH: 2, EXTREME: 3 };
-    presentFrictionScores
-      .sort((a, b) => frictionOrder[a] - frictionOrder[b])
-      .forEach((score) => {
-        const rawLabel = frictionBandLabel(effectiveLocale, score);
-        const label = effectiveLocale === "zh-Hans" ? rawLabel.replace("竞争", "") : rawLabel;
-        const separator = effectiveLocale === "zh-Hans" ? "：" : ": ";
-        addSmallText(`${text.frictionLevel}${separator}${label}${separator}${frictionBandDefinition(effectiveLocale, score)}`, 0);
-      });
+    frictionLegendLines(
+      pathwayRows.map((row) => ({ subclass: row.subclass, visa: row.visa, level: row.frictionScore })),
+      report,
+      effectiveLocale
+    ).forEach((line) => addSmallText(line, 0));
     yPosition += 1;
 
     // Definition lines for the confidence levels present in this report's rows
@@ -4677,20 +4675,15 @@ export async function generateReadinessPDF(input: PDFGeneratorInput): Promise<Ui
       }
     });
     
-    // Definition lines for the friction levels present in the comparison block
-    const presentFrictionLevels = Array.from(
-      new Set(report.pathwayStrengthComparison.map((item) => item.friction))
-    ) as Array<"low" | "medium" | "high" | "extreme" | "not_assessed">;
-    const frictionOrder: Record<"low" | "medium" | "high" | "extreme" | "not_assessed", number> = { not_assessed: -1, low: 0, medium: 1, high: 2, extreme: 3 };
-    presentFrictionLevels
-      .sort((a, b) => frictionOrder[a] - frictionOrder[b])
-      .forEach((level) => {
-        const upper = level.toUpperCase() as "LOW" | "MEDIUM" | "HIGH" | "EXTREME" | "NOT_ASSESSED";
-        const rawLabel = frictionBandLabel(effectiveLocale, upper);
-        const label = effectiveLocale === "zh-Hans" ? rawLabel.replace("竞争", "") : rawLabel;
-        const separator = effectiveLocale === "zh-Hans" ? "：" : ": ";
-        addSmallText(`${text.frictionLevel}${separator}${label}${separator}${frictionBandDefinition(effectiveLocale, upper)}`, 4);
-      });
+    // Legend: the actual cause of each points-tested pathway's level (points gap or nomination-availability floor).
+    frictionLegendLines(
+      report.pathwayStrengthComparison.map((item) => {
+        const baseName = item.visaName.replace(/\s*\(subclass\s+\d+\)\s*$/i, "").replace(/\s*\(\d+\)\s*$/, "");
+        return { subclass: item.subclass, visa: `${baseName} (${item.subclass})`, level: item.friction.toUpperCase() as "LOW" | "MEDIUM" | "HIGH" | "EXTREME" | "NOT_ASSESSED" };
+      }),
+      report,
+      effectiveLocale
+    ).forEach((line) => addSmallText(line, 4));
     
     yPosition += 3;
   }

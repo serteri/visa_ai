@@ -75,7 +75,8 @@ const B0D_BASELINE: Record<string, { status: string; notMet: string[]; unknown: 
   "500": { status: "conditional", notMet: [], unknown: ["500.enrolment", "500.oshc"] },
   "820": { status: "conditional", notMet: [], unknown: ["820.relationship", "820.sponsor"] },
 };
-const B0D_AVAILABILITY = { "190": ["WA", "TAS", "ACT"], "491": ["WA", "TAS", "ACT"] };
+// 190 without WA: report b0d20f74 records no WA job offer, and WA's 190 General stream needs a six-month WA employment contract.
+const B0D_AVAILABILITY = { "190": ["TAS", "ACT"], "491": ["WA", "TAS", "ACT"] };
 
 const gateSnapshot = (r: ReadinessReport) =>
   Object.fromEntries(Object.entries(r.visaGates ?? {}).map(([v, g]) => [v, { status: g.status, notMet: g.notMet.map((x) => x.id), unknown: g.unknown.map((x) => x.id) }]));
@@ -175,7 +176,7 @@ async function main() {
     const tasRow = qld.states.find((s) => s.code === "TAS")!;
     t("QLD resident: Tasmania is not available, with the reason", !qld.nominationAvailability!["190"].includes("TAS") && tasRow.isOpen === false && tasRow.residenceBlock === "required" && tasRow.requirements.includes("Tasmania's onshore pathways require you to live in Tasmania; you live in Queensland."), JSON.stringify(tasRow.requirements.slice(0, 2)));
     t("TAS resident: Tasmania is available", tas.nominationAvailability!["190"].includes("TAS") && tas.nominationAvailability!["491"].includes("TAS"), JSON.stringify(tas.nominationAvailability));
-    t("QLD resident: WA (sourced: interstate candidates eligible) stays available", qld.nominationAvailability!["190"].includes("WA"));
+    t("QLD resident: WA (sourced: interstate candidates eligible) is not residence-blocked and stays available for 491; for 190 its General stream needs a WA job (no WA job recorded), a separate condition", !qld.states.find((s) => s.code === "WA")!.residenceBlock && qld.nominationAvailability!["491"].includes("WA") && !qld.nominationAvailability!["190"].includes("WA"));
     const act = qld.states.find((s) => s.code === "ACT")!;
     t("QLD resident: ACT is 'residence requirement not confirmed' and not counted as available", act.residenceBlock === "not_confirmed" && !qld.nominationAvailability!["190"].includes("ACT") && act.requirements.some((x) => x.includes("residence requirement not confirmed")), JSON.stringify(act.requirements.slice(0, 2)));
     t("no top-recommended state is blocked by residence", !qld.topRecommendedStates.some((s) => s.residenceBlock));
@@ -223,7 +224,7 @@ async function main() {
     const snap = gateSnapshot(refreshed.report);
     const diff = Object.keys(B0D_BASELINE).filter((v) => JSON.stringify(snap[v]) !== JSON.stringify(B0D_BASELINE[v]));
     t("the refreshed report's gate results equal 093b656's (sponsor gates unknown, as before)", diff.length === 0, diff.map((v) => `${v}: ${JSON.stringify(snap[v])}`).join("; "));
-    t("state availability unchanged (no residence answer -> no residence check)", JSON.stringify(refreshed.report.stateNominationTracker?.nominationAvailability) === JSON.stringify(B0D_AVAILABILITY) && !refreshed.report.stateNominationTracker?.states.some((s) => s.residenceBlock), JSON.stringify(refreshed.report.stateNominationTracker?.nominationAvailability));
+    t("state availability: no residence answer -> no residence check (WA is out for 190 only because no WA job is recorded)", JSON.stringify(refreshed.report.stateNominationTracker?.nominationAvailability) === JSON.stringify(B0D_AVAILABILITY) && !refreshed.report.stateNominationTracker?.states.some((s) => s.residenceBlock), JSON.stringify(refreshed.report.stateNominationTracker?.nominationAvailability));
     t("no stage: no lodgement next step, no applicationStage on the report", refreshed.report.applicationStage === undefined && !/60/.test(refreshed.report.suggestedNextSteps[0] ?? ""));
   }
 

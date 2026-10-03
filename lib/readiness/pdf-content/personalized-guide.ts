@@ -246,7 +246,40 @@ export function getPersonalizedApplicationGuide(
         ? "Month 1-2: Skills assessment already completed — proceed directly to EOI creation"
         : "Month 1-2: Skills assessment application and language test");
 
-  const detailedTimeline = isTr
+  // A profile that is ready to lodge (AU: skills assessment completed, English at least Competent, points at least 65)
+  // starts with the EOI itself, followed by the nomination applications -- the completed assessment is not scheduled.
+  const englishOk = ["competent", "proficient", "superior"].includes((profile.englishLevel ?? "").trim().toLowerCase());
+  const readyToLodge = !isCA && requirementMet && englishOk && pointsEstimate !== undefined && pointsEstimate >= 65;
+  const readyTimeline = readyToLodge
+    ? isTr
+      ? [
+          "Ay 1: EOI'nizi şimdi gönderin (beceri değerlendirmesi tamamlandı, İngilizce en az Competent, puan en az 65)",
+          "Ay 2-4: EOI davet beklerken, size açık eyaletlere adaylık başvurularını yapın (Eyalet Adaylığı Takipçisi'ne bakın)",
+          "Ay 5-8: Davet beklemesi (puanınıza bağlı)",
+          "Ay 9-10: Başvuru hazırlığı ve belge toplama",
+          "Ay 11-12: Başvuru sunma",
+          "Ay 13-24: Değerlendirme süreci ve sonuç",
+        ]
+      : isZh
+        ? [
+            "第1个月：立即提交 EOI（技能评估已完成，英语至少 Competent，积分至少 65）",
+            "第2-4个月：EOI 等待邀请期间，向对您开放的州提交提名申请（见州提名追踪器）",
+            "第5-8个月：等待邀请（取决于积分）",
+            "第9-10个月：准备申请材料",
+            "第11-12个月：提交申请",
+            "第13-24个月：审核过程和结果",
+          ]
+        : [
+            "Month 1: Submit your EOI now (skills assessment completed, English at least Competent, points at least 65)",
+            "Month 2-4: Apply for nomination in the states open to you while your EOI waits for an invitation (see the State Nomination Tracker)",
+            "Month 5-8: Wait for invitation (depends on your points)",
+            "Month 9-10: Prepare application and gather documents",
+            "Month 11-12: Lodge application",
+            "Month 13-24: Assessment process and decision",
+          ]
+    : undefined;
+
+  const detailedTimeline = readyTimeline ?? (isTr
     ? [
         skillsAssessmentStepTr,
         isCA ? "Ay 3-4: Express Entry profili oluşturma ve gönderme" : requirementMet ? "Ay 3-4: EOI'yi gönderme ve eyalet adaylığı başvurularını hazırlama" : "Ay 3-4: Değerlendirme sonuçlarını bekleme, EOI oluşturma",
@@ -271,7 +304,7 @@ export function getPersonalizedApplicationGuide(
           "Month 9-10: Prepare application and gather documents",
           "Month 11-12: Lodge application",
           "Month 13-24: Assessment process and decision",
-        ];
+        ]);
 
   // ── Document Checklist ────────────────────────────────────────────────
   const documentChecklist = isTr

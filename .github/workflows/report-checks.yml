@@ -161,6 +161,12 @@ jobs:
       - name: Reference report LVA-20261001-ASDASDASD (9 fixes, en/tr/zh-Hans)
         run: npm run test:reference-report
 
+      # State stream conditions (WA 190 needs a WA job; 491 does not), the friction legend's actual cause, the ready-profile
+      # timeline, completed-assessment FAQ / checklist wording and the living-cost city, on the LVA-20261003-XYZ reference
+      # profile and one with a WA job offer (real PDF text, en/tr/zh-Hans).
+      - name: State stream conditions, friction causes, ready timeline, completed-assessment wording, living-cost city
+        run: npm run test:state-conditions
+
       # 190 / 491 friction includes nomination availability (occupation listed AND program open for the location).
       - name: Nomination availability in 190 / 491 friction
         run: npm run test:nomination-availability

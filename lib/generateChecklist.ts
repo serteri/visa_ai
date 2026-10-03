@@ -130,7 +130,26 @@ export function generateChecklist(args: {
   // own `authority` field, which uses another vocabulary and disagrees for some codes).
   const resolvedAuthority = resolveAssessingAuthority(input.occupation);
   const authority = resolvedAuthority.isGeneralFallback ? undefined : authorityDisplayName(resolvedAuthority);
-  if (authority) {
+  const assessmentCompleted = (input.occupationConfirmed ?? "").trim().toLowerCase() === "yes";
+  if (authority && assessmentCompleted) {
+    // Completed: no "timing can influence ..." planning item -- what matters now is the outcome letter and its validity.
+    items.push({
+      id: "skills-assessment",
+      priority: "important",
+      title: t(
+        input.locale,
+        `Skills assessment outcome letter (${authority}): keep it valid`,
+        `Beceri değerlendirmesi sonuç mektubu (${authority}): geçerli tutun`,
+        `技能评估结果信（${authority}）：保持有效`
+      ),
+      detail: t(
+        input.locale,
+        "You declare a suitable skills assessment when you are invited (Home Affairs, Subclass 189 p.7; Subclass 190 p.17; Subclass 491 p.25). Check the validity period on your outcome letter, keep it valid until you are invited and keep it with your EOI evidence.",
+        "Davet alındığında uygun bir beceri değerlendirmesine sahip olduğunuzu beyan edersiniz (Home Affairs, Subclass 189 s.7; Subclass 190 s.17; Subclass 491 s.25). Sonuç mektubunuzdaki geçerlilik süresini kontrol edin, davet alana kadar geçerli tutun ve EOI kanıtlarınızla birlikte saklayın.",
+        "获邀时您需声明持有合适的技能评估（内政部，Subclass 189 第 7 页；Subclass 190 第 17 页；Subclass 491 第 25 页）。请核对结果信上的有效期，确保在获邀前一直有效，并与 EOI 证据一并保存。"
+      ),
+    });
+  } else if (authority) {
     items.push({
       id: "skills-assessment",
       priority: "important",

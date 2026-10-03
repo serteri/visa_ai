@@ -91,7 +91,8 @@ import zhTranslations from "@/public/locales/zh-Hans.json";
 import { getEligibleSkilledSubclasses, resolveOccupationDisplayName } from "./occupation-eligibility";
 import { generatePremiumSections, getTrendBenchmarks } from "@/src/lib/readiness/report-generator";
 import { lodgementNextStep } from "@/lib/readiness/pdf-content/lodgement";
-import { GATED_VISAS, conditionalGateLines, evaluateVisaGates, failedGateLines, pathwayGateLabel, type PointsClosureFactor, type PointsClosurePlan } from "@/lib/readiness/visa-gates";
+import { GATED_VISAS, conditionalGateLines, evaluateVisaGates, failedGateLines, pathwayGateLabel, type GateContext, type PointsClosureFactor, type PointsClosurePlan } from "@/lib/readiness/visa-gates";
+import { nominationConditionContext } from "@/lib/readiness/state-nomination";
 import { NOMINATION_BONUS } from "@/lib/readiness/pathway-scores";
 import { blockedLabel, blockedReasonPhrase, computePathwayScores, describePathwayScore, frictionFromScore, frictionKey, type PathwayScoreSet, type PathwaySubclass } from "@/lib/readiness/pathway-scores";
 import { computeConfidence } from "@/lib/readiness/confidence";
@@ -2500,7 +2501,8 @@ function buildPathwayEntry(
   rawGatePoints: number | undefined = estimatedPoints,
   boosterGain?: number,
   pointsIfEnglishMet?: number,
-  closurePlan?: (short: number) => PointsClosurePlan | undefined
+  closurePlan?: (short: number) => PointsClosurePlan | undefined,
+  nomination?: GateContext["nomination"]
 ): PathwayComparison {
   // The 65-point minimum applies to the total including the nomination / sponsorship points the visa requires
   // (190: +5, 491: +15), the same total the invitation benchmark is compared with.
@@ -2513,7 +2515,7 @@ function buildPathwayEntry(
   // "Conditional" and the reason lists what must be true.
   const gateKey = subclass === "801" ? "820" : subclass;
   const gates = (GATED_VISAS as readonly string[]).includes(gateKey)
-    ? evaluateVisaGates(input, { estimatedPoints, potentialPoints: rawGatePoints, boosterGain, pointsIfEnglishMet, closurePlan }, locale)[gateKey]
+    ? evaluateVisaGates(input, { estimatedPoints, potentialPoints: rawGatePoints, boosterGain, pointsIfEnglishMet, closurePlan, nomination }, locale)[gateKey]
     : undefined;
   const isSkilledGate = ["189", "190", "491"].includes(gateKey);
   // 189/190/491: the body uses the gate's arithmetic. A pathway the gate marks "Next step required" (a no-English
@@ -7192,6 +7194,9 @@ function runReadinessEngineInternal(input: ReadinessInput): ReadinessReport {
   // The closable ceiling and the closure plan: one computation shared by every pathway entry and the gates below.
   const pointsClosure = pointsClosureOf(pointsEstimate, input, locale);
 
+  // Which states are open to this applicant per subclass, and which are left out only because of an unmet stream
+  // condition (WA 190 needs a WA job): the 190 / 491 nomination gates read it.
+  const nominationCtx = nominationConditionContext(input);
   let pathwayComparison: PathwayComparison[];
 
   if (detectedSubclasses.length === 0 && isPartnerPathwaySelected(input)) {
@@ -7275,7 +7280,8 @@ function runReadinessEngineInternal(input: ReadinessInput): ReadinessReport {
         pointsEstimate?.potentialPoints ?? pointsEstimate?.estimatedPoints,
         pointsClosure?.gain,
         pointsIfEnglishMetOf(input, locale),
-        pointsClosure?.plan
+        pointsClosure?.plan,
+        nominationCtx
       )
     );
   }
@@ -7387,6 +7393,7 @@ function runReadinessEngineInternal(input: ReadinessInput): ReadinessReport {
     locale,
     occupation: input.occupation,
     selectedCity: input.preferredCity,
+    residenceState: input.residenceState,
     familyStatus: input.sponsorOrFamily,
     timeline: input.timeline,
     mainGoal: input.mainGoal,
@@ -7422,6 +7429,7 @@ function runReadinessEngineInternal(input: ReadinessInput): ReadinessReport {
       boosterGain: pointsClosure?.gain,
       pointsIfEnglishMet: pointsIfEnglishMetOf(input, locale),
       closurePlan: pointsClosure?.plan,
+      nomination: nominationCtx,
       invitation: pathwayScores
         ? Object.fromEntries(
             (["189", "190", "491"] as const).map((v) => [v, { score: pathwayScores[v].comparisonScore ?? pathwayScores[v].baseScore, benchmark: pathwayScores[v].benchmark }])

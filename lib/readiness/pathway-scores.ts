@@ -304,15 +304,61 @@ export function frictionWithAvailability(score: PathwayScore | undefined, openSt
 }
 
 /**
+ * The actual cause of a 190 / 491 friction level when it comes from the nomination-availability floor (frictionWithAvailability)
+ * rather than from the points gap: "points meet the recent benchmark; only one state is currently open to you". Null when
+ * the level is the points level (the band definition then states the cause) or cannot be determined.
+ */
+export function frictionCauseText(score: PathwayScore | undefined, level: FrictionLevel, openStates: readonly string[] | undefined, locale: Locale): string | null {
+  if (!score || score.subclass === "189" || !openStates || level === "NOT_ASSESSED") return null;
+  const pointsLevel = frictionFromScore(score);
+  if (pointsLevel === level) return null;
+  const gap = comparisonOf(score).comparisonGap;
+  const n = openStates.length;
+  const list = openStates.join(", ");
+  const points =
+    gap === null || gap <= 0
+      ? T(locale, "points meet the recent benchmark", "puanlar yakın dönem referansını karşılıyor", "分数已达到近期参考分")
+      : T(locale, `your score is ${gap} point${gap === 1 ? "" : "s"} below the recent benchmark`, `puanınız yakın dönem referansının ${gap} puan altında`, `您的分数比近期参考分低 ${gap} 分`);
+  const availability =
+    n === 0
+      ? T(locale, `no state or territory is currently open to you for ${score.subclass}`, `şu anda ${score.subclass} için size açık hiçbir eyalet veya bölge yok`, `目前没有任何州或领地对您开放 ${score.subclass}`)
+      : n === 1
+        ? T(locale, `only one state is currently open to you (${list})`, `şu anda size yalnızca bir eyalet açık (${list})`, `目前仅有一个州对您开放（${list}）`)
+        : T(locale, `only two states are currently open to you (${list})`, `şu anda size yalnızca iki eyalet açık (${list})`, `目前仅有两个州对您开放（${list}）`);
+  return `${points}${locale === "zh-Hans" ? "；" : "; "}${availability}`;
+}
+
+/**
  * The plain statement of nomination availability for a 190 / 491 reality check. Points met -> "Points are not your
  * barrier for 491; securing a nomination is." Always names the states open for the occupation and location, or says
  * that none are.
  */
-export function nominationAvailabilitySentence(score: PathwayScore, openStates: readonly string[], locale: Locale): string {
+export function nominationAvailabilitySentence(
+  score: PathwayScore,
+  openStates: readonly string[],
+  locale: Locale,
+  /** Open states on the occupation's list left out for this subclass because a stream condition (employment / study in the state) is unmet. */
+  blocked: ReadonlyArray<{ code: string; reason: string }> = [],
+): string {
+  const base = availabilityCore(score, openStates, locale, blocked.length > 0);
+  if (blocked.length === 0) return base;
+  const list = blocked.map((b) => `${b.code} (${b.reason})`).join(", ");
+  return `${base} ${T(locale, `Not available to you for ${score.subclass} on your answers: ${list}.`, `Yanıtlarınıza göre ${score.subclass} için size açık olmayanlar: ${list}.`, `根据您的答案，${score.subclass} 不可用的州：${list}。`)}`;
+}
+
+function availabilityCore(score: PathwayScore, openStates: readonly string[], locale: Locale, hasBlocked: boolean): string {
   const sub = score.subclass;
   const gap = comparisonOf(score).comparisonGap;
   const pointsMet = gap !== null && gap <= 0;
   const list = openStates.join(", ");
+  if (openStates.length === 0 && hasBlocked) {
+    return T(
+      locale,
+      `No state is currently available to you for ${sub}: the states that list your occupation and are open to your location have a stream condition your answers do not meet -- without a nomination, ${sub} is not available${pointsMet ? ", even though your points meet the benchmark" : ""}.`,
+      `Şu anda ${sub} için size açık bir eyalet yok: mesleğinizi listeleyen ve bulunduğunuz yere açık eyaletlerin, yanıtlarınızın karşılamadığı bir akış şartı var -- adaylık olmadan ${sub} mümkün değil${pointsMet ? ", puanınız referansı karşılasa da" : ""}.`,
+      `目前没有任何州对您开放 ${sub}：列有您职业且对您所在地开放的州，其类别条件与您的答案不符——没有提名就无法申请 ${sub}${pointsMet ? "，即使您的分数已达到参考分" : ""}。`
+    );
+  }
   if (openStates.length === 0) {
     return T(
       locale,

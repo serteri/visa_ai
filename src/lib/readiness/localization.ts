@@ -167,6 +167,21 @@ const textMap: Record<string, { tr?: string; zh?: string }> = {
     zh: "您的 {occupation} 技能评估已完成：请保持评估结果信有效，并用于 EOI 中的申报。",
   },
   "EOI Strategy": { tr: "EOI Stratejisi", zh: "EOI 策略" },
+  "Submit your EOI now": { tr: "EOI'nizi şimdi gönderin", zh: "立即提交 EOI" },
+  "Your skills assessment is complete, your English meets the requirement and your points reach 65: submit your Expression of Interest (EOI) in SkillSelect in month 1.": {
+    tr: "Beceri değerlendirmeniz tamamlandı, İngilizceniz şartı karşılıyor ve puanınız 65'e ulaşıyor: Expression of Interest (EOI) başvurunuzu 1. ayda SkillSelect'te gönderin.",
+    zh: "您的技能评估已完成，英语达到要求，分数达到 65 分：请在第 1 个月于 SkillSelect 提交意向书（EOI）。",
+  },
+  "State Nomination Applications": { tr: "Eyalet Adaylığı Başvuruları", zh: "州提名申请" },
+  "While the EOI waits for an invitation, apply for nomination in the states open to you for 190 and 491 (see the State Nomination Tracker) and keep your assessment outcome letter and English result valid.": {
+    tr: "EOI davet beklerken, size açık eyaletlerde 190 ve 491 için adaylık başvurusu yapın (Eyalet Adaylığı Takipçisi'ne bakın) ve değerlendirme sonuç mektubunuzun ile İngilizce sonucunuzun geçerliliğini koruyun.",
+    zh: "在 EOI 等待邀请期间，向对您开放的州申请 190 和 491 提名（见州提名追踪器），并确保技能评估结果信和英语成绩保持有效。",
+  },
+  "Invitation Window": { tr: "Davet Penceresi", zh: "邀请窗口" },
+  "Invitations and nominations arrive in rounds; keep your EOI claims and evidence up to date until you are invited.": {
+    tr: "Davetler ve adaylıklar turlar halinde gelir; davet alana kadar EOI beyanlarınızı ve kanıtlarınızı güncel tutun.",
+    zh: "邀请和提名按轮次发出；在获邀前，请保持 EOI 申报和证据为最新。",
+  },
   "Visa Lodgement & Processing": { tr: "Vize Başvurusu ve İşlem", zh: "签证递交与审理" },
   "Profile Foundation & 485 Bridge": { tr: "Profil Temeli ve 485 Köprüsü", zh: "档案基础与 485 过渡" },
   "Skills Validation & 485 Work-Experience Window": {
