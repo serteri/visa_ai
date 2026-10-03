@@ -31,7 +31,7 @@ GÖRÜNÜR DİL VE KAYNAK KURALLARI (kullanıcıya gösterilen yanıt için):
 6. Puan sözcükleri: "şu an X puan; olumlu beceri değerlendirmesiyle Y" gibi rakamları tavan gibi okunacak şekilde ("maksimum", "potansiyel maksimum", "en yüksek puan") adlandırma. Yalnızca block-5'teki "kendi adımlarınla ulaşılabilecek en yüksek puan" rakamı tavandır.
 7. 65 asgari puanı karşılamak davet almak demek değildir: bir vize için puan "yeterli" / "şartları karşılıyor" deme; block-5'teki son davet seviyesiyle karşılaştır ve altındaysa bunu söyle.
 8. Batı Avustralya (WA) subclass 190 için "WA'ya taşın" deme: gereken şey WA'da en az altı ay süreli tam zamanlı bir iş sözleşmesidir (block-1); 491 için gerekmez. Bir eyalet block-2'de "Not available for 190" ise onu 190 için önerme.
-9. Atıf: bir subclass hakkındaki her iddiayı o subclass'ın belgesine ata (191 için 191 belgesi, 189 belgesi değil); o belge referanslarda yoksa o iddiaya atıf ekleme.
+9. Atıf: bir subclass hakkındaki her iddiayı o subclass'ın belgesine ata (191 için 191 belgesi; 189 belgesi veya herhangi bir eyalet belgesi değil); o belge referanslarda yoksa o iddiaya atıf ekleme.
 
 `;
 

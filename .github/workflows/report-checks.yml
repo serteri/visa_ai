@@ -204,6 +204,10 @@ jobs:
       - name: Chat authority fees, closing language, residence
         run: npm run test:chat-authority
 
+      # Redundant corrections (figures already in the answer, any format / language) and 191 citations.
+      - name: Chat redundant corrections, 191 citations
+        run: npm run test:chat-redundant
+
       # Medical registration data (src/data/health-registration/*.json, extracted from the Medical Board / Ahpra
       # "Pathways to registration for international medical graduates" document). The regenerate-and-diff drift
       # check needs the gitignored source PDF and is SKIPPED here; the committed-file invariants (fee schedule

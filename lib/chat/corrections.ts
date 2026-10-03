@@ -24,7 +24,11 @@ import type { PlanFacts } from "./plan-summary";
 
 export { detectAnswerLocale };
 
-export type Correction = { kind: "fee" | "gate" | "state_availability" | "visa_name" | "trt_period" | "experience_points" | "age_limit" | "status_wording" | "max_potential" | "gap_figure" | "benchmark_sufficiency" | "state_condition" | "authority_fee" | "residence" | "closing_language"; text: string };
+export type Correction = { kind: "fee" | "gate" | "state_availability" | "visa_name" | "trt_period" | "experience_points" | "age_limit" | "status_wording" | "max_potential" | "gap_figure" | "benchmark_sufficiency" | "state_condition" | "authority_fee" | "residence" | "closing_language"; text: string;
+  /** The subclass the correction is about and its key figures (a correction without them is never redundant). */
+  subclass?: string;
+  figures?: number[];
+};
 
 const T = (l: Locale, en: string, tr: string, zh: string) => (l === "tr" ? tr : l === "zh-Hans" ? zh : en);
 const aud = (n: number) => `AUD ${n.toLocaleString("en-AU")}`;
@@ -68,6 +72,8 @@ export function buildCorrections(conflicts: EngineConflict[], locale: Locale, ct
         const source = T(locale, "LogiVisa fee table, Home Affairs charges from 1 July 2026", "LogiVisa ücret tablosu, İçişleri Bakanlığı ücretleri (1 Temmuz 2026'dan itibaren)", "LogiVisa 费用表，内政部 2026 年 7 月 1 日起的收费");
         add(`fee:${sc}`, {
           kind: "fee",
+          subclass: sc,
+          figures: [vac.main],
           text: T(
             locale,
             `Correction: the subclass ${sc} visa application charge is ${aud(vac.main)} for the main applicant${extra.length ? `, ${extra.join(", ")}` : ""} (${source}).`,
@@ -194,6 +200,8 @@ export function buildCorrections(conflicts: EngineConflict[], locale: Locale, ct
           : `${locale === "zh-Hans" ? "，" : ", "}${T(locale, `not below the recent invitation level of ${b.benchmark}`, `son davet seviyesi ${b.benchmark}'in altında değil`, `不低于近期邀请水平 ${b.benchmark} 分`)}`;
         add(`gap:${sc}`, {
           kind: "gap_figure",
+          subclass: sc,
+          figures: [b.total, short, b.benchmark === null ? 0 : b.benchmark - b.total].filter((n) => n > 0),
           text: T(
             locale,
             `Correction: for subclass ${sc} your score${nom} is ${b.total}: ${minimum}${recent}.`,
@@ -212,6 +220,8 @@ export function buildCorrections(conflicts: EngineConflict[], locale: Locale, ct
         const nom = sc === "189" ? "" : T(locale, " including the nomination the visa requires", " (bu vizenin gerektirdiği adaylık dahil)", "（含该签证所需的提名）");
         add(`bench:${sc}`, {
           kind: "benchmark_sufficiency",
+          subclass: sc,
+          figures: [b.total, gap].filter((n) => n > 0),
           text: T(
             locale,
             `Correction: for subclass ${sc} your score${nom} is ${b.total}, ${gap} below the recent invitation level of ${b.benchmark} (${src}); meeting the minimum is not the same as being invited.`,
@@ -334,4 +344,45 @@ export function capCorrections(corrections: Correction[], max = 2): { shown: Cor
   };
   const ordered = corrections.map((c, i) => ({ c, i })).sort((a, b) => rank(a.c) - rank(b.c) || a.i - b.i).map((x) => x.c);
   return { shown: ordered.slice(0, max), dropped: ordered.slice(max) };
+}
+
+const SUBCLASS_MENTION = /(?<![\d.,])(189|190|191|482|485|491|500|186|820|801)(?![\d])/g;
+const NUMBER = /\d{1,3}(?:[,.]\d{3})+|\d+/g;
+
+/** The numbers in a text in any format: "4,910" / "4.910" / "4910" -> 4910; "+5", "5分", "5 puan", table cells, bullets. */
+export function numbersIn(text: string): Set<number> {
+  return new Set(Array.from(text.matchAll(NUMBER), (m) => Number(m[0].replace(/[,.]/g, ""))));
+}
+
+/**
+ * The part of the answer that is about one subclass: its lines and the lines under them until a line names another
+ * subclass (a heading "**190 (...)**" followed by bullets, a paragraph, a table row).
+ */
+export function sectionAbout(answer: string, subclass: string): string {
+  const out: string[] = [];
+  let current: string[] = [];
+  for (const line of answer.split("\n")) {
+    const named = [...new Set(Array.from(line.matchAll(SUBCLASS_MENTION), (m) => m[1]))];
+    if (named.length > 0) current = named;
+    if (current.includes(subclass)) out.push(line);
+  }
+  return out.join("\n");
+}
+
+/**
+ * A correction whose key figures the answer already states for the same subclass -- in prose, bullets, a table, any
+ * language -- adds nothing: it is not shown, and logged as redundant. A correction with no key figures is kept.
+ */
+export function dropRedundant(corrections: Correction[], answer: string): { kept: Correction[]; redundant: Correction[] } {
+  const kept: Correction[] = [];
+  const redundant: Correction[] = [];
+  for (const c of corrections) {
+    if (!c.subclass || !c.figures || c.figures.length === 0) {
+      kept.push(c);
+      continue;
+    }
+    const have = numbersIn(sectionAbout(answer, c.subclass));
+    (c.figures.every((f) => have.has(f)) ? redundant : kept).push(c);
+  }
+  return { kept, redundant };
 }

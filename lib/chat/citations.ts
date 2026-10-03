@@ -69,7 +69,8 @@ const MENTION = /(?:subclass|alt sınıf|vize|visa|子类)?\s*\b(189|190|191|482
  * marker in it points at a retrieved document about ANOTHER subclass (a 191 statement tagged with the 189 page), the
  * marker is moved to the retrieved document of the subclass the sentence is about; with none retrieved the marker is
  * dropped rather than left pointing at the wrong document. Sentences about no subclass, and documents that are about
- * no subclass (lists, state documents), are left alone.
+ * no subclass (lists, state documents), are left alone -- except for subclass 191: a statement about 191 never cites a
+ * state or list document.
  */
 export function alignCitationsToSubclass(text: string, refs: SourceRef[]): string {
   const bySubclass = new Map<string, SourceRef>();
@@ -95,7 +96,13 @@ export function alignCitationsToSubclass(text: string, refs: SourceRef[]): strin
       return piece.replace(MARKER, (m, id: string) => {
         const ref = byId.get(id);
         const sc = ref ? sourceSubclass(ref.source) : undefined;
-        if (!ref || !sc || mentioned.includes(sc)) return m;
+        if (!ref) return m;
+        // A statement about 191 cites the 191 document, never a state or list document (those are about no subclass).
+        if (!sc && mentioned.includes("191")) {
+          const own191 = bySubclass.get("191");
+          return own191 ? `[${own191.id}]` : "";
+        }
+        if (!sc || mentioned.includes(sc)) return m;
         const target = mentioned.map((x) => bySubclass.get(x)).find(Boolean);
         return target ? `[${target.id}]` : "";
       });

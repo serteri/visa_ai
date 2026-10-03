@@ -12,7 +12,7 @@ import {
 import { visitorAuthorityFee } from "./authority-fees";
 import { residenceFacts } from "./residence";
 import { findEngineConflicts, type EngineConflict } from "./answer-check";
-import { buildCorrections, capCorrections, conversationLocale, type Correction } from "./corrections";
+import { buildCorrections, capCorrections, dropRedundant, conversationLocale, type Correction } from "./corrections";
 import { buildPlanSummary, lastShownLeadFingerprint, profileFingerprint, shouldShowLead, type PlanFacts } from "./plan-summary";
 import type { CreditStore } from "./credits";
 import { buildEngineFacts, type LiveStateData } from "./engine-facts";
@@ -162,7 +162,9 @@ export async function handleChat(req: Request, deps: ChatDeps): Promise<Response
     else console.warn("[chat_engine_conflict]", JSON.stringify({ premium: opts.premium, conflicts: conflicts.map((c) => ({ kind: c.kind, detail: c.detail })) }));
     const locale = answerLocale(text);
     // At most two correction blocks per answer, the most serious first; the rest are logged.
-    const { shown, dropped } = capCorrections(buildCorrections(conflicts, locale, { plan: opts.plan, input: profileInput, residence }), MAX_CORRECTIONS);
+    const { kept, redundant } = dropRedundant(buildCorrections(conflicts, locale, { plan: opts.plan, input: profileInput, residence }), text);
+    if (redundant.length > 0) console.warn("[chat_correction_redundant]", JSON.stringify(redundant.map((d) => ({ kind: d.kind, subclass: d.subclass, figures: d.figures }))));
+    const { shown, dropped } = capCorrections(kept, MAX_CORRECTIONS);
     if (dropped.length > 0) console.warn("[chat_correction_dropped]", JSON.stringify(dropped.map((d) => ({ kind: d.kind, text: d.text }))));
     return shown;
   };
