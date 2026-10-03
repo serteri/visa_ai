@@ -264,7 +264,7 @@ async function main() {
     check(res.status === 200 && c.modelId === "gpt-4o-mini", "free message uses gpt-4o-mini");
     check(c.retrieval.primary === 8 && c.retrieval.occupation === 2, "free retrieval depth stays 8 + 2");
     check(c.sources === undefined && !c.system.includes("block-2:") && !c.system.includes("PREMIUM KAYNAK"), "free path: no sources metadata, no profile, no citation rules");
-    check(c.system === buildSystemPrompt(CHUNKS, { engineFacts: buildEngineFacts() }), "free path sends exactly buildSystemPrompt(chunks, engine facts)");
+    check(c.system === buildSystemPrompt(CHUNKS, { engineFacts: buildEngineFacts(), locale: "en" }), "free path sends exactly buildSystemPrompt(chunks, engine facts + the conversation language)");
     await c.onFinish("");
     check(w.visitors.get("v1")!.messageCount === 3 && w.visitors.get("v1")!.premiumCredits === 0, "free message counts once, after the reply");
     w.visitor("v1", { messageCount: 5 });

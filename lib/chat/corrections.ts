@@ -1,6 +1,11 @@
 import { evaluateVisaGates } from "@/lib/readiness/visa-gates";
-import type { Locale } from "@/lib/readiness/types";
+import type { Locale, ReadinessInput } from "@/lib/readiness/types";
+import { getAuthorityById } from "@/lib/skills-assessment";
+import { STATE_NAMES } from "@/lib/state-nomination/residence-rules";
 
+import { detectAnswerLocale, looksEnglish } from "./locale";
+import { authorityFeeRows, visitorAuthorityFee } from "./authority-fees";
+import type { ResidenceFacts } from "./residence";
 import { LOG_ONLY_KINDS, type EngineConflict } from "./answer-check";
 import { AGE_LIMIT, TRT_EMPLOYMENT, VISA_NAMES, engineFeeRow, gateRowCitation } from "./engine-facts";
 import type { PlanFacts } from "./plan-summary";
@@ -17,17 +22,12 @@ import type { PlanFacts } from "./plan-summary";
  * additionally stripped where the answer is shown (lib/chat/internal-labels.ts).
  */
 
-export type Correction = { kind: "fee" | "gate" | "state_availability" | "visa_name" | "trt_period" | "experience_points" | "age_limit" | "status_wording" | "max_potential" | "gap_figure" | "benchmark_sufficiency" | "state_condition"; text: string };
+export { detectAnswerLocale };
+
+export type Correction = { kind: "fee" | "gate" | "state_availability" | "visa_name" | "trt_period" | "experience_points" | "age_limit" | "status_wording" | "max_potential" | "gap_figure" | "benchmark_sufficiency" | "state_condition" | "authority_fee" | "residence" | "closing_language"; text: string };
 
 const T = (l: Locale, en: string, tr: string, zh: string) => (l === "tr" ? tr : l === "zh-Hans" ? zh : en);
 const aud = (n: number) => `AUD ${n.toLocaleString("en-AU")}`;
-
-/** The language of the answer, when the client did not say: Chinese characters, then Turkish letters/words, else English. */
-export function detectAnswerLocale(text: string): Locale {
-  if (/[一-鿿]/.test(text)) return "zh-Hans";
-  if (/[çğıöşüÇĞİÖŞÜ]|\b(vize|vizesi|için|olarak|gerekir|başvuru|nedir|nasıl|neden|mı|mi|mu|mü|ve|bir|ama|puan|puanım|yılında|yaşında)\b/i.test(text)) return "tr";
-  return "en";
-}
 
 /**
  * The language of the conversation: what the visitor writes in, not the site language the page happened to be in. The
@@ -44,18 +44,12 @@ export function conversationLocale(userTexts: readonly string[], requested?: str
   return requested === "tr" || requested === "zh-Hans" || requested === "en" ? requested : "en";
 }
 
-const ENGLISH_WORDS = /\b(?:the|what|how|can|could|should|would|do|does|is|are|am|my|i|for|to|of|and|with|visa|options?|which|when|where|why|need|get|apply)\b/gi;
-/** At least two distinct English function words: a message in English, not just a number or a subclass. */
-function looksEnglish(text: string): boolean {
-  return new Set(Array.from(text.matchAll(ENGLISH_WORDS), (m) => m[0].toLowerCase())).size >= 2;
-}
-
 function gateSource(subclass: string, id: string, locale: Locale): string | null {
   const gates = evaluateVisaGates({ locale, country: "AU" }, {}, locale)[subclass];
   return gates?.gates.find((g) => g.id === id)?.citation ?? null;
 }
 
-export function buildCorrections(conflicts: EngineConflict[], locale: Locale, ctx: { plan?: PlanFacts } = {}): Correction[] {
+export function buildCorrections(conflicts: EngineConflict[], locale: Locale, ctx: { plan?: PlanFacts; input?: Partial<ReadinessInput>; residence?: ResidenceFacts } = {}): Correction[] {
   const out = new Map<string, Correction>();
   const add = (key: string, c: Correction) => {
     if (!out.has(key)) out.set(key, c);
@@ -237,6 +231,62 @@ export function buildCorrections(conflicts: EngineConflict[], locale: Locale, ct
           `更正：西澳 subclass 190 一般类别要求持有您职业的全职西澳雇佣合同，期限至少六个月；搬到西澳并不满足该要求（${src}）。subclass 491 不要求该合同。`,
         ),
       });
+    } else if (c.kind === "authority_fee" && c.authority) {
+      const authority = getAuthorityById(c.authority);
+      const rows = authorityFeeRows(locale).filter((r) => r.authorityId === c.authority);
+      if (!authority || rows.length === 0) continue;
+      const seen = new Set<string>();
+      const list = rows
+        .filter((r) => (seen.has(`${r.pathway}|${r.amountAUD}`) ? false : (seen.add(`${r.pathway}|${r.amountAUD}`), true)))
+        .slice(0, 8)
+        .map((r) => `${r.pathway} ${aud(r.amountAUD)}${r.estimated ? T(locale, " (estimate pending verification)", " (doğrulama bekleyen tahmin)", "（待核实的估算）") : ""}`)
+        .join("; ");
+      const mine = visitorAuthorityFee(ctx.input ?? {}, locale);
+      const yours = mine && mine.authorityId === c.authority ? T(locale, ` For your profile the report uses the ${mine.pathway} pathway: ${aud(mine.amountAUD)}.`, ` Profilinizde rapor ${mine.pathway} yolunu kullanır: ${aud(mine.amountAUD)}.`, ` 针对您的资料，报告采用 ${mine.pathway} 途径：${aud(mine.amountAUD)}。`) : "";
+      const pages = c.authority === "ACS" ? T(locale, ", pp. 15, 19, 21-22", ", s. 15, 19, 21-22", "，第 15、19、21-22 页") : "";
+      const src = `${authority.sourceDocument}${pages}`;
+      add(`authority:${c.authority}`, {
+        kind: "authority_fee",
+        text: T(
+          locale,
+          `Correction: the ${authority.authorityName} fee depends on the assessment pathway: ${list} (${src}).${yours}`,
+          `Düzeltme: ${authority.authorityName} ücreti değerlendirme yoluna göre değişir: ${list} (${src}).${yours}`,
+          `更正：${authority.authorityName} 的费用取决于评估途径：${list}（${src}）。${yours}`,
+        ),
+      });
+    } else if (c.kind === "residence" && c.state && ctx.residence) {
+      const li = locale === "tr" ? 1 : locale === "zh-Hans" ? 2 : 0;
+      const b = ctx.residence.blocked.find((x) => x.code === c.state);
+      if (!b) continue;
+      const stateName = STATE_NAMES[b.code][li];
+      const homeName = STATE_NAMES[ctx.residence.home][li];
+      add(`residence:${b.code}`, {
+        kind: "residence",
+        text:
+          b.requirement === "required"
+            ? T(
+                locale,
+                `Correction: you live in ${homeName}, and ${stateName}'s onshore nomination pathways require living in ${stateName}${b.subclasses?.length === 1 ? ` (sourced for subclass ${b.subclasses[0]}; the other subclass's rule is not confirmed)` : ""}, so the report does not count ${stateName} as available to you from where you live now (LogiVisa State Nomination Tracker).`,
+                `Düzeltme: ${homeName} eyaletinde yaşıyorsunuz ve ${stateName} eyaletinin Avustralya içi adaylık yolları ${stateName} eyaletinde yaşamayı gerektirir${b.subclasses?.length === 1 ? ` (subclass ${b.subclasses[0]} için kaynaklı; diğer subclass için kural teyit edilmedi)` : ""}; bu nedenle rapor ${stateName} eyaletini şu an yaşadığınız yerden size açık saymaz (LogiVisa Eyalet Adaylık Takipçisi).`,
+                `更正：您居住在${homeName}，而${stateName}境内提名途径要求居住在${stateName}${b.subclasses?.length === 1 ? `（仅对 subclass ${b.subclasses[0]} 有来源；另一类别的规则未确认）` : ""}，因此报告不把${stateName}计为您目前居住地可申请的州（LogiVisa 州提名追踪器）。`,
+              )
+            : T(
+                locale,
+                `Correction: you live in ${homeName}; ${stateName}'s residence requirement for applicants living in another state is not confirmed, so the report does not count ${stateName} as available to you (LogiVisa State Nomination Tracker).`,
+                `Düzeltme: ${homeName} eyaletinde yaşıyorsunuz; ${stateName} için başka eyalette yaşayan başvuru sahiplerinin ikamet şartı teyit edilmedi, bu nedenle rapor ${stateName} eyaletini size açık saymaz (LogiVisa Eyalet Adaylık Takipçisi).`,
+                `更正：您居住在${homeName}；${stateName}对居住在其他州的申请人的居住要求未确认，因此报告不把${stateName}计为您可申请的州（LogiVisa 州提名追踪器）。`,
+              ),
+      });
+    } else if (c.kind === "closing_language") {
+      add("closing", {
+        kind: "closing_language",
+        text: T(
+          locale,
+          "Note: anything above that our sources do not cover is general information, not verified against an official source; check the Department of Home Affairs website or a registered MARA agent before relying on it.",
+          "Not: yukarıda kaynaklarımızın kapsamadığı her şey genel bilgidir ve resmi bir kaynaktan doğrulanmamıştır; güvenmeden önce İçişleri Bakanlığı (Department of Home Affairs) sitesini veya kayıtlı bir MARA ajanını kontrol edin.",
+          "注：上文中我们的资料未涵盖的内容均为一般信息，未经官方来源核实；在依赖之前，请查阅内政部（Department of Home Affairs）网站或咨询注册 MARA 代理。",
+        ),
+      });
     } else if (c.kind === "state_availability") {
       const src = T(locale, "LogiVisa State Nomination Tracker", "LogiVisa Eyalet Adaylık Takipçisi", "LogiVisa 州提名追踪器");
       add("state", {
@@ -250,6 +300,8 @@ export function buildCorrections(conflicts: EngineConflict[], locale: Locale, ct
       });
     }
   }
+  // A gap correction already states the score, the minimum and the benchmark for that subclass: do not repeat them in a sufficiency correction.
+  for (const key of [...out.keys()]) if (key.startsWith("gap:")) out.delete(`bench:${key.slice(4)}`);
   return [...out.values()];
 }
 
@@ -260,6 +312,7 @@ export function buildCorrections(conflicts: EngineConflict[], locale: Locale, ct
  */
 const SEVERITY: Correction["kind"][] = [
   "fee",
+  "authority_fee",
   "gap_figure",
   "experience_points",
   "max_potential",
@@ -270,7 +323,9 @@ const SEVERITY: Correction["kind"][] = [
   "trt_period",
   "state_availability",
   "state_condition",
+  "residence",
   "visa_name",
+  "closing_language",
 ];
 export function capCorrections(corrections: Correction[], max = 2): { shown: Correction[]; dropped: Correction[] } {
   const rank = (c: Correction) => {

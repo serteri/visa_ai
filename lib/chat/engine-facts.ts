@@ -5,6 +5,7 @@ import type { AustraliaPointsInput } from "@/lib/points/types";
 import { STATE_RULES } from "@/lib/state-nomination/state-rules-config";
 import { resolveDisplayStatus } from "@/lib/state-nomination/state-status";
 import { evaluateVisaGates } from "@/lib/readiness/visa-gates";
+import { authorityFeeLines } from "./authority-fees";
 
 /**
  * One source of truth for the AI assistant: the figures and rules the LogiVisa REPORT uses, as structured facts for
@@ -161,6 +162,9 @@ export function buildEngineFacts(live: LiveStateData = {}): string {
     "",
     "Visa application charges (from 1 July 2026):",
     ...feeLines(),
+    "",
+    "Skills assessment (assessing authority) fees, per authority and PATHWAY (the report's registry; the fee depends on the pathway, so always name the pathway and never quote one pathway's fee for another; if the visitor's pathway is not in their profile, give the pathway names with their fees):",
+    ...authorityFeeLines(),
     "",
     "Mandatory requirements per visa (the report's gate matrix, from the Home Affairs pages):",
     ...gateLines(),

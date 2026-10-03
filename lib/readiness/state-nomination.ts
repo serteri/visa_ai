@@ -126,7 +126,7 @@ function normalize(value?: string): string {
   return (value ?? "").trim().toLowerCase();
 }
 
-function isOffshore(currentCountry?: string): boolean {
+export function isOffshore(currentCountry?: string): boolean {
   const normalized = normalize(currentCountry);
   if (!normalized) return false;
   return !normalized.includes("australia") && !normalized.includes("australya") && normalized !== "au";

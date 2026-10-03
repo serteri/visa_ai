@@ -1,6 +1,9 @@
 import type { ReadinessInput, ReadinessReport } from "@/lib/readiness/types";
 import { pathwayStatusLabel } from "@/lib/readiness/visa-gates";
 
+import { visitorAuthorityFee } from "./authority-fees";
+import { residenceFacts, residenceLines } from "./residence";
+
 import { isMissingTableError, type QuickProfileStore } from "./quick-profile";
 
 /**
@@ -20,7 +23,7 @@ const clip = (s: unknown, n: number): string => {
   return t.length > n ? `${t.slice(0, n - 1)}…` : t;
 };
 
-const MAX_SUMMARY_CHARS = 2000;
+const MAX_SUMMARY_CHARS = 3000;
 
 export function buildProfileSummary(
   reportJson: unknown,
@@ -65,6 +68,11 @@ export function buildProfileSummary(
     const fmt = (v: string[] | undefined) => (v && v.length ? v.join(", ") : "none");
     lines.push(`States open for this occupation: 190 -> ${fmt(avail["190"])}; 491 -> ${fmt(avail["491"])}`);
   }
+
+  // Residence and the assessment fee only add to a profile that already has report content (an empty report stays empty).
+  const fee = lines.length > 0 ? visitorAuthorityFee(input) : undefined;
+  if (lines.length > 0) lines.push(...residenceLines(residenceFacts(input)));
+  if (fee) lines.push(`Skills assessment fee in the visitor's report: ${fee.authority} (${fee.authorityId}), ${fee.pathway} pathway, AUD ${fee.amountAUD.toLocaleString("en-AU")}${fee.estimated ? " (estimate pending verification)" : ""}. Other pathways of the same authority cost differently: name the pathway whenever you quote an assessment fee.`);
 
   const blocked = report.stateNominationTracker?.conditionBlocked;
   if (blocked) {

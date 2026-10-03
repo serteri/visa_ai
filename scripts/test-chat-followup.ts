@@ -203,7 +203,7 @@ async function main() {
     await ask(mkDeps({ id: "free-2", messageCount: 0, premiumCredits: 0 }));
     const without = captured[1];
     const refs = [{ content: "Visa application charge AUD 6,140.", metadata: { source: "x.pdf" } }];
-    t("free path without a profile: unchanged (exactly the engine-facts prompt, no profile block)", !without.system.includes("block-2:") && without.system === buildSystemPrompt(refs, { engineFacts: buildEngineFacts({}) }));
+    t("free path without a profile: unchanged (exactly the engine-facts prompt, no profile block)", !without.system.includes("block-2:") && without.system === buildSystemPrompt(refs, { engineFacts: buildEngineFacts({}), locale: "en" }));
     // Another visitor never sees this visitor's profile.
     t("another visitor's prompt does not contain this visitor's result", !without.system.includes("Status by visa"));
   }

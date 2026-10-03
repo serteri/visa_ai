@@ -1,3 +1,5 @@
+import type { Locale } from "@/lib/readiness/types";
+
 import type { RetrievedChunk } from "./types";
 
 /**
@@ -10,7 +12,7 @@ KESİN KURALLAR (GUARDRAILS):
 1. Yasal Sınırlar ve Garanti: ASLA vize onayı veya Kalıcı Oturum (PR) için kesin garanti verme ("Kesin PR alırsın", "Vizen %100 onaylanır" gibi ifadeler YASAKTIR). Dilini her zaman olasılıklar üzerine kur ("... şartlarını sağlarsanız bu uygun bir yol olabilir", "Bu rota genellikle şu adımları içerir...").
 2. MARA Yönlendirmesi: Sen bir yapay zekasın, lisanslı bir MARA ajanı değilsin. Ancak bunu her cümlenin sonuna ekleyip kullanıcıyı sıkma. Sadece çok kritik, yasal olarak riskli veya tamamen sana verilen verilerin dışına çıkan karmaşık vakalarda profesyonel destek almalarını öner.
 3. Planlama ve Strateji: Kullanıcı spesifik bir durum verdiğinde (örn: yaş, meslek, deneyim) sadece kural okuma. Sağlanan referansları kullanarak adım adım bir eylem planı veya alternatif senaryolar (A Planı, B Planı) oluştur.
-4. Bağlam Önceliği ve Eksik Veri Yönetimi: Rakamlar, vize şartları, ücretler, puan tablosu ve eyalet durumu için ÖNCE block-1 bloğunu kullan; bu blok LogiVisa raporunun kullandığı verinin aynısıdır ve referanslarla çeliştiğinde block-1 geçerlidir. Diğer ayrıntılar için block-3 (RAG) verilerini kullan. Eğer gelen referanslarda Tasmania gibi spesifik bir eyalet veya vize kuralı varsa, bunu ASLA özetleyip kısaltma -- eksiksiz ve birebir aktar. Sorulan bir konu ne block-1 ne de referanslarda yoksa, genel bilgilerinle kısa ve yapılandırılmış bir özet verebilirsin; bunu yanıt başına EN FAZLA BİR KEZ, tek ve kısa bir cümleyle belirt (ör. "Bu kısım kaynaklarımda yer almıyor; genel bilgidir."). Bu uyarıyı ASLA tekrarlama ve her paragrafa ekleme.
+4. Bağlam Önceliği ve Eksik Veri Yönetimi: Rakamlar, vize şartları, ücretler, puan tablosu ve eyalet durumu için ÖNCE block-1 bloğunu kullan; bu blok LogiVisa raporunun kullandığı verinin aynısıdır ve referanslarla çeliştiğinde block-1 geçerlidir. Diğer ayrıntılar için block-3 (RAG) verilerini kullan. Eğer gelen referanslarda Tasmania gibi spesifik bir eyalet veya vize kuralı varsa, bunu ASLA özetleyip kısaltma -- eksiksiz ve birebir aktar. Sorulan bir konu ne block-1 ne de referanslarda yoksa, genel bilgilerinle kısa ve yapılandırılmış bir özet verebilirsin; bunu yanıt başına EN FAZLA BİR KEZ, tek ve kısa bir cümleyle belirt (kullanıcının dilinde; en sondaki YANIT DİLİ bölümündeki kalıpla). Bu uyarıyı ASLA tekrarlama ve her paragrafa ekleme.
 5. Kesin Rakamlar ve Ücretler: Referanslarda vize başvuru ücretleri (Örn: AUD), vizelerin geçerlilik süreleri, İngilizce skor gereksinimleri veya yaş sınırları gibi KESİN VERİLER geçiyorsa bunları ASLA özetleme veya atlama. Yanıtına birebir ve kesin olarak dahil et.
 6. Kompleks Senaryo Analizi: Kullanıcı kendi eğitim süresini, yaşını ve iş geçmişini detaylıca verdiğinde (Örn: "4 yıldır buradayım, 2 yıl trade okudum, tecrübem yok"); bu bilgileri referanslardaki uygun vize alt türleriyle (Örn: Subclass 485) eşleştir. Tecrübe eksikliği gibi engelleri filtrele, uygun olan ve olmayan rotaları analitik olarak açıkla.
 7. Dil Uyumu (Cross-Lingual): Kullanıcı soruyu hangi dilde soruyorsa (Türkçe, Çince, İngilizce vb.), tüm planlamayı, terimleri ve yanıtını KESİNLİKLE kullanıcının dilinde ver.
@@ -33,6 +35,23 @@ GÖRÜNÜR DİL VE KAYNAK KURALLARI (kullanıcıya gösterilen yanıt için):
 
 `;
 
+/** The general-information note, in the conversation language. */
+export const GENERAL_NOTE: Record<Locale, string> = {
+  en: "This part is not covered by my sources; it is general information.",
+  tr: "Bu kısım kaynaklarımda yer almıyor; genel bilgidir.",
+  "zh-Hans": "这部分内容不在我的资料中，属于一般信息。",
+};
+const LANGUAGE_NAME: Record<Locale, string> = { en: "English", tr: "Türkçe", "zh-Hans": "Çince (简体中文)" };
+
+/**
+ * The last rule of every system prompt (so it outranks the Turkish examples above): the whole answer, closing lines
+ * included, is in the conversation language -- what the visitor writes in, the same language as the opening summary.
+ */
+export function languageBlock(locale: Locale | undefined): string {
+  if (!locale) return "";
+  return `\nYANIT DİLİ (en son kural; diğer her şeyden önceliklidir): Bu konuşmanın dili ${LANGUAGE_NAME[locale]}. Yanıtın TAMAMI -- sondaki kaynak notu, "genel bilgidir" notu, kapanış cümlesi ve eylem çağrısı dahil -- yalnızca bu dilde olmalı; bu talimatların Türkçe olması yanıt dilini etkilemez. "Kaynaklarda yok / genel bilgidir" notunu (gerekirse, en fazla bir kez) şu cümleyle yaz: "${GENERAL_NOTE[locale]}"\n`;
+}
+
 /** What both paths add after the guardrails: the engine facts (always) and visa-aware guidance (when it applies). */
 export type PromptExtras = {
   /** buildEngineFacts(): the report's fees, gates, points table and state status. */
@@ -41,6 +60,8 @@ export type PromptExtras = {
   guidance?: string;
   /** FREE path only: the visitor's own engine result (quick profile card or linked report), when there is one. */
   profile?: { summary: string; source: "report" | "quick"; lead?: string; leadShownEarlier?: boolean; leadWithheld?: boolean };
+  /** The conversation language (what the visitor writes in): the whole answer, closing lines included, is in it. */
+  locale?: Locale;
 };
 
 const extrasBlock = (x: PromptExtras) => `${x.engineFacts}\n\n${x.guidance ? `${x.guidance}\n\n` : ""}`;
@@ -72,7 +93,7 @@ export function buildSystemPrompt(chunks: RetrievedChunk[], extras: PromptExtras
 
   return `${GUARDRAILS_TEXT}${extrasBlock(extras)}${extras.profile ? freeProfileBlock(extras.profile) : ""}block-3:
 ${chunkContents}
-`;
+${languageBlock(extras.locale)}`;
 }
 
 /** PREMIUM path system prompt: the same guardrails, then source-id references, the visitor's profile and the citation rules. */
@@ -116,5 +137,5 @@ ${profileBlock}
 
 block-3:
 ${opts.references}
-`;
+${languageBlock(opts.extras.locale)}`;
 }

@@ -9,6 +9,8 @@ import {
   OCCUPATION_LIST_CHUNK_COUNT,
   PREMIUM_PRIMARY_CHUNK_COUNT,
 } from "./config";
+import { visitorAuthorityFee } from "./authority-fees";
+import { residenceFacts } from "./residence";
 import { findEngineConflicts, type EngineConflict } from "./answer-check";
 import { buildCorrections, capCorrections, conversationLocale, type Correction } from "./corrections";
 import { buildPlanSummary, lastShownLeadFingerprint, profileFingerprint, shouldShowLead, type PlanFacts } from "./plan-summary";
@@ -18,7 +20,7 @@ import { loadChatProfile, type ProfileStore } from "./profile";
 import type { QuickProfileStore } from "./quick-profile";
 import { buildStudentVisaGuidance, isStudentVisaContext } from "./visa-guidance";
 import type { RetrievedChunk, SourceRef } from "./types";
-import type { Locale } from "@/lib/readiness/types";
+import type { Locale, ReadinessInput } from "@/lib/readiness/types";
 
 /** Correction blocks shown under one answer. */
 export const MAX_CORRECTIONS = 2;
@@ -140,7 +142,9 @@ export async function handleChat(req: Request, deps: ChatDeps): Promise<Response
       return null;
     }
   };
-  const check = (text: string, opts: { premium: boolean; hasProfile: boolean; plan?: PlanFacts; groundingText?: string }): Correction[] => {
+  const check = (text: string, opts: { premium: boolean; hasProfile: boolean; plan?: PlanFacts; groundingText?: string; input?: object }): Correction[] => {
+    const residence = residenceFacts(opts.input);
+    const profileInput = opts.input as Partial<ReadinessInput> | undefined;
     const gateStatus = opts.plan ? Object.fromEntries(Object.entries(opts.plan.statuses).map(([v, s]) => [v, s.status])) : undefined;
     const conflicts = findEngineConflicts(text, {
       hasProfile: opts.hasProfile,
@@ -149,13 +153,16 @@ export async function handleChat(req: Request, deps: ChatDeps): Promise<Response
       benchmarks: opts.plan?.benchmarks,
       currentTotals: opts.plan?.currentTotals,
       groundingText: opts.groundingText,
+      residence,
+      visitorAuthorityFee: profileInput ? visitorAuthorityFee(profileInput) : undefined,
+      locale: answerLocale(text),
     });
     if (conflicts.length === 0) return [];
     if (deps.reportConflicts) deps.reportConflicts(conflicts, { premium: opts.premium });
     else console.warn("[chat_engine_conflict]", JSON.stringify({ premium: opts.premium, conflicts: conflicts.map((c) => ({ kind: c.kind, detail: c.detail })) }));
     const locale = answerLocale(text);
     // At most two correction blocks per answer, the most serious first; the rest are logged.
-    const { shown, dropped } = capCorrections(buildCorrections(conflicts, locale, { plan: opts.plan }), MAX_CORRECTIONS);
+    const { shown, dropped } = capCorrections(buildCorrections(conflicts, locale, { plan: opts.plan, input: profileInput, residence }), MAX_CORRECTIONS);
     if (dropped.length > 0) console.warn("[chat_correction_dropped]", JSON.stringify(dropped.map((d) => ({ kind: d.kind, text: d.text }))));
     return shown;
   };
@@ -179,11 +186,11 @@ export async function handleChat(req: Request, deps: ChatDeps): Promise<Response
       const plan = planFor(profile);
       return await deps.stream({
         modelId: CHAT_MODEL_ID,
-        system: buildSystemPrompt(chunks, { engineFacts, guidance, ...(profile ? { profile: { summary: profile.summary, source: profile.source, lead: plan?.lead, leadShownEarlier: plan ? plan.earlier : undefined, leadWithheld: plan ? plan.withheld : undefined } } : {}) }),
+        system: buildSystemPrompt(chunks, { engineFacts, guidance, locale: convLocale, ...(profile ? { profile: { summary: profile.summary, source: profile.source, lead: plan?.lead, leadShownEarlier: plan ? plan.earlier : undefined, leadWithheld: plan ? plan.withheld : undefined } } : {}) }),
         messages,
         locale: convLocale,
         ...(plan?.show ? { lead: plan.lead, leadFingerprint: plan.fingerprint } : {}),
-        correct: (text) => check(text, { premium: false, hasProfile: Boolean(profile), plan: plan?.facts, groundingText: groundingOf(engineFacts, chunks) }),
+        correct: (text) => check(text, { premium: false, hasProfile: Boolean(profile), plan: plan?.facts, groundingText: groundingOf(engineFacts, chunks), input: profile?.input }),
         onFinish: async () => {
           await deps.credits.recordFreeMessage(visitor.id);
         },
@@ -213,14 +220,14 @@ export async function handleChat(req: Request, deps: ChatDeps): Promise<Response
         leadShownEarlier: plan ? plan.earlier : undefined,
         leadWithheld: plan ? plan.withheld : undefined,
         isFirstAnswer: !messages.some((m) => m.role === "assistant"),
-        extras: { engineFacts, guidance },
+        extras: { engineFacts, guidance, locale: convLocale },
       }),
       messages,
       locale: convLocale,
       sources: catalogRefs(catalog),
       profileSource: profile?.source ?? null,
       ...(plan?.show ? { lead: plan.lead, leadFingerprint: plan.fingerprint } : {}),
-      correct: (text) => check(text, { premium: true, hasProfile: Boolean(profile), plan: plan?.facts, groundingText: groundingOf(engineFacts, chunks) }),
+      correct: (text) => check(text, { premium: true, hasProfile: Boolean(profile), plan: plan?.facts, groundingText: groundingOf(engineFacts, chunks), input: profile?.input }),
       onFinish: async () => {},
       onFailure: refundOnce,
     });

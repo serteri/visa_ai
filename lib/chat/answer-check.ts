@@ -1,3 +1,7 @@
+import { authorityFeeAmounts, authoritiesMentioned, pathwaysMentioned, type VisitorAuthorityFee } from "./authority-fees";
+import type { Locale } from "@/lib/readiness/types";
+import { detectAnswerLocale, looksEnglish } from "./locale";
+import type { ResidenceFacts } from "./residence";
 import { AGE_LIMIT, DIRECT_ENTRY_EXPERIENCE_YEARS, TRT_EMPLOYMENT, VISA_NAMES, employmentPointsFor, engineFeeTable } from "./engine-facts";
 import { findInternalLabels } from "./internal-labels";
 
@@ -31,7 +35,10 @@ export type EngineConflictKind =
   | "benchmark_sufficiency"
   | "state_condition"
   | "gap_figure"
-  | "state_specifics";
+  | "state_specifics"
+  | "authority_fee"
+  | "residence"
+  | "closing_language";
 
 /** Conflicts that are only logged: no visible correction block (not a factual error in what the visitor was told). */
 export const LOG_ONLY_KINDS: ReadonlySet<EngineConflictKind> = new Set<EngineConflictKind>(["repeated_disclaimer", "internal_label", "state_specifics"]);
@@ -46,6 +53,10 @@ export type EngineConflict = {
   topic?: "skills_assessment" | "income_191";
   /** experience_points: what the answer claimed about which employment, years and points. */
   experience?: { location: "overseas" | "australian"; years: number; correct: number };
+  /** authority_fee: the assessing authority the sentence is about. */
+  authority?: string;
+  /** residence: the state the answer suggested although the visitor's residence rules it out. */
+  state?: string;
 };
 
 export type CheckOptions = {
@@ -60,9 +71,38 @@ export type CheckOptions = {
   currentTotals?: Partial<Record<"189" | "190" | "491", number>>;
   /** The engine facts and the retrieved chunks' text: a state-condition duration must appear here, or it is logged. */
   groundingText?: string;
+  /** The visitor's own assessing authority and fee (the report's Financial Roadmap), when known. */
+  visitorAuthorityFee?: VisitorAuthorityFee;
+  /** The visitor's state of residence and the states it rules out (the State Nomination Tracker's residence rule). */
+  residence?: ResidenceFacts;
+  /** The conversation language: a closing line (sources / general-information note) in another language is flagged. */
+  locale?: Locale;
 };
 
-const SENTENCE_SPLIT = /(?<=[.!?。！？])\s+|\n+/;
+// A sentence that recommends / proposes something, and one that states the residence condition (then it is not advising a bare use of the state).
+const SUGGEST_WORDS = /\b(?:consider|suggest\w*|recommend\w*|apply|applying|target\w*|choose|opt for|pursue|option|options|best|good fit|pathways?|streams?|nominat\w*|use)\b|(?<![\p{L}])(?:öner\p{L}*|düşün\p{L}*|başvur\p{L}*|seç\p{L}*|hedefle\p{L}*|yol\p{L}*|seçenek\p{L}*|aday\p{L}*)(?![\p{L}])|建议|考虑|申请|选择|途径|提名|可以走|适合/iu;
+const RESIDENCE_WORDS = /\b(?:live|living|lives|reside\w*|residence|relocat\w*|move|moving|moved)\b|ikamet|yaşa\w*|taşın\p{L}*|居住|搬|迁|住在/iu;
+const STATE_NAMES_RE: Record<string, string> = {
+  NSW: "New South Wales|Yeni Güney Galler|新南威尔士",
+  VIC: "Victoria|Viktorya|维多利亚",
+  QLD: "Queensland|昆士兰",
+  SA: "South Australia|Güney Avustralya|南澳",
+  WA: "Western Australia|Batı Avustralya|西澳",
+  TAS: "Tasmania|Tazmanya|塔斯马尼亚",
+  NT: "Northern Territory|Kuzey Bölgesi|北领地",
+  ACT: "Australian Capital Territory|Canberra|Başkent Bölgesi|首都领地",
+};
+/** The state's name in any language (case-insensitive) or its upper-case code as a whole word (case-sensitive: "act" is a verb). */
+const stateRegex = (code: string) => {
+  const all = STATE_NAMES_RE[code].split("|");
+  const cjk = all.filter((n) => /[一-鿿]/.test(n)); // no word boundaries in Chinese
+  const latin = all.filter((n) => !/[一-鿿]/.test(n));
+  const names = new RegExp(`(?<![\\p{L}\\p{N}])(?:${latin.join("|")})(?![\\p{L}\\p{N}])${cjk.length ? `|${cjk.join("|")}` : ""}`, "iu");
+  const abbr = new RegExp(`(?<![\\p{L}\\p{N}])${code}(?![\\p{L}\\p{N}])`, "u");
+  return { test: (text: string) => names.test(text) || abbr.test(text) };
+};
+// A full stop ends a sentence unless it ends an abbreviation ("approx. AUD 625", "e.g.", "vs.").
+const SENTENCE_SPLIT = /(?<=[.!?。！？])(?<!\b(?:approx|e\.g|i\.e|vs|etc|incl|excl|est|no|ca)\.)\s+|\n+/i;
 const SUBCLASS = /(?:subclass|alt sınıf|vize|visa|子类)?\s*\b(189|190|191|482|485|491|500|186|820|801)\b/gi;
 const FEE_WORDS = /\b(fee|fees|charge|charges|cost|costs|vac|application charge)\b|ücret|harç|maliyet|başvuru bedeli|费用|申请费|签证费/i;
 // AUD 4,910 / A$4,910 / $4,910 / 4.910 AUD / 4,910 AUD / 4910 澳元
@@ -81,7 +121,7 @@ const MIN_INCOME = /minimum income|income threshold|income requirement|compliant
 const NEGATED_INCOME = /\b(no|not|without|none)\b[^.]{0,30}(minimum income|income (?:threshold|requirement))|(asgari|minimum) gelir (şartı )?(yok|bulunmuyor|aranmaz)|gelir şartı (yok|bulunmuyor|aranmaz)|没有最低收入|无最低收入|不设最低收入|无收入要求/i;
 const MOST_STATES = /\b(most|all|many|every) (?:australian )?(?:states|state and territor)|çoğu eyalet|tüm eyalet|birçok eyalet|bütün eyalet|大多数州|所有州|多数州|大部分州/i;
 const DISCLAIMER =
-  /not (?:in|covered by) (?:my|the) (?:system|sources|references|knowledge base)|general knowledge|genel bilgi(?:ler)?(?:im)?(?:le)?|sistemimde(?:ki)?|kaynaklarımda|referanslarda (?:yer )?al(?:mıyor|madığı)|resmi kaynaktan doğrulanmadı|一般知识|系统中没有|资料中没有|未经官方来源核实/i;
+  /not (?:in|covered by) (?:my|the) (?:system|sources|references|knowledge base)|general knowledge|genel bilgi(?:ler)?(?:im)?(?:le)?|sistemimde(?:ki)?|kaynaklarımda|referanslarda (?:yer )?al(?:mıyor|madığı)|kaynaklarda (?:yer )?(?:al|geç)(?:mıyor|madığı)|resmi kaynaktan doğrulanmadı|一般知识|系统中没有|资料中没有|未经官方来源核实/i;
 
 const WRONG_VISA_NAME: Record<string, RegExp> = {
   "482": /temporary skill shortage|\bTSS\b|geçici (?:beceri|nitelikli iş gücü) açığı|temporary skills? shortage|临时技能短缺|临时技术短缺/i,
@@ -135,8 +175,9 @@ const GAP_CLAIM = new RegExp(
     "needs? (?:another |an additional )?(\\d{1,3}) (?:more )?points?",
     "(?<!\\d)(\\d{1,3})\\s*puan\\s*(?:eksi[kğ]\\p{L}*|altında|açık|daha|farkı|geride)",
     "(?<!\\d)(\\d{1,3}) puanlık (?:bir )?(?:açık|fark|eksik)",
-    "(?:还差|差|低于?|不足|缺|少)\\s*(\\d{1,3})\\s*分",
-    "(?<!\\d)(\\d{1,3})\\s*分(?:的)?(?:差距|缺口|不足)",
+    // "还差5分", "差5分", "低25分", "缺5分", "少5分" are gaps; "低于65分" / "不足65分" / "至少65分" state a threshold, and "60分不足65分" is a sentence about a threshold.
+    "(?:还差|差|低|缺|少)(?!于)\\s*(\\d{1,3})\\s*分",
+    "(?<!\\d)(\\d{1,3})\\s*分(?:的)?(?:差距|缺口)",
   ].join("|"),
   "giu",
 );
@@ -160,6 +201,7 @@ function durationKeys(text: string): Set<string> {
 
 export function findEngineConflicts(answer: string, opts: CheckOptions = {}): EngineConflict[] {
   const fees = engineFeeTable();
+  const authorityAmounts = authorityFeeAmounts();
   const out: EngineConflict[] = [];
   // Sentences with the paragraph (blank-line block) each one sits in: some checks read the whole paragraph.
   const items = answer
@@ -178,9 +220,37 @@ export function findEngineConflicts(answer: string, opts: CheckOptions = {}): En
     if (FEE_WORDS.test(s) && subs.length > 0) {
       const allowed = new Set(subs.flatMap((sc) => fees[sc] ?? []));
       if (allowed.size > 0) {
+        const authorityIds = authoritiesMentioned(s);
         for (const a of amounts(s)) {
+          if (authorityIds.some((id) => authorityAmounts.get(id)?.has(a))) continue; // an assessing-authority fee, checked below
           if (!allowed.has(a)) out.push({ kind: "fee", sentence: s, detail: `AUD ${a.toLocaleString("en-AU")} is not an engine fee for subclass ${subs.join("/")} (engine: ${[...allowed].map((n) => n.toLocaleString("en-AU")).join(", ")})`, subclasses: subs.filter((sc) => (fees[sc] ?? []).length > 0) });
         }
+      }
+    }
+
+    // Assessing-authority fees: the amount must be one of that authority's fees, and for the pathway the sentence names.
+    if (FEE_WORDS.test(s) || /assessment|değerlendirme|评估/i.test(s)) {
+      const ids = authoritiesMentioned(s);
+      for (const id of ids) {
+        const own = authorityAmounts.get(id);
+        if (!own) continue;
+        const named = pathwaysMentioned(id, s);
+        for (const a of amounts(s)) {
+          if (!own.has(a)) {
+            if (FEE_WORDS.test(s)) out.push({ kind: "authority_fee", sentence: s, detail: `AUD ${a.toLocaleString("en-AU")} is not a ${id} assessment fee (registry: ${[...own].sort((x, y) => x - y).map((n) => n.toLocaleString("en-AU")).join(", ")})`, authority: id });
+          } else if (named.length > 0 && !named.some((r) => r.amountAUD === a)) {
+            out.push({ kind: "authority_fee", sentence: s, detail: `AUD ${a.toLocaleString("en-AU")} is not the ${id} fee for the ${named.map((r) => r.pathway).join(" / ")} pathway (${named.map((r) => r.amountAUD.toLocaleString("en-AU")).join(", ")})`, authority: id });
+          } else if (named.length === 0 && opts.visitorAuthorityFee?.authorityId === id && opts.visitorAuthorityFee.amountAUD !== a && FEE_WORDS.test(s)) {
+            out.push({ kind: "authority_fee", sentence: s, detail: `AUD ${a.toLocaleString("en-AU")} quoted for ${id} without naming a pathway; the visitor's report shows AUD ${opts.visitorAuthorityFee.amountAUD.toLocaleString("en-AU")} (${opts.visitorAuthorityFee.pathway})`, authority: id });
+          }
+        }
+      }
+    }
+
+    // Residence: a state the visitor's residence rules out must not be suggested as an option.
+    if (opts.residence && SUGGEST_WORDS.test(s) && !RESIDENCE_WORDS.test(s)) {
+      for (const b of opts.residence.blocked) {
+        if (stateRegex(b.code).test(s)) out.push({ kind: "residence", sentence: s, detail: `${b.name} is not counted as available to a visitor living in ${opts.residence.homeName} (${b.requirement})`, state: b.code });
       }
     }
 
@@ -284,7 +354,9 @@ export function findEngineConflicts(answer: string, opts: CheckOptions = {}): En
             if ((benchTarget || !minTarget) && b.benchmark !== null) valid.add(Math.max(0, b.benchmark - total));
           }
         }
-        const wrong = claims.filter((c) => !valid.has(c));
+        // A number that is the 65 minimum or a recent benchmark is a threshold being named, not a gap.
+        const thresholds = new Set<number>([65, ...gapSubs.map((sc) => opts.benchmarks![sc as "189" | "190" | "491"]!.benchmark).filter((x): x is number => typeof x === "number")]);
+        const wrong = claims.filter((c) => !valid.has(c) && !thresholds.has(c));
         if (wrong.length > 0) out.push({ kind: "gap_figure", sentence: s, detail: `stated gap ${wrong.join(", ")} is not the engine's (valid: ${[...valid].join(", ")}) for subclass ${gapSubs.join("/")}`, subclasses: gapSubs });
       }
     }
@@ -297,6 +369,19 @@ export function findEngineConflicts(answer: string, opts: CheckOptions = {}): En
     }
 
     if (DISCLAIMER.test(s)) disclaimers++;
+  }
+  // Closing lines (the general-information note, a sources note, a pointer to the CTA) are in the conversation language.
+  if (opts.locale && sentences.length > 0) {
+    const last = sentences[sentences.length - 1];
+    for (const x of sentences) {
+      if (!DISCLAIMER.test(x) && x !== last) continue;
+      const l = detectAnswerLocale(x);
+      const mismatch = l !== opts.locale && (l !== "en" || (DISCLAIMER.test(x) && looksEnglish(x)));
+      if (mismatch) {
+        out.push({ kind: "closing_language", sentence: x, detail: `closing line is in ${l}, the conversation is in ${opts.locale}` });
+        break;
+      }
+    }
   }
   const labels = findInternalLabels(answer);
   if (labels.length > 0) out.push({ kind: "internal_label", sentence: "", detail: `internal prompt labels in the answer: ${[...new Set(labels.map((l) => l.match))].join(", ")}` });
