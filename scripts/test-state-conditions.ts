@@ -143,24 +143,28 @@ async function main() {
     const refReport = pick("ref", L).report as ReadinessReport;
     const waJob = flat(pick("waJob", L).text);
     const submit = { en: "Submit your EOI now", tr: "EOI'nizi şimdi gönderin", "zh-Hans": "立即提交 EOI" }[L];
-    const month1 = { en: "Month 1: Submit your EOI now", tr: "Ay 1: EOI'nizi şimdi gönderin", "zh-Hans": "第1个月：立即提交 EOI" }[L];
+    const month1 = { en: "Month 1Submit your EOI now", tr: "Ay 1EOI'nizi şimdi gönderin", "zh-Hans": "第1个月立即提交 EOI" }[L];
     // 1 in the PDF.
     t(`[${L}] PDF: 190 state reason "${REASON[L]}" and the sourced WA condition appear; WA-job persona has neither`, has(ref, REASON[L]) && !has(waJob, REASON[L]), "");
-    // 2 in the PDF.
-    t(`[${L}] PDF legend: 491 states the availability cause, never the "1-15 points below" text for it`, has(ref, { en: "points meet the recent benchmark; only one state is currently open to you", tr: "puanlar yakın dönem referansını karşılıyor; şu anda size yalnızca bir eyalet açık", "zh-Hans": "分数已达到近期参考分；目前仅有一个州对您开放" }[L]) && !/491[^\n]{0,40}(Friction level|Zorluk seviyesi|竞争激烈度)[^\n]{0,80}(1-15|1–15)/.test(pick("ref", L).text));
+    // 2 in the PDF: the plain availability statement in "States you can use" (no friction wording).
+    const note491 = { en: "Only one state is open to you for 491 (WA), so nomination is the main hurdle.", tr: "491 için size yalnızca bir eyalet açık (WA); bu yüzden asıl engel adaylık.", "zh-Hans": "目前仅有一个州对您开放 491（WA），因此主要障碍是获得提名。" }[L];
+    const note190 = { en: "No state is open to you for 190, so nomination is the main hurdle.", tr: "190 için size açık bir eyalet yok; bu yüzden asıl engel adaylık.", "zh-Hans": "目前没有任何州对您开放 190，因此主要障碍是获得提名。" }[L];
+    t(`[${L}] PDF states section: 491 has one open state (WA) and 190 none, in plain words ("nomination is the main hurdle")`, has(ref, note491) && has(ref, note190), "");
     // 3.
     const gantt = refReport.premiumSections.strategicGanttChart;
     t(`[${L}] ready profile: the Gantt starts with "${submit}" in quarter 1, then nomination applications; the assessment is not a future quarter`, gantt.steps[0].title === submit && /1/.test(gantt.steps[0].window) && gantt.steps[1].window === gantt.steps[0].window && !gantt.steps.some((s) => /Skills Assessment Completed|Beceri Değerlendirmesi Tamamlandı|技能评估已完成/.test(s.title)), JSON.stringify(gantt.steps.map((s) => [s.title, s.window])));
-    t(`[${L}] ready profile: the detailed timeline starts with "${month1}" (month 1), then the nomination applications`, has(ref, month1) && !has(ref, { en: "Month 1-2: Skills assessment already completed", tr: "Ay 1-2: Beceri değerlendirmesi zaten tamamlandı", "zh-Hans": "第1-2个月：技能评估已完成" }[L]));
+    t(`[${L}] ready profile: the action plan starts with "${month1}" (month 1), then the nomination applications`, has(ref, month1) && !has(ref, { en: "Month 1-2Skills assessment already completed", tr: "Ay 1-2Beceri değerlendirmesi zaten tamamlandı", "zh-Hans": "第1-2个月技能评估已完成" }[L]));
     const needs = flat(pick("needsSteps", L).text);
     const low = flat(pick("lowPoints", L).text);
     t(`[${L}] profiles that still need steps keep the existing timeline (no "${submit}")`, !has(needs, month1) && !has(low, month1) && !(pick("needsSteps", L).report as ReadinessReport).premiumSections.strategicGanttChart.steps.some((s) => s.title === submit) && !(pick("lowPoints", L).report as ReadinessReport).premiumSections.strategicGanttChart.steps.some((s) => s.title === submit));
     // 4.
     const stale = { en: ["How do I get a skills assessment", "Skills assessment timing can influence"], tr: ["beceri değerlendirmesi nasıl yapılır", "Beceri incelemesi zamanlaması"], "zh-Hans": ["进行技能评估？", "技能评估时间点可能影响"] }[L];
     t(`[${L}] completed assessment: no "how do I get one" FAQ and no "timing can influence" checklist item`, stale.every((x) => !has(ref, x)), stale.filter((x) => has(ref, x)).join(" | "));
-    const guidance = { en: ["How long is my skills assessment outcome letter valid", "Skills assessment outcome letter", "keep it valid"], tr: ["sonuç mektubumun geçerliliği", "Beceri değerlendirmesi sonuç mektubu", "geçerli tutun"], "zh-Hans": ["技能评估结果信的有效期", "技能评估结果信", "保持有效"] }[L];
-    t(`[${L}] completed assessment: outcome-letter validity guidance in the FAQ and the checklist`, guidance.every((x) => has(ref, x)), guidance.filter((x) => !has(ref, x)).join(" | "));
-    t(`[${L}] a profile that has NOT completed the assessment still gets the original FAQ`, has(needs, { en: "How do I get a skills assessment", tr: "beceri değerlendirmesi nasıl yapılır", "zh-Hans": "进行技能评估？" }[L]));
+    // The outcome-letter item is the one profile-specific lodgement item that stays (appendix, "Before you lodge").
+    const guidance = { en: ["Skills assessment outcome letter", "keep it valid"], tr: ["Beceri değerlendirmesi sonuç mektubu", "geçerli tutun"], "zh-Hans": ["技能评估结果信", "保持有效"] }[L];
+    t(`[${L}] completed assessment: outcome-letter validity guidance in the appendix (before you lodge)`, guidance.every((x) => has(ref, x)), guidance.filter((x) => !has(ref, x)).join(" | "));
+    const original = { en: "Month 1-2Skills assessment application and language test", tr: "Ay 1-2Beceri değerlendirmesi başvurusu ve dil testi", "zh-Hans": "第1-2个月提交技能评估申请和语言考试" }[L];
+    t(`[${L}] a profile that has NOT completed the assessment still gets the original plan, and no outcome-letter item`, has(needs, original) && !has(needs, guidance[0]));
     // 5.
     const living = { en: "Brisbane (based on your state: Queensland)", tr: "Brisbane (yaşadığınız eyalete göre: Queensland)", "zh-Hans": "布里斯班（根据您居住的州：昆士兰州）" }[L];
     t(`[${L}] living cost: Brisbane for a QLD resident, labelled as based on the applicant's state, not the Sydney example`, has(ref, living) && !/Sydney|悉尼/.test(ref.slice(ref.search(/Living Cost|Yaşam Maliyeti|生活成本/) >= 0 ? ref.search(/Living Cost|Yaşam Maliyeti|生活成本/) : 0, (ref.search(/Living Cost|Yaşam Maliyeti|生活成本/) >= 0 ? ref.search(/Living Cost|Yaşam Maliyeti|生活成本/) : 0) + 400)), refReport.premiumSections.livingCostProjection.city);

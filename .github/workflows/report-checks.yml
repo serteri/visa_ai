@@ -126,6 +126,9 @@ jobs:
       - name: Result page = PDF (states, booster rows, date stamp)
         run: npm run test:result-page-parity
 
+      - name: Report structure (8-10 pages, section order, removed titles)
+        run: npm run test:report-structure
+
       # The AI assistant and the report resolve state status with the same precedence (newer verification wins).
       - name: AI assistant and report agree on state status
         run: npm run test:state-status-precedence

@@ -210,12 +210,14 @@ async function main() {
       pointsBoosterSimulator?: { scenarios: Array<{ label: string; isCombined?: boolean; onlyForSubclass?: string }> };
     };
 
-    // No experience entered -> only "experience not provided".
+    // No experience entered -> no "below 2 years" / deduction wording; the points table says what was claimed (0 years).
     if (input.offshoreExperienceYears === undefined && input.onshoreExperienceYears === undefined) {
       const below2 = /below 2 years|2 yilin altinda|不足 2 年|deducted years|ACS deducted experience/i.test(text);
-      const notProvided = /Work experience not provided|Is deneyimi girilmedi|未提供工作经验/.test(text);
-      if (!below2 && notProvided) ok(`${tag}: experience not provided -- no "below 2 years" / deduction line`);
-      else fail(`${tag}: experience lines -- below2/deduction ${below2}, "not provided" ${notProvided}`);
+      const rowsWithNote = (r.report as { pointsEstimate?: { breakdown: Array<{ label: string; points: number; max?: number; note?: string }> } }).pointsEstimate?.breakdown.filter((b) => /Claimed Experience|Beyan Edilen Tecrübe|申报经验/.test(b.note ?? "") && b.max !== undefined && b.points < b.max) ?? [];
+      const flatText = text.replace(/\s+/g, "");
+      const claimed = rowsWithNote.every((b) => flatText.includes((b.note ?? "").replace(/\s+/g, "")));
+      if (!below2 && claimed) ok(`${tag}: no experience entered -- no "below 2 years" / deduction line; the points table states the claimed experience`);
+      else fail(`${tag}: experience lines -- below2/deduction ${below2}, claimed experience in the points table ${claimed} (${rowsWithNote.length} rows)`);
     }
 
     // WA list: a Software Engineer (261313, on WA's Schedule 2 and Graduate lists) sees WA's stream conditions.

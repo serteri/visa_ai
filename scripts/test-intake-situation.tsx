@@ -195,14 +195,14 @@ async function main() {
     const LEAD = { en: "15 business days", tr: "15 iş günü", "zh-Hans": "15 个工作日" } as const;
     const OVERSEAS = { en: "4-12 weeks", tr: "4-12 hafta", "zh-Hans": "4-12 周" } as const;
     const HEALTH = { en: "Bupa Medical Visa Services", tr: "Bupa Medical Visa Services", "zh-Hans": "Bupa Medical Visa Services" } as const;
-    const BOOSTER = { en: "Points Booster Simulator", tr: "Puan Senaryo Simülatörü", "zh-Hans": "加分场景模拟" } as const;
+    const POINTS = { en: "Your points", tr: "Puanlarınız", "zh-Hans": "您的积分" } as const;
     const EOI = { en: "update your EOI in SkillSelect", tr: "EOI'nizi SkillSelect'te güncelleyin", "zh-Hans": "在 SkillSelect 中更新您的 EOI" } as const;
     for (const locale of ["en", "tr", "zh-Hans"] as const) {
       const inv = squash(pdf("invited", locale).text);
       const plan = squash(pdf("planning", locale).text);
       const iTitle = inv.indexOf(squash(TITLE[locale]));
-      const iBooster = inv.indexOf(squash(BOOSTER[locale]));
-      t(`${locale}: Invited -> the lodgement section is in the PDF, above the Points Booster`, iTitle >= 0 && iBooster > iTitle, `title ${iTitle}, booster ${iBooster}`);
+      const iBooster = inv.indexOf(squash(POINTS[locale]));
+      t(`${locale}: Invited -> the lodgement section is in the PDF (action plan, after the points section)`, iTitle >= 0 && iBooster >= 0 && iTitle > iBooster, `title ${iTitle}, booster ${iBooster}`);
       const miss = [DEADLINE, LEAD, OVERSEAS, HEALTH].map((m) => m[locale]).filter((m) => !inv.includes(squash(m)));
       t(`${locale}: ... with the 60-day deadline, police and health lead times`, miss.length === 0, miss.join(" | "));
       t(`${locale}: Planning -> no lodgement section`, !plan.includes(squash(TITLE[locale])));

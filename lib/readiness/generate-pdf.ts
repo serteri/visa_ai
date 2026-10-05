@@ -18,6 +18,8 @@ import { notoSansRegularBase64 } from "./pdf-font";
 import { notoSansBoldBase64 } from "./pdf-font-bold";
 import { notoSansSCRegularBase64 } from "./pdf-font-sc";
 import { appendNominationStreamSuffix, buildCaRankedPathways, calculateRankedPathways } from "./ranked-pathways";
+import { renderReportV2 } from "./pdf-report-v2";
+import { buildReportView, type ReportView } from "@/lib/reports/report-view";
 import { renderPersonalizedContent } from "./pdf-personalized-content";
 import { frictionLegendLines } from "./friction-legend";
 import { getCommonPitfalls } from "./pdf-content/common-pitfalls";
@@ -277,12 +279,12 @@ function getLocalizedText(locale: "en" | "tr" | "zh-Hans") {
       qualitativeFitUnclear: "Belirsiz uyum",
       qualitativeFitUnlikely: "Olası değil",
       coverTitle: "LogiVisa Premium Hazırlık Analizi",
-      coverSubtitle: "AI destekli vize stratejisi ve uygunluk raporu",
+      coverSubtitle: "Resmi kaynaklara dayalı kişiselleştirilmiş vize hazırlık değerlendirmesi",
       preparedFor: "Hazırlanan Kişi",
-      advisoryIntro: "Bu rapor, profilinizi 1 Temmuz 2026 tarihli bağlayıcı düzenleyici eşiklere, eyalet aday gösterme sinyallerine ve kanıt gerekliliklerine karşı denetleyen, uyumluluk odaklı bir analizdir.",
+      advisoryIntro: "Bu rapor, resmi kaynaklara dayalı, kişiselleştirilmiş bir vize hazırlık değerlendirmesidir.",
       stateTrackerIntro: "Aşağıdaki matris, profilinizi mevcut eyalet/bölge talep sinyalleri ve kanıt uyumu açısından değerlendirir.",
       pathwayTableIntro: "Aşağıdaki karşılaştırma, olası vize yollarını güven, rekabet ve pratik uygunluk sinyalleriyle birlikte gösterir.",
-      pathwayStrengthIntro: "Yol gücü öncelikle bağlayıcı düzenleyici eşiklere göre değerlendirilir; herhangi bir Zorunlu Eşik (Hard Gate) ihlali, altta yatan sinyali geçersiz kılarak yolu Uygun Değil durumuna zorlar.",
+      pathwayStrengthIntro: "Her vize yolu, resmi kaynaklardaki zorunlu şartlara göre değerlendirilir.",
       riskBoxIntro: "Bunlar isteğe bağlı notlar değil, zorunlu uyumluluk uyarılarıdır. Her uyarı, 1 Temmuz 2026 tarihli bağlayıcı bir kural eşiğini yansıtır ve bir yola güvenilmeden önce çözülmeli veya doğrulanmalıdır.",
       riskAlertsHeading: "Risk Uyarıları",
       riskAlertsIntro: "Her uyarı risk seviyesini gösterir (Yüksek / Orta / Düşük). Bir yola güvenmeden önce her birini çözün veya doğrulayın.",
@@ -446,12 +448,12 @@ function getLocalizedText(locale: "en" | "tr" | "zh-Hans") {
       qualitativeFitUnclear: "匹配度不明确",
       qualitativeFitUnlikely: "匹配可能性低",
       coverTitle: "\u004c\u006f\u0067\u0069\u0056\u0069\u0073\u0061 \u9ad8\u7ea7\u51c6\u5907\u5ea6\u8bc4\u4f30",
-      coverSubtitle: "\u0041\u0049 \u9a71\u52a8\u7684\u79fb\u6c11\u7b56\u7565\u4e0e\u53ef\u884c\u6027\u62a5\u544a",
+      coverSubtitle: "基于官方来源的个性化签证准备度评估",
       preparedFor: "\u4e3a\u4ee5\u4e0b\u7533\u8bf7\u4eba\u51c6\u5907",
-      advisoryIntro: "\u672c\u62a5\u544a\u662f\u4e00\u9879\u4ee5\u5408\u89c4\u4e3a\u5bfc\u5411\u7684\u5ba1\u8ba1\uff0c\u4f9d\u636e2026\u5e747\u67081\u65e5\u8d77\u5177\u6709\u7ea6\u675f\u529b\u7684\u76d1\u7ba1\u95e8\u69db\u3001\u5dde\u63d0\u540d\u4fe1\u53f7\u53ca\u4e3e\u8bc1\u8981\u6c42\uff0c\u5bf9\u4f60\u7684\u7b7e\u8bc1\u53ef\u884c\u6027\u8fdb\u884c\u6838\u67e5\u3002",
+      advisoryIntro: "本报告是基于官方来源的个性化签证准备度评估。",
       stateTrackerIntro: "\u4e0b\u8868\u6839\u636e\u5f53\u524d\u5dde/\u5730\u533a\u9700\u6c42\u4fe1\u53f7\u548c\u6750\u6599\u5339\u914d\u5ea6\u8bc4\u4f30\u4f60\u7684\u6863\u6848\u3002",
       pathwayTableIntro: "\u4e0b\u8868\u5c06\u53ef\u80fd\u7684\u7b7e\u8bc1\u8def\u5f84\u4e0e\u7f6e\u4fe1\u5ea6\u3001\u7ade\u4e89\u5f3a\u5ea6\u548c\u5b9e\u9645\u5339\u914d\u4fe1\u53f7\u5bf9\u7167\u3002",
-      pathwayStrengthIntro: "\u8def\u5f84\u5f3a\u5ea6\u9996\u5148\u4f9d\u636e\u5177\u6709\u7ea6\u675f\u529b\u7684\u76d1\u7ba1\u95e8\u69db\u8fdb\u884c\u8bc4\u4f30\uff1b\u4efb\u4f55\u5f3a\u5236\u6027\u95e8\u69db\uff08Hard Gate\uff09\u8fdd\u89c4\u90fd\u5c06\u8986\u76d6\u5e95\u5c42\u4fe1\u53f7\uff0c\u5f3a\u5236\u5c06\u8be5\u8def\u5f84\u5224\u5b9a\u4e3a\u4e0d\u7b26\u5408\u8d44\u683c\u3002",
+      pathwayStrengthIntro: "每条签证路径均按官方来源中的强制性要求进行评估。",
       riskBoxIntro: "\u4ee5\u4e0b\u5e76\u975e\u53ef\u9009\u63d0\u793a\uff0c\u800c\u662f\u5f3a\u5236\u6027\u5408\u89c4\u8b66\u62a5\u3002\u6bcf\u4e00\u9879\u8b66\u62a5\u5747\u53cd\u66202026\u5e747\u67081\u65e5\u8d77\u5177\u6709\u7ea6\u675f\u529b\u7684\u89c4\u5219\u95e8\u69db\uff0c\u5fc5\u987b\u5728\u4f9d\u8d56\u8be5\u8def\u5f84\u4e4b\u524d\u4e88\u4ee5\u89e3\u51b3\u6216\u6838\u5b9e\u3002",
       riskAlertsHeading: "风险提示",
       riskAlertsIntro: "每项提示均标明风险等级（高 / 中 / 低）。在依赖某一路径之前，请逐项解决或核实。",
@@ -614,12 +616,12 @@ function getLocalizedText(locale: "en" | "tr" | "zh-Hans") {
     qualitativeFitUnclear: "Unclear fit",
     qualitativeFitUnlikely: "Unlikely fit",
     coverTitle: "LogiVisa Premium Readiness Assessment",
-    coverSubtitle: "AI-Powered Migration Strategy & Viability Report",
+    coverSubtitle: "A personalised visa readiness assessment based on official sources",
     preparedFor: "Prepared for",
-    advisoryIntro: "This report is a compliance-driven audit of your visa viability against binding 1 July 2026 regulatory thresholds, state nomination signals, and evidentiary requirements.",
+    advisoryIntro: "This report is a personalised visa readiness assessment based on official sources.",
     stateTrackerIntro: "The following matrix analyzes your profile against current state and territory demand signals, nomination posture, and evidence fit.",
     pathwayTableIntro: "The following comparison places each possible pathway beside its confidence, friction, and practical readiness signals.",
-    pathwayStrengthIntro: "Pathway strength is assessed against binding regulatory thresholds first; any Hard Gate violation overrides the underlying signal and forces the pathway to Ineligible.",
+    pathwayStrengthIntro: "Each visa pathway is assessed against the mandatory requirements in the official sources.",
     riskBoxIntro: "These are mandatory compliance flags, not optional notes. Each alert reflects a binding 1 July 2026 rule threshold and must be resolved or verified before a pathway can be relied upon.",
     riskAlertsHeading: "Risk Alerts",
     riskAlertsIntro: "Each alert shows its risk level (High / Medium / Low). Resolve or verify each one before relying on a pathway.",
@@ -1791,6 +1793,28 @@ export async function generateReadinessPDF(input: PDFGeneratorInput): Promise<Ui
     doc.setPage(last);
   }
 
+  // The restructured customer report (lib/reports/report-view.ts): the AU skilled / employer report. Canada and the
+  // partner (820 / 801) report keep their own flows.
+  const useRestructuredReport = !report.partnerSponsorshipAssessment && report.country !== "CA";
+  let cachedReportView: ReportView | null = null;
+  /** The date on the cover: "Last updated <date>" when the content was recomputed, else the generation date. */
+  function coverDateText(): string {
+    const reportDate = new Intl.DateTimeFormat(locale, { timeZone: "Australia/Brisbane", year: "numeric", month: "numeric", day: "numeric" }).format(new Date());
+    const stamp = reportDateStamp(effectiveLocale, report.contentStamp);
+    return stamp ? stamp.text : reportDate;
+  }
+  function getReportView(): ReportView {
+    if (!cachedReportView) {
+      cachedReportView = buildReportView({
+        report,
+        locale: effectiveLocale,
+        profile: { ...userInputSummary, occupationRaw: rawUserInputSummary.occupation },
+        dateText: coverDateText(),
+      });
+    }
+    return cachedReportView;
+  }
+
   function addCoverPage() {
     const reportDate = new Intl.DateTimeFormat(locale, {
       timeZone: "Australia/Brisbane",
@@ -1902,6 +1926,40 @@ export async function generateReadinessPDF(input: PDFGeneratorInput): Promise<Ui
     // Strict vertical flow cursor: each cover element advances a Y cursor with
     // an explicit gap, so no two elements ever stack on top of one another.
     let stackY = cardY + cardHeight + 14;
+
+    if (useRestructuredReport) {
+      // Restructured report: name, date and occupation are in the card above; one line states the verdict.
+      const verdict = getReportView().cover.verdictLine;
+      if (verdict) {
+        setBoldFont();
+        doc.setFontSize(13);
+        const lines = doc.splitTextToSize(safeText(verdict), contentWidth - 16) as string[];
+        const boxH = 12 + lines.length * 6;
+        doc.setFillColor(COLORS.primary.r, COLORS.primary.g, COLORS.primary.b);
+        doc.setDrawColor(COLORS.accent.r, COLORS.accent.g, COLORS.accent.b);
+        doc.setLineWidth(0.4);
+        doc.roundedRect(margin, stackY, contentWidth, boxH, 2, 2, "FD");
+        setBoldFont();
+        doc.setFontSize(8.5);
+        doc.setTextColor(COLORS.accent.r, COLORS.accent.g, COLORS.accent.b);
+        doc.text(safeText(getReportView().titles.verdict).toUpperCase(), margin + 6, stackY + 7, { charSpace: 0.3 });
+        setBoldFont();
+        doc.setFontSize(13);
+        doc.setTextColor(255, 255, 255);
+        doc.text(lines, margin + 6, stackY + 14);
+        stackY += boxH + 8;
+      }
+      doc.setDrawColor(COLORS.accent.r, COLORS.accent.g, COLORS.accent.b);
+      doc.setLineWidth(0.3);
+      doc.line(margin, pageHeight - 18, pageWidth - margin, pageHeight - 18);
+      setBaseFont();
+      doc.setFontSize(8);
+      doc.setTextColor(COLORS.accent.r, COLORS.accent.g, COLORS.accent.b);
+      doc.text("Generated by LogiVisa AI  |  logivisa.com", margin, pageHeight - 11);
+      doc.addPage();
+      yPosition = 20;
+      return;
+    }
 
     if (userInputSummary.occupation) {
       const chipY = stackY;
@@ -4446,6 +4504,36 @@ export async function generateReadinessPDF(input: PDFGeneratorInput): Promise<Ui
 
   if (report.partnerSponsorshipAssessment) {
     drawPartnerSponsorshipReport();
+  } else if (useRestructuredReport) {
+    renderReportV2(
+      {
+        addSectionHeading,
+        addHeading,
+        addBody,
+        addSmallText,
+        addBulletPoints,
+        addPremiumBulletContainer,
+        addPremiumKeyValueContainer,
+        drawTable,
+        startNewPage: () => {
+          if (yPosition > 21) {
+            doc.addPage();
+            yPosition = 20;
+          }
+        },
+        addLink: (label, url) => {
+          ensurePageSpace(6);
+          setBaseFont();
+          doc.setFontSize(FONTS.small);
+          doc.setTextColor(COLORS.accent.r, COLORS.accent.g, COLORS.accent.b);
+          doc.textWithLink(safeText(clipToWidth(`${label} — ${url}`, contentWidth - 8)), margin + 4, yPosition, { url });
+          yPosition += 4.6;
+          doc.setTextColor(COLORS.text.r, COLORS.text.g, COLORS.text.b);
+        },
+        COLORS,
+      },
+      getReportView(),
+    );
   } else {
     addReportOverview();
     // Premium AI Strategy layer (if present) renders right after the
@@ -4468,7 +4556,7 @@ export async function generateReadinessPDF(input: PDFGeneratorInput): Promise<Ui
     drawLodgementReadyChecklist();
   }
 
-  if (!report.partnerSponsorshipAssessment) {
+  if (!report.partnerSponsorshipAssessment && !useRestructuredReport) {
   {
     const snap = report.signalSnapshot;
     // The Snapshot shows the SAME overall confidence as the Structured Pathway Comparison table (confidence.ts).
@@ -4749,7 +4837,7 @@ export async function generateReadinessPDF(input: PDFGeneratorInput): Promise<Ui
   }
   }
 
-  if (report.financialRoadmap.length > 0) {
+  if (report.financialRoadmap.length > 0 && !useRestructuredReport) {
     addSectionHeading("", text.financialRoadmap);
     addSmallText(text.financialRoadmapIntro, 0);
     yPosition += 1;
@@ -4891,7 +4979,7 @@ export async function generateReadinessPDF(input: PDFGeneratorInput): Promise<Ui
     }
   }
 
-  if (!report.partnerSponsorshipAssessment) {
+  if (!report.partnerSponsorshipAssessment && !useRestructuredReport) {
   if (report.progressionPathways.length > 0) {
     addHeading(text.progressionPathways);
     addSmallText(text.progressionPathwaysIntro, 0);
@@ -4973,7 +5061,7 @@ export async function generateReadinessPDF(input: PDFGeneratorInput): Promise<Ui
   drawSparseDataDisclaimer();
   }
 
-  if (report.premiumSections) {
+  if (report.premiumSections && !useRestructuredReport) {
     addSectionHeading("", text.premiumSections);
     addSmallText(text.premiumSectionsIntro, 0);
 
@@ -5070,7 +5158,7 @@ export async function generateReadinessPDF(input: PDFGeneratorInput): Promise<Ui
     drawGanttTimeline();
   }
 
-  if (!report.partnerSponsorshipAssessment) {
+  if (!report.partnerSponsorshipAssessment && !useRestructuredReport) {
   // NOC / TEER / ECA section (CA only — surfaces occupation indication with ECA body and duties)
   if (report.country === "CA") drawNocEcaSection();
 
@@ -5137,11 +5225,11 @@ export async function generateReadinessPDF(input: PDFGeneratorInput): Promise<Ui
   drawImmediateActionPlan();
   }
 
-  addHeading(text.downloadablePdf);
-  addSmallText(text.downloadablePdfDescription, 0);
-  yPosition += 3;
-
-
+  if (!useRestructuredReport) {
+    addHeading(text.downloadablePdf);
+    addSmallText(text.downloadablePdfDescription, 0);
+    yPosition += 3;
+  }
 
   // Beta feedback note on final page
   ensurePageSpace(14);
@@ -5273,7 +5361,7 @@ export async function generateReadinessPDF(input: PDFGeneratorInput): Promise<Ui
   // ── End Personalized Content ───────────────────────────────────────────
 
   // ── Common Pitfalls (all locales, AU/CA) ───────────────────────────────
-  if (!report.partnerSponsorshipAssessment) {
+  if (!report.partnerSponsorshipAssessment && !useRestructuredReport) {
     try {
       const pitfalls = getCommonPitfalls(effectiveLocale, report.country || "AU");
       ensurePageSpace(40);
@@ -5302,7 +5390,7 @@ export async function generateReadinessPDF(input: PDFGeneratorInput): Promise<Ui
   }
 
   // ── Official Resources & Links (all locales, AU/CA) ───────────────────
-  if (!report.partnerSponsorshipAssessment) {
+  if (!report.partnerSponsorshipAssessment && !useRestructuredReport) {
     try {
       const resources = getResourcesSection(effectiveLocale, report.country || "AU");
       ensurePageSpace(40);

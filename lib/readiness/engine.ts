@@ -492,9 +492,9 @@ function customIneligibleFrictionExplanation(locale: Locale, subclass: string): 
       zh: "189 类完全依赖打分，且没有担保方或提名方来弥补分差，因此在预估分数达到 65 分及格线之前无法申请。",
     },
     "190": {
-      en: "Subclass 190 adds state nomination (+5) on top of the points test, but that boost still leaves your base score below the binding 65-point threshold on its own.",
-      tr: "Subclass 190, puan testinin üzerine eyalet aday gösterimi (+5) ekler; ancak bu katkı tek başına temel puanınızı bağlayıcı 65 puan eşiğinin altında bırakır.",
-      zh: "190 类在打分基础上增加州担保（+5），但仅凭这一加分，您的基础分数仍低于具有约束力的 65 分门槛。",
+      en: "Subclass 190 adds state nomination (+5) on top of the points test, but that boost still leaves your base score below the required 65-point threshold on its own.",
+      tr: "Subclass 190, puan testinin üzerine eyalet aday gösterimi (+5) ekler; ancak bu katkı tek başına temel puanınızı gereken 65 puan eşiğinin altında bırakır.",
+      zh: "190 类在打分基础上增加州担保（+5），但仅凭这一加分，您的基础分数仍低于所需的 65 分门槛。",
     },
     "491": {
       en: "Subclass 491 carries the largest single boost via regional nomination (+15), making it the most realistic route back to eligibility once you close the remaining points gap.",
@@ -4276,8 +4276,8 @@ function buildExecutiveSummary(
     return [
       ...ineligibleLines,
       pathwayNames
-        ? `Bu rapor, ${pathwayNames} yollarını bağlayıcı 1 Temmuz 2026 kural eşiklerine göre değerlendirir; çalışma, mezuniyet, iş sponsorluğu ve nitelikli göç sinyalleri tek çerçevede sunulur.`
-        : "Bu rapor, verilen bilgilerle görünen yol sinyallerini bağlayıcı kural eşiklerine göre değerlendirir.",
+        ? `Bu rapor, ${pathwayNames} yollarını 1 Temmuz 2026'dan itibaren yürürlükteki kurallara göre değerlendirir; çalışma, mezuniyet, iş sponsorluğu ve nitelikli göç sinyalleri tek çerçevede sunulur.`
+        : "Bu rapor, verilen bilgilerle görünen yol sinyallerini güncel kurallara göre değerlendirir.",
       skilledVisible && estimatedPoints !== undefined
         ? `Tahmini temel puan ${estimatedPoints}; bu puan, puan testli yolların sıralamasını belirleyen ana faktördür.`
         : skilledVisible && hasPreliminaryPointsSignal
@@ -4291,8 +4291,8 @@ function buildExecutiveSummary(
     return [
       ...ineligibleLines,
       pathwayNames
-        ? `本报告依据具有约束力的2026年7月1日规则门槛评估 ${pathwayNames} 路径，并综合学习、毕业生、雇主担保与技术移民信号。`
-        : "本报告依据具有约束力的规则门槛评估当前可见的签证路径信号。",
+        ? `本报告依据自2026年7月1日起生效的规则评估 ${pathwayNames} 路径，并综合学习、毕业生、雇主担保与技术移民信号。`
+        : "本报告依据现行规则评估当前可见的签证路径信号。",
       skilledVisible && estimatedPoints !== undefined
         ? `当前加分信号为 ${estimatedPoints}；该分数是决定打分制路径排序的关键因素。`
         : skilledVisible && hasPreliminaryPointsSignal
@@ -4305,8 +4305,8 @@ function buildExecutiveSummary(
   return [
     ...ineligibleLines,
     pathwayNames
-      ? `This report evaluates ${pathwayNames} against binding 1 July 2026 rule thresholds, cross-referencing study, graduate, employer-sponsored, and skilled pathway signals.`
-      : "This report evaluates visible pathway signals from the details provided against binding rule thresholds.",
+      ? `This report evaluates ${pathwayNames} against the rules in force from 1 July 2026, cross-referencing study, graduate, employer-sponsored, and skilled pathway signals.`
+      : "This report evaluates visible pathway signals from the details provided against the current rules.",
     skilledVisible && estimatedPoints !== undefined
       ? `Estimated base points are ${estimatedPoints}; this is a determining factor in the ranking of points-tested pathways.`
       : skilledVisible && hasPreliminaryPointsSignal

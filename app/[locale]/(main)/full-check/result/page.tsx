@@ -5,6 +5,7 @@ import { canAccessReport, reportAccessToken, reportPdfPath } from "@/lib/reports
 import { getReportRequester } from "@/lib/reports/report-access-server";
 import { refreshStoredReport } from "@/lib/reports/refresh-report";
 import { reportDateStamp } from "@/lib/reports/report-date-stamp";
+import { buildReportView, reportViewProfile } from "@/lib/reports/report-view";
 import type { FullCheckQuickPreview } from "../actions";
 import { ReportAccessRequired } from "./report-access-required";
 import { ResultView } from "./result-view";
@@ -49,6 +50,13 @@ export default async function FullCheckResultPage({
   // The same current-engine refresh and fallback as the PDF (lib/reports/refresh-report.ts), so the page and the
   // downloaded PDF always show the same content and the same "Last updated" / "Generated" stamp.
   const refreshed = await refreshStoredReport(record.report, record.input, { generatedAt: record.createdAt });
+  // The same eight-part view the PDF is drawn from (Canada and partner reports keep their own layout).
+  const viewLocale = locale === "tr" ? "tr" : locale === "zh-Hans" ? "zh-Hans" : "en";
+  const dateText = reportDateStamp(viewLocale, refreshed.stamp)?.text ?? "";
+  const view =
+    refreshed.report.country !== "CA" && !refreshed.report.partnerSponsorshipAssessment
+      ? buildReportView({ report: refreshed.report, locale: viewLocale, profile: reportViewProfile(record.input, record.fullName, viewLocale), dateText })
+      : null;
   return (
     <ResultView
       locale={locale}
@@ -58,6 +66,7 @@ export default async function FullCheckResultPage({
       downloadHref={record.isUnlocked ? reportPdfPath(record.id, accessToken) : null}
       report={refreshed.report}
       dateStamp={reportDateStamp(locale, refreshed.stamp)?.text ?? null}
+      view={view}
       previewData={(record.previewData as FullCheckQuickPreview | null) ?? null}
       fullName={record.fullName ?? undefined}
       email={record.email}

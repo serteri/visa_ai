@@ -14,14 +14,15 @@
  * the report object). Per persona x locale the test fails if:
  *   - any known-bad string appears ("legally required", "Less than 2 years",
  *     "recent rounds", "partner/child columns", ...);
- *   - the cover EOI banner is truncated -- checked both as text (its final
- *     words are present) AND geometrically (no text item extends past the
- *     page's right edge; text extraction alone cannot see clipping, because
- *     pdf.js returns off-page text too);
- *   - the Financial Roadmap has no total row, or its total differs from the
- *     FAQ/guide figure (same computeEstimatedTotalAud() result);
- *   - the guide's cost list omits the police-certificate line, or (for a
- *     partnered profile) the partner/child VAC line from visa-fees.json.
+ *   - text runs past the page's right edge or over other text (geometry from
+ *     pdf.js; text extraction alone cannot see clipping);
+ *   - the verdict does not state the estimated total exactly once (same
+ *     computeEstimatedTotalAud() result), or the costs table has no
+ *     in-total column, no police-certificate row, or (for a partnered
+ *     profile) no partner/child VAC row from visa-fees.json.
+ * The report is the restructured eight-part customer report
+ * (lib/reports/report-view.ts): the old sections these checks used to read
+ * (Financial Roadmap, FAQ, guide, Reality Check, Signal Snapshot, ...) are gone.
  *
  * The browser download in full-check-waitlist-form.tsx calls the same
  * generateReadinessPDF with a thinner userInputSummary (no age, no
@@ -64,6 +65,7 @@ import { anmacAuthority } from "../lib/skills-assessment/authorities/anmac";
 import type { PremiumStrategyResult } from "../lib/ai/strategy-schema";
 import { runReadinessEngine } from "../src/lib/readiness-engine";
 import { generateReadinessPDF } from "../lib/readiness/generate-pdf";
+import { buildReportView } from "../lib/reports/report-view";
 import { computeEstimatedTotalAud, computePartnerTotalAud, estimateQualifier, formatEstimatedTotalLine, formatPartnerTotalLine, formatSecondInstalmentLine } from "../lib/readiness/financial-roadmap-totals";
 import visaFeesData from "../src/data/visa-fees.json";
 import { ENGLISH_TEST_VALIDITY_YEARS, SECOND_INSTALMENT_AUD } from "../lib/readiness/constants";
@@ -303,38 +305,37 @@ async function checkPdf(
     }
   }
 
-  if (expectBanner && !BANNER_TAIL[locale].test(flat) && !BANNER_TAIL[locale].test(squashAll(flat))) {
-    ctx.fail("cover EOI banner sentence missing its final words");
+  const view = buildReportView({ report, locale, profile: { name: "Test Persona", occupation: persona.input.occupation, englishLevel: persona.input.englishLevel }, dateText: "" });
+  // A blocked profile: the verdict names the missing step first (the old cover EOI banner's job).
+  if (expectBanner && !(view.verdict.nextActions[0] && squashAll(flat).includes(squashAll(view.verdict.nextActions[0])))) {
+    ctx.fail(`blocked profile: the verdict does not state the first next action "${view.verdict.nextActions[0]}"`);
   }
   const layout = await analyzeLayout(pdfBytes);
   if (layout.offPage.length > 0) ctx.fail(`text runs past the page edge (clipped): ${layout.offPage.slice(0, 3).join(" | ")}`);
   if (layout.overlaps.length > 0) ctx.fail(`${layout.overlaps.length} text overlap(s): ${layout.overlaps.slice(0, 4).join(" | ")}`);
-  if (layout.bannerIssues.length > 0) ctx.fail(`EOI banner overlap: ${layout.bannerIssues.slice(0, 3).join(" | ")}`);
-  if (expectBanner && layout.bannerCount === 0) ctx.fail("blocked profile but no EOI banner box found in the PDF");
 
   const total = computeEstimatedTotalAud(report.financialRoadmap);
   if (!total) {
     ctx.fail("computeEstimatedTotalAud returned null");
     return;
   }
-  // Same helper the three sections use -> the exact line must appear in
-  // Roadmap + FAQ + guide (>= 3 times), and the Roadmap-only scope lines must exist.
+  // The total comes from computeEstimatedTotalAud / formatEstimatedTotalLine and is stated once (the verdict).
   const totalLine = formatEstimatedTotalLine(total, locale);
-  // The FAQ puts a full stop between the range and any "leaves out" note, so
-  // compare label + figure only (the part every section must share).
-  const maxStr = total.max.toLocaleString(locale === "tr" ? "tr-TR" : "en-AU");
+  // Compare label + figure only (the part after the figure is a note on what the total leaves out).
+  const maxStr = total.max.toLocaleString(locale === "tr" ? "tr-TR" : "en-AU", { minimumFractionDigits: Number.isInteger(total.max) ? 0 : 2, maximumFractionDigits: 2 });
   const needle = totalLine.slice(0, totalLine.indexOf(maxStr) + maxStr.length);
-  const squash = (t: string) => (locale === "zh-Hans" ? squashAll(t) : t);
+  const squash = (t: string) => (locale === "zh-Hans" ? squashAll(t).replace(/：/g, ":") : t);
   const occurrences = squash(flat).split(squash(needle)).length - 1;
-  if (occurrences < 3) ctx.fail(`total "${needle}" appears ${occurrences}x (need Roadmap + FAQ + guide)`);
-  if (!squash(flat).includes(squash(SCOPE_INCLUDED[locale]))) ctx.fail("Financial Roadmap total row has no included/not-included lines");
-
-  if (!squash(flat).includes(squash(POLICE_LINE[locale]))) ctx.fail("guide cost list has no police-certificate line");
+  if (occurrences !== 1) ctx.fail(`total "${needle}" appears ${occurrences}x (expected once, on the verdict)`);
+  // Costs table: the in-total column and the rows the engine's roadmap has.
+  if (!squashAll(flat).includes(squashAll(view.costs.headers[2])) || !squashAll(flat).includes(squashAll(view.costs.yes))) ctx.fail("costs table has no in-total column");
+  const police = report.financialRoadmap.find((i) => i.kind === "police");
+  if (!police || !squashAll(flat).includes(squashAll(police.category))) ctx.fail("costs table has no police-certificate row");
 
   const additional = report.financialRoadmap.find((i) => i.kind === "vac_additional");
   if (persona.partnered) {
     if (!additional) ctx.fail("partnered profile has no vac_additional roadmap row");
-    else if (!squash(flat).includes(squash(ADDITIONAL_VAC_LINE[locale]))) ctx.fail("guide cost list has no partner/child VAC line");
+    else if (!squashAll(flat).includes(squashAll(additional.category))) ctx.fail("costs table has no partner/child VAC row");
   } else if (additional) {
     ctx.fail("single applicant unexpectedly has a partner/child VAC row");
   }
@@ -362,7 +363,7 @@ async function checkPdf(
       const partnerMax = partner.max.toLocaleString(locale === "tr" ? "tr-TR" : "en-AU");
       const partnerNeedle = partnerLine.slice(0, partnerLine.indexOf(partnerMax) + partnerMax.length);
       const partnerOccurrences = squash(withoutPageFurniture(flat)).split(squash(partnerNeedle)).length - 1;
-      if (partnerOccurrences < 3) ctx.fail(`partner total "${partnerNeedle}" appears ${partnerOccurrences}x (need Roadmap + FAQ + guide)`);
+      if (partnerOccurrences !== 1) ctx.fail(`partner total "${partnerNeedle}" appears ${partnerOccurrences}x (expected once, on the verdict)`);
       if (!squash(partnerNeedle).includes(squash(ASSUMING_ONE_PARTNER[locale]))) ctx.fail(`partner total line lacks "${ASSUMING_ONE_PARTNER[locale]}"`);
       if (!squash(partnerNeedle).includes(squash(`${partner.subclass}`))) ctx.fail("partner total line does not name the subclass");
       if (!squash(partnerNeedle).includes(squash(partnerLabel))) ctx.fail(`partner total line lacks its label "${partnerLabel}"`);
@@ -372,18 +373,15 @@ async function checkPdf(
       if (!instalmentLine) ctx.fail("no second-instalment line although the subclass has a constant");
       else {
         const instalmentOccurrences = squash(withoutPageFurniture(flat)).split(squash(instalmentLine)).length - 1;
-        if (instalmentOccurrences < 3) ctx.fail(`second-instalment line appears ${instalmentOccurrences}x (need Roadmap + FAQ + guide)`);
+        if (instalmentOccurrences !== 1) ctx.fail(`second-instalment line appears ${instalmentOccurrences}x (expected once, on the verdict)`);
         if (!squash(instalmentLine).includes(squash(POSSIBLE_ADDITIONAL[locale]))) ctx.fail("second-instalment line is not labelled as a possible additional charge");
       }
       console.log(`  ${partnerNeedle} | occurrences=${partnerOccurrences}`);
     }
   }
 
-  // ── Age: a known age is printed, never "Not specified" ──
-  if (knownAge) {
-    if (NOT_SPECIFIED_AGE[locale].test(squash(flat))) ctx.fail(`"Age: Not specified" appears although the applicant's age is ${knownAge}`);
-    if (!squash(flat).includes(squash(`${AGE_LABEL[locale]}${knownAge}`))) ctx.fail(`the guide's status block does not print "${AGE_LABEL[locale]}${knownAge}"`);
-  }
+  // ── Age: the report never says the age is "Not specified" for an applicant whose age is known ──
+  if (knownAge && NOT_SPECIFIED_AGE[locale].test(squash(flat))) ctx.fail(`"Age: Not specified" appears although the applicant's age is ${knownAge}`);
   console.log(`  ${needle} | occurrences=${occurrences}`);
 }
 
@@ -689,20 +687,21 @@ async function runPointsActionChecks(
         if (layout.overlaps.length > 0) f(`${layout.overlaps.length} text overlap(s): ${layout.overlaps.slice(0, 3).join(" | ")}`);
         if (layout.offPage.length > 0) f(`text runs past the page edge: ${layout.offPage.slice(0, 3).join(" | ")}`);
 
-        // ── Roadmap section ───────────────────────────────────────────
-        const roadmap = sliceBetween(flat, sq(ROADMAP_HEADING[locale]), [sq(TIMELINE_HEADING[locale])]);
+        // ── Ways to add points (the merged roadmap / tips / simulator table) ─────────────
+        const view = buildReportView({ report, locale, profile: { name: "Test Persona", occupation: input.occupation, englishLevel: input.englishLevel }, dateText: "" });
+        const roadmap = sliceBetween(flat, sq(view.points.waysTitle), [sq(view.points.scenariosTitle), sq(view.titles.visas)]);
         if (!roadmap) {
-          f("Points Booster Roadmap section missing from the PDF");
+          f("'Ways to add points' section missing from the PDF");
           continue;
         }
         const roadmapGains = plusNumbers(roadmap);
-        if (JSON.stringify(roadmapGains) !== JSON.stringify(gains)) f(`roadmap points [${roadmapGains}] != engine [${gains}]`);
+        if (JSON.stringify(roadmapGains) !== JSON.stringify(gains)) f(`ways to add points [${roadmapGains}] != engine [${gains}]`);
         for (const a of plan.actions) {
-          if (!roadmap.includes(sq(a.label).slice(0, 40))) f(`roadmap is missing engine action ${a.id}`);
+          if (!roadmap.includes(sq(a.label).slice(0, 40))) f(`ways to add points is missing engine action ${a.id}`);
         }
-        if (!profile.expectEnglishAction && ENGLISH_RE.test(withoutPartnerWording(roadmap, plan, sq))) f("roadmap mentions English although English is at the maximum");
-        if (!profile.expectEducationAction && EDUCATION_RE.test(withoutPartnerWording(roadmap, plan, sq))) f("roadmap mentions education although it is at the maximum");
-        if (!profile.expectPartnerAction && PARTNER_RE.test(roadmap)) f("roadmap mentions a partner for a single applicant");
+        if (!profile.expectEnglishAction && ENGLISH_RE.test(withoutPartnerWording(roadmap, plan, sq))) f("ways to add points mention English although English is at the maximum");
+        if (!profile.expectEducationAction && EDUCATION_RE.test(withoutPartnerWording(roadmap, plan, sq))) f("ways to add points mention education although it is at the maximum");
+        if (!profile.expectPartnerAction && PARTNER_RE.test(roadmap)) f("ways to add points mention a partner for a single applicant");
 
         // Enabling step: separate, no points value.
         const step = plan.enablingSteps[0];
@@ -723,45 +722,15 @@ async function runPointsActionChecks(
           f("enabling step shown although a positive assessment is already on file");
         }
 
-        if (run.kind === "valid" || run.kind === "hostile-then-valid") {
-          for (const a of plan.actions) {
-            if (!roadmap.includes(sq(`TESTWORD-${a.id}`))) f(`validated model wording for ${a.id} was not used`);
-          }
-        } else if (/TESTWORD/.test(roadmap)) {
-          f("model wording used although validation failed");
+        // The customer report shows the engine's rows and wording only: the stored model wording (valid or hostile)
+        // is not part of it.
+        if (/TESTWORD|TESTDIFF/.test(flat)) f("stored model wording appears in the PDF");
+        if (/\+10-20|\+10 - 20/.test(flat)) f("static '+10-20' Masters/PhD tip is shown");
+        // Combined scenarios: at most three, each valid for its subclass (never a 189 row with a nomination).
+        if (view.points.scenarios.length > 3) f(`${view.points.scenarios.length} combined scenarios (at most 3)`);
+        for (const sc of view.points.scenarios) {
+          if (/subclass 189|189 子类/.test(sc[0]) && /nomination|adaylık|提名/i.test(sc[0])) f("a scenario scoped to 189 carries a nomination");
         }
-
-        // ── Points Improvement Tips + gap analysis ────────────────────
-        const tipsRaw = sliceBetween(flat, sq(TIPS_HEADING[locale]), [], 6000);
-        let tips = "";
-        {
-          let seen = 0;
-          const re = /\+\s?\d+\s?(?:pts|puan|分)/g;
-          let m: RegExpExecArray | null;
-          while ((m = re.exec(tipsRaw)) !== null) {
-            if (++seen === gains.length) {
-              tips = tipsRaw.slice(0, m.index + m[0].length);
-              break;
-            }
-          }
-          if (!tips && gains.length === 0) tips = tipsRaw.slice(0, 200);
-        }
-        if (!tips) {
-          f("Points Improvement Tips missing from the PDF");
-        } else {
-          // The container ends where the next block starts; the engine gains must be exactly the ones listed, in order.
-          const tipGains = plusNumbers(tips).slice(0, gains.length).sort((x, y) => x - y);
-          if (JSON.stringify(tipGains) !== JSON.stringify(gains)) f(`tips points [${tipGains}] != engine [${gains}]`);
-          for (const a of plan.actions) {
-            if (!tips.includes(sq(a.label).slice(0, 40))) f(`tips are missing engine action ${a.id}`);
-          }
-          if (/\+10-20|\+10 - 20/.test(tips)) f("static '+10-20' Masters/PhD tip is still shown");
-        }
-        const gapAnalysis = sliceBetween(flat, locale === "en" ? "TOTAL:" : locale === "tr" ? "TOPLAM:" : "总分：", [sq(TIPS_HEADING[locale])], 1500);
-        if (!profile.expectEnglishAction && ENGLISH_RE.test(withoutPartnerWording(gapAnalysis, plan, sq))) f(`gap analysis mentions English although it is at the maximum: "${gapAnalysis.slice(0, 200)}"`);
-        if (!profile.expectEnglishAction && ENGLISH_RE.test(withoutPartnerWording(tips, plan, sq))) f("tips mention English although it is at the maximum");
-        if (!profile.expectEducationAction && EDUCATION_RE.test(withoutPartnerWording(tips, plan, sq))) f("tips mention education although it is at the maximum");
-        if (!profile.expectPartnerAction && PARTNER_RE.test(tips)) f("tips mention a partner for a single applicant");
 
         // ── Whole-PDF: no English improvement advice at the maximum ──
         if (!profile.expectEnglishAction) {
@@ -950,91 +919,52 @@ async function runPathwayChecks(
       const flat = locale === "zh-Hans" ? squashAll(raw) : flatten(raw);
       const sq = (t: string) => (locale === "zh-Hans" ? squashAll(t) : t);
 
-      // 1. One statement per pathway, identical in Reality Check and Historical Invitation Trends
+      const view = buildReportView({ report: baseReport, locale, profile: { name: "Test Persona", occupation: input.occupation, englishLevel: input.englishLevel }, dateText: "" });
+      const estNow = baseReport.pointsEstimate?.estimatedPoints;
+
+      // 1. One statement per pathway: the verdict table row carries the engine's figures (score now with the nomination the
+      //    visa requires, the 65 minimum, the recent benchmark and the gap) -- and the PDF shows exactly that row.
       for (const s of PATHWAY_SUBCLASSES) {
-        const statement = sq(describePathwayScore(scores[s], locale));
-        const count = flat.split(statement).length - 1;
-        const rankingRowNeedsIt = 0; // the ranking row may truncate the sentence; Reality Check + Trends must state it in full
-        // Reality Check + Trends (+ the ranking row when it is a qualitative/blocked row)
-        if (count < 2 + rankingRowNeedsIt) f(`${s}: the score sentence appears ${count}x, expected >= ${2 + rankingRowNeedsIt} (Reality Check, Trends${rankingRowNeedsIt ? ", ranking" : ""})`);
+        const p = scores[s];
+        const row = view.verdict.distance.find((r) => r.visa === s);
+        if (!row) { f(`${s}: no row in the verdict table`); continue; }
+        const now = p.baseScore + p.nominationBonus;
+        if (!row.score.startsWith(String(now))) f(`${s}: verdict score "${row.score}" != score now with the required nomination (${now})`);
+        if (p.benchmark !== null) {
+          const gap = p.benchmark - now;
+          if (!row.vsRecent.includes(String(p.benchmark)) || (gap > 0 && !row.vsRecent.includes(String(gap)))) f(`${s}: verdict "vs recent" "${row.vsRecent}" != benchmark ${p.benchmark} / gap ${gap}`);
+        }
+        const cells = [row.visa, row.score, row.vsMinimum, row.vsRecent];
+        if (!cells.every((c) => squashAll(flat).includes(squashAll(c)))) f(`${s}: the verdict table row is not in the PDF: ${cells.join(" | ")}`);
       }
       // 2. Bonus scores are never presented as current
       if (/nomination bonus|adaylık bonusu|提名加分|\(base \d+ \+/i.test(flat)) f("old '(base N + nomination bonus M)' wording is still shown");
       for (const s of ["190", "491"] as const) {
-        const p = scores[s];
-        const statement = sq(describePathwayScore(p, locale));
-        // The nomination is a precondition of 190 / 491: every benchmark comparison states the score WITH it, and
-        // names it as required ("with the ... required for 491, your score is 85"), in at least two sections.
-        const re = new RegExp(`(?:required for ${s}, your score is ${p.comparisonScore}|${s} için zorunlu[^;]{0,60}puanınız ${p.comparisonScore}|${s} ?必需的[^为]{0,20}为 ?${p.comparisonScore})`, "g");
-        const mentions = (flat.match(re) ?? []).length;
-        if (!flat.includes(statement)) f(`${s}: the benchmark statement is missing`);
-        if (mentions < 2) f(`${s}: the score with the required nomination (${p.comparisonScore}) is not stated in at least two sections (${mentions})`);
+        const row = view.verdict.distance.find((r) => r.visa === s);
+        if (row && !/incl\. nomination|adaylık dahil|含提名/.test(row.score)) f(`${s}: the score does not say it includes the required nomination`);
         if (/only if nominated|yalnızca aday gösterilirseniz|仅在获得提名时/.test(flat)) f(`${s}: a benchmark is still compared with the score without the required nomination`);
       }
-      // 3. Gap numbers in Reality Check == gap numbers in Trends
-      for (const s of PATHWAY_SUBCLASSES) {
-        const p = scores[s];
-        const reality = flat.match(new RegExp(`${s}\\)? ?- ?(?:Reality Check|Gerçeklik Kontrolü|实际难度评估): ?(.{0,400})`));
-        const trends = flat.match(new RegExp(`Subclass ?${s}: ?(.{0,400})`, "g")) ?? [];
-        const gapNums = (t: string) => [...t.matchAll(/(\d+)(?: points below| puan altında|分)/g)].map((m) => Number(m[1]));
-        const expected = [p.comparisonGap ?? null].filter((n): n is number => n !== null && n > 0);
-        if (reality && expected.length > 0 && !expected.every((n) => gapNums(reality[1]).includes(n))) f(`${s}: Reality Check gap numbers ${gapNums(reality[1])} != engine ${expected}`);
-        const trendLine = trends.find((t) => /Score now|Şu anki puan|当前分数/.test(t));
-        if (trendLine && expected.length > 0 && !expected.every((n) => gapNums(trendLine).includes(n))) f(`${s}: Trends gap numbers ${gapNums(trendLine)} != engine ${expected}`);
-        const cg = p.comparisonGap ?? null;
-        if (reality && trendLine && cg !== null && cg > 0 && !(gapNums(reality[1]).includes(cg) && gapNums(trendLine).includes(cg))) f(`${s}: Reality Check and Trends disagree on the gap`);
+      // 3. The benchmark comparison sentence (the one function) is stated on the verdict page and on the points page: the same numbers.
+      if (estNow !== undefined && PATHWAY_SUBCLASSES.some((s) => scores[s].benchmark !== null)) {
+        const sentence = view.verdict.benchmarkSentence;
+        const n = sentence ? flat.split(sq(sentence)).length - 1 : 0;
+        if (!sentence || n !== 2) f(`the benchmark comparison sentence appears ${n}x, expected twice (verdict + points page)`);
       }
-      // 4. Ranking order identical across sections
-      const sections: Array<[string, string[]]> = [];
-      // Rows read "491 Visa - ..." (one per pathway) or, when grouped, "491 / 190 / 189 - General Skilled Migration".
-      const rankingLabel = /(189|190|491)(?= Visa| Vizesi| ?签证| ?\/ ?(?:189|190|491)| ?- ?(?:General|Genel|一般))/g;
-      const rankingStart = flat.search(/The ranking below orders|Aşağıdaki sıralama, olası|以下排序按合规状态/);
-      if (rankingStart >= 0) sections.push(["Visa Viability Ranking", orderOf(flat.slice(rankingStart, rankingStart + 4000), rankingLabel)]);
-      const snapStart = flat.search(/Signal Snapshot|Sinyal Özeti|匹配度概览/);
-      if (snapStart >= 0) sections.push(["Signal Snapshot", orderOf(flat.slice(snapStart, snapStart + 700), /\((189|190|491)\)/g)]);
-      sections.push(["Reality Check", orderOf(flat, /\((189|190|491)\) ?- ?(?:Reality Check|Gerçeklik Kontrolü|实际难度评估)/g)]);
-      sections.push(["Historical Invitation Trends", orderOf(flat, /Subclass ?(189|190|491): ?(?:Score now|Şu anki puan|当前分数)/g)]);
-      const checklist = flat.match(/(?:in ranking order|sıralama düzeninde yollar|按排序顺序的路径)[:：] ?([^.。]{0,120})/);
-      if (checklist) sections.push(["Lodgement checklist", orderOf(checklist[1], /(189|190|491)/g)]);
-      for (const [name, order] of sections) {
-        if (order.length === 0) { f(`${name}: no pathways found to compare`); continue; }
-        const expectedSubset = expectedOrder.filter((s) => order.includes(s));
-        if (JSON.stringify(order) !== JSON.stringify(expectedSubset)) f(`${name} order [${order}] != ranking [${expectedOrder}]`);
-      }
-      // strongest signal == ranking #1
-      const strongest = flat.match(/(?:Strongest signal|En güçlü sinyal|最高匹配路径) ?[^()]*\((189|190|491)\)/);
-      if (strongest && strongest[1] !== expectedOrder[0]) f(`Signal Snapshot strongest (${strongest[1]}) != ranking #1 (${expectedOrder[0]})`);
-      // every-blocked: one consistent label
-      if (ranking.allBlocked && ranking.commonBlockReason) {
-        const lbl = sq(blockedLabel(ranking.commonBlockReason, locale));
-        const n = flat.split(lbl).length - 1;
-        const expectedLabels = ranking.commonBlockReason === "skills_assessment" ? 4 : 1; // ranking x3 + snapshot + checklist; grouped points-blocked ranking rows keep their own heading
-        if (n < expectedLabels) f(`the blocked label "${lbl}" appears only ${n}x (expected >= ${expectedLabels})`);
+      // 4. The best pathway on the verdict is the single ranking's first; the visa blocks follow the report's pathway order.
+      if (view.verdict.best && view.verdict.best.subclass !== expectedOrder[0]) f(`verdict best (${view.verdict.best.subclass}) != ranking #1 (${expectedOrder[0]})`);
+      // every-blocked: nothing is called a fit, and the verdict says what is missing
+      if (ranking.allBlocked) {
         if (ranking.entries.some((e) => e.fit !== "blocked")) f("allBlocked but a pathway is not blocked");
-      }
-      // fit labels come from the ranking only: no "Potential fit"/"Unclear fit" on a blocked pathway
-      if (ranking.allBlocked && /Potential fit|Unclear fit|Unlikely fit|Olası uyum|Belirsiz uyum|可能匹配|匹配度不明/.test(flat.slice(Math.max(0, rankingStart), rankingStart + 4000))) {
-        f("a fit label is shown although every pathway is blocked");
+        if (/Potential fit|Unclear fit|Unlikely fit|Olası uyum|Belirsiz uyum|可能匹配|匹配度不明/.test(flat)) f("a fit label is shown although every pathway is blocked");
+        if (view.verdict.best && !view.verdict.why && view.verdict.nextActions.length === 0) f("every pathway is blocked but the verdict says neither why nor what to do");
       }
 
-      // 5. Cover: "N / 65" explained, page reference correct, number equals the breakdown total
-      const est = baseReport.pointsEstimate?.estimatedPoints;
-      const cover = squashAll(pages[0] ?? "");
-      if (est !== undefined) {
-        const coverNote = locale === "tr" ? `Tahminipuan${est};` : locale === "zh-Hans" ? `预估分数${est}；` : `Estimatedpoints${est};`;
-        if (!cover.includes(coverNote)) f(`cover does not explain the score ("${coverNote}")`);
-        if (!cover.includes(`${est}/65`) && !cover.includes(`${est}`)) f("cover does not show the estimate");
-        const seeRef = cover.match(/(?:seepage|bkz\.sayfa|见第)(\d+)/);
-        const hasBenchmark = PATHWAY_SUBCLASSES.some((s) => scores[s].benchmark !== null);
-        if (hasBenchmark) {
-          if (!seeRef) f("cover has no page reference to the invitation benchmarks");
-          else {
-            const target = pages[Number(seeRef[1]) - 1] ?? "";
-            if (!/Historical Invitation Trends|Tarihsel Davet Trendleri|历史邀请趋势/.test(target)) f(`cover points to page ${seeRef[1]}, which is not the Historical Invitation Trends page`);
-          }
-        }
-        const totalLine = flat.match(/(?:TOTAL|TOPLAM|总分)[:：] ?(\d+) ?\/ ?65/);
-        if (totalLine && Number(totalLine[1]) !== est) f(`cover estimate ${est} != points breakdown total ${totalLine[1]}`);
+      // 5. The points page states the estimate; it equals the breakdown total (the cover shows the verdict, not the number).
+      if (estNow !== undefined) {
+        const breakdownTotal = (baseReport.pointsEstimate?.breakdown ?? []).reduce((sum, b) => sum + b.points, 0);
+        if (view.points.total !== estNow) f(`points page total ${view.points.total} != estimate ${estNow}`);
+        if (!flat.includes(sq(view.points.totalLine))) f(`the points page does not state "${view.points.totalLine}"`);
+        if (breakdownTotal !== estNow && !baseReport.pointsEstimate?.potentialPoints) f(`breakdown total ${breakdownTotal} != estimate ${estNow}`);
       }
       if (!caseFailed) console.log("  ✅ ok");
     }
@@ -1134,75 +1064,26 @@ async function runAuthorityChecks(
       const flat = locale === "zh-Hans" ? squashAll(raw) : flatten(raw);
       const sq = (t: string) => (locale === "zh-Hans" ? squashAll(t) : t);
 
-      // ── 1. Friction: a level only with a benchmark and a score gap ──────────
+      const view = buildReportView({ report, locale, profile: { name: "Test Persona", occupation: profile.input.occupation, englishLevel: profile.input.englishLevel }, dateText: "" });
+
+      // ── 1. No invitation benchmark: the verdict table says so, plainly -- no level, no "gap exists" sentence ─────────
       const noBenchmark = PATHWAY_SUBCLASSES.filter((s) => scores[s].benchmark === null);
-      const levels = ["LOW", "MEDIUM", "HIGH", "EXTREME"] as const;
-      const notAssessedDef = sq(frictionBandDefinition(locale, "NOT_ASSESSED"));
-      const notAssessedLabel = sq(frictionBandLabel(locale, "NOT_ASSESSED"));
+      const noLevel = { en: "no recent level available", tr: "yakın dönem seviyesi yok", "zh-Hans": "暂无近期参考分" }[locale];
       if (noBenchmark.length === PATHWAY_SUBCLASSES.length) {
-        for (const lv of levels) {
-          const def = sq(frictionBandDefinition(locale, lv));
-          if (flat.includes(def)) f(`friction level ${lv} is shown although no pathway has an invitation benchmark`);
-        }
-        if (!flat.includes(sq(NO_BENCHMARK_PHRASE[locale]))) f("the Reality Check does not say there is no invitation benchmark");
-        if (!flat.includes(notAssessedLabel)) f(`"Not assessed" label is missing ("${notAssessedLabel}")`);
-        if (!flat.includes(notAssessedDef)) f("the 'Not assessed' friction definition is missing");
+        if (!view.verdict.distance.every((r) => r.vsRecent === noLevel)) f("a pathway shows a recent level although no pathway has an invitation benchmark");
+        if (!flat.includes(sq(noLevel))) f("the verdict table does not say there is no recent invitation level");
+        if (/A (?:moderate|meaningful|substantial) gap exists between your profile and/.test(flat)) f("a 'gap exists between your profile and recent benchmarks' sentence is shown next to 'no benchmark available'");
       } else if (noBenchmark.length === 0) {
-        // Positive control: with benchmarks a real level IS shown and "Not assessed" is not
-        if (!levels.some((lv) => flat.includes(sq(frictionBandDefinition(locale, lv))))) f("no friction level is shown although benchmarks exist");
-        if (flat.includes(notAssessedLabel)) f("'Not assessed' is shown although benchmarks exist");
-      }
-      // Glossary: the friction definition says levels exist only with a benchmark and a score gap
-      if (!flat.includes(sq(frictionLevelDefinitionGeneric(locale)))) f("glossary friction definition (levels only with a benchmark and a gap) is missing");
-      // the sentence that contradicts the Reality Check
-      if (flat.includes(sq(NO_BENCHMARK_PHRASE[locale])) && /A (?:moderate|meaningful|substantial) gap exists between your profile and/.test(flat) && noBenchmark.length === PATHWAY_SUBCLASSES.length) {
-        f("a 'gap exists between your profile and recent benchmarks' definition is shown next to 'no benchmark available'");
+        if (flat.includes(sq(noLevel))) f("'no recent level available' is shown although benchmarks exist");
+        if (view.verdict.distance.some((r) => /^\D/.test(r.vsRecent))) f("a pathway has no recent level although benchmarks exist");
       }
 
-      // ── 2. Confidence: one value in the table and the Snapshot ─────────────
-      const words = CONF_WORDS[locale];
-      const wordRe = `(${words.high}|${words.medium}|${words.low})`;
-      const tableStart = flat.search(/Structured Pathway Comparison|Vize Yolu Karşılaştırması|签证路径结构化对比/);
-      const snapStart = flat.search(/Signal Snapshot|Sinyal Özeti|匹配度概览/);
-      const snapMatch = snapStart >= 0 ? flat.slice(snapStart, snapStart + 900).match(new RegExp(`(?:Confidence|Güven|置信度) ?${wordRe}`)) : null;
-      const snapLevel = snapMatch ? (Object.entries(words).find(([, w]) => w === snapMatch[1])?.[0] as keyof typeof CONF_RANK) : undefined;
-      if (!snapLevel) f("no confidence value found in the Signal Snapshot");
-      const tableLevels: Array<keyof typeof CONF_RANK> = [];
-      if (tableStart >= 0) {
-        const slice = flat.slice(tableStart, tableStart + 3500);
-        for (const m of slice.matchAll(new RegExp(`\\((?:189|190|491|482|485|500|186|820/801)\\) ?${wordRe}`, "g"))) {
-          const lv = Object.entries(words).find(([, w]) => w === m[1])?.[0] as keyof typeof CONF_RANK;
-          if (lv) tableLevels.push(lv);
-        }
-      }
-      if (tableLevels.length === 0) f("no pathway confidence found in the comparison table");
-      if (snapLevel) {
-        for (const lv of tableLevels) if (CONF_RANK[lv] > CONF_RANK[snapLevel]) f(`table confidence ${lv} is higher than the Snapshot's ${snapLevel}`);
-        if (tableLevels.some((lv) => lv !== snapLevel)) f(`table confidence [${tableLevels}] differs from the Snapshot's ${snapLevel}`);
-        if (snapLevel !== undefined && report.signalSnapshot.overallConfidence !== snapLevel) f(`Snapshot text ${snapLevel} != engine overallConfidence ${report.signalSnapshot.overallConfidence}`);
-        // capped by completeness: a missing skills assessment caps at Medium
-        if (!report.assessmentState.fieldsPresent.skillsAssessment && CONF_RANK[snapLevel] > CONF_RANK.medium) f("confidence exceeds Medium although the skills assessment is missing");
-      }
-
-      // ── 3. Snapshot when every pathway is blocked ──────────────────────────
-      if (ranking.allBlocked) {
-        if (snapStart >= 0 && flat.slice(snapStart, snapStart + 900).includes(sq(STRONGEST_LABEL[locale]))) f('"Strongest signal" is shown although every pathway is blocked');
-        const status = sq(report.signalSnapshot.strongest);
-        if (!flat.includes(status)) f(`Snapshot status sentence missing ("${report.signalSnapshot.strongest}")`);
-        const onceIdx = flat.indexOf(sq(ONCE_UNBLOCKED[locale]));
-        if (onceIdx < 0) f("'would be evaluated first once unblocked' row is missing");
-        else {
-          const order = orderOf(flat.slice(onceIdx, onceIdx + 500), /\((189|190|491)\)/g);
-          const expected = ranking.entries.map((e) => e.subclass);
-          if (JSON.stringify(order) !== JSON.stringify(expected)) f(`unblocked order [${order}] != ranking [${expected}]`);
-        }
-      } else if (snapStart >= 0 && !flat.slice(snapStart, snapStart + 900).includes(sq(STRONGEST_LABEL[locale]))) {
-        f('"Strongest signal" is missing although a pathway is not blocked');
-      }
+      // ── 2. When every pathway is blocked, the verdict says why and what to do (no ranking labels, no "strongest") ──────
+      if (ranking.allBlocked && view.verdict.best && !view.verdict.why && view.verdict.nextActions.length === 0) f("every pathway is blocked but the verdict says neither why nor what to do");
 
       // ── 4. One authority per occupation in the whole text ──────────────────
       const resolved = resolveAssessingAuthority(profile.input.occupation);
-      const resStart = flat.indexOf(sq(RESOURCES_HEADING[locale]));
+      const resStart = flat.lastIndexOf(sq(view.appendix.resourcesTitle));
       const body = resStart >= 0 ? flat.slice(0, resStart) : flat; // the generic "Official Resources" link list is exempt
       const named = AUTHORITY_PATTERNS.filter((a) => a.re.test(body)).map((a) => a.id);
       // A body that is part of the resolved authority's own process is not a second authority: for doctors the
@@ -1212,7 +1093,9 @@ async function runAuthorityChecks(
       const stray = named.filter((id) => id !== resolved.authorityId && !(PROCESS_BODIES[resolved.authorityId] ?? []).includes(id));
       if (stray.length > 0) f(`text names other authorities ${stray} although ${profile.input.occupation} resolves to ${resolved.authorityId}`);
       if (/AMC ?pathway/i.test(body)) f(`text frames the AMC as an assessing pathway ("AMC pathway") although ${profile.input.occupation} resolves to ${resolved.authorityId}`);
-      if (!named.includes(resolved.authorityId)) f(`the resolved authority ${resolved.authorityId} is never named`);
+      // A completed skills assessment is mentioned once, without its authority, so the authority is only required while the assessment is still to do.
+      const assessmentToDo = report.financialRoadmap.some((i) => i.kind === "skills_assessment" && !i.completed);
+      if (assessmentToDo && !named.includes(resolved.authorityId)) f(`the resolved authority ${resolved.authorityId} is never named`);
 
       // ── 5. Estimate qualifier next to every figure from an estimated fee ───
       const qualifier = sq(estimateQualifier(locale));
@@ -1222,9 +1105,9 @@ async function runAuthorityChecks(
         for (const item of estimatedItems) {
           // The label carries the qualifier (from the data flag)...
           if (!item.amountLabel.includes(estimateQualifier(locale)) && !item.amountLabel.includes("估算")) f(`roadmap item "${item.category}" is flagged estimated but its amount label has no qualifier`);
-          // ...and every section quoting the figure quotes that label: Roadmap + guide cost list + FAQ answer.
+          // ...and every place quoting the figure quotes that label: the costs table row (and the plan step that pays it).
           const labelCount = flat.split(sq(item.amountLabel)).length - 1;
-          if (labelCount < 3) f(`estimated fee "${item.amountLabel}" appears ${labelCount}x with its qualifier, expected in the Roadmap, guide cost list and FAQ`);
+          if (labelCount < 1) f(`estimated fee "${item.amountLabel}" is not in the PDF with its qualifier`);
           // No skills-assessment sentence quotes the figure without the qualifier
           const fig = String(item.amountMin).replace(/\B(?=(\d{3})+(?!\d))/g, ",");
           const bare = new RegExp(`(?:Skills assessment|Beceri değerlendirmesi|技能评估)[^.。;]{0,90}?${fig.replace(",", "[,.]")}(?!\\d)(?![^]{0,4}[(（])`, "gi");
@@ -1233,10 +1116,11 @@ async function runAuthorityChecks(
             if (!sq(tail).includes(qualifier) && !sq(tail).includes("估算")) f(`fee ${fig} quoted without the qualifier: "...${m[0].slice(-40)}${tail.slice(0, 30)}..."`);
           }
         }
-        const totalLine = sq(formatEstimatedTotalLine(total!, locale));
+        const totalLine = sq(`${view.verdict.costLine?.title}: ${view.verdict.costLine?.text}`);
         const totalCount = flat.split(totalLine.replace(/\.$/, "")).length - 1;
-        if (totalCount < 3) f(`Estimated total line with the estimate qualifier appears ${totalCount}x (need Roadmap + FAQ + guide)`);
+        if (totalCount !== 1) f(`Estimated total line with the estimate qualifier appears ${totalCount}x (expected once, on the verdict)`);
         if (!totalLine.includes(qualifier)) f("Estimated total line lacks the estimate qualifier");
+        if (total && !sq(formatEstimatedTotalLine({ ...total, completedKinds: [] }, locale)).startsWith(totalLine.replace(/\.$/, "").slice(0, 40))) f("the verdict total is not formatEstimatedTotalLine");
       } else if (flat.includes(qualifier)) {
         f("the estimate qualifier is shown although no fee is flagged estimated");
       }
@@ -1343,46 +1227,25 @@ async function runFrictionChecks(
       const flat = locale === "zh-Hans" ? squashAll(raw) : flatten(raw);
       const sq = (t: string) => (locale === "zh-Hans" ? squashAll(t) : t);
 
-      // ── The table ────────────────────────────────────────────────────────
-      const tableStart = flat.search(/Structured Pathway Comparison|Vize Yolu Karşılaştırması|签证路径结构化对比/);
-      const tableEnd = flat.indexOf("Reality Check", tableStart) > 0 ? tableStart + 2500 : tableStart + 2500;
-      const tableText = tableStart >= 0 ? flat.slice(tableStart, tableEnd) : "";
-      const labelOf = (lv: FrictionName) => sq(frictionBandLabel(locale, lv));
-      const words = CONF_WORDS[locale];
-      const shown: Record<string, FrictionName> = {};
+      // ── The customer report states the same facts plainly (no friction levels, no legend) ──────────
+      // 190 / 491 open states: none or one -> "nomination is the main hurdle"; the sentence names the states.
+      const view = buildReportView({ report, locale, profile: { name: "Test Persona", occupation: profile.input.occupation, englishLevel: profile.input.englishLevel }, dateText: "" });
+      for (const sub of ["190", "491"] as const) {
+        const open = availability?.[sub];
+        if (!open) continue;
+        const note = view.states.availabilityNotes.find((n) => n.includes(` ${sub}`) || n.includes(`${sub} `));
+        if (!note) { f(`${sub}: no availability sentence in the states section`); continue; }
+        if (!flat.includes(sq(note))) f(`${sub}: the availability sentence is not in the PDF: "${note}"`);
+        if (open.length <= 1 && !/main hurdle|asıl engel|主要障碍/.test(note)) f(`${sub}: ${open.length} open state(s) but the sentence does not say nomination is the main hurdle: "${note}"`);
+        if (open.length === 1 && !note.includes(open[0])) f(`${sub}: the one open state ${open[0]} is not named: "${note}"`);
+      }
+      // The verdict table shows each pathway's gap to the benchmark (the number behind its level).
       for (const s of PATHWAY_SUBCLASSES) {
-        const re = new RegExp(`\\(${s}\\) ?(?:${words.high}|${words.medium}|${words.low}) ?(${FRICTION_NAMES.map((lv) => labelOf(lv).replace(/[.*+?^${}()|[\]\\]/g, "\\$&")).join("|")})`);
-        const m = tableText.match(re);
-        const lv = m ? FRICTION_NAMES.find((n) => labelOf(n) === m[1]) : undefined;
-        if (!lv) f(`${s}: no friction label found in the comparison table`);
-        else {
-          shown[s] = lv;
-          if (lv !== expected[s]) f(`${s}: table shows ${lv} but the gap ${scores[s].comparisonGap} means ${expected[s]}`);
-        }
-      }
-
-      // ── The sentences under the table match the levels actually shown ────
-      const presentLevels = new Set(Object.values(shown));
-      const sentenceZone = tableText;
-      for (const lv of FRICTION_NAMES) {
-        const def = sq(frictionBandDefinition(locale, lv));
-        const isShown = sentenceZone.includes(def);
-        if (presentLevels.has(lv) && !isShown) f(`level ${lv} is in the table but its sentence is missing`);
-        if (!presentLevels.has(lv) && isShown) f(`sentence for ${lv} is shown but no pathway has that level`);
-      }
-      const compoundingShown = COMPOUNDING[locale].test(sentenceZone);
-      if (compoundingShown !== presentLevels.has("EXTREME")) f(`"multiple compounding factors" wording ${compoundingShown ? "shown" : "absent"} while EXTREME ${presentLevels.has("EXTREME") ? "is" : "is not"} in the table`);
-      if (/multiple compounding factors/.test(flat.slice(tableStart, tableStart + 2500)) && !presentLevels.has("EXTREME")) f("'multiple compounding factors' shown without an EXTREME level");
-
-      // ── Pathway Strength section (en): same level per pathway ────────────
-      if (locale === "en") {
-        for (const s of PATHWAY_SUBCLASSES) {
-          const secStart = flat.indexOf("Pathway Strength Comparison", flat.indexOf("Pathway Strength Comparison") + 1) > 0 ? flat.lastIndexOf("Pathway Strength Comparison") : flat.indexOf("Pathway Strength Comparison");
-          const m = flat.slice(secStart).match(new RegExp(`\\(${s}\\)[^]{0,300}?Friction: (Low|Medium|High|Extreme|Not assessed)`));
-          if (!m) { f(`${s}: no Friction line found in the Pathway Strength section`); continue; }
-          const got = m[1].toUpperCase().startsWith("NOT") ? "NOT_ASSESSED" : m[1].toUpperCase();
-          if (got !== expected[s]) f(`${s}: Pathway Strength shows friction ${got} but the gap means ${expected[s]}`);
-        }
+        const row = view.verdict.distance.find((r) => r.visa === s);
+        const gapNow = scores[s].benchmark === null ? null : scores[s].benchmark! - (scores[s].baseScore + scores[s].nominationBonus);
+        if (!row) { f(`${s}: no verdict row`); continue; }
+        if (gapNow !== null && gapNow > 0 && !row.vsRecent.includes(String(gapNow))) f(`${s}: the verdict row "${row.vsRecent}" does not carry the gap ${gapNow}`);
+        if (!squashAll(flat).includes(squashAll(row.vsRecent))) f(`${s}: the verdict row "${row.vsRecent}" is not in the PDF`);
       }
       if (!caseFailed) console.log("  ✅ ok");
     }
@@ -1487,6 +1350,7 @@ async function runOccupationMatchChecks(
       await writeFile(path.join(outDir, `occ-match-${profile.name}-${locale}.txt`), raw);
       const flat = locale === "zh-Hans" ? squashAll(raw) : flatten(raw);
       const sq = (t: string) => (locale === "zh-Hans" ? squashAll(t) : t);
+      const view = buildReportView({ report, locale, profile: { name: "Test Persona", occupation: input.occupation, englishLevel: input.englishLevel }, dateText: "" });
 
       for (const state of states) {
         // Every one of the 8 states must carry a note -- the occupation resolves to a real ANZSCO code here.
@@ -1501,9 +1365,14 @@ async function runOccupationMatchChecks(
         if (state.occupationMatchNote !== expectedLine) {
           f(`${state.code}: engine's occupationMatchNote != independently recomputed line\n    engine:   "${state.occupationMatchNote}"\n    expected: "${expectedLine}"`);
         }
-        if (!sq(flat).includes(sq(expectedLine))) {
+        // The customer report lists the states open to the applicant with this sourced line; the others in one short
+        // table (state, reason) -- their reason is shown instead.
+        const usable = view.states.available.some((a) => a.code === state.code);
+        if (usable && !sq(flat).includes(sq(expectedLine))) {
           f(`${state.code}: expected line not found verbatim in the extracted PDF text: "${expectedLine.slice(0, 120)}..."`);
         }
+        const rowReason = view.states.unavailable.find((u) => u.code === state.code);
+        if (!usable && (!rowReason || !sq(flat).includes(sq(rowReason.reason)))) f(`${state.code}: neither usable nor in the unavailable table with its reason`);
       }
       if (!caseFailed) console.log("  ✅ ok");
     }
@@ -1579,9 +1448,13 @@ async function runMedicalRegistrationChecks(
     }
 
     // PDF-level: the same text must reach the real route's PDF output.
+    // A completed skills assessment is not a cost row in the report, so the PDF fee rows are checked on the same profile
+    // with the assessment still to do.
     const reportId = `medical-${locale}`;
+    const pdfInput: ReadinessInput = { ...input, occupationConfirmed: "no" };
+    const pdfReport = runReadinessEngine(pdfInput);
     rows.set(reportId, {
-      id: reportId, email: "qa@example.com", locale, report_json: JSON.parse(JSON.stringify(report)), input_json: JSON.parse(JSON.stringify(input)),
+      id: reportId, email: "qa@example.com", locale, report_json: JSON.parse(JSON.stringify(pdfReport)), input_json: JSON.parse(JSON.stringify(pdfInput)),
       agent_id: null, is_unlocked: true, full_name: "Test Persona", preview_data: null,
     });
     const res = await GET(new Request(`http://localhost/api/reports/${reportId}/pdf`), { params: Promise.resolve({ reportId }) });
@@ -1606,8 +1479,6 @@ async function runMedicalRegistrationChecks(
       const window = sq(flat).slice(at, at + sq(deferred.category).length + sq(deferred.amountLabel).length + 20);
       if (/\d{2,}|AUD\s*\d|\$\s*\d/.test(window.replace(sq(deferred.category), ""))) f(`AMC / ECFMG / college line is followed by a number in the PDF: "${window}"`);
     } else f("AMC / ECFMG / college category not found in the PDF");
-    const processLead = MEDICAL_REGISTRATION_PROCESS[locale].split(locale === "zh-Hans" ? "。" : ". ")[0];
-    if (!has(processLead)) f(`sourced process description not found in the PDF (FAQ / guide): "${processLead}"`);
     if (/53[,.\s]?900/.test(flat)) f("PDF still mentions the 53,900 income threshold");
     if (!/notices\s*of\s*assessment/.test(flat)) f("PDF does not describe the 191 ATO notices of assessment requirement");
 
@@ -1693,9 +1564,11 @@ async function runNursingChecks(
     if (!regRow) f("no separate nursing registration (Ahpra/NMBA) row");
     else if (regRow.kind !== undefined || regRow.amountMin !== undefined) f("nursing registration row must carry no kind and no amount (never in a total)");
 
+    // A completed assessment is not a cost row in the report: the PDF is checked with the assessment still to do.
     const reportId = `nursing-${locale}`;
+    const pdfInput: ReadinessInput = { ...input, occupationConfirmed: "no" };
     rows.set(reportId, {
-      id: reportId, email: "qa@example.com", locale, report_json: JSON.parse(JSON.stringify(report)), input_json: JSON.parse(JSON.stringify(input)),
+      id: reportId, email: "qa@example.com", locale, report_json: JSON.parse(JSON.stringify(runReadinessEngine(pdfInput))), input_json: JSON.parse(JSON.stringify(pdfInput)),
       agent_id: null, is_unlocked: true, full_name: "Test Persona", preview_data: null,
     });
     const res = await GET(new Request(`http://localhost/api/reports/${reportId}/pdf`), { params: Promise.resolve({ reportId }) });
@@ -1710,12 +1583,9 @@ async function runNursingChecks(
 
     if (!has(expectedAmount)) f(`ANMAC amount not found in the PDF: "${expectedAmount}"`);
     if (!has(anmacFeeCitation(full.fee!, locale))) f(`ANMAC fee + citation not found verbatim in the PDF: "${anmacFeeCitation(full.fee!, locale)}"`);
-    if (!has("6–8")) f("stated 6–8 week wait time missing from the PDF");
     // A standalone AUD 1,000 -- not the start of a range such as the RMA line's "AUD 1,000–2,500".
     if (/AUD\s*1[,.]?000\b(?!\s*[–-]\s*\d)|澳元\s*1[,.]?000\b(?!\s*[–-]\s*\d)|\b1[,.]?000\s*澳元/.test(flat)) f("PDF still shows the old AUD 1,000 placeholder");
     if (/REASONABLE PLACEHOLDER|Estimate only -- verify current processing/i.test(flat)) f("PDF still carries the placeholder wording");
-    const processLead = ANMAC_ASSESSMENT_PROCESS[locale].split(locale === "zh-Hans" ? "。" : ". ")[0];
-    if (!has(processLead)) f(`sourced Anmac process description not found in the PDF (FAQ / guide): "${processLead}"`);
     if (!has(registration.category)) f(`nursing registration line not found in the PDF: "${registration.category}"`);
 
     if (!caseFailed) console.log(`  ✅ ok (ANMAC ${expectedAmount}, ${citation}, 6–8 weeks; registration line unpriced except AUD 410)`);
@@ -1742,8 +1612,11 @@ async function runLocationFeeAndOtcChecks(
     { name: "singapore-SG", currentCountry: "SG", expected: 560, other: [565, 514], locales: ["en"] },
   ];
   const render = async (reportId: string, input: ReadinessInput, report: ReadinessReport, locale: Locale, file: string) => {
+    // A completed assessment is not a cost row in the report: the PDF is checked with the assessment still to do.
+    const pdfInput: ReadinessInput = { ...input, occupationConfirmed: "no" };
+    void report;
     rows.set(reportId, {
-      id: reportId, email: "qa@example.com", locale, report_json: JSON.parse(JSON.stringify(report)), input_json: JSON.parse(JSON.stringify(input)),
+      id: reportId, email: "qa@example.com", locale, report_json: JSON.parse(JSON.stringify(runReadinessEngine(pdfInput))), input_json: JSON.parse(JSON.stringify(pdfInput)),
       agent_id: null, is_unlocked: true, full_name: "Test Persona", preview_data: null,
     });
     const res = await GET(new Request(`http://localhost/api/reports/${reportId}/pdf`), { params: Promise.resolve({ reportId }) });
@@ -1812,7 +1685,8 @@ async function runToolPageAuthorityChecks(
     console.log(`\n=== ${label} ===`);
     let caseFailed = false;
     const f = (m: string) => { caseFailed = true; fail(`${label}: ${m}`); };
-    const input: ReadinessInput = { ...base, occupation: c.occupation, occupationConfirmed: "yes", sponsorOrFamily: undefined, locale: "en" };
+    // A completed assessment is not a cost row in the report, so the authority is checked with the assessment still to do.
+    const input: ReadinessInput = { ...base, occupation: c.occupation, occupationConfirmed: "no", sponsorOrFamily: undefined, locale: "en" };
     const report = runReadinessEngine(input);
     const row = report.financialRoadmap.find((i) => i.kind === "skills_assessment");
     if (!row?.category.includes(`(${c.id})`)) f(`roadmap skills row is "${row?.category}", expected ${c.id}`);
@@ -1848,8 +1722,10 @@ async function runRoadmapLabelAndOsapChecks(
 ) {
   const render = async (reportId: string, input: ReadinessInput, locale: Locale) => {
     const report = runReadinessEngine(input);
+    // A completed assessment is not a cost row in the report: the PDF is checked with the assessment still to do.
+    const pdfInput: ReadinessInput = { ...input, occupationConfirmed: "no" };
     rows.set(reportId, {
-      id: reportId, email: "qa@example.com", locale, report_json: JSON.parse(JSON.stringify(report)), input_json: JSON.parse(JSON.stringify(input)),
+      id: reportId, email: "qa@example.com", locale, report_json: JSON.parse(JSON.stringify(runReadinessEngine(pdfInput))), input_json: JSON.parse(JSON.stringify(pdfInput)),
       agent_id: null, is_unlocked: true, full_name: "Test Persona", preview_data: null,
     });
     const res = await GET(new Request(`http://localhost/api/reports/${reportId}/pdf`), { params: Promise.resolve({ reportId }) });
@@ -1872,14 +1748,14 @@ async function runRoadmapLabelAndOsapChecks(
       console.log(`\n=== ${label} ===`);
       let caseFailed = false;
       const f = (m: string) => { caseFailed = true; fail(`${label}: ${m}`); };
-      const { flat } = await render(`label-${c.name}-${locale}`, { ...base, occupation: c.occupation, occupationConfirmed: "yes", sponsorOrFamily: undefined, locale }, locale);
+      const { flat } = await render(`label-${c.name}-${locale}`, { ...base, occupation: c.occupation, occupationConfirmed: "no", sponsorOrFamily: undefined, locale }, locale);
       if (flat === null) { f("route did not return the PDF"); continue; }
       const m = flat.match(doubled);
       if (m) f(`doubled label in the PDF: "...${flat.slice(Math.max(0, m.index! - 40), m.index! + 60)}..."`);
-      const lead = locale === "tr" ? "Beceri değerlendirmesi (" : locale === "zh-Hans" ? "技能评估（" : "Skills assessment (";
-      const sq = (t: string) => (locale === "zh-Hans" ? squashAll(t) : flatten(t));
-      if (!flat.includes(sq(`${lead}${c.authority}`))) f(`the cost sentence does not read "${lead}${c.authority}..."`);
-      if (!caseFailed) console.log(`  ✅ ok (${lead}${c.authority}...)`);
+      // The costs table names the authority as "Skills Assessment — <authority>"; its acronym must be in the PDF.
+      const acronym = c.authority.match(/\(([A-Z]+)\)\s*$/)?.[1] ?? c.authority;
+      if (!flat.includes(`(${acronym})`)) f(`the costs table does not name the authority "(${acronym})"`);
+      if (!caseFailed) console.log(`  ✅ ok (${acronym})`);
     }
   }
 
@@ -1944,8 +1820,10 @@ async function runExtractedAuthorityChecks(
 ) {
   const render = async (reportId: string, input: ReadinessInput, locale: Locale) => {
     const report = runReadinessEngine(input);
+    // A completed assessment is not a cost row in the report: the PDF is checked with the assessment still to do.
+    const pdfInput: ReadinessInput = { ...input, occupationConfirmed: "no" };
     rows.set(reportId, {
-      id: reportId, email: "qa@example.com", locale, report_json: JSON.parse(JSON.stringify(report)), input_json: JSON.parse(JSON.stringify(input)),
+      id: reportId, email: "qa@example.com", locale, report_json: JSON.parse(JSON.stringify(runReadinessEngine(pdfInput))), input_json: JSON.parse(JSON.stringify(pdfInput)),
       agent_id: null, is_unlocked: true, full_name: "Test Persona", preview_data: null,
     });
     const res = await GET(new Request(`http://localhost/api/reports/${reportId}/pdf`), { params: Promise.resolve({ reportId }) });
@@ -1991,7 +1869,7 @@ async function runExtractedAuthorityChecks(
     { occupation: "Flying Instructor 231113", id: "VETASSESS", name: "Vocational Education and Training Assessment Services" },
     { occupation: "Aeroplane Pilot 231111", id: "CASA", name: "Civil Aviation Safety Authority", text: /around 14 days/ },
     // Home Affairs lists both for 312999: the report names both wherever it names the authority.
-    { occupation: "Building and Engineering Technicians nec 312999", id: "EA", name: "Engineers Australia (The Institution of Engineers Australia) (EA) / Vocational Education and Training Assessment Services (VETASSESS)", text: /names more than one assessing authority for this occupation/ },
+    { occupation: "Building and Engineering Technicians nec 312999", id: "EA", name: "Engineers Australia (The Institution of Engineers Australia)", text: /names more than one assessing authority for this occupation/ },
   ];
   for (const c of authorityCases) {
     const label = `authority-fix ${c.occupation}/en`;
