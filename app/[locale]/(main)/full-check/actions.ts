@@ -2,6 +2,7 @@
 
 import { reportAccessToken, reportResultUrl } from "@/lib/reports/report-access";
 import { isAdminSession } from "@/lib/reports/report-access-server";
+import { nonAdminUnlockMode } from "@/lib/readiness/paid-checkout";
 import { eq, sql } from "drizzle-orm";
 import { cookies, headers } from "next/headers";
 import { revalidateTag } from "next/cache";
@@ -107,7 +108,7 @@ export type PremiumUnlockState = {
   message?: string;
   errors?: Record<string, string>;
   redirectUrl?: string;
-  /** The report's access token (admin unlock only) -- lets the in-page PDF download pass the route's authorization. */
+  /** The report's access token (admin unlock only; never returned by the free-beta unlock) -- lets the in-page PDF download pass the route's authorization. */
   accessToken?: string;
   report?: ReadinessReport;
   userInput?: {
@@ -1512,6 +1513,35 @@ async function unlockPremiumReportInternal(
   // credential: before this, typing an ADMIN_EMAILS address unlocked any report without Stripe or a login.
   const isAdmin = await isAdminSession();
   console.log("Adım 2: Checkout gate değerlendiriliyor", { isAdmin, unlockMethod });
+
+  // ── Free beta (paid checkout flag OFF) ────────────────────────────────────
+  // The Readiness Report is a free beta unless READINESS_REPORT_PAID_CHECKOUT_ENABLED is "true"
+  // (lib/readiness/paid-checkout.ts): /api/checkout is never asked for a Stripe session. The report is opened for the
+  // visitor whose typed email matches the report's own, but, as everywhere else, a typed email is not a credential:
+  // nothing is returned to the browser. The PDF and the secure result link (with the access token) are emailed to the
+  // report's OWN address, and the report opens from that link.
+  if (!isAdmin && nonAdminUnlockMode() === "free_beta") {
+    if (email.trim().toLowerCase() !== record.email.trim().toLowerCase()) {
+      return { status: "error", message: "The email you entered doesn't match this report. Please use the email you originally submitted." };
+    }
+    let betaPdfSent = false;
+    try {
+      betaPdfSent = (await generateAndSendReport(reportId, record.email, fullName || undefined)).pdfSent;
+    } catch (err) {
+      console.error("unlockPremiumReport (free beta): generateAndSendReport threw unexpectedly", err);
+    }
+    await markUserReportUnlocked({ reportId, email: record.email, phone: phone || undefined, unlockMethod: "beta_free", pdfSent: betaPdfSent });
+    const betaLocale = record.locale === "tr" ? "tr" : record.locale === "zh-Hans" ? "zh-Hans" : "en";
+    return {
+      status: "success",
+      message:
+        betaLocale === "tr"
+          ? "Ücretsiz beta: raporunuzun güvenli bağlantısı ve PDF'i, raporun oluşturulduğu e-posta adresine gönderildi. Birkaç dakika içinde gelmezse gereksiz klasörüne bakın."
+          : betaLocale === "zh-Hans"
+            ? "免费测试版：报告的安全链接和 PDF 已发送到创建报告时使用的邮箱。如几分钟内未收到，请检查垃圾邮件文件夹。"
+            : "Free beta: the secure link to your report and the PDF were emailed to the address the report was created with. If nothing arrives within a few minutes, check your spam folder.",
+    };
+  }
 
   // ── Checkout gate ─────────────────────────────────────────────────────────
   // Every non-admin unlock -- regardless of unlockMethod ("payment" or

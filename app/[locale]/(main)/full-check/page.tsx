@@ -8,6 +8,7 @@ import { ShareLogivisaCard } from "@/components/share-logivisa-card";
 import { getFreePromoStatus } from "@/lib/services/free-promo";
 import { isSupportedCountry } from "@/lib/countries";
 import { PREMIUM_PRICE_DISPLAY } from "@/lib/pricing";
+import { isPaidReportCheckoutEnabled } from "@/lib/readiness/paid-checkout";
 
 const BASE_URL = "https://www.logivisa.com";
 
@@ -113,6 +114,9 @@ export default async function FullCheckPage({ params, searchParams }: FullCheckP
     // Keep defaults when DB is temporarily unavailable
   }
 
+  // Free beta unless the server-side flag is on (lib/readiness/paid-checkout.ts): no price is shown.
+  const paidCheckoutEnabled = isPaidReportCheckoutEnabled();
+
   return (
     <main className="flex-1 pb-12">
       <section className="section-shell space-y-6">
@@ -121,6 +125,7 @@ export default async function FullCheckPage({ params, searchParams }: FullCheckP
           initialValues={initialValues}
           isFreeActive={isFreeActive}
           remainingSpots={remainingSpots}
+          paidCheckoutEnabled={paidCheckoutEnabled}
           formHeader={
             <>
               <div className="mb-6 flex flex-wrap items-center justify-between gap-4 border-b border-slate-200 pb-6">
@@ -129,7 +134,9 @@ export default async function FullCheckPage({ params, searchParams }: FullCheckP
                 </p>
                 <p className="whitespace-nowrap">
                   <span className="text-3xl font-extrabold text-slate-900">
-                    {tx(PREMIUM_PRICE_DISPLAY.en, PREMIUM_PRICE_DISPLAY.tr, PREMIUM_PRICE_DISPLAY["zh-Hans"])}
+                    {paidCheckoutEnabled
+                      ? tx(PREMIUM_PRICE_DISPLAY.en, PREMIUM_PRICE_DISPLAY.tr, PREMIUM_PRICE_DISPLAY["zh-Hans"])
+                      : tx("Free beta", "Ücretsiz beta", "免费测试版")}
                   </span>
                 </p>
               </div>

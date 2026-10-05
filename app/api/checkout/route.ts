@@ -3,6 +3,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { getStripeClient, getStripeBaseUrl, type StripeProductType } from "@/lib/stripe";
 import { getUserReportById } from "@/src/lib/user-reports";
 import { getCheckoutLineItem } from "@/lib/stripe/line-items";
+import { isPaidReportCheckoutEnabled } from "@/lib/readiness/paid-checkout";
 
 export const dynamic = "force-dynamic";
 
@@ -39,6 +40,16 @@ export async function POST(request: NextRequest) {
             "Invalid productType. Use 'premium', 'pdf_book', or 'pdf_book_global'.",
         },
         { status: 400 }
+      );
+    }
+
+    // The Readiness Report is a free beta: its paid checkout stays closed unless READINESS_REPORT_PAID_CHECKOUT_ENABLED
+    // is exactly "true" (lib/readiness/paid-checkout.ts). Enforced here, on the server, before anything else happens
+    // (no report lookup, no Stripe call); hiding the button is not the gate. The ebooks (pdf_book*) are unaffected.
+    if (productType === "premium" && !isPaidReportCheckoutEnabled()) {
+      return NextResponse.json(
+        { error: "paid_checkout_disabled", message: "The Readiness Report is currently a free beta; paid checkout is not available." },
+        { status: 403 }
       );
     }
 

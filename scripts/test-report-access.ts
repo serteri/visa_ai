@@ -11,6 +11,8 @@
  */
 import { cookieJar, setNextAuthSession, signOutAll } from "./lib/stub-request-context";
 
+// The unlock action under test is the PAID path (Stripe redirect); the free-beta path is covered by test-paid-checkout-flag.ts.
+process.env.READINESS_REPORT_PAID_CHECKOUT_ENABLED = "true";
 process.env.ADMIN_DASHBOARD_PASSWORD = "test-admin-password";
 process.env.ADMIN_DASHBOARD_SECRET = "test-admin-secret";
 process.env.AUTH_SECRET = "test-auth-secret-for-report-tokens";

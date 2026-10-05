@@ -67,6 +67,11 @@ jobs:
       - name: Report access control (admin unlock needs a session; PDF / result page need authorization)
         run: npm run test:report-access
 
+      # The paid Readiness Report checkout is behind READINESS_REPORT_PAID_CHECKOUT_ENABLED (default OFF = free beta): the
+      # route refuses "premium" when off, the payment path stays reachable when on, no Stripe key and no database used.
+      - name: Paid readiness-report checkout flag (free beta)
+        run: npm run test:paid-checkout
+
       # Free admin orders (ADMINFREE promotion code, or an ADMIN_EMAILS / KNOWN_TEST_EMAILS address) must send
       # no report email, internal or customer; normal and other-discount orders send both as before. Runs the
       # real Stripe webhook handler with Resend, Stripe and Prisma stubbed (fake keys, no network, no DB).

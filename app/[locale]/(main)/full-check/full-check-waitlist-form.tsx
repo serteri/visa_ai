@@ -132,12 +132,14 @@ export function FullCheckWaitlistForm({
   initialValues = {},
   isFreeActive = true,
   remainingSpots = 0,
+  paidCheckoutEnabled = false,
   onCountryChange,
 }: {
   locale: string;
   initialValues?: Record<string, string>;
   isFreeActive?: boolean;
   remainingSpots?: number;
+  paidCheckoutEnabled?: boolean;
   onCountryChange?: (country: SupportedCountry) => void;
 }) {
   const isTr = locale === "tr";
@@ -395,6 +397,7 @@ export function FullCheckWaitlistForm({
   const reportSection = state.status === "success" && state.preview && state.reportId && !report && (
     <div id="quick-result-section" ref={reportSectionRef}>
       <PremiumFeatureGate
+        paidCheckoutEnabled={paidCheckoutEnabled}
         locale={locale}
         reportId={state.reportId}
         preview={state.preview}
