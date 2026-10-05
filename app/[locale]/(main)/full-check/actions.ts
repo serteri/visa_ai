@@ -1526,7 +1526,7 @@ async function unlockPremiumReportInternal(
     }
     let betaPdfSent = false;
     try {
-      betaPdfSent = (await generateAndSendReport(reportId, record.email, fullName || undefined)).pdfSent;
+      betaPdfSent = (await generateAndSendReport(reportId, record.email, fullName || undefined, { freeBeta: true })).pdfSent;
     } catch (err) {
       console.error("unlockPremiumReport (free beta): generateAndSendReport threw unexpectedly", err);
     }
