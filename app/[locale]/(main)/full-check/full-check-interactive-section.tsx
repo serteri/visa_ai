@@ -276,6 +276,7 @@ export function FullCheckInteractiveSection({
   initialValues,
   isFreeActive,
   remainingSpots,
+  paidCheckoutEnabled = false,
 }: {
   locale: string;
   formHeader: ReactNode;
@@ -289,6 +290,8 @@ export function FullCheckInteractiveSection({
   };
   isFreeActive: boolean;
   remainingSpots: number;
+  /** Server-side paid-checkout flag (lib/readiness/paid-checkout.ts); anything but true is the free beta. */
+  paidCheckoutEnabled?: boolean;
 }) {
   const loc: Locale = locale === "tr" ? "tr" : locale === "zh-Hans" ? "zh-Hans" : "en";
   const isTr = loc === "tr";
@@ -319,6 +322,7 @@ export function FullCheckInteractiveSection({
             initialValues={initialValues}
             isFreeActive={isFreeActive}
             remainingSpots={remainingSpots}
+            paidCheckoutEnabled={paidCheckoutEnabled}
             onCountryChange={setSelectedCountry}
           />
         </div>

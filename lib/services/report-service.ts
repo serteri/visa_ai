@@ -1,5 +1,7 @@
 import { Resend } from "resend";
 import { reportResultUrl } from "@/lib/reports/report-access";
+import { reportReadyEmailCopy } from "@/lib/services/report-email-copy";
+import { isPaidReportCheckoutEnabled } from "@/lib/readiness/paid-checkout";
 
 import { prisma } from "@/lib/prisma";
 import { shouldSuppressReportEmails } from "@/lib/email/suppression";
@@ -30,6 +32,8 @@ async function sendPremiumReportReadyEmail(payload: {
   fullName: string;
   locale: "en" | "tr" | "zh-Hans";
   reportLink: string;
+  /** Free beta: no payment exists, so the email must not say one was confirmed. */
+  freeBeta?: boolean;
 }) {
   const apiKey = process.env.RESEND_API_KEY;
   if (!apiKey) throw new Error("RESEND_API_KEY is not configured.");
@@ -51,17 +55,7 @@ async function sendPremiumReportReadyEmail(payload: {
         ? "您好，"
         : "Hi,";
 
-  const subject = isTr
-    ? "Premium Raporunuz Hazır 🎉"
-    : isZh
-      ? "您的高级报告已就绪 🎉"
-      : "Your Premium Report is Ready 🎉";
-
-  const intro = isTr
-    ? "Ödemeniz onaylandı ve tam vize hazırlık raporunuz kilidi açıldı."
-    : isZh
-      ? "您的付款已确认，完整签证准备度报告已解锁。"
-      : "Your payment has been confirmed and your full visa readiness report is now unlocked.";
+  const { subject, intro } = reportReadyEmailCopy(payload.locale, payload.freeBeta === true);
 
   const ctaLabel = isTr
     ? "Raporumu Görüntüle ve İndir →"
@@ -301,7 +295,7 @@ export async function generateAndSendReport(
   reportId: string,
   email: string,
   fullName?: string,
-  options?: { suppressEmail?: boolean }
+  options?: { suppressEmail?: boolean; /** The free-beta unlock: the email must not claim a payment. */ freeBeta?: boolean }
 ): Promise<{ pdfSent: boolean; suppressed?: boolean }> {
   try {
     const record = await getUserReportById(reportId);
@@ -346,6 +340,7 @@ export async function generateAndSendReport(
         fullName: fullName ?? record.fullName ?? "",
         locale,
         reportLink,
+        freeBeta: options?.freeBeta === true,
       });
     } catch (emailErr) {
       console.error(`[report-service] Müşteri e-postası GÖNDERİLEMEDİ -- report ${reportId} → ${recipientEmail}:`, emailErr);
@@ -379,6 +374,8 @@ export async function sendReportAccessLink(reportId: string): Promise<{ sent: bo
       fullName: record.fullName ?? "",
       locale,
       reportLink: reportResultUrl(getBaseUrl(), locale, reportId),
+      // No checkout in the free beta: say nothing about a payment.
+      freeBeta: !isPaidReportCheckoutEnabled(),
     });
     return { sent: true };
   } catch (err) {

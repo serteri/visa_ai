@@ -30,6 +30,8 @@ type ResultViewProps = {
    * reports that keep their own layout (Canada, partner visas).
    */
   view?: ReportView | null;
+  /** Server-side paid-checkout flag (lib/readiness/paid-checkout.ts); anything but true is the free beta. */
+  paidCheckoutEnabled?: boolean;
 };
 
 export function ResultView({
@@ -44,6 +46,7 @@ export function ResultView({
   email,
   dateStamp,
   view,
+  paidCheckoutEnabled = false,
 }: ResultViewProps) {
   const isTr = locale === "tr";
   const isZh = locale === "zh-Hans";
@@ -86,7 +89,7 @@ export function ResultView({
                 {isTr ? "Tam Hazırlık Raporunuz" : isZh ? "您的完整准备度报告" : "Your Full Readiness Report"}
               </CardTitle>
               <Badge variant="secondary">
-                {isTr ? "Premium" : isZh ? "高级版" : "Premium"}
+                {paidCheckoutEnabled ? (isTr ? "Premium" : isZh ? "高级版" : "Premium") : isTr ? "Ücretsiz beta" : isZh ? "免费测试版" : "Free beta"}
               </Badge>
             </div>
             {dateStamp ? (
@@ -235,6 +238,7 @@ export function ResultView({
   return (
     <main className="mx-auto max-w-2xl space-y-6 px-4 py-10">
       <PremiumFeatureGate
+        paidCheckoutEnabled={paidCheckoutEnabled}
         locale={locale}
         reportId={reportId}
         preview={

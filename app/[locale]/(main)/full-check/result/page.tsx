@@ -7,6 +7,7 @@ import { refreshStoredReport } from "@/lib/reports/refresh-report";
 import { reportDateStamp } from "@/lib/reports/report-date-stamp";
 import { buildReportView, reportViewProfile } from "@/lib/reports/report-view";
 import type { FullCheckQuickPreview } from "../actions";
+import { isPaidReportCheckoutEnabled } from "@/lib/readiness/paid-checkout";
 import { ReportAccessRequired } from "./report-access-required";
 import { ResultView } from "./result-view";
 
@@ -70,6 +71,7 @@ export default async function FullCheckResultPage({
       previewData={(record.previewData as FullCheckQuickPreview | null) ?? null}
       fullName={record.fullName ?? undefined}
       email={record.email}
+      paidCheckoutEnabled={isPaidReportCheckoutEnabled()}
     />
   );
 }

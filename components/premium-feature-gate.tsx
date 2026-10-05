@@ -37,6 +37,7 @@ export function PremiumFeatureGate({
   defaultEmail,
   defaultName,
   onUnlocked,
+  paidCheckoutEnabled = false,
 }: {
   locale: string;
   reportId: string;
@@ -44,6 +45,11 @@ export function PremiumFeatureGate({
   defaultEmail?: string;
   defaultName?: string;
   onUnlocked: (payload: { report: ReadinessReport; email?: string; name?: string; isUnlocked?: boolean; accessToken?: string }) => void;
+  /**
+   * The server-side READINESS_REPORT_PAID_CHECKOUT_ENABLED flag (lib/readiness/paid-checkout.ts), passed down by the
+   * page. Anything but an explicit true means free beta: no price, no payment wording, no checkout events.
+   */
+  paidCheckoutEnabled?: boolean;
 }) {
   const isTr = locale === "tr";
   const isZh = locale === "zh-Hans";
@@ -128,26 +134,28 @@ export function PremiumFeatureGate({
     // Stripe redirect) is about to run -- the earliest point at which the
     // user has actually committed to checkout, as opposed to just opening
     // the modal (setShowModal(true) above, which many visitors abandon).
-    trackGaEvent("checkout_initiated", {
-      report_id: reportId,
-      product_type: "premium",
-    });
+    if (paidCheckoutEnabled) {
+      trackGaEvent("checkout_initiated", {
+        report_id: reportId,
+        product_type: "premium",
+      });
+    }
   }
 
   const termsLabel = isTr ? (
     <>
       <TermsGateLink>Kullanım Koşullarını</TermsGateLink> ve veri işleme politikalarını
-      okudum, onaylıyorum. (Dijital ürünlerde iade yapılmaz.)
+      okudum, onaylıyorum.{paidCheckoutEnabled ? " (Dijital ürünlerde iade yapılmaz.)" : ""}
     </>
   ) : isZh ? (
     <>
       我已阅读并同意<TermsGateLink>服务条款</TermsGateLink>
-      和数据处理政策。（数字产品不支持退款。）
+      和数据处理政策。{paidCheckoutEnabled ? "（数字产品不支持退款。）" : ""}
     </>
   ) : (
     <>
       I agree to the <TermsGateLink>Terms of Service</TermsGateLink> and data processing
-      policies. (No refunds on digital products.)
+      policies.{paidCheckoutEnabled ? " (No refunds on digital products.)" : ""}
     </>
   );
   const termsErrorText = isTr
@@ -165,6 +173,7 @@ export function PremiumFeatureGate({
               {isTr ? "Quick Pathway Check Sonucu" : isZh ? "快速路径评估结果" : "Quick Pathway Check Result"}
             </CardTitle>
             <Badge variant="secondary">{isTr ? "Ücretsiz görünüm" : isZh ? "免费预览" : "Free preview"}</Badge>
+            {!paidCheckoutEnabled && <Badge>{isTr ? "Ücretsiz beta" : isZh ? "免费测试版" : "Free beta"}</Badge>}
           </div>
         </CardHeader>
         <CardContent className="space-y-4">
@@ -232,28 +241,38 @@ export function PremiumFeatureGate({
           <div className="w-full max-w-md rounded-2xl border border-primary/20 bg-card/95 p-5 shadow-2xl ring-1 ring-primary/15">
             <div className="mb-3 inline-flex items-center gap-2 rounded-full border border-primary/30 bg-primary/10 px-3 py-1 text-xs font-semibold text-primary">
               <Lock className="size-3.5" />
-              <span>{isTr ? "Premium Access" : isZh ? "高级访问" : "Premium Access"}</span>
+              <span>{paidCheckoutEnabled ? (isTr ? "Premium Access" : isZh ? "高级访问" : "Premium Access") : isTr ? "Ücretsiz beta" : isZh ? "免费测试版" : "Free beta"}</span>
             </div>
 
             <h3 className="text-xl font-bold tracking-tight">
-              {isTr ? "Unlock Full Report" : isZh ? "解锁完整报告" : "Unlock Full Report"}
+              {paidCheckoutEnabled
+                ? isTr ? "Unlock Full Report" : isZh ? "解锁完整报告" : "Unlock Full Report"
+                : isTr ? "Tam raporu aç (ücretsiz beta)" : isZh ? "打开完整报告（免费测试版）" : "Open the full report (free beta)"}
             </h3>
 
             <p className="mt-1 text-sm text-muted-foreground">
-              {isTr
-                ? "Detaylı rapor, stratejik tablo ve PDF teslimini açın."
-                : isZh
-                  ? "解锁完整分析、高级图表与 PDF 交付。"
-                  : "Unlock full analysis, premium sections, and PDF delivery."}
+              {paidCheckoutEnabled
+                ? isTr
+                  ? "Detaylı rapor, stratejik tablo ve PDF teslimini açın."
+                  : isZh
+                    ? "解锁完整分析、高级图表与 PDF 交付。"
+                    : "Unlock full analysis, premium sections, and PDF delivery."
+                : isTr
+                  ? "Rapor şu anda ücretsiz beta olarak sunuluyor; ödeme gerekmez."
+                  : isZh
+                    ? "该报告目前为免费测试版，无需付款。"
+                    : "The report is currently offered as a free beta; no payment is taken."}
             </p>
 
             <div className="mt-4 rounded-xl border border-border/70 bg-background/70 p-3">
               <div className="flex items-end justify-between gap-3">
                 <p className="text-xs uppercase tracking-wide text-muted-foreground">
-                  {isTr ? "Premium Rapor" : isZh ? "高级报告" : "Premium Report"}
+                  {paidCheckoutEnabled ? (isTr ? "Premium Rapor" : isZh ? "高级报告" : "Premium Report") : isTr ? "Tam rapor" : isZh ? "完整报告" : "Full report"}
                 </p>
                 <p className="text-lg font-bold text-primary">
-                  {isTr ? PREMIUM_PRICE_DISPLAY.tr : isZh ? PREMIUM_PRICE_DISPLAY["zh-Hans"] : PREMIUM_PRICE_DISPLAY.en}
+                  {paidCheckoutEnabled
+                    ? isTr ? PREMIUM_PRICE_DISPLAY.tr : isZh ? PREMIUM_PRICE_DISPLAY["zh-Hans"] : PREMIUM_PRICE_DISPLAY.en
+                    : isTr ? "Ücretsiz beta" : isZh ? "免费测试版" : "Free beta"}
                 </p>
               </div>
             </div>
@@ -264,13 +283,15 @@ export function PremiumFeatureGate({
               onClick={() => setShowModal(true)}
             >
               <Sparkles className="size-4" />
-              {isTr ? "Unlock Your Full Readiness Report" : isZh ? "解锁完整准备度报告" : "Unlock Your Full Readiness Report"}
+              {paidCheckoutEnabled
+                ? isTr ? "Unlock Your Full Readiness Report" : isZh ? "解锁完整准备度报告" : "Unlock Your Full Readiness Report"
+                : isTr ? "Tam hazırlık raporunu aç" : isZh ? "打开完整准备度报告" : "Open your full readiness report"}
             </Button>
 
             <div className="mt-3 grid gap-2 text-xs text-muted-foreground sm:grid-cols-3">
               <div className="flex items-center gap-1.5 rounded-md border border-border/60 bg-background/70 px-2 py-1.5">
                 <ShieldCheck className="size-3.5 text-primary" />
-                <span>{isTr ? "Secure Checkout" : isZh ? "Secure Checkout" : "Secure Checkout"}</span>
+                <span>{paidCheckoutEnabled ? "Secure Checkout" : isTr ? "Ücretsiz beta" : isZh ? "免费测试版" : "Free beta"}</span>
               </div>
               <div className="flex items-center gap-1.5 rounded-md border border-border/60 bg-background/70 px-2 py-1.5">
                 <Zap className="size-3.5 text-primary" />
@@ -301,11 +322,17 @@ export function PremiumFeatureGate({
             <CardHeader className="space-y-2">
               <CardTitle>{isTr ? "Raporu aç" : isZh ? "解锁报告" : "Unlock report"}</CardTitle>
               <p className="text-sm text-muted-foreground">
-                {isTr
-                  ? "Ödeme sonrası premium raporunuz açılır ve size güvenli bir indirme bağlantısı e-posta ile gönderilir."
-                  : isZh
-                    ? "支付完成后，您的高级报告将被解锁，并通过邮件向您发送安全下载链接。"
-                  : "After payment, your premium report is unlocked and a secure download link is emailed to you."}
+                {paidCheckoutEnabled
+                  ? isTr
+                    ? "Ödeme sonrası premium raporunuz açılır ve size güvenli bir indirme bağlantısı e-posta ile gönderilir."
+                    : isZh
+                      ? "支付完成后，您的高级报告将被解锁，并通过邮件向您发送安全下载链接。"
+                      : "After payment, your premium report is unlocked and a secure download link is emailed to you."
+                  : isTr
+                    ? "Ücretsiz beta: raporun güvenli bağlantısı, raporun oluşturulduğu e-posta adresine gönderilir (PDF rapor sayfasından indirilir). Ödeme alınmaz."
+                    : isZh
+                      ? "免费测试版：报告的安全链接将发送到创建报告时使用的邮箱（PDF 可在报告页面下载），不收取任何费用。"
+                      : "Free beta: the secure link to your report is emailed to the address the report was created with (the PDF can be downloaded from the report page). No payment is taken."}
               </p>
             </CardHeader>
             <CardContent className="space-y-4">
@@ -349,15 +376,23 @@ export function PremiumFeatureGate({
                       method. Still sent as a real form field (rather than
                       hardcoded server-side) so unlockPremiumReportInternal's
                       existing unlockMethod handling doesn't need to change. */}
-                  <input type="hidden" name="unlockMethod" value="payment" />
+                  <input type="hidden" name="unlockMethod" value={paidCheckoutEnabled ? "payment" : "beta_free"} />
                   <div className="h-12 flex items-center rounded-xl border border-primary/30 bg-primary/5 px-3 text-sm font-medium text-primary">
-                    {isTr
-                      ? `🔓 Ödeme ile aç (${PREMIUM_PRICE_DISPLAY.tr})`
-                      : isZh
-                        ? `🔓 支付解锁 (${PREMIUM_PRICE_DISPLAY["zh-Hans"]})`
-                        : `🔓 Unlock with Payment (${PREMIUM_PRICE_DISPLAY.en})`}
+                    {!paidCheckoutEnabled
+                      ? isTr ? "🔓 Ücretsiz beta" : isZh ? "🔓 免费测试版" : "🔓 Free beta"
+                      : isTr
+                        ? `🔓 Ödeme ile aç (${PREMIUM_PRICE_DISPLAY.tr})`
+                        : isZh
+                          ? `🔓 支付解锁 (${PREMIUM_PRICE_DISPLAY["zh-Hans"]})`
+                          : `🔓 Unlock with Payment (${PREMIUM_PRICE_DISPLAY.en})`}
                   </div>
                 </div>
+
+                {unlockState.status === "success" && !unlockState.report && unlockState.message && (
+                  <p className="rounded-md border border-emerald-200 bg-emerald-50 px-3 py-2 text-sm text-emerald-800">
+                    {unlockState.message}
+                  </p>
+                )}
 
                 {unlockState.status === "error" && unlockState.message && (
                   <p className="rounded-md border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-700">
@@ -380,7 +415,7 @@ export function PremiumFeatureGate({
                   <Button type="button" variant="outline" className="h-12 flex-1 rounded-xl" onClick={() => setShowModal(false)}>
                     {isTr ? "İptal" : isZh ? "取消" : "Cancel"}
                   </Button>
-                  <Button type="submit" className="h-12 flex-1 rounded-xl" disabled={unlockPending}>
+                  <Button type="submit" className="h-12 flex-1 rounded-xl" disabled={unlockPending || (unlockState.status === "success" && !unlockState.report)}>
                     {unlockPending
                       ? isTr ? "İşleniyor..." : isZh ? "处理中..." : "Processing..."
                       : isTr ? "Raporu aç" : isZh ? "解锁报告" : "Unlock report"}
@@ -390,7 +425,7 @@ export function PremiumFeatureGate({
                 <div className="grid gap-2 text-xs text-muted-foreground sm:grid-cols-3">
                   <div className="flex items-center gap-1.5 rounded-md border border-border/60 px-2 py-1.5">
                     <ShieldCheck className="size-3.5 text-primary" />
-                    <span>Secure Checkout</span>
+                    <span>{paidCheckoutEnabled ? "Secure Checkout" : "Free beta"}</span>
                   </div>
                   <div className="flex items-center gap-1.5 rounded-md border border-border/60 px-2 py-1.5">
                     <CheckCircle2 className="size-3.5 text-primary" />
