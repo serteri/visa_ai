@@ -7622,10 +7622,10 @@ function buildPartnerReadinessReport(input: ReadinessInput, country: "AU" | "CA"
   const executiveSummary = country === "AU"
     ? [
         isTr
-          ? "Bu rapor, Avustralya Partner vizesi (Subclass 820/801) başvurunuz için ilişki kanıtı derinliğini ve sponsor uygunluğu sinyallerini değerlendirmektedir."
+          ? "Bu rapor, Avustralya Partner vizesi (Subclass 820/801) başvurunuz için bildirdiğiniz ilişki ve sponsor bilgilerini ve yayımlanmış gereklilikleri özetlemektedir. İlişkinin gerçekliği hakkında bir değerlendirme yapmaz."
           : isZh
-            ? "本报告评估您申请澳大利亚伴侣签证（Subclass 820/801）的关系证明深度和担保人资格信号。"
-            : "This report assesses your relationship evidence depth and sponsor eligibility signals for the Australian Partner visa (Subclass 820/801) pathway.",
+            ? "本报告汇总您填写的关系与担保人信息以及已公布的要求，不对关系的真实性作任何评估。"
+            : "This report sets out the relationship and sponsor details you entered and the published requirements for the Australian Partner visa (Subclass 820/801). It does not assess whether a relationship is genuine.",
         isTr
           ? "Bu değerlendirme puan testi içeren vasıflı göçmenlik vizeleri (189/190/491) için geçerli değildir; partner vizeleri puan-bazlı değildir."
           : isZh
@@ -7634,10 +7634,10 @@ function buildPartnerReadinessReport(input: ReadinessInput, country: "AU" | "CA"
       ]
     : [
         isTr
-          ? "Bu rapor, Kanada Eş Sponsorluğu (Spousal Sponsorship) başvurunuz için ilişki kanıtı derinliğini ve sponsor uygunluğu sinyallerini değerlendirmektedir."
+          ? "Bu rapor, Kanada Eş Sponsorluğu (Spousal Sponsorship) başvurunuz için bildirdiğiniz ilişki ve sponsor bilgilerini ve yayımlanmış gereklilikleri özetlemektedir. İlişkinin gerçekliği hakkında bir değerlendirme yapmaz."
           : isZh
-            ? "本报告评估您申请加拿大配偶担保（Spousal Sponsorship）的关系证明深度和担保人资格信号。"
-            : "This report assesses your relationship evidence depth and sponsor eligibility signals for the Canada Spousal Sponsorship pathway.",
+            ? "本报告汇总您填写的关系与担保人信息以及已公布的要求，不对关系的真实性作任何评估。"
+            : "This report sets out the relationship and sponsor details you entered and the published requirements for Canada Spousal Sponsorship. It does not assess whether a relationship is genuine.",
         isTr
           ? "Bu değerlendirme puan testi içeren Express Entry (CRS) göçmenlik vizeleri için geçerli değildir; aile sponsorluğu vizeleri puan-bazlı değildir."
           : isZh
@@ -7646,22 +7646,20 @@ function buildPartnerReadinessReport(input: ReadinessInput, country: "AU" | "CA"
       ];
 
   const primaryLimitingFactor = {
-    label: isTr
-      ? (pAssessment.relationshipSignalStrength === "Low" ? "Kısıtlı İlişki Kanıtı" : pAssessment.sponsorEligibilitySignal === "Conditional" ? "Sponsorluk Engel Riski" : "Kanıt Toplama")
-      : isZh
-        ? (pAssessment.relationshipSignalStrength === "Low" ? "关系证明不足" : pAssessment.sponsorEligibilitySignal === "Conditional" ? "担保人资格风险" : "材料收集")
-        : (pAssessment.relationshipSignalStrength === "Low" ? "Limited Relationship Evidence" : pAssessment.sponsorEligibilitySignal === "Conditional" ? "Sponsorship Bar Risk" : "Evidence Collection"),
+    label: pAssessment.sponsorEligibilitySignal === "Conditional"
+      ? (isTr ? "Sponsorluk kısıtlaması: bildirilen geçmiş" : isZh ? "担保限制：已填写的担保历史" : "Sponsorship restriction: previous sponsorship entered")
+      : (isTr ? "Yayımlanmış gereklilikler" : isZh ? "已公布的要求" : "Published requirements"),
     explanation: pAssessment.sponsorEligibilitySignal === "Conditional"
       ? (isTr
-          ? "Sponsorun son 5 yıl içindeki sponsorluk geçmişi, başvurunun askıya alınmasına veya reddedilmesine neden olabilecek bir kısıtlamayı tetikleyebilir."
+          ? "Bildirdiğiniz sponsorluk geçmişi, yayımlanmış kurallara göre bir sponsorluk kısıtlamasını gündeme getirebilir; uygulanıp uygulanmadığını karar vericiler belirler."
           : isZh
-            ? "担保人近 5 年内的担保历史可能会触发限制条件，导致申请被暂停或拒绝。"
-            : "The sponsor's previous sponsorship within the last 5 years may trigger a bar or restriction, causing delays or refusal.")
+            ? "您填写的担保历史按已公布规则可能涉及担保限制；是否适用由主管部门判断。"
+            : "The previous sponsorship you entered can engage a published sponsorship restriction; whether it applies is for the decision-maker.")
       : (isTr
-          ? "Partner vizesinde en kritik faktör ilişkinin gerçekliği ve sürekliliğidir. Eksik kanıtların toplanması öncelikli adımdır."
+          ? "Bu rapor ilişkiyi değerlendirmez; yalnızca bildirdiğiniz bilgileri ve yayımlanmış gereklilikleri listeler."
           : isZh
-            ? "配偶签证最关键的因素是关系的真实性与持续性。收集缺失的证明材料是首要任务。"
-            : "The most critical factor in a partner visa is relationship genuineness and continuity. Gathering missing evidence is the priority.")
+            ? "本报告不评估关系，仅列出您填写的信息和已公布的要求。"
+            : "This report does not assess the relationship; it lists the details you entered and the published requirements.")
   };
 
   const pathwayComparison: PathwayComparison[] = [
@@ -7674,12 +7672,12 @@ function buildPartnerReadinessReport(input: ReadinessInput, country: "AU" | "CA"
           ? "与表单中申报的关系和担保信息匹配的直接担保途径。"
           : "Direct sponsorship pathway matching the relationship and sponsor details declared in the form.",
       relevance: "possible",
-      confidenceLevel: pAssessment.relationshipSignalStrength === "High" ? "high" : pAssessment.relationshipSignalStrength === "Medium" ? "medium" : "low",
+      confidenceLevel: "low",
       confidenceExplanation: isTr
-        ? "Güven seviyesi, sunulan ilişki süresi ve kanıt türlerinin çeşitliliğine dayanmaktadır."
+        ? "Bu yol için güven düzeyi hesaplanmaz; ilişki değerlendirilmez."
         : isZh
-          ? "置信度级别基于提供的共同居住时间及证明材料的多样性。"
-          : "The confidence level is based on the cohabitation duration and variety of evidence types provided.",
+          ? "此通道不计算置信度；本报告不评估关系。"
+          : "No confidence level is calculated for this pathway; the relationship is not assessed.",
       difficulty: pAssessment.sponsorEligibilitySignal === "Conditional" ? "high" : "medium",
       requirementType: isTr ? "İlişki ve sponsor kanıtları" : "Relationship & sponsor evidence",
       userRelativePosition: isTr
@@ -7771,14 +7769,12 @@ function buildPartnerReadinessReport(input: ReadinessInput, country: "AU" | "CA"
   const signalSnapshot = {
     strongest: country === "AU" ? "Partner Visa (subclass 820/801)" : "Spousal Sponsorship",
     secondary: [],
-    confidenceLabel: pAssessment.relationshipSignalStrength === "High"
-      ? ("stronger" as const)
-      : pAssessment.relationshipSignalStrength === "Medium"
-        ? ("moderate" as const)
-        : ("limited" as const),
+    confidenceLabel: "limited" as const,
     confidenceExplanation: isTr
-      ? "İlişki süresi ve mevcut kanıtların çeşitliliğine dayanmaktadır."
-      : "Based on relationship duration and diversity of declared evidence.",
+      ? "Bu yol için güven düzeyi hesaplanmaz."
+      : isZh
+        ? "此通道不计算置信度。"
+        : "No confidence level is calculated for this pathway.",
   };
 
   const dataCompleteness: DataCompleteness = {
@@ -7796,7 +7792,7 @@ function buildPartnerReadinessReport(input: ReadinessInput, country: "AU" | "CA"
     },
     {
       category: isTr ? "İlişki Kanıt Belgeleri" : "Relationship Evidence Documents",
-      items: pAssessment.evidenceGaps.concat(
+      items: (
         partnerData.relationshipEvidence?.map(e => {
           if (e === "marriage_cert") return isTr ? "Evlilik Cüzdanı / Kaydı" : "Marriage Certificate";
           if (e === "joint_bank") return isTr ? "Ortak Banka Hesabı / Ortak Finansal Kanıtlar" : "Joint Bank Account / Shared Finances";
@@ -7825,7 +7821,7 @@ function buildPartnerReadinessReport(input: ReadinessInput, country: "AU" | "CA"
     reportIndicators: {
       dataCompletenessScore: 100,
       dataCompletenessLabel: isTr ? "Veri tamlığı" : "Data completeness",
-      documentReadinessIndicator: pAssessment.relationshipSignalStrength === "High" ? "high" : pAssessment.relationshipSignalStrength === "Medium" ? "medium" : "low",
+      documentReadinessIndicator: "low",
       informationCoverageLevel: "comprehensive",
       explanation: isTr
         ? "Partner vizesi değerlendirmesi yapılmıştır."
@@ -7854,33 +7850,8 @@ function buildPartnerReadinessReport(input: ReadinessInput, country: "AU" | "CA"
         note: ""
       },
       strategicGanttChart: {
-        timelineBand: "6-12 months",
-        steps: [
-          {
-            step: 1,
-            title: isTr ? "Kanıt Toplama ve Hazırlık Aşaması" : "Evidence Collection & Preparation",
-            window: "Weeks 1-8",
-            description: isTr
-              ? "İlişki kanıtlarının (ortak banka hesap dökümleri, faturalar, fotoğraflar, arkadaş ve aile beyanları) bir araya getirilmesi."
-              : "Assembling comprehensive relationship proof (joint accounts, statements, declarations, and history narrative)."
-          },
-          {
-            step: 2,
-            title: isTr ? "Sponsorluk ve Vize Başvuru Dosyası" : "Sponsorship & Visa Application Submission",
-            window: "Weeks 8-12",
-            description: isTr
-              ? "Hükümet harcının ödenerek sponsorluk onay talebinin ve vize dosyasının resmi olarak sisteme girilmesi."
-              : "Lodge the sponsorship request and the main visa application files with the official government portal."
-          },
-          {
-            step: 3,
-            title: isTr ? "Sağlık ve Karakter Kontrolleri" : "Health, Biometrics & Character Clearances",
-            window: "Weeks 12-24",
-            description: isTr
-              ? "Göçmenlik dairesinden gelen bildirimleri takiben biyometri verilmesi, sağlık kontrolü ve adli sicil belgelerinin sunulması."
-              : "Attend biometrics appointment, undergo medical examinations, and submit police certificates upon request."
-          }
-        ]
+        timelineBand: "",
+        steps: []
       },
       scenarioBasedInsights: {
         pathwayStrengthComparison: [],
@@ -7894,7 +7865,7 @@ function buildPartnerReadinessReport(input: ReadinessInput, country: "AU" | "CA"
       }
     },
     frictionAnalysis: [],
-    suggestedNextSteps: pAssessment.recommendedNextSteps,
+    suggestedNextSteps: [],
     missingInformation: [],
     disclaimer: country === "AU"
       ? "Regulatory disclaimer: Registered Migration Agents (MARA) provide official counsel in Australia. This report is for initial guidance only."

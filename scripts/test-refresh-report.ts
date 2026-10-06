@@ -51,8 +51,8 @@ async function main() {
 
   const refreshed = await refreshStoredReport(stored, input);
   const labels = (refreshed.report.pointsBoosterSimulator?.scenarios ?? []).map((s) => s.label);
-  if (refreshed.source === "recomputed" && !labels.includes(MIXED) && (refreshed.report.aiStrategy as unknown as { marker?: string })?.marker === "stored-strategy") {
-    ok("stored report with the old 491-in-189 scenario is recomputed without it; the stored AI strategy is kept");
+  if (refreshed.source === "recomputed" && !labels.includes(MIXED) && refreshed.report.aiStrategy === undefined) {
+    ok("stored report with the old 491-in-189 scenario is recomputed without it; a stored AI strategy is no longer carried forward");
   } else fail(`refresh: ${refreshed.source} ${refreshed.reason ?? ""}; mixed still present: ${labels.includes(MIXED)}`);
 
   const otherPoints: ReadinessReport = JSON.parse(JSON.stringify(stored));

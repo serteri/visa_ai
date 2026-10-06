@@ -54,7 +54,7 @@ export async function refreshStoredReport(
     const stamp: ReportContentStamp = asOf
       ? { recomputed: true, generatedAt: meta.generatedAt, dataAsOf: asOf.date, dataSources: asOf.sources.map((x) => `${x.source}: ${x.date}`) }
       : storedStamp;
-    return { report: { ...fresh, aiStrategy: stored.aiStrategy, contentStamp: stamp }, source: "recomputed", stamp };
+    return { report: { ...fresh, contentStamp: stamp }, source: "recomputed", stamp };
   } catch (error) {
     console.error("[refresh-report] recompute failed; using the stored report:", error);
     return keep("recompute failed");

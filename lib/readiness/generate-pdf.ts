@@ -2339,14 +2339,6 @@ export async function generateReadinessPDF(input: PDFGeneratorInput): Promise<Ui
   }
 
   /**
-   * Renders the Premium AI Strategy layer (lib/ai/generate-premium-strategy.ts)
-   * immediately after the Report Overview page, when present. Purely
-   * additive on top of the deterministic report above it -- report.aiStrategy
-   * is optional (absent when the AI call failed or wasn't attempted), so
-   * this section renders nothing at all in that case rather than an empty
-   * placeholder.
-   */
-  /**
    * "Invited or nominated" (AU): the lodgement section, rendered once, above the first Points Booster section of the
    * PDF (the AI strategy's roadmap when present, otherwise the Points Booster Simulator).
    */
@@ -2364,157 +2356,6 @@ export async function generateReadinessPDF(input: PDFGeneratorInput): Promise<Ui
     yPosition += 3;
   }
 
-  function renderAiStrategySection() {
-    const strategy = report.aiStrategy;
-    if (!strategy) return;
-
-    const isTr = effectiveLocale === "tr";
-    const isZh = effectiveLocale === "zh-Hans";
-
-    // AU: the stored model output is re-checked against the single ranking / open-state data / score set
-    // (the same validator used when it was generated). A recommendation outside them is replaced by the
-    // deterministic list, so nothing stored earlier can contradict the ranking shown elsewhere.
-    const recommendationViolations =
-      report.country === "CA" || !report.pathwayRanking ? [] : findRecommendationViolations(strategy, report);
-    const shownPathways =
-      recommendationViolations.length > 0 ? deterministicRecommendations(report, effectiveLocale) : strategy.topRecommendedPathways;
-    const summaryText = recommendationViolations.some((v) => v.path === "executiveSummary")
-      ? (isTr
-          ? "Bu bölüm için ayrıntılı bir strateji özeti bulunmuyor -- puanlar, uygunluk ve yol karşılaştırması için raporun deterministik bölümlerine bakın."
-          : isZh
-            ? "本节暂无详细战略摘要——积分、资格与路径对比请参见报告中的确定性章节。"
-            : "A detailed strategy summary is not available for this section -- see the deterministic sections of this report for your points, eligibility, and pathway comparison.")
-      : strategy.executiveSummary;
-
-    const sectionTitle = isTr ? "Yapay Zeka Strateji Özeti" : isZh ? "AI 战略摘要" : "AI Strategy Summary";
-    addSectionHeading("🧭", sectionTitle);
-
-    // ── Executive summary highlight box ───────────────────────────────
-    if (summaryText.trim()) {
-      const summaryLines = doc.splitTextToSize(safeText(summaryText), contentWidth - 16);
-      const boxHeight = Math.max(20, 10 + summaryLines.length * 4.6);
-      ensurePageSpace(boxHeight + 8);
-
-      const boxY = yPosition;
-      doc.setFillColor(COLORS.cream.r, COLORS.cream.g, COLORS.cream.b);
-      doc.setDrawColor(COLORS.gold.r, COLORS.gold.g, COLORS.gold.b);
-      doc.setLineWidth(0.6);
-      doc.roundedRect(margin, boxY, contentWidth, boxHeight, 2, 2, "FD");
-      doc.setFillColor(COLORS.gold.r, COLORS.gold.g, COLORS.gold.b);
-      doc.rect(margin, boxY, 2.8, boxHeight, "F");
-
-      setBaseFont();
-      doc.setFontSize(FONTS.body);
-      doc.setTextColor(COLORS.text.r, COLORS.text.g, COLORS.text.b);
-      doc.text(summaryLines, margin + 8, boxY + 8, { lineHeightFactor: 1.2 });
-
-      yPosition = boxY + boxHeight + 6;
-    }
-
-    // ── Top recommended pathways ───────────────────────────────────────
-    if (shownPathways.length > 0) {
-      const pathwaysHeading = isTr ? "Önerilen Vize Yolları" : isZh ? "推荐签证路径" : "Top Recommended Pathways";
-      addHeading(pathwaysHeading);
-
-      shownPathways.forEach((pathway) => {
-        // CA programs (CEC/FSW/FSTP) are not "subclasses" -- that's AU
-        // terminology for a numbered visa category. Avoid it for CA rather
-        // than mislabeling a Canadian program.
-        const pathwayLabel = report.country === "CA"
-          ? `${pathway.state} — ${pathway.subclass}`
-          : `${pathway.state} — Subclass ${pathway.subclass}`;
-        addPremiumKeyValueContainer(
-          pathwayLabel,
-          [[isTr ? "Neden" : isZh ? "原因" : "Reason", pathway.reason]],
-          COLORS.primary,
-        );
-        if (pathway.nextSteps.length > 0) {
-          addPremiumBulletContainer(
-            isTr ? "Sonraki Adımlar" : isZh ? "下一步" : "Next Steps",
-            pathway.nextSteps,
-            COLORS.accent,
-          );
-        }
-        yPosition += 1;
-      });
-    }
-
-    // ── Points booster roadmap ─────────────────────────────────────────
-    // AU: rows come from the engine's action plan (pointsEstimate.actionPlan);
-    // the stored model output only contributes wording, and only if it still
-    // passes the same validation used when it was generated. Reports stored
-    // before the plan existed (AU, no actionPlan) show no roadmap rather than
-    // an unvalidated model-written one. CA keeps the model-written rows.
-    const auPlan = report.country === "CA" ? undefined : report.pointsEstimate?.actionPlan;
-    const boosterRows: Array<{ action: string; pointsGained: number; difficulty: "Low" | "Medium" | "High"; reason: string; difficultyExplanation: string }> =
-      report.country === "CA"
-        ? strategy.pointsBoosterStrategy.map((b) => ({
-            action: b.action,
-            pointsGained: b.pointsGained,
-            difficulty: b.difficulty,
-            reason: "",
-            difficultyExplanation: "",
-          }))
-        : auPlan
-          ? assembleBoosterRows(auPlan, strategy.pointsBoosterStrategy).rows
-          : [];
-    const enablingSteps = report.country === "CA" ? [] : (auPlan?.enablingSteps ?? []);
-
-    if (report.country !== "CA" && report.applicationStage === "invited") renderLodgementSection();
-    if (boosterRows.length > 0 || enablingSteps.length > 0) {
-      const boosterHeading = isTr ? "Puan Artırma Yol Haritası" : isZh ? "积分提升路线图" : "Points Booster Roadmap";
-      addHeading(boosterHeading);
-
-      // A skills assessment is an enabling step, not a points action: its own row, no points value.
-      enablingSteps.forEach((step) => {
-        addBody(step.label);
-        addSmallText(step.reason, 4);
-        yPosition += 1;
-      });
-
-      const difficultyLabel = (level: "Low" | "Medium" | "High"): string => {
-        if (level === "Low") return isTr ? "Düşük" : isZh ? "低" : "Low";
-        if (level === "Medium") return isTr ? "Orta" : isZh ? "中" : "Medium";
-        return isTr ? "Yüksek" : isZh ? "高" : "High";
-      };
-      const difficultyColor = (level: "Low" | "Medium" | "High") => {
-        if (level === "Low") return COLORS.riskLow;
-        if (level === "Medium") return COLORS.riskMedium;
-        return COLORS.riskHigh;
-      };
-
-      if (boosterRows.length > 0) {
-        drawTable(
-          [
-            isTr ? "Aksiyon" : isZh ? "行动" : "Action",
-            isTr ? "Kazanılacak Puan" : isZh ? "可获积分" : "Points Gained",
-            isTr ? "Zorluk" : isZh ? "难度" : "Difficulty",
-          ],
-          boosterRows.map((booster) => [
-            booster.reason ? `${booster.action} — ${booster.reason}` : booster.action,
-            `+${booster.pointsGained}`,
-            booster.difficultyExplanation ? `${difficultyLabel(booster.difficulty)} — ${booster.difficultyExplanation}` : difficultyLabel(booster.difficulty),
-          ]),
-          [0.5, 0.15, 0.35],
-          (rowIndex, colIndex) => {
-            if (colIndex !== 2) return null;
-            const booster = boosterRows[rowIndex];
-            return booster ? difficultyColor(booster.difficulty) : null;
-          },
-        );
-      }
-      yPosition += 2;
-    }
-
-    // ── Timeline estimate ───────────────────────────────────────────────
-    if (strategy.timelineEstimate.trim()) {
-      const timelineHeading = isTr ? "Tahmini Zaman Çizelgesi" : isZh ? "预计时间线" : "Timeline Estimate";
-      addSmallText(`${timelineHeading}: ${strategy.timelineEstimate}`, 0);
-      yPosition += 2;
-    }
-
-    yPosition += 3;
-  }
 
   /**
    * Defines the report's recurring generic terms once, up front, instead of
@@ -4386,61 +4227,27 @@ export async function generateReadinessPDF(input: PDFGeneratorInput): Promise<Ui
     );
     yPosition += 2;
 
-    // 2. Genuine Relationship Evidence Assessment
-    addHeading(isTr ? "İlişki Kanıt Gücü Değerlendirmesi" : isZh ? "真实关系证明评估" : "Genuine Relationship Evidence Assessment");
-    
-    const signalLabel = isTr ? "İlişki Kanıt Sinyali Gücü" : isZh ? "关系证明信号强度" : "Relationship Signal Strength";
-    const sigColor = pAssessment.relationshipSignalStrength === "High" 
-      ? COLORS.riskLow 
-      : pAssessment.relationshipSignalStrength === "Medium"
-        ? COLORS.riskMedium
-        : COLORS.riskHigh;
-
-    const signalValueText = pAssessment.relationshipSignalStrength === "High"
-      ? (isTr ? "YÜKSEK (Güçlü kanıt derinliği)" : isZh ? "高（证明材料丰富）" : "HIGH (Strong evidence depth)")
-      : pAssessment.relationshipSignalStrength === "Medium"
-        ? (isTr ? "ORTA (Makul kanıt derinliği)" : isZh ? "中（证明材料一般）" : "MEDIUM (Moderate evidence depth)")
-        : (isTr ? "DÜŞÜK (Yetersiz/Kısıtlı kanıt)" : isZh ? "低（证明材料不足）" : "LOW (Limited evidence/cohabitation)");
-
-    addPremiumKeyValueContainer(
-      isTr ? "Kanıt Gücü Sinyali" : isZh ? "证明强度信号" : "Evidence Strength Signal",
-      [
-        [signalLabel, signalValueText],
-      ],
-      sigColor
-    );
-    yPosition += 2;
-
-    addBody(
-      isTr
-        ? "Bu değerlendirme, başvuru formunda işaretlediğiniz birlikte yaşama süresi ve ilişki kanıtı çeşitliliğine (ortak fatura, banka hesabı vb.) dayanmaktadır. Bu resmi bir 'genuine relationship' kararı değildir, sadece göçmenlik dairesinin kanıt zenginliğini nasıl yorumlayacağına dair kaba bir sinyal göstergesidir."
-        : isZh
-          ? "此评估基于您在申请表中填写的共同居住时间及关系证明材料（如联名账户、租约等）。这并非官方的“真实关系”裁决，仅作为移民局可能如何评估您关系材料丰富程度的参考信号。"
-          : "This assessment is based on the cohabitation duration and the variety of relationship evidence (joint bank accounts, leases, etc.) provided in your intake. It is not an official 'genuine relationship' decision, but a rough indication of how immigration authorities may interpret your evidence richness."
-    );
-    yPosition += 2;
-
     // 3. Sponsor Eligibility Snapshot
-    addHeading(isTr ? "Sponsor Uygunluk Durumu" : isZh ? "担保人资格评估" : "Sponsor Eligibility Snapshot");
+    addHeading(isTr ? "Sponsor Bilgisi: Önceki Sponsorluk" : isZh ? "担保人信息：过往担保" : "Sponsor Information: Previous Sponsorship");
     const sponSigText = pAssessment.sponsorEligibilitySignal === "Eligible"
-      ? (isTr ? "UYGUN (Sponsorluk kriterleri karşılanıyor)" : isZh ? "符合条件" : "ELIGIBLE")
-      : (isTr ? "KOŞULLU (İnceleme / Risk var)" : isZh ? "有待核实/存在风险" : "CONDITIONAL (Exemptions / Risks apply)");
+      ? (isTr ? "Son 5 yıl içinde sponsorluk bildirilmedi" : isZh ? "未填写过去 5 年内的担保记录" : "No sponsorship in the last 5 years entered")
+      : (isTr ? "Son 5 yıl içinde sponsorluk bildirildi; yayımlanmış kısıtlama kuralları gündeme gelebilir" : isZh ? "已填写过去 5 年内的担保记录；可能涉及已公布的限制规则" : "Sponsorship in the last 5 years entered; published restriction rules may apply");
 
     addPremiumKeyValueContainer(
-      isTr ? "Sponsorluk Uygunluk Sinyali" : isZh ? "担保人资格信号" : "Sponsor Eligibility Signal",
+      isTr ? "Girilen Bilgi" : isZh ? "已填写信息" : "Information Entered",
       [
-        [isTr ? "Değerlendirme Sonucu" : isZh ? "评估结果" : "Assessment Status", sponSigText],
+        [isTr ? "Sponsorluk Geçmişi" : isZh ? "担保历史" : "Sponsorship history", sponSigText],
       ],
-      pAssessment.sponsorEligibilitySignal === "Eligible" ? COLORS.riskLow : COLORS.riskMedium
+      COLORS.primary
     );
     yPosition += 2;
 
     if (pAssessment.hardGateFlags.length > 0) {
       pAssessment.hardGateFlags.forEach((flag) => {
         addPremiumKeyValueContainer(
-          isTr ? "UYARI / KISITLAMA" : isZh ? "限制性警示" : "REGULATORY WARNING / BAR",
+          isTr ? "Yayımlanmış kural" : isZh ? "已公布的规则" : "Published rule",
           [[isTr ? "Açıklama" : isZh ? "详情说明" : "Details", flag]],
-          COLORS.riskHigh
+          COLORS.primary
         );
         yPosition += 2;
       });
@@ -4456,13 +4263,13 @@ export async function generateReadinessPDF(input: PDFGeneratorInput): Promise<Ui
     }
 
     // 4. Audit-Ready Proof Checklist (Partner Version)
-    addSectionHeading("", isTr ? "Kanıt Evrak Kontrol Listesi" : isZh ? "关系证明文件清单" : "Audit-Ready Evidence Checklist");
+    addSectionHeading("", isTr ? "Girilen İlişki Belgesi Türleri" : isZh ? "已填写的关系材料类型" : "Relationship Document Types Entered");
     addSmallText(
       isTr
-        ? "Partner vizesi başvurusunda ilişkinin gerçekliğini ve sponsorluğun geçerliliğini kanıtlamak için gereken temel evraklar:"
+        ? "Aşağıda formda işaretlediğiniz belge türleri listelenmiştir. Hiçbir belge incelenmemiştir; liste bir değerlendirme değildir."
         : isZh
-          ? "用于在伴侣签证申请中证明关系真实性及担保资格的关键文件清单："
-          : "Key documents required to substantiate relationship genuineness and sponsor eligibility in your partner application:",
+          ? "下列为您在表单中勾选的材料类型。未审阅任何文件；此列表不是评估。"
+          : "These are the document types you ticked in the form. No documents were reviewed; this list is not an assessment.",
       0
     );
     yPosition += 2;
@@ -4471,31 +4278,26 @@ export async function generateReadinessPDF(input: PDFGeneratorInput): Promise<Ui
     const gaps = pAssessment.evidenceGaps;
 
     if (evidenceList.length > 0) {
-      addBody(isTr ? "Mevcut Olduğu Belirtilen Evraklar:" : isZh ? "已准备/申报的关系证明：" : "Declared Evidence (Ready/Available):");
+      addBody(isTr ? "Bilgi girildi (belge incelenmedi):" : isZh ? "已填写信息（未审阅文件）：" : "Information entered (documents not reviewed):");
       evidenceList.forEach((e) => {
         const itemLabel = e === "marriage_cert" ? (isTr ? "Evlilik Cüzdanı / Kaydı" : isZh ? "结婚证书/官方登记" : "Marriage Certificate")
           : e === "joint_bank" ? (isTr ? "Ortak Banka Hesabı / Finansal Dökümler" : isZh ? "联名账户/共同财务" : "Joint Bank Account / Shared Finances")
           : e === "joint_lease" ? (isTr ? "Ortak Kira Sözleşmesi / Faturalar" : isZh ? "联名租约/共同账单" : "Joint Lease / Utility Bills")
           : e === "photos_social" ? (isTr ? "Birlikte Fotoğraflar / Sosyal Kanıtlar" : isZh ? "合影与社交证据" : "Photos & Social Evidence")
           : (isTr ? "Ortak Çocuk Bilgileri" : isZh ? "共同子女" : "Joint Children Details");
-        addSmallText(`[x] ${itemLabel}`, 4);
+        addSmallText(`• ${itemLabel}`, 4);
       });
       yPosition += 2;
     }
 
     if (gaps.length > 0) {
-      addBody(isTr ? "Eksik / Güçlendirilmesi Gereken Kanıtlar:" : isZh ? "缺失/待加强的关系证明材料：" : "Evidence Gaps (Needs to be acquired/strengthened):");
+      addBody(isTr ? "Girilmeyen belge türleri:" : isZh ? "未填写的材料类型：" : "Document types not entered:");
       gaps.forEach((g) => {
-        addSmallText(`[ ] ${g}`, 4);
+        addSmallText(`• ${g}`, 4);
       });
       yPosition += 2;
     }
 
-    // 5. Next Steps
-    addHeading(isTr ? "Önerilen Sonraki Adımlar" : isZh ? "推荐执行步骤" : "Recommended Next Steps");
-    pAssessment.recommendedNextSteps.forEach((step) => {
-      addSmallText(`• ${step}`, 0);
-    });
     yPosition += 3;
   }
 
@@ -4536,9 +4338,6 @@ export async function generateReadinessPDF(input: PDFGeneratorInput): Promise<Ui
     );
   } else {
     addReportOverview();
-    // Premium AI Strategy layer (if present) renders right after the
-    // Overview page, before the deterministic personalized sections below.
-    renderAiStrategySection();
     // Personalized sections (EOI banner → points breakdown → viability)
     // render immediately after the executive summary so the most critical
     // data appears on pages 2-3 rather than buried at the end.

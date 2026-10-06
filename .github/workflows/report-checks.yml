@@ -81,6 +81,8 @@ jobs:
       # assessed" (never 0 years), partner "no Functional English" is not "unknown", evidence is "information entered".
       - name: Input status (unknown is not an answer; en / tr / zh-Hans)
         run: npm run test:input-status
+      - name: Partner and AI removal (unknown is not an answer; en / tr / zh-Hans)
+        run: npm run test:partner-ai-removal
 
       # Free admin orders (ADMINFREE promotion code, or an ADMIN_EMAILS / KNOWN_TEST_EMAILS address) must send
       # no report email, internal or customer; normal and other-discount orders send both as before. Runs the

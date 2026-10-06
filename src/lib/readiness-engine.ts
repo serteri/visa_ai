@@ -866,6 +866,8 @@ export function runReadinessEngine(input: ReadinessInput): ReadinessReport {
     documentChecklist: buildPremiumDocumentChecklist(input, base),
     // Invited or nominated (AU intake stage): lodgement is the first next step, ahead of any points booster.
     suggestedNextSteps: ((steps: string[]) => {
+      // Partner / family sponsorship reports carry no next-step advice (and never the points-table steps below).
+      if (base.partnerSponsorshipAssessment) return [];
       if (input.applicationStage !== "invited" || base.country === "CA") return steps;
       const lodge = lodgementNextStep(input.locale);
       return [lodge, ...steps.filter((s) => s !== lodge)];
