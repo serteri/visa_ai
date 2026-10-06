@@ -329,10 +329,10 @@ export function PremiumFeatureGate({
                       ? "支付完成后，您的高级报告将被解锁，并通过邮件向您发送安全下载链接。"
                       : "After payment, your premium report is unlocked and a secure download link is emailed to you."
                   : isTr
-                    ? "Ücretsiz beta: raporun güvenli bağlantısı, raporun oluşturulduğu e-posta adresine gönderilir (PDF rapor sayfasından indirilir). Ödeme alınmaz."
+                    ? "Ücretsiz beta: raporu bu tarayıcıda hemen açarsınız; güvenli bağlantı raporun oluşturulduğu e-posta adresine de gönderilir. Ödeme alınmaz."
                     : isZh
-                      ? "免费测试版：报告的安全链接将发送到创建报告时使用的邮箱（PDF 可在报告页面下载），不收取任何费用。"
-                      : "Free beta: the secure link to your report is emailed to the address the report was created with (the PDF can be downloaded from the report page). No payment is taken."}
+                      ? "免费测试版：您可在此浏览器中立即打开报告；安全链接也会发送到创建报告时使用的邮箱。不收取任何费用。"
+                      : "Free beta: the report opens here in this browser right away, and the secure link is also emailed to the address the report was created with. No payment is taken."}
               </p>
             </CardHeader>
             <CardContent className="space-y-4">

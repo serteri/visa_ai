@@ -3,11 +3,10 @@ import Stripe from "stripe";
 
 import { prisma } from "@/lib/prisma";
 import { generateAndSendReport } from "@/lib/services/report-service";
-import type { ReadinessInput } from "@/lib/readiness/types";
 import { PDF_SLUGS, sendPdfDeliveryEmail } from "@/lib/email/pdf-delivery";
 import { recordCommissionTransaction, recordCommissionTransactionForLead, hasRecordedTransaction } from "@/lib/stripe/commission";
 import { getStripeClient } from "@/lib/stripe";
-import { sendFullCheckAdminEmail } from "@/lib/email/full-check-admin";
+import { fullCheckAdminPayload, sendFullCheckAdminEmail } from "@/lib/email/full-check-admin";
 import { shouldSuppressReportEmails } from "@/lib/email/suppression";
 import { getSessionPromotionCodes } from "@/lib/stripe/session-discounts";
 import { recordCreditPurchase } from "@/lib/chat/purchases";
@@ -223,30 +222,7 @@ async function handleReportUnlock(stripe: Stripe, session: Stripe.Checkout.Sessi
 
     try {
       if (!shouldSuppressReportEmails(suppressionInput, "stripe_webhook_admin_notification")) {
-        const input = (record.inputJson ?? {}) as Partial<ReadinessInput>;
-        await sendFullCheckAdminEmail({
-          fullName: record.fullName ?? "",
-          email,
-          visaInterest: record.preferredPath ?? input.preferredPathway ?? "",
-          preferredLanguage: record.locale,
-          currentCountry: input.currentCountry ?? "",
-          passportCountry: input.passportCountry ?? "",
-          age: input.age ?? "",
-          occupation: input.occupation ?? "",
-          englishLevel: input.englishLevel ?? "",
-          occupationConfirmed: input.occupationConfirmed ?? "",
-          estimatedBudgetRange: input.estimatedBudgetRange ?? "",
-          timeline: input.timeline ?? "",
-          qualificationAwardedInAustralia: input.qualificationAwardedInAustralia,
-          qualificationRegionalAustralia: input.qualificationRegionalAustralia,
-          specialistEducationStemResponse: input.specialistEducationStemResponse,
-          offshoreExperienceYears: input.offshoreExperienceYears,
-          onshoreExperienceYears: input.onshoreExperienceYears,
-          sponsorOrFamily: input.sponsorOrFamily ?? "",
-          biggestConcern: input.biggestConcern ?? "",
-          mainGoal: input.mainGoal ?? "",
-          source: record.source,
-        });
+        await sendFullCheckAdminEmail(fullCheckAdminPayload(record, email));
       }
     } catch (adminEmailErr) {
       console.error("Webhook: PAID admin notification email failed (non-blocking):", adminEmailErr);

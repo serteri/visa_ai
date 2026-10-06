@@ -89,7 +89,11 @@ async function main() {
   const sessionAt = actions.indexOf("await createCheckoutSession({ reportId");
   check(freeAt > 0 && sessionAt > freeAt, "the unlock action returns the free-beta branch before it can ask /api/checkout for a session");
   const freeBlock = actions.slice(freeAt, sessionAt);
-  check(!/redirectUrl|createCheckoutSession|accessToken|report:/.test(freeBlock.slice(0, freeBlock.indexOf("// ── Checkout gate"))), "the free-beta branch returns no redirect, no access token and no report to the browser (the link is emailed to the report's own address)");
+  check(!/redirectUrl|createCheckoutSession/.test(freeBlock.slice(0, freeBlock.indexOf("// ── Checkout gate"))), "the free-beta branch never returns a Stripe redirect or asks /api/checkout for a session");
+  const sbAt = freeBlock.indexOf("if (sameBrowser) {");
+  const afterSession = freeBlock.slice(sbAt, freeBlock.indexOf("// ── Checkout gate"));
+  const outsideSession = freeBlock.slice(0, sbAt) + afterSession.slice(afterSession.indexOf("if (!firstUnlock)"));
+  check(sbAt > 0 && /accessToken/.test(afterSession) && !/accessToken|report:/.test(outsideSession), "the report and its access token are returned only inside the creating-browser (session) branch");
   check(/generateAndSendReport\(reportId, record\.email, fullName \|\| undefined, \{ freeBeta: true \}\)/.test(actions), "the free-beta unlock sends the free-beta email wording");
   const gate = read("components/premium-feature-gate.tsx");
   check(/paidCheckoutEnabled = false/.test(gate), "the unlock UI defaults to free beta");

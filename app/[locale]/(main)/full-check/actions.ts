@@ -1,7 +1,9 @@
 "use server";
 
 import { reportAccessToken, reportResultUrl } from "@/lib/reports/report-access";
-import { isAdminSession } from "@/lib/reports/report-access-server";
+import { hasReportSession, isAdminSession, rememberReportSession } from "@/lib/reports/report-access-server";
+import { refreshStoredReport } from "@/lib/reports/refresh-report";
+import { fullCheckAdminPayload, sendFullCheckAdminEmail } from "@/lib/email/full-check-admin";
 import { nonAdminUnlockMode } from "@/lib/readiness/paid-checkout";
 import { eq, sql } from "drizzle-orm";
 import { cookies, headers } from "next/headers";
@@ -14,7 +16,7 @@ import { fullCheckUsage, fullCheckWaitlist, leads } from "@/db/schema";
 import { prisma } from "@/lib/prisma";
 import { getStripeBaseUrl } from "@/lib/stripe";
 import { defaultCountry, isSupportedCountry, isPartnerFamilySponsorship, getVisaSubclassesForGoals, type MigrationGoalId } from "@/lib/countries";
-import { generateAndSendReport } from "@/lib/services/report-service";
+import { generateAndSendReport, sendReportAccessLink } from "@/lib/services/report-service";
 import {
   completeFullCheckProgress,
   failFullCheckProgress,
@@ -40,6 +42,7 @@ import {
   markInternalLeadEmailSent,
   markUserReportUnlocked,
   type UnlockMethod,
+  countFreeBetaUnlocksToday,
 } from "@/src/lib/user-reports";
 import { getAgentUser } from "@/lib/crm/leads";
 import { sendAgentAssignedEmail } from "@/lib/email/agent-notifications";
@@ -1308,6 +1311,9 @@ export async function submitFullCheckWaitlist(
     previewData: buildQuickPreview(generatedReport),
   });
 
+  // This browser may open its own report on screen (and download its PDF) -- lib/reports/report-session.ts.
+  await rememberReportSession(reportRecord.id);
+
   // Best-effort: the lead is already persisted and (if applicable) assigned
   // above, so a broken RESEND_API_KEY or a send failure here must never fail
   // the submission the visitor is waiting on.
@@ -1516,22 +1522,70 @@ async function unlockPremiumReportInternal(
 
   // ── Free beta (paid checkout flag OFF) ────────────────────────────────────
   // The Readiness Report is a free beta unless READINESS_REPORT_PAID_CHECKOUT_ENABLED is "true"
-  // (lib/readiness/paid-checkout.ts): /api/checkout is never asked for a Stripe session. The report is opened for the
-  // visitor whose typed email matches the report's own, but, as everywhere else, a typed email is not a credential:
-  // nothing is returned to the browser. The secure result link (with the access token) is emailed to the report's OWN
-  // address, and the report (and its PDF) opens from that link.
+  // (lib/readiness/paid-checkout.ts): /api/checkout is never asked for a Stripe session. Two routes to the report:
+  //   1. the BROWSER SESSION THAT CREATED IT (signed httpOnly cookie set when the form was submitted,
+  //      lib/reports/report-session.ts) sees it on screen right away -- the report and its access token are returned;
+  //   2. the emailed secure link, sent to the report's OWN address. Anyone else only gets that email: a typed email
+  //      address alone is not a credential, so nothing is returned to the browser.
+  // Unlocking is idempotent: an already unlocked report (paid or free) is never re-marked, so a paid report keeps its
+  // payment record. The first free unlock sends the admin notification (labelled FREE BETA) and is counted per day.
   if (!isAdmin && nonAdminUnlockMode() === "free_beta") {
-    if (email.trim().toLowerCase() !== record.email.trim().toLowerCase()) {
+    const sameBrowser = await hasReportSession(reportId);
+    if (!sameBrowser && email.trim().toLowerCase() !== record.email.trim().toLowerCase()) {
       return { status: "error", message: "The email you entered doesn't match this report. Please use the email you originally submitted." };
     }
-    let betaPdfSent = false;
-    try {
-      betaPdfSent = (await generateAndSendReport(reportId, record.email, fullName || undefined, { freeBeta: true })).pdfSent;
-    } catch (err) {
-      console.error("unlockPremiumReport (free beta): generateAndSendReport threw unexpectedly", err);
-    }
-    await markUserReportUnlocked({ reportId, email: record.email, phone: phone || undefined, unlockMethod: "beta_free", pdfSent: betaPdfSent });
     const betaLocale = record.locale === "tr" ? "tr" : record.locale === "zh-Hans" ? "zh-Hans" : "en";
+    const firstUnlock = !record.isUnlocked;
+    if (firstUnlock) {
+      await markUserReportUnlocked({ reportId, email: record.email, phone: phone || undefined, unlockMethod: "beta_free", pdfSent: false });
+      try {
+        if (!shouldSuppressReportEmails({ email: [email, record.email] }, "free_beta_admin_notification")) {
+          const today = await countFreeBetaUnlocksToday();
+          await sendFullCheckAdminEmail({ ...fullCheckAdminPayload({ fullName: record.fullName, locale: record.locale, source: "full_check", inputJson: record.input }, record.email), variant: "free_beta", freeUnlocksToday: today });
+        }
+      } catch (err) {
+        console.error("unlockPremiumReport (free beta): admin notification failed (non-blocking):", err);
+      }
+      try {
+        await generateAndSendReport(reportId, record.email, fullName || undefined, { freeBeta: true });
+      } catch (err) {
+        console.error("unlockPremiumReport (free beta): generateAndSendReport threw unexpectedly", err);
+      }
+    }
+    if (sameBrowser) {
+      let shown: ReadinessReport = record.report;
+      try {
+        shown = (await refreshStoredReport(record.report, record.input, { generatedAt: record.createdAt })).report;
+      } catch (err) {
+        console.error("unlockPremiumReport (free beta): refresh failed, showing the stored report", err);
+      }
+      return {
+        status: "success",
+        message:
+          betaLocale === "tr"
+            ? "Ücretsiz beta: raporunuz açıldı. Güvenli bağlantı, raporun oluşturulduğu e-posta adresine de gönderildi."
+            : betaLocale === "zh-Hans"
+              ? "免费测试版：报告已打开。安全链接也已发送到创建报告时使用的邮箱。"
+              : "Free beta: your report is open. The secure link was also emailed to the address the report was created with.",
+        accessToken: reportAccessToken(reportId) ?? undefined,
+        report: shown,
+        userInput: {
+          name: fullName || undefined,
+          email: record.email,
+          mainGoal: record.input.mainGoal,
+          currentCountry: record.input.currentCountry,
+          passportCountry: record.input.passportCountry,
+          age: record.input.age,
+          qualificationLevel: record.input.qualificationLevel,
+          annualSalaryAud: typeof record.input.annualSalaryAud === "number" ? String(record.input.annualSalaryAud) : undefined,
+          occupation: record.input.occupation,
+          englishLevel: record.input.englishLevel,
+          sponsorOrFamily: record.input.sponsorOrFamily,
+          biggestConcern: record.input.biggestConcern,
+        },
+      };
+    }
+    if (!firstUnlock) await sendReportAccessLink(reportId);
     return {
       status: "success",
       message:

@@ -174,3 +174,20 @@ export async function markUserReportUnlocked(input: {
     input.reportId
   );
 }
+
+/**
+ * Free-beta unlocks recorded today (UTC day): rows unlocked with unlock_method = 'beta_free' (written by
+ * markUserReportUnlocked, which sets unlocked_at). No separate counter table: the unlock itself is the record, so the
+ * count cannot drift from the reports. Returns undefined when the query fails (a count must never break an unlock).
+ */
+export async function countFreeBetaUnlocksToday(): Promise<number | undefined> {
+  try {
+    const rows = await prisma.$queryRawUnsafe<Array<{ n: number | bigint }>>(
+      `SELECT COUNT(*)::int AS n FROM user_reports WHERE unlock_method = 'beta_free' AND unlocked_at >= date_trunc('day', NOW())`
+    );
+    return Number(rows[0]?.n ?? 0);
+  } catch (err) {
+    console.error("[user-reports] free-beta unlock count failed (non-blocking):", err);
+    return undefined;
+  }
+}

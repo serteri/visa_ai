@@ -8,7 +8,8 @@
  *   - the report's ACCESS TOKEN -- HMAC-SHA256 of the report id under a server secret, handed out only where the owner
  *     legitimately is: the checkout success page after the server confirms the Stripe session paid for this report,
  *     and the links in the emails sent to the report's own address; or
- *   - a signed-in (NextAuth) user whose email is the report's email.
+ *   - a signed-in (NextAuth) user whose email is the report's email; or
+ *   - the BROWSER SESSION THAT CREATED the report (signed httpOnly cookie, lib/reports/report-session.ts).
  * A typed email address is never a credential.
  */
 import { createHmac, timingSafeEqual } from "node:crypto";
@@ -38,6 +39,8 @@ export type ReportRequester = {
   isAdmin: boolean;
   /** Email of a verified NextAuth session, if any. */
   sessionEmail?: string | null;
+  /** Report ids this browser created (verified signed cookie, lib/reports/report-session.ts): its own reports only. */
+  sessionReportIds?: readonly string[];
 };
 
 /** Pure decision: may this requester see this report? (Unlock state is checked separately by the caller.) */
@@ -50,6 +53,7 @@ export function canAccessReport(input: {
 }): boolean {
   if (input.requester.isAdmin) return true;
   if (isValidReportAccessToken(input.reportId, input.token, input.secret === undefined ? reportAccessSecret() : input.secret)) return true;
+  if (input.requester.sessionReportIds?.includes(input.reportId)) return true;
   const session = (input.requester.sessionEmail ?? "").trim().toLowerCase();
   return session !== "" && session === input.reportEmail.trim().toLowerCase();
 }
