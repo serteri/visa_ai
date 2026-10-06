@@ -193,13 +193,15 @@ function installStubPrisma(rows: Map<string, Record<string, unknown>>, live?: Li
   };
 }
 
-async function renderRow(row: Record<string, unknown>): Promise<string> {
+async function renderRow(row: Record<string, unknown>, onPdf?: (bytes: Uint8Array) => void): Promise<string> {
   const { GET } = await import("../app/api/reports/[reportId]/pdf/route");
   const { reportAccessToken } = await import("../lib/reports/report-access");
   const reportId = String(row.id);
   const res = await GET(new Request(`http://localhost/api/reports/${reportId}/pdf?t=${reportAccessToken(reportId)}`), { params: Promise.resolve({ reportId }) });
   if (res.status !== 200) throw new Error(`${reportId}: HTTP ${res.status}`);
-  const parser = new PDFParse({ data: new Uint8Array(await res.arrayBuffer()) });
+  const bytes = new Uint8Array(await res.arrayBuffer());
+  onPdf?.(bytes);
+  const parser = new PDFParse({ data: bytes.slice() });
   const text = (await parser.getText()).pages.map((p: { text: string }) => p.text).join("\n");
   await parser.destroy();
   return text;
@@ -211,7 +213,9 @@ export async function renderPersonaPdfTexts(
   locales: readonly (typeof LOCALES)[number][] = LOCALES,
   live?: LiveStateRows,
   /** user_reports.created_at for every rendered row (drives the "Generated <date>" stamp); omitted = none stored. */
-  createdAt?: string
+  createdAt?: string,
+  /** Receives each rendered PDF's bytes (to write the file for a visual check). */
+  onPdf?: (id: string, locale: (typeof LOCALES)[number], bytes: Uint8Array) => void
 ): Promise<RenderedPersona[]> {
   const rows = new Map<string, Record<string, unknown>>();
   installStubPrisma(rows, live);
@@ -227,7 +231,7 @@ export async function renderPersonaPdfTexts(
       const report = runReadinessEngine({ ...input, stateIntelligence, stateNominationConfig });
       const reportId = `${id}-${locale}`;
       rows.set(reportId, { id: reportId, email: "qa@example.com", locale, report_json: JSON.parse(JSON.stringify(report)), input_json: JSON.parse(JSON.stringify(input)), agent_id: null, is_unlocked: true, full_name: "Test Persona", preview_data: null, ...(createdAt ? { created_at: createdAt } : {}) });
-      out.push({ id, locale, text: await renderRow(rows.get(reportId)!), report });
+      out.push({ id, locale, text: await renderRow(rows.get(reportId)!, onPdf ? (bytes) => onPdf(id, locale, bytes) : undefined), report });
     }
   }
   return out;

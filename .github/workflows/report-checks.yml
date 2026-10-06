@@ -77,6 +77,11 @@ jobs:
       - name: Free-beta unlock (session-bound access, admin notification)
         run: npm run test:free-beta-unlock
 
+      # Data defects: an unanswered skills-assessment question is unknown (never "no"), missing employment is "not
+      # assessed" (never 0 years), partner "no Functional English" is not "unknown", evidence is "information entered".
+      - name: Input status (unknown is not an answer; en / tr / zh-Hans)
+        run: npm run test:input-status
+
       # Free admin orders (ADMINFREE promotion code, or an ADMIN_EMAILS / KNOWN_TEST_EMAILS address) must send
       # no report email, internal or customer; normal and other-discount orders send both as before. Runs the
       # real Stripe webhook handler with Resend, Stripe and Prisma stubbed (fake keys, no network, no DB).

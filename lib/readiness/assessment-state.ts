@@ -1,3 +1,4 @@
+import { buildInputStatus } from "./input-status";
 import { findOccupationRecord, getEligibleSkilledSubclasses, isAmbiguousOccupationAlias } from "./occupation-eligibility";
 import { getEmploymentDataSignals } from "./employment-signals";
 import { hasRealEnglishEvidence } from "./english-evidence";
@@ -250,6 +251,7 @@ export function buildAssessmentState(
     eoiIneligibilityReason,
     pathwayPoints: computePathwayPoints(estimatedPoints),
     referenceBenchmarks: { "189": POINTS_THRESHOLD, "190": POINTS_THRESHOLD, "491": POINTS_THRESHOLD },
+    inputStatus: buildInputStatus(input),
     employerSponsorship: buildEmployerSponsorshipSignal(input),
   };
 }

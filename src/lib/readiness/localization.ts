@@ -444,33 +444,42 @@ export function signalConfidenceDefinition(locale: Locale): string {
 }
 
 export function evidenceStatusLabel(locale: Locale, status: "provided" | "missing" | "unclear" | "typically_required"): string {
+  // The report has no document upload and reviews no documents: "provided" only ever means the visitor ENTERED
+  // information in the form, so it is labelled "Information entered", never "Provided".
   if (locale === "tr") {
-    if (status === "provided") return "Sağlandı";
-    if (status === "missing") return "Eksik";
+    if (status === "provided") return "Bilgi girildi";
+    if (status === "missing") return "Girilmedi";
     if (status === "typically_required") return "Tipik olarak gerekir";
-    return "Net değil";
+    return "Girilen bilgilerden net değil";
   }
   if (locale === "zh-Hans") {
-    if (status === "provided") return "已提供";
-    if (status === "missing") return "缺失";
+    if (status === "provided") return "已填写信息";
+    if (status === "missing") return "未填写";
     if (status === "typically_required") return "通常需要";
-    return "不明确";
+    return "根据已填信息不明确";
   }
-  if (status === "provided") return "Provided";
-  if (status === "missing") return "Missing";
+  if (status === "provided") return "Information entered";
+  if (status === "missing") return "Not entered";
   if (status === "typically_required") return "Typically required";
-  return "Unclear";
+  return "Unclear from the information entered";
 }
 
-/** What "Evidence status" tracks: whether a specific document/proof point has actually been supplied in this profile, as opposed to Evidence load (how much is required overall). */
+/** The one statement that must accompany any evidence status: nothing was uploaded, nothing was reviewed. */
+export function noDocumentsReviewedNote(locale: Locale): string {
+  if (locale === "tr") return "Bu rapor belge almaz ve belge incelemez: aşağıdaki durumlar yalnızca formda girdiğiniz bilgileri yansıtır.";
+  if (locale === "zh-Hans") return "本报告不接收也不审核任何文件：以下状态仅反映您在表单中填写的信息。";
+  return "No documents were uploaded or reviewed for this report: the statuses below only reflect what was entered in the form.";
+}
+
+/** What "Evidence status" tracks: whether the visitor ENTERED information about a proof point -- never whether a document was supplied or verified. */
 export function evidenceStatusDefinition(locale: Locale): string {
   if (locale === "tr") {
-    return "Kanıt durumu, belirli bir belge veya kanıt noktasının bu profilde şu an sağlanıp sağlanmadığını gösterir -- toplamda ne kadar kanıt gerektiğini değil (bkz. Kanıt Yükü).";
+    return "Kanıt durumu, belirli bir kanıt noktası hakkında formda bilgi girilip girilmediğini gösterir; belge sağlandığını veya doğrulandığını göstermez. Hiçbir belge incelenmemiştir.";
   }
   if (locale === "zh-Hans") {
-    return "证据状态表示某项具体文件或证明是否已在该档案中提供——而非总体所需证据的多少（见“证据负荷”）。";
+    return "证据状态表示您是否在表单中填写了某项证明的相关信息，并不表示已提供或核实任何文件。未审核任何文件。";
   }
-  return "Evidence status shows whether a specific document or proof point has actually been supplied in this profile -- not how much evidence is required overall (see Evidence load).";
+  return "Evidence status shows whether information about a proof point was entered in the form -- not whether a document was supplied or verified. No documents were reviewed.";
 }
 
 /** What "Points gap" means wherever it appears in generated prose: the numeric distance between the profile's estimated points and the benchmark a pathway currently requires. */

@@ -117,6 +117,7 @@ import type {
   KeyVisaRequirement,
   Locale,
   OccupationIndication,
+  PartnerAnswer,
   PathwayComparison,
   PathwayFriction,
   PathwayRelevance,
@@ -3540,13 +3541,14 @@ const AGE_BRACKET_LABEL: Record<ReturnType<typeof parseAgeOption> & string, { en
  * than guessed at 5 or 10 -- never award points the form can't actually
  * confirm.
  */
-function sponsorOrFamilyToPartnerOption(sponsorOrFamily: string | undefined, locale: Locale): { option: PartnerOption; reason: string } {
+function sponsorOrFamilyToPartnerOption(sponsorOrFamily: string | undefined, locale: Locale): { option: PartnerOption; reason: string; answer: PartnerAnswer } {
   const isTr = locale === "tr";
   const isZh = locale === "zh-Hans";
   const value = (sponsorOrFamily ?? "").trim();
 
   if (value === "Single / No Dependants") {
     return {
+      answer: "single",
       option: "single_or_partner_au_citizen_or_pr",
       reason: isTr
         ? "Bekar / bağımlı yok olarak belirtildi"
@@ -3556,18 +3558,21 @@ function sponsorOrFamilyToPartnerOption(sponsorOrFamily: string | undefined, loc
     };
   }
   if (value === "Partner / Dependants WITHOUT Functional English") {
+    // A STATED answer ("no Functional English"), worth 0 partner points -- not the same as "not provided".
     return {
+      answer: "no_functional_english",
       option: "none_or_unsure",
       reason: isTr
-        ? "Partner Functional English koşulunu karşılamıyor"
+        ? "Partner İngilizce durumu: kullanıcı Functional English olmadığını bildirdi"
         : isZh
-          ? "伴侣不具备 Functional English"
-          : "Partner does not meet Functional English",
+          ? "伴侣英语情况：用户报告伴侣没有 Functional English"
+          : "Partner English status: user reported no Functional English",
     };
   }
   // Intake options mirror the points test's partner categories (full-check form): +10 / +5 / 0, plus single (+10).
   if (value === "Partner with Competent English and positive Skills Assessment") {
     return {
+      answer: "skilled",
       option: "partner_skilled",
       reason: isTr
         ? "Partner Competent English ve olumlu beceri değerlendirmesine sahip"
@@ -3578,6 +3583,7 @@ function sponsorOrFamilyToPartnerOption(sponsorOrFamily: string | undefined, loc
   }
   if (value === "Partner with Competent English only") {
     return {
+      answer: "competent_english",
       option: "partner_competent_english",
       reason: isTr ? "Partner yalnızca Competent English'e sahip" : isZh ? "伴侣仅具备 Competent English" : "Partner has Competent English only",
     };
@@ -3585,6 +3591,7 @@ function sponsorOrFamilyToPartnerOption(sponsorOrFamily: string | undefined, loc
   // Older reports: this option was removed from the form (Functional English earns no partner points).
   if (value === "Partner / Dependants with Functional English") {
     return {
+      answer: "no_functional_english",
       option: "none_or_unsure",
       reason: isTr
         ? "Functional English, puan tablosundaki Competent English eşiğinin altında; partnerin beceri değerlendirmesi de forma girilmedi, bu yüzden puan verilmedi"
@@ -3594,8 +3601,9 @@ function sponsorOrFamilyToPartnerOption(sponsorOrFamily: string | undefined, loc
     };
   }
   return {
+    answer: "unknown",
     option: "none_or_unsure",
-    reason: isTr ? "Partner durumu girilmedi" : isZh ? "未提供伴侣情况" : "Partner status not provided",
+    reason: isTr ? "Partner durumu girilmedi — partner puanı değerlendirilmedi" : isZh ? "未提供伴侣情况——伴侣分数未评估" : "Partner status not provided — partner points not assessed",
   };
 }
 
@@ -3649,6 +3657,16 @@ function buildAuPointsActionPlan(input: ReadinessInput, subclasses: readonly str
     partnerStatusProvided: Boolean((input.sponsorOrFamily ?? "").trim()),
     subclasses,
   });
+}
+
+/** The note on a factor the visitor entered nothing for: "not assessed" (points arithmetic unchanged: nothing to count). */
+function notAssessedNote(kind: "employment", locale: Locale): string {
+  void kind;
+  return locale === "tr"
+    ? "İstihdam puanları değerlendirilmedi — istihdam bilgisi girilmedi"
+    : locale === "zh-Hans"
+      ? "工作经验分数未评估——未填写工作经验"
+      : "Employment points not assessed — employment not entered";
 }
 
 function buildPointsEstimate(input: ReadinessInput, locale: Locale): PointsEstimate {
@@ -3786,6 +3804,7 @@ function buildPointsEstimate(input: ReadinessInput, locale: Locale): PointsEstim
       // DHA absolute age gate: applicants 45+ get 0 age points and cannot lodge an EOI.
       points: isOverAgeLimit ? 0 : result.breakdown.age,
       max: 30,
+      status: ageOption ? "calculated" : "not_assessed",
       note: isOverAgeLimit
         ? (isTr ? "Yaş sınırı aşıldı (45+) — 0 puan, EOI uygun değil"
           : isZh ? "超过年龄上限（45岁）— 0分，不符合EOI条件"
@@ -3803,6 +3822,7 @@ function buildPointsEstimate(input: ReadinessInput, locale: Locale): PointsEstim
         : `English Language (${input.englishLevel || "Not Provided"})`,
       points: result.breakdown.english,
       max: 20,
+      status: englishOption ? "calculated" : "not_assessed",
       note: englishOption
         ? (isTr ? "Girilen seviye: " : isZh ? "已提供级别：" : "Provided level: ") + input.englishLevel
         : isTr ? "Test sonucu girilmedi" : isZh ? "未提供考试成绩" : "Test score not provided",
@@ -3814,7 +3834,10 @@ function buildPointsEstimate(input: ReadinessInput, locale: Locale): PointsEstim
         : `Skilled Employment (Overseas${input.offshoreExperienceYears !== undefined ? `, ${input.offshoreExperienceYears} yrs` : ""})`,
       points: (canApplyExperiencePoints && hasSkillsAssessmentDone) ? result.breakdown.overseasEmployment : 0,
       max: 15,
-      note: !hasSkillsAssessmentDone
+      status: input.offshoreExperienceYears === undefined ? "not_assessed" : "calculated",
+      note: input.offshoreExperienceYears === undefined
+        ? notAssessedNote("employment", locale)
+        : !hasSkillsAssessmentDone
         ? (isTr ? "Beceri değerlendirmesi gerekli — puan talep edilemez"
           : isZh ? "需要技能评估 — 无法计分"
           : "Assessment Required — points cannot be claimed")
@@ -3822,10 +3845,7 @@ function buildPointsEstimate(input: ReadinessInput, locale: Locale): PointsEstim
           ? (isTr ? "Meslek doğrulanamadığı için uygulanmadı" : isZh ? "职业无法核验，未计分" : "Not applied -- occupation could not be verified")
           : input.offshoreExperienceYears !== undefined
             ? `${input.offshoreExperienceYears} ${isTr ? "yıl" : isZh ? "年" : "yrs"}${employmentCapNote}`
-            // Left blank -- a valid claim of zero years, not missing data
-            // (see state-nomination.ts's buildPartialDataWarning, which
-            // stopped flagging this as an error for the same reason).
-            : isTr ? "Beyan Edilen Tecrübe: 0 Yıl" : isZh ? "申报经验：0 年" : "Claimed Experience: 0 Years",
+            : "",
     },
     {
       label: isTr
@@ -3834,7 +3854,10 @@ function buildPointsEstimate(input: ReadinessInput, locale: Locale): PointsEstim
         : `Skilled Employment (Australian${input.onshoreExperienceYears !== undefined ? `, ${input.onshoreExperienceYears} yrs` : ""})`,
       points: (canApplyExperiencePoints && hasSkillsAssessmentDone) ? result.breakdown.australianEmployment : 0,
       max: 20,
-      note: !hasSkillsAssessmentDone
+      status: input.onshoreExperienceYears === undefined ? "not_assessed" : "calculated",
+      note: input.onshoreExperienceYears === undefined
+        ? notAssessedNote("employment", locale)
+        : !hasSkillsAssessmentDone
         ? (isTr ? "Beceri değerlendirmesi gerekli — puan talep edilemez"
           : isZh ? "需要技能评估 — 无法计分"
           : "Assessment Required — points cannot be claimed")
@@ -3842,10 +3865,7 @@ function buildPointsEstimate(input: ReadinessInput, locale: Locale): PointsEstim
           ? (isTr ? "Meslek doğrulanamadığı için uygulanmadı" : isZh ? "职业无法核验，未计分" : "Not applied -- occupation could not be verified")
           : input.onshoreExperienceYears !== undefined
             ? `${input.onshoreExperienceYears} ${isTr ? "yıl" : isZh ? "年" : "yrs"}${employmentCapNote}`
-            // Left blank -- a valid claim of zero years, not missing data
-            // (see state-nomination.ts's buildPartialDataWarning, which
-            // stopped flagging this as an error for the same reason).
-            : isTr ? "Beyan Edilen Tecrübe: 0 Yıl" : isZh ? "申报经验：0 年" : "Claimed Experience: 0 Years",
+            : "",
     },
     {
       label: isTr
@@ -3862,6 +3882,7 @@ function buildPointsEstimate(input: ReadinessInput, locale: Locale): PointsEstim
       // points when NEITHER signal confirms recognition.
       points: (isOverseasQualification && !hasSkillsAssessmentDone) ? 0 : result.breakdown.education,
       max: 20,
+      status: hasEducationInput ? "calculated" : "not_assessed",
       note: (isOverseasQualification && !hasSkillsAssessmentDone)
         ? (isTr ? "Geçici — derecenizin beceri değerlendirmenizce Avustralya seviyesiyle karşılaştırılabilir olarak tanınmasına bağlıdır"
           : isZh ? "暂定——取决于您的技能评估是否认可您的学位与澳大利亚水平相当"
@@ -3881,6 +3902,7 @@ function buildPointsEstimate(input: ReadinessInput, locale: Locale): PointsEstim
         : `Partner Skills (${partner.reason})`,
       points: result.breakdown.partner,
       max: 10,
+      status: partner.answer === "unknown" ? "not_assessed" : "calculated",
       note: partner.reason,
     },
   ];
@@ -3988,12 +4010,21 @@ function buildPointsEstimate(input: ReadinessInput, locale: Locale): PointsEstim
       ? `实际分数取决于个人情况；NAATI、Professional Year、州/偏远地区提名等潜在加分见下方“加分场景模拟”。${australianOriginPointsDisclaimer ? ` ${australianOriginPointsDisclaimer}` : ""}${specialistEducationNoteCaveat ? ` ${specialistEducationNoteCaveat}` : ""}`
       : `Actual points position depends on individual circumstances; see the Points Booster Simulator below for potential additions like NAATI, Professional Year, and state/regional nomination.${australianOriginPointsDisclaimer ? ` ${australianOriginPointsDisclaimer}` : ""}${specialistEducationNoteCaveat ? ` ${specialistEducationNoteCaveat}` : ""}`;
 
+  // Factors the visitor entered nothing for add nothing to the total (the arithmetic is unchanged) and are said to be "not assessed".
+  const notAssessedSentence = breakdown.some((b) => b.status === "not_assessed")
+    ? isTr
+      ? " “Değerlendirilmedi” olarak işaretlenen unsurlar girilmedi ve toplama dahil değildir."
+      : isZh
+        ? " 标为“未评估”的项目未填写，不计入总分。"
+        : " Factors marked “not assessed” were not entered and are not included in the total."
+    : "";
+
   return {
     appliesTo: ["189", "190", "491"],
     estimatedPoints,
     potentialPoints,
     breakdown,
-    note,
+    note: `${note}${notAssessedSentence}`,
     occupationNote,
     isEoiEligible,
     eoiIneligibilityReason,

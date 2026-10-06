@@ -558,7 +558,12 @@ export function buildReportView(args: ReportViewArgs): ReportView {
 
   // Points.
   const pe = report.pointsEstimate;
-  const breakdownRows = (pe?.breakdown ?? []).map((b) => [b.label, String(b.points), b.max !== undefined ? String(b.max) : "", b.max !== undefined && b.points >= b.max ? "—" : (b.note || "—")]);
+  const breakdownRows = (pe?.breakdown ?? []).map((b) =>
+    // A factor the visitor entered nothing for is "not assessed", never a 0.
+    b.status === "not_assessed"
+      ? [b.label, T(locale, "not assessed", "değerlendirilmedi", "未评估"), b.max !== undefined ? String(b.max) : "", b.note || "—"]
+      : [b.label, String(b.points), b.max !== undefined ? String(b.max) : "", b.max !== undefined && b.points >= b.max ? "—" : (b.note || "—")],
+  );
   const actions: PointsAction[] = pe?.actionPlan?.actions ?? [];
   const ways: WayRow[] = actions.map((a) => ({
     action: a.onlyForSubclass && !a.label.includes(a.onlyForSubclass) ? `${a.label} (${T(locale, "subclass", "subclass", "子类")} ${a.onlyForSubclass})` : a.label,

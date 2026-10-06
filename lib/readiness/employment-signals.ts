@@ -62,12 +62,12 @@ export function buildEmploymentExperienceCaveat(
     }
 
     if (locale === "tr") {
-      return `İş deneyimi sağlanmadı — bu durum sonucu önemli ölçüde değiştirebilir. Nitelikli iş deneyimi toplamda 20 puana kadar katkı sağlayabilir (üst sınır uygulanır). ${buildEmploymentReferenceTable(locale)} İlgili deneyiminiz varsa daha doğru bir sonuç için bu alanları doldurun; mevcut puanınız şu anda sıfır deneyim varsayar.`;
+      return `İş deneyimi sağlanmadı — bu durum sonucu önemli ölçüde değiştirebilir. Nitelikli iş deneyimi toplamda 20 puana kadar katkı sağlayabilir (üst sınır uygulanır). ${buildEmploymentReferenceTable(locale)} İlgili deneyiminiz varsa daha doğru bir sonuç için bu alanları doldurun; istihdam puanları değerlendirilmedi ve gösterilen toplama dahil değildir.`;
     }
     if (locale === "zh-Hans") {
-      return `未提供工作经验——这可能显著改变结果。技术工作经验最多可增加 20 分（适用合计上限）。${buildEmploymentReferenceTable(locale)} 如果你有相关经验，请补充以获得更准确的评估；当前分数按零经验处理。`;
+      return `未提供工作经验——这可能显著改变结果。技术工作经验最多可增加 20 分（适用合计上限）。${buildEmploymentReferenceTable(locale)} 如果你有相关经验，请补充以获得更准确的评估；工作经验分数未评估，不计入所示总分。`;
     }
-    return `Employment experience not provided — this may significantly change your result. Skilled employment experience can add up to 20 points (capped). ${buildEmploymentReferenceTable(locale)} If you have relevant experience, add it above to get a more accurate result — your current score assumes zero.`;
+    return `Employment experience not provided — this may significantly change your result. Skilled employment experience can add up to 20 points (capped). ${buildEmploymentReferenceTable(locale)} If you have relevant experience, add it above to get a more accurate result — employment points are not assessed and are not included in the total shown.`;
   }
 
   if (signals.missingOnshore && !signals.missingOffshore) {

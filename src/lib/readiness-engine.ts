@@ -706,7 +706,7 @@ function localizeBaseReportForZh(report: ReadinessReport): ReadinessReport {
             note: cleanNote,
           };
         }),
-        note: "这是基于年龄与英语能力的初步估算；海外工作经验、澳洲工作经验、学历、加分项和伴侣因素尚未完整纳入。实际分数需以个人材料和官方规则为准。",
+        note: `这是基于年龄与英语能力的初步估算；海外工作经验、澳洲工作经验、学历、加分项和伴侣因素尚未完整纳入。实际分数需以个人材料和官方规则为准。${report.pointsEstimate.breakdown.some((b) => b.status === "not_assessed") ? " 标为“未评估”的项目未填写，不计入总分。" : ""}`,
       }
     : undefined;
 

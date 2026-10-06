@@ -14,6 +14,8 @@ export function getSkillsAssessmentStatus(
   assessingAuthority?: string,
   firstName?: string,
   isGeneralAuthorityFallback?: boolean,
+  /** The visitor's explicit answer; "unknown" = not answered (never shown as "Not Done"). */
+  answer?: "yes" | "no" | "unknown",
 ): {
   title: string;
   status: string;
@@ -74,7 +76,22 @@ export function getSkillsAssessmentStatus(
     };
   }
 
-  // Australia
+  // Australia: an unanswered question is "not provided", not "Not Done".
+  if (!assessmentDone && answer === "unknown") {
+    return {
+      title: isTr ? "Beceri Değerlendirmesi" : isZh ? "技能评估" : "Skills Assessment",
+      status: isTr ? "Belirtilmedi" : isZh ? "未填写" : "Not provided",
+      statusColor: "amber",
+      details: [
+        isTr ? `Meslek: ${occupation}` : isZh ? `职业：${occupation}` : `Occupation: ${occupation}`,
+        isTr
+          ? "Beceri değerlendirmesinin tamamlanıp tamamlanmadığı yanıtlanmadı. Olumlu bir değerlendirme teyit edilene kadar istihdam ve yurt dışı eğitim puanları değerlendirilmez."
+          : isZh
+            ? "未回答是否已完成技能评估。在确认获得正面评估之前，工作经验和海外学历分数不予评估。"
+            : "Whether a skills assessment has been completed was not answered. Employment and overseas-education points are not assessed until a positive assessment is confirmed.",
+      ],
+    };
+  }
   const name = firstName?.trim();
   const namePrefix = name ? `${name}, ` : "";
   const namePrefixTr = name ? `${name}, ` : "";

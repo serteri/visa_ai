@@ -30,7 +30,7 @@ import {
 } from "@/lib/state-intelligence";
 import { canonicalizeOccupationInput, resolveOccupationDisplayName } from "@/lib/readiness/occupation-eligibility";
 import { computeInternalLeadTier } from "@/lib/readiness/internal-lead-tier";
-import { AU_STATE_CODES, isAuStateCode, isEnglishLevel, isQualificationLevel, parseExperienceYears } from "@/lib/intake/fields";
+import { AU_STATE_CODES, isAuStateCode, isEnglishLevel, isQualificationLevel, parseExperienceYears, resolveSkillsAssessmentAnswer } from "@/lib/intake/fields";
 import type { ReadinessInput, ReadinessReport } from "@/lib/readiness/types";
 import { generatePremiumStrategy } from "@/lib/ai/generate-premium-strategy";
 import { retrieveVisaContext } from "@/lib/ai/retrieve-visa-context";
@@ -727,17 +727,9 @@ export async function submitFullCheckWaitlist(
   const qualificationLevel = isQualificationLevel(qualificationLevelRaw) ? qualificationLevelRaw : undefined;
   const annualSalaryAudRaw = String(formData.get("annualSalaryAud") ?? "").trim();
   const annualSalaryAud = annualSalaryAudRaw ? Number(annualSalaryAudRaw) : undefined;
-  // Skills assessment status — captured from the form radio button
-  const skillsAssessmentRaw = String(formData.get("skillsAssessment") ?? "").trim();
-  const skillsAssessmentDone = skillsAssessmentRaw === "yes";
-
-  // Bridge: engine uses occupationConfirmed for hasSkillsAssessment check.
-  // When skillsAssessment is explicitly answered, override occupationConfirmed
-  // so the engine's points calculation reflects the user's actual assessment status.
-  let occupationConfirmedRaw = String(formData.get("occupationConfirmed") ?? "").trim();
-  if (skillsAssessmentRaw === "yes" || skillsAssessmentRaw === "no") {
-    occupationConfirmedRaw = skillsAssessmentDone ? "yes" : "no";
-  }
+  // Skills assessment: the explicit radio (no default selection), else the older "Occupation confirmed?" select; an
+  // unanswered question is stored as unknown ("" -> undefined), never as "no" (lib/intake/fields.ts).
+  const occupationConfirmedRaw = resolveSkillsAssessmentAnswer(formData.get("skillsAssessment"), formData.get("occupationConfirmed"));
 
   const qualificationAwardedInAustraliaResult = optionalYesNoSchema.safeParse(
     formData.get("qualificationAwardedInAustralia")
@@ -825,7 +817,7 @@ export async function submitFullCheckWaitlist(
     : undefined;
   const applicationStageRaw = String(formData.get("applicationStage") ?? "").trim();
   const applicationStage = (["planning", "skills_assessment_in_progress", "eoi_submitted", "invited"] as const).find((v) => v === applicationStageRaw) ?? "planning";
-  const occupationConfirmed = occupationConfirmedRaw || String(formData.get("occupationConfirmed") ?? "").trim();
+  const occupationConfirmed = occupationConfirmedRaw;
   const hasGraduateVisaPathwayIntentRaw = String(formData.get("hasGraduateVisaPathwayIntent") ?? "").trim();
   const hasGraduateVisaPathwayIntent =
     hasGraduateVisaPathwayIntentRaw === "yes"

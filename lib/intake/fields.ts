@@ -103,3 +103,16 @@ export const INTAKE_COUNTRIES = [
   { code: "ES", label: { en: "Spain", tr: "İspanya", "zh-Hans": "西班牙" } },
   { code: "OTHER", label: { en: "Other", tr: "Diğer", "zh-Hans": "其他" } },
 ] as const;
+
+/**
+ * The skills-assessment answer stored on the report (ReadinessInput.occupationConfirmed): "yes" / "no" only when the
+ * visitor answered, otherwise "" (unknown). The explicit radio wins; the older "Occupation confirmed?" select is used only
+ * when the radio is unanswered. Anything else posted is ignored -- an unanswered question is never stored as "no".
+ */
+export function resolveSkillsAssessmentAnswer(skillsAssessmentRaw: unknown, occupationConfirmedRaw: unknown): "yes" | "no" | "" {
+  const norm = (v: unknown) => String(v ?? "").trim().toLowerCase();
+  const radio = norm(skillsAssessmentRaw);
+  if (radio === "yes" || radio === "no") return radio;
+  const select = norm(occupationConfirmedRaw);
+  return select === "yes" || select === "no" ? select : "";
+}

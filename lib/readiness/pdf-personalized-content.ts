@@ -927,6 +927,7 @@ export function renderPersonalizedContent(ctx: PDFContext): void {
     resolvedAuthorityName,
     userInputSummary.name,
     isGeneralAuthorityFallback,
+    report.assessmentState.inputStatus?.skillsAssessment,
   );
 
   addSectionHeading("", skillsStatus.title);

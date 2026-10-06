@@ -238,7 +238,8 @@ export function FullCheckWaitlistForm({
   const [qualificationAwardedInAustralia, setQualificationAwardedInAustralia] = useState("");
   const [qualificationRegionalAustralia, setQualificationRegionalAustralia] = useState("");
   const [specialistEducationStemResponse, setSpecialistEducationStemResponse] = useState("");
-  const [skillsAssessment, setSkillsAssessment] = useState("no");
+  // No default: an unanswered question is stored as unknown, never as "no".
+  const [skillsAssessment, setSkillsAssessment] = useState("");
   const [occupationConfirmedSel, setOccupationConfirmedSel] = useState("");
   const [isQualificationRecognized, setIsQualificationRecognized] = useState("");
   const [visaInterest, setVisaInterest] = useState(initialValues.visaInterest ?? "");
@@ -293,7 +294,8 @@ export function FullCheckWaitlistForm({
     { value: "Single / No Dependants", label: txt("Bekar (+10 puan)", "Single (+10 pts)", "单身（+10 分）") },
     { value: "Partner with Competent English and positive Skills Assessment", label: txt("Partner: Competent English VE olumlu Beceri Değerlendirmesi (+10 puan)", "Partner with Competent English AND positive Skills Assessment (+10 pts)", "伴侣：具备 Competent English 且技能评估结果为正面（+10 分）") },
     { value: "Partner with Competent English only", label: txt("Partner: yalnızca Competent English (+5 puan)", "Partner with Competent English only (+5 pts)", "伴侣：仅具备 Competent English（+5 分）") },
-    { value: "Partner / Dependants WITHOUT Functional English", label: txt("Partner: işlevsel İngilizcesi yok / uygun değil (0 puan)", "Partner with NO functional English / Not eligible (0 pts)", "伴侣：无功能性英语 / 不符合条件（0 分）") },
+    { value: "Partner / Dependants WITHOUT Functional English", label: txt("Partner: işlevsel İngilizcesi yok (0 puan)", "Partner with no Functional English (0 pts)", "伴侣：没有功能性英语（0 分）") },
+    { value: "Not provided", label: txt("Emin değilim / belirtmek istemiyorum (partner puanı değerlendirilmez)", "Not sure / prefer not to say (partner points not assessed)", "不确定 / 不愿说明（不评估伴侣分数）") },
   ];
 
   const fieldClassName = "h-11 w-full rounded-none border-0 border-b border-slate-300 bg-transparent px-1 text-sm text-slate-900 placeholder:text-gray-500 transition-colors outline-none focus-visible:border-[#53917E]";

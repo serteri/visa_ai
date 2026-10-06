@@ -203,9 +203,29 @@ export type KeyVisaRequirement = {
   items: string[];
 };
 
+/**
+ * What the visitor told us, per points factor -- never a value the system supplied. "not_entered" is shown as
+ * "not assessed" / "not provided", never as 0 years, "No", or a status. The points arithmetic is unchanged (a factor with
+ * nothing to count adds nothing); only the labelling distinguishes "not provided" from a stated zero or "no".
+ */
+export type SkillsAssessmentAnswer = "yes" | "no" | "unknown";
+export type PartnerAnswer = "single" | "skilled" | "competent_english" | "no_functional_english" | "unknown";
+export type EnteredStatus = "entered" | "not_entered";
+export type InputStatus = {
+  skillsAssessment: SkillsAssessmentAnswer;
+  overseasEmployment: EnteredStatus;
+  australianEmployment: EnteredStatus;
+  partner: PartnerAnswer;
+  english: EnteredStatus;
+  education: EnteredStatus;
+  age: EnteredStatus;
+};
+
 export type PointsBreakdownItem = {
   label: string;
   points: number;
+  /** "not_assessed": the visitor entered nothing for this factor, so no points were assessed (the row shows no figure). */
+  status?: "calculated" | "not_assessed";
   /** Maximum points available in this category (e.g. Age's max is 30), for the "Maximum" column of the points breakdown table. Undefined for categories without a fixed table maximum. */
   max?: number;
   note?: string;
@@ -632,6 +652,8 @@ export type AssessmentState = {
   pathwayPoints: Record<"189" | "190" | "491", { base: number; bonus: number; total: number }>;
   /** The single points-test minimum (65) each pathway is compared against. Same value for 189/190/491 today, but kept per-pathway so a future subclass-specific threshold doesn't require touching every reader. */
   referenceBenchmarks: Record<"189" | "190" | "491", number>;
+  /** What the visitor entered per points factor (see InputStatus); absent on reports stored before it existed. */
+  inputStatus?: InputStatus;
   /** Single source of truth for the Employer Sponsorship module (lib/readiness/pdf-content/employer-sponsorship.ts). See EmployerSponsorshipSignal. */
   employerSponsorship: EmployerSponsorshipSignal;
 };
