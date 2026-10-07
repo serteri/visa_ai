@@ -277,6 +277,7 @@ export function FullCheckInteractiveSection({
   isFreeActive,
   remainingSpots,
   paidCheckoutEnabled = false,
+  canadaReportEnabled = false,
 }: {
   locale: string;
   formHeader: ReactNode;
@@ -292,6 +293,8 @@ export function FullCheckInteractiveSection({
   remainingSpots: number;
   /** Server-side paid-checkout flag (lib/readiness/paid-checkout.ts); anything but true is the free beta. */
   paidCheckoutEnabled?: boolean;
+  /** Server-side Canada switch (lib/readiness/report-mode.ts); off = Canada is not offered during the beta. */
+  canadaReportEnabled?: boolean;
 }) {
   const loc: Locale = locale === "tr" ? "tr" : locale === "zh-Hans" ? "zh-Hans" : "en";
   const isTr = loc === "tr";
@@ -299,7 +302,7 @@ export function FullCheckInteractiveSection({
   const tx = (en: string, tr: string, zh: string) => tx3(loc, en, tr, zh);
 
   const [selectedCountry, setSelectedCountry] = useState<SupportedCountry>(
-    isSupportedCountry(initialValues.targetCountry) ? initialValues.targetCountry : defaultCountry
+    isSupportedCountry(initialValues.targetCountry) && (initialValues.targetCountry !== "CA" || canadaReportEnabled) ? initialValues.targetCountry : defaultCountry
   );
 
   const comparisonRows = getComparisonRows(loc, selectedCountry);
@@ -323,6 +326,7 @@ export function FullCheckInteractiveSection({
             isFreeActive={isFreeActive}
             remainingSpots={remainingSpots}
             paidCheckoutEnabled={paidCheckoutEnabled}
+            canadaReportEnabled={canadaReportEnabled}
             onCountryChange={setSelectedCountry}
           />
         </div>

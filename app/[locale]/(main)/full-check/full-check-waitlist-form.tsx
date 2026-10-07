@@ -133,6 +133,7 @@ export function FullCheckWaitlistForm({
   isFreeActive = true,
   remainingSpots = 0,
   paidCheckoutEnabled = false,
+  canadaReportEnabled = false,
   onCountryChange,
 }: {
   locale: string;
@@ -140,6 +141,7 @@ export function FullCheckWaitlistForm({
   isFreeActive?: boolean;
   remainingSpots?: number;
   paidCheckoutEnabled?: boolean;
+  canadaReportEnabled?: boolean;
   onCountryChange?: (country: SupportedCountry) => void;
 }) {
   const isTr = locale === "tr";
@@ -197,7 +199,7 @@ export function FullCheckWaitlistForm({
   const [state, formAction, isPending] = useActionState(submitFullCheckWaitlist, initialState);
 
   const [selectedCountry, setSelectedCountry] = useState<SupportedCountry>(
-    isSupportedCountry(initialValues.targetCountry) ? (initialValues.targetCountry as SupportedCountry) : defaultCountry
+    isSupportedCountry(initialValues.targetCountry) && (initialValues.targetCountry !== "CA" || canadaReportEnabled) ? (initialValues.targetCountry as SupportedCountry) : defaultCountry
   );
   const [currentCountry, setCurrentCountry] = useState(initialValues.currentCountry ?? "");
   const [passportCountry, setPassportCountry] = useState(initialValues.passportCountry ?? "");
@@ -514,7 +516,7 @@ export function FullCheckWaitlistForm({
 
           {/* Step content — CSS hidden keeps all mounted in DOM */}
           <div className={currentStep === 1 ? "" : "hidden"}>
-            <Step1Personal locale={locale} selectedCountry={selectedCountry} onCountryChange={(c) => { setSelectedCountry(c); onCountryChange?.(c); }} initialValues={initialValues} currentCountry={currentCountry} setCurrentCountry={setCurrentCountry} passportCountry={passportCountry} setPassportCountry={setPassportCountry} migrationGoals={migrationGoals} toggleMigrationGoal={toggleMigrationGoal} visaInterest={visaInterest} setVisaInterest={setVisaInterest} nominationStream={nominationStream} setNominationStream={setNominationStream} yearsInSponsoredPosition={yearsInSponsoredPosition} setYearsInSponsoredPosition={setYearsInSponsoredPosition} courseName={courseName} setCourseName={setCourseName} courseCricosCode={courseCricosCode} setCourseCricosCode={setCourseCricosCode} courseCompletionStatus={courseCompletionStatus} setCourseCompletionStatus={setCourseCompletionStatus} courseCompletionDate={courseCompletionDate} setCourseCompletionDate={setCourseCompletionDate} preferredState={preferredState} setPreferredState={setPreferredState} state={state} fieldClassName={fieldClassName} selectClassName={selectClassName} noAutofill={noAutofill} showsCourseFields={showsCourseFields} fieldErrors={stepErrors} />
+            <Step1Personal locale={locale} canadaReportEnabled={canadaReportEnabled} selectedCountry={selectedCountry} onCountryChange={(c) => { setSelectedCountry(c); onCountryChange?.(c); }} initialValues={initialValues} currentCountry={currentCountry} setCurrentCountry={setCurrentCountry} passportCountry={passportCountry} setPassportCountry={setPassportCountry} migrationGoals={migrationGoals} toggleMigrationGoal={toggleMigrationGoal} visaInterest={visaInterest} setVisaInterest={setVisaInterest} nominationStream={nominationStream} setNominationStream={setNominationStream} yearsInSponsoredPosition={yearsInSponsoredPosition} setYearsInSponsoredPosition={setYearsInSponsoredPosition} courseName={courseName} setCourseName={setCourseName} courseCricosCode={courseCricosCode} setCourseCricosCode={setCourseCricosCode} courseCompletionStatus={courseCompletionStatus} setCourseCompletionStatus={setCourseCompletionStatus} courseCompletionDate={courseCompletionDate} setCourseCompletionDate={setCourseCompletionDate} preferredState={preferredState} setPreferredState={setPreferredState} state={state} fieldClassName={fieldClassName} selectClassName={selectClassName} noAutofill={noAutofill} showsCourseFields={showsCourseFields} fieldErrors={stepErrors} />
           </div>
           <div className={currentStep === 2 ? "" : "hidden"}>
             <Step2Career skillsAssessment={skillsAssessment} setSkillsAssessment={setSkillsAssessment} locale={locale} selectedCountry={selectedCountry} isPartner={isPartner} nocSearch={nocSearch} setNocSearch={setNocSearch} nocCode={nocCode} setNocCode={setNocCode} nocTeer={nocTeer} setNocTeer={setNocTeer} nocResults={nocResults} setNocResults={setNocResults} nocOpen={nocOpen} setNocOpen={setNocOpen} searchNoc={searchNoc} anzscoSearch={anzscoSearch} setAnzscoSearch={setAnzscoSearch} anzscoCode={anzscoCode} setAnzscoCode={setAnzscoCode} resolvedAnzscoEntry={resolvedAnzscoEntry} anzscoResults={anzscoResults} setAnzscoResults={setAnzscoResults} anzscoOpen={anzscoOpen} setAnzscoOpen={setAnzscoOpen} searchAnzsco={searchAnzsco} getLocalizedAnzscoTitle={getLocalizedAnzscoTitle} submittedOccupationValue={submittedOccupationValue} setOccupationModalOpen={setOccupationModalOpen} relationshipType={relationshipType} setRelationshipType={setRelationshipType} cohabitationDuration={cohabitationDuration} setCohabitationDuration={setCohabitationDuration} sponsorStatus={sponsorStatus} setSponsorStatus={setSponsorStatus} previousSponsorship={previousSponsorship} setPreviousSponsorship={setPreviousSponsorship} applicationLocationPreference={applicationLocationPreference} setApplicationLocationPreference={setApplicationLocationPreference} relationshipEvidence={relationshipEvidence} setRelationshipEvidence={setRelationshipEvidence} state={state} fieldClassName={fieldClassName} selectClassName={selectClassName} noAutofill={noAutofill} />

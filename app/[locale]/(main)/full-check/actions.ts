@@ -15,6 +15,7 @@ import { db } from "@/db";
 import { fullCheckUsage, fullCheckWaitlist, leads } from "@/db/schema";
 import { prisma } from "@/lib/prisma";
 import { getStripeBaseUrl } from "@/lib/stripe";
+import { CANADA_REPORT_UNAVAILABLE, isCanadaReportEnabled } from "@/lib/readiness/report-mode";
 import { defaultCountry, isSupportedCountry, isPartnerFamilySponsorship, getVisaSubclassesForGoals, type MigrationGoalId } from "@/lib/countries";
 import { generateAndSendReport, sendReportAccessLink } from "@/lib/services/report-service";
 import {
@@ -834,6 +835,11 @@ export async function submitFullCheckWaitlist(
     visaInterest,
     mainGoal,
   });
+  // Canada report generation is switched off during the beta (lib/readiness/report-mode.ts): nothing is created,
+  // stored or emailed for a Canada request; the Canada code stays in place.
+  if (targetCountry === "CA" && !isCanadaReportEnabled()) {
+    return { status: "error", error: CANADA_REPORT_UNAVAILABLE[resolvedLocale === "tr" ? "tr" : resolvedLocale === "zh-Hans" ? "zh-Hans" : "en"] };
+  }
   // Admin = a verified admin session (signed admin cookie or NextAuth ADMIN), never the typed email.
   const isAdmin = await isAdminSession();
 

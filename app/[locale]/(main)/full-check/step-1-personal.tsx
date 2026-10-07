@@ -25,6 +25,8 @@ const COUNTRIES = INTAKE_COUNTRIES;
 
 interface Step1Props {
   locale: string;
+  /** Canada is offered only when the server-side switch is on (lib/readiness/report-mode.ts). */
+  canadaReportEnabled?: boolean;
   selectedCountry: SupportedCountry;
   onCountryChange: (c: SupportedCountry) => void;
   initialValues: Record<string, string>;
@@ -68,6 +70,7 @@ export function Step1Personal({
   preferredState, setPreferredState, state, fieldClassName, selectClassName, noAutofill,
   showsCourseFields,
   fieldErrors,
+  canadaReportEnabled = false,
 }: Step1Props) {
   const isTr = locale === "tr";
   const isZh = locale === "zh-Hans";
@@ -80,6 +83,7 @@ export function Step1Personal({
     const code = searchParams.get("country");
     if (!code) return null;
     const upper = code.toUpperCase();
+    if (upper === "CA" && !canadaReportEnabled) return null;
     return ["AU", "CA"].includes(upper) ? (upper as SupportedCountry) : null;
   })();
 
@@ -109,13 +113,18 @@ export function Step1Personal({
         <Label htmlFor="waitlist-target-country">{txt("Hangi ülke için rapor istiyorsunuz?", "Which country is this report for?", "您希望针对哪个国家生成报告？")}</Label>
         <Combobox
           placeholder={txt("Ülke seçin", "Select country", "请选择国家")}
-          items={activeCountries.map(code => ({ value: code, label: countryLabels[code][isTr ? "tr" : isZh ? "zh-Hans" : "en"] }))}
+          items={activeCountries.filter((code) => code !== "CA" || canadaReportEnabled).map(code => ({ value: code, label: countryLabels[code][isTr ? "tr" : isZh ? "zh-Hans" : "en"] }))}
           value={selectedCountry}
           onChange={(val) => onCountryChange(val as SupportedCountry)}
           disabled={lockedCountry !== null}
           className={selectClassName}
         />
         <input type="hidden" name="targetCountry" value={selectedCountry} />
+        {!canadaReportEnabled && (
+          <p className="text-xs text-slate-500" data-testid="canada-unavailable">
+            {txt("Kanada raporları beta döneminde kullanılamıyor.", "Canada reports are not available during the beta.", "测试期间暂不提供加拿大报告。")}
+          </p>
+        )}
       </div>
 
       <div className="space-y-3">

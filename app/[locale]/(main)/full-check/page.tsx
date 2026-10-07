@@ -1,3 +1,4 @@
+import { isCanadaReportEnabled } from "@/lib/readiness/report-mode";
 import type { Metadata } from "next";
 import Link from "next/link";
 
@@ -86,7 +87,7 @@ export default async function FullCheckPage({ params, searchParams }: FullCheckP
   const initialValues = {
     visaInterest: query.visaInterest ?? query.preferredPathway ?? "",
     currentCountry: query.currentCountry ?? "",
-    targetCountry: isSupportedCountry(query.country?.toUpperCase()) ? query.country!.toUpperCase() : "",
+    targetCountry: isSupportedCountry(query.country?.toUpperCase()) && (query.country!.toUpperCase() !== "CA" || isCanadaReportEnabled()) ? query.country!.toUpperCase() : "",
     occupation: query.occupation ?? "",
     source: query.source ?? "full_check",
     mainGoal: buildPrefilledGoal({
@@ -116,6 +117,7 @@ export default async function FullCheckPage({ params, searchParams }: FullCheckP
 
   // Free beta unless the server-side flag is on (lib/readiness/paid-checkout.ts): no price is shown.
   const paidCheckoutEnabled = isPaidReportCheckoutEnabled();
+  const canadaReportEnabled = isCanadaReportEnabled();
 
   return (
     <main className="flex-1 pb-12">
@@ -126,6 +128,7 @@ export default async function FullCheckPage({ params, searchParams }: FullCheckP
           isFreeActive={isFreeActive}
           remainingSpots={remainingSpots}
           paidCheckoutEnabled={paidCheckoutEnabled}
+          canadaReportEnabled={canadaReportEnabled}
           formHeader={
             <>
               <div className="mb-6 flex flex-wrap items-center justify-between gap-4 border-b border-slate-200 pb-6">
