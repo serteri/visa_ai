@@ -99,9 +99,10 @@ export const metadata: Metadata = {
       "max-snippet": -1,
     },
   },
-  verification: {
-    google: "foOddNGs8xqNCNQ74vzcc0AheCIMssYqDONHUOkWgCk",
-  },
+  // Search Console: SEARCH_CONSOLE_VERIFICATION (the content value of the google-site-verification meta tag) wins. The
+  // token that was hard-coded here before the variable existed stays as the fallback so the live property does not lose
+  // verification; delete the fallback once the variable is set in every environment.
+  verification: { google: process.env.SEARCH_CONSOLE_VERIFICATION?.trim() || "foOddNGs8xqNCNQ74vzcc0AheCIMssYqDONHUOkWgCk" },
 };
 
 export const viewport: Viewport = {
