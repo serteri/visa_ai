@@ -2,11 +2,12 @@
 
 import Link from "next/link";
 import { Info, Save, Check } from "lucide-react";
-import { useMemo, useReducer, useState, useTransition } from "react";
+import { useEffect, useMemo, useReducer, useRef, useState, useTransition } from "react";
 import type { ReactNode } from "react";
 import { useSession } from "next-auth/react";
 import type { Occupation } from "@/lib/occupations";
 import { useTranslation } from "@/contexts/language-context";
+import { trackEvent } from "@/lib/analytics/events";
 import { saveCalculation } from "@/app/[locale]/(main)/dashboard/actions";
 
 // ─── DHA point tables (values + points only — labels come from translations) ──
@@ -397,6 +398,22 @@ export function PointsCalculatorClient({ locale, hideHeader, occupation }: { loc
   }
 
   const calc = useMemo(() => calculate(form), [form]);
+
+  // Analytics (no personal data): started on the first answer; completed once the core factors are all answered.
+  const startedRef = useRef(false);
+  const completedRef = useRef(false);
+  useEffect(() => {
+    const started = !!form.age || !!form.english || !!form.education || !!form.overseasExp || !!form.ausExp;
+    if (started && !startedRef.current) {
+      startedRef.current = true;
+      trackEvent("calculator_start", { calculator: "australia_points", locale, subclass: form.subclass || undefined });
+    }
+    const complete = !!form.age && !!form.english && !!form.education && (!!form.overseasExp || !!form.ausExp);
+    if (complete && !completedRef.current) {
+      completedRef.current = true;
+      trackEvent("calculator_complete", { calculator: "australia_points", locale, subclass: form.subclass || undefined });
+    }
+  }, [form, locale]);
 
   const showNomination = form.subclass === "190" || form.subclass === "491";
 

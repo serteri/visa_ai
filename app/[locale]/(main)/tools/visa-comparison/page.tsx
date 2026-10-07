@@ -1,5 +1,7 @@
 import type { Metadata } from "next";
 
+import { PageViewTracker } from "@/components/analytics/page-view-tracker";
+
 import { VisaComparisonClient } from "./VisaComparisonClient";
 
 const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL?.trim() || "http://localhost:3000";
@@ -61,5 +63,10 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 
 export default async function VisaComparisonPage({ params }: PageProps) {
   const { locale } = await params;
-  return <VisaComparisonClient locale={locale} />;
+  return (
+    <>
+      <PageViewTracker event="comparison_page_view" params={{ locale, page_type: "visa_comparison" }} />
+      <VisaComparisonClient locale={locale} />
+    </>
+  );
 }
