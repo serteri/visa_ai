@@ -1,239 +1,152 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { notFound } from "next/navigation";
-import { ArrowRight, BadgeCheck, ShieldCheck, Sparkles } from "lucide-react";
+import { notFound, permanentRedirect } from "next/navigation";
 
+import { OccupationViewTracker } from "@/components/analytics/occupation-view-tracker";
 import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { MiniCvTeaser } from "@/components/MiniCvTeaser";
-import { StateDemandRadar } from "@/components/StateDemandRadar";
-import { activeLocales, isValidLocale } from "@/lib/i18n/config";
-import {
-  buildOccupationSlug,
-  deriveSubclasses,
-  findAnzscoListEntry,
-  findOccupationById,
-  getUniqueOccupations,
-  localizedDuties,
-  localizedTitle,
-  parseOccupationCodeFromId,
-} from "@/lib/occupations/seo";
+import { activeLocales, isValidLocale, type Locale } from "@/lib/i18n/config";
+import { occupationPageContent } from "@/lib/occupations/page-content";
+import { buildOccupationSlug, findOccupationById, getUniqueOccupations } from "@/lib/occupations/seo";
+import { pageAlternates, publicPath, publicUrl, SITE_ORIGIN } from "@/lib/seo/urls";
 
-const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL?.trim() || "http://localhost:3000";
-
-const tx = (locale: string, zh: string, tr: string, en: string) =>
-  locale === "tr" ? tr : locale === "zh-Hans" ? zh : en;
-
-// SSG: pre-renders every {locale} x {eligible occupation} combination at
-// build time instead of rendering on-demand per request. Uses
-// getUniqueOccupations() (not the raw 1464-row occupations.json array)
-// specifically so this generates the exact same set of pages that
-// findOccupationById() will actually resolve at request time -- that
-// function excludes isEligibleForMigration:false rows and dedupes by
-// anzsco_code, so generating params for the raw array would build pages
-// for slugs that immediately 404 on visit.
+// SSG: every {locale} x {listed occupation} page is pre-rendered at build time. getUniqueOccupations() is the same set
+// findOccupationById() resolves, so no generated slug 404s.
 export function generateStaticParams() {
   const occupations = getUniqueOccupations();
-
-  return activeLocales.flatMap((locale) =>
-    occupations.map((occupation) => ({
-      locale,
-      id: buildOccupationSlug(occupation),
-    }))
-  );
+  return activeLocales.flatMap((locale) => occupations.map((occupation) => ({ locale, id: buildOccupationSlug(occupation) })));
 }
 
-type PageProps = {
-  params: Promise<{ locale: string; id: string }>;
-};
+type PageProps = { params: Promise<{ locale: string; id: string }> };
 
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
   const { locale, id } = await params;
-  const siteUrl = new URL(BASE_URL);
   const occupation = findOccupationById(id);
+  if (!occupation || !isValidLocale(locale)) return { robots: { index: false, follow: false } };
 
-  if (!occupation) {
-    return {
-      metadataBase: siteUrl,
-      title: "Occupation Visa Options | Logivisa",
-      description: "Occupation-specific visa options and points guidance.",
-    };
-  }
-
-  const subclasses = deriveSubclasses(occupation).join(", ") || "189, 190, 491";
-  const title = tx(
-    locale,
-    `${occupation.occupation_name} (${occupation.anzsco_code}) 签证路径与分数评估`,
-    `${occupation.occupation_name} (${occupation.anzsco_code}) Vize Yollari ve Puan Kontrolu`,
-    `${occupation.occupation_name} (${occupation.anzsco_code}) Visa Options & Points Check`
-  );
-
-  const description = tx(
-    locale,
-    `${occupation.occupation_name}（${occupation.anzsco_code}）的评估机构、相关签证子类（${subclasses}）与准备度行动建议。`,
-    `${occupation.occupation_name} (${occupation.anzsco_code}) icin degerlendirme kurumu, uygun alt siniflar (${subclasses}) ve hazirlik aksiyonlari.`,
-    `Assessing authority, relevant subclasses (${subclasses}), and readiness actions for ${occupation.occupation_name} (${occupation.anzsco_code}).`
-  );
-
+  const content = occupationPageContent(occupation, locale);
+  const path = `/occupations/${content.slug}`;
   return {
-    metadataBase: siteUrl,
-    title,
-    description,
-    alternates: {
-      canonical: `/${locale}/occupations/${id}`,
-      languages: {
-        en: `/en/occupations/${id}`,
-        tr: `/tr/occupations/${id}`,
-        "zh-Hans": `/zh-Hans/occupations/${id}`,
-      },
-    },
+    metadataBase: new URL(SITE_ORIGIN),
+    title: content.title,
+    description: content.description,
+    alternates: pageAlternates(locale, path),
+    // Thin pages (little or no unique data -- lib/occupations/richness.ts) stay out of the index until they carry some.
+    robots: content.richness.tier === "thin" ? { index: false, follow: true } : { index: true, follow: true },
     openGraph: {
-      title,
-      description,
+      title: content.title,
+      description: content.description,
       type: "article",
-      url: `/${locale}/occupations/${id}`,
-      images: [
-        {
-          url: "/og/default-og.png",
-          width: 1200,
-          height: 630,
-          alt: `${occupation.occupation_name} ${occupation.anzsco_code}`,
-        },
-      ],
+      url: publicUrl(locale, path),
+      images: [{ url: "/og/default-og.png", width: 1200, height: 630, alt: `${content.displayName} ${content.code}` }],
     },
   };
 }
 
 export default async function OccupationDetailsPage({ params }: PageProps) {
   const { locale, id } = await params;
-
   if (!isValidLocale(locale)) notFound();
 
   const occupation = findOccupationById(id);
-  const fallbackCode = parseOccupationCodeFromId(id);
+  if (!occupation) notFound();
 
-  // Trilingual title/duties come from a separate dataset (anzsco-list.json)
-  // than occupation_name/authority/visa_lists (occupations.json) -- the two
-  // aren't 1:1, so this can be null even when `occupation` is found. All
-  // vise-list/points/stat logic below still reads only from `occupation`,
-  // unchanged.
-  const anzscoEntry = findAnzscoListEntry(id);
-  const displayTitle = anzscoEntry ? localizedTitle(anzscoEntry, locale) : occupation?.occupation_name;
-  const duties = anzscoEntry ? localizedDuties(anzscoEntry, locale) : [];
+  const c = occupationPageContent(occupation, locale as Locale);
+  // One URL per occupation: a slug with the right code but different words resolves to the canonical slug.
+  if (id !== c.slug) permanentRedirect(publicPath(locale, `/occupations/${c.slug}`));
 
-  if (!occupation) {
-    const fallbackHref = fallbackCode
-      ? `/en/full-check?occupation=${encodeURIComponent(fallbackCode)}`
-      : "/en/full-check";
-
-    return (
-      <main className="ambient-bg relative flex-1 overflow-hidden py-12 sm:py-16">
-        <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top,_rgba(56,189,248,0.14),transparent_55%)]" />
-        <section className="relative mx-auto w-full max-w-4xl px-4 sm:px-6 lg:px-8">
-          <Card className="border-slate-200/80 bg-white/95 shadow-2xl shadow-slate-900/10 backdrop-blur">
-            <CardHeader className="space-y-4 pb-3 text-center">
-              <Badge variant="outline" className="mx-auto w-fit border-amber-300 bg-amber-50 text-amber-800">
-                Occupation Lookup
-              </Badge>
-              <CardTitle className="text-3xl font-extrabold tracking-tight text-slate-900 sm:text-4xl">
-                Occupation Not Found
-              </CardTitle>
-              <p className="mx-auto max-w-2xl text-sm text-slate-600 sm:text-base">
-                We could not match this occupation slug to our ANZSCO dataset. You can still run a full readiness check
-                and enter your occupation manually.
-              </p>
-            </CardHeader>
-            <CardContent className="pb-8">
-              <div className="mx-auto flex w-full max-w-xl flex-col gap-3 sm:flex-row sm:justify-center">
-                <Button asChild size="lg" className="h-14 rounded-xl px-8 text-base font-bold shadow-lg shadow-cyan-500/30">
-                  <Link href={fallbackHref}>
-                    Check Your PR Eligibility Now (Free)
-                    <ArrowRight className="ml-2 size-4" />
-                  </Link>
-                </Button>
-                <Button asChild size="lg" variant="outline" className="h-14 rounded-xl px-8 text-base font-semibold">
-                  <Link href="/en/tools/points-calculator">Open Points Calculator</Link>
-                </Button>
-              </div>
-            </CardContent>
-          </Card>
-        </section>
-      </main>
-    );
-  }
-
-  const subclasses = deriveSubclasses(occupation);
-  const fullCheckHref = `/en/full-check?occupation=${encodeURIComponent(occupation.anzsco_code)}`;
+  const row = "flex flex-col gap-1 border-b border-slate-100 py-3 sm:flex-row sm:gap-6";
+  const rowLabel = "w-full shrink-0 text-sm font-semibold text-slate-700 sm:w-64";
+  const rowValue = "text-sm text-slate-600";
 
   return (
     <main className="ambient-bg relative flex-1 overflow-hidden py-12 sm:py-16">
-      <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top,_rgba(56,189,248,0.14),transparent_55%)]" />
-
-      <section className="relative mx-auto w-full max-w-6xl space-y-8 px-4 sm:px-6 lg:px-8">
-        <header className="overflow-hidden rounded-3xl border border-slate-200/80 bg-white/95 p-8 shadow-2xl shadow-slate-900/10 backdrop-blur sm:p-12">
-          <div className="flex flex-wrap items-center justify-center gap-3 text-center">
-            <Badge variant="outline" className="border-cyan-200 bg-cyan-50 text-cyan-900">
-              ANZSCO {occupation.anzsco_code}
-            </Badge>
-            <Badge className="border border-emerald-200 bg-emerald-50 text-emerald-700 hover:bg-emerald-100">
-              <Sparkles className="mr-1 size-3.5" /> AI-Powered Strategy Landing
-            </Badge>
-          </div>
-
-          <h1 className="mx-auto mt-6 max-w-4xl text-center text-3xl font-extrabold tracking-tight text-slate-900 sm:text-5xl">
-            {tx(
-              locale,
-              `${displayTitle}（${occupation.anzsco_code}）在澳大利亚的签证选择`,
-              `${displayTitle} (${occupation.anzsco_code}) icin Avustralya'da Vize Secenekleri`,
-              `Visa Options for ${displayTitle} (${occupation.anzsco_code}) in Australia`
-            )}
-          </h1>
-
-          <p className="mx-auto mt-5 max-w-4xl text-center text-base text-slate-600 sm:text-lg">
-            {tx(
-              locale,
-              `作为 ${occupation.occupation_name}，快速了解你是否适合 189、190 和 491 签证。使用我们的 AI 工具进行分数估算，并将你的 CV 职责与官方 ANZSCO 标准进行匹配。`,
-              `${occupation.occupation_name} olarak 189, 190 ve 491 icin uygunluk gorunumunuzu hizlica inceleyin. AI destekli aracimiz puan tahmini yapar ve CV gorevlerinizi resmi ANZSCO standartlariyla eslestirir.`,
-              `Find out your eligibility for 189, 190, and 491 visas as a ${occupation.occupation_name}. Use our AI-powered tool to calculate your points and match your CV duties with official ANZSCO standards.`
-            )}
-          </p>
-
-          <div className="mt-8 flex justify-center">
-            <Button
-              asChild
-              size="lg"
-              className="h-16 rounded-2xl bg-cyan-600 px-10 text-base font-extrabold shadow-2xl shadow-cyan-600/30 transition hover:bg-cyan-500 sm:px-14 sm:text-lg"
-            >
-              <Link href={fullCheckHref}>
-                Check Your PR Eligibility Now (Free)
-                <ArrowRight className="ml-2 size-5" />
-              </Link>
-            </Button>
-          </div>
-
-          <div className="mt-6 flex flex-wrap items-center justify-center gap-4 text-xs text-slate-600 sm:text-sm">
-            <span className="inline-flex items-center gap-1.5">
-              <ShieldCheck className="size-4 text-emerald-600" />
-              ANZSCO-aligned checks
-            </span>
-            <span className="inline-flex items-center gap-1.5">
-              <BadgeCheck className="size-4 text-cyan-600" />
-              Occupation-specific score signals
-            </span>
-          </div>
+      <OccupationViewTracker occupationCode={c.code} locale={locale} />
+      <section className="relative mx-auto w-full max-w-4xl space-y-8 px-4 sm:px-6 lg:px-8">
+        <header className="rounded-3xl border border-slate-200/80 bg-white/95 p-8 shadow-xl shadow-slate-900/5 sm:p-10">
+          <Badge variant="outline" className="border-cyan-200 bg-cyan-50 text-cyan-900">
+            ANZSCO {c.code}
+          </Badge>
+          <h1 className="mt-5 text-3xl font-extrabold tracking-tight text-slate-900 sm:text-4xl">{c.h1}</h1>
+          <p className="mt-4 text-base text-slate-600">{c.intro}</p>
         </header>
 
-        {duties.length > 0 && (
+        <Card className="border-slate-200/80 bg-white/95 shadow-lg shadow-slate-900/5">
+          <CardHeader>
+            <CardTitle>
+              <h2>{c.headings.details}</h2>
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <dl>
+              <div className={row}>
+                <dt className={rowLabel}>{c.labels.code}</dt>
+                <dd className={rowValue}>{c.code}</dd>
+              </div>
+              <div className={row}>
+                <dt className={rowLabel}>{c.labels.authority}</dt>
+                <dd className={rowValue}>{c.details.authority ?? c.labels.authorityNone}</dd>
+              </div>
+              <div className={row}>
+                <dt className={rowLabel}>{c.labels.lists}</dt>
+                <dd className={rowValue}>{c.details.lists ?? c.labels.listsNone}</dd>
+              </div>
+              {c.details.subclasses.length > 0 && (
+                <div className={row}>
+                  <dt className={rowLabel}>{c.labels.subclasses}</dt>
+                  <dd className={rowValue}>{c.details.subclasses.join(", ")}</dd>
+                </div>
+              )}
+            </dl>
+          </CardContent>
+        </Card>
+
+        <Card className="border-slate-200/80 bg-white/95 shadow-lg shadow-slate-900/5">
+          <CardHeader>
+            <CardTitle>
+              <h2>{c.headings.states}</h2>
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-3">
+            {c.stateRows.length > 0 ? (
+              <div className="overflow-x-auto">
+                <table className="w-full text-left text-sm">
+                  <thead>
+                    <tr className="border-b border-slate-200 text-slate-700">
+                      <th className="py-2 pr-4 font-semibold">{c.labels.stateColumn}</th>
+                      <th className="py-2 pr-4 font-semibold">{c.labels.stateSubclasses}</th>
+                      <th className="py-2 pr-4 font-semibold">{c.labels.stateLevel}</th>
+                      <th className="py-2 font-semibold">{c.labels.checked}</th>
+                    </tr>
+                  </thead>
+                  <tbody className="text-slate-600">
+                    {c.stateRows.map((r) => (
+                      <tr key={r.state} className="border-b border-slate-100">
+                        <td className="py-2 pr-4 font-medium">{r.state}</td>
+                        <td className="py-2 pr-4">{r.subclasses.join(", ")}</td>
+                        <td className="py-2 pr-4">{r.levelLabel}</td>
+                        <td className="py-2">{r.checked}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            ) : (
+              <p className="text-sm text-slate-600">{c.stateNoData}</p>
+            )}
+            <p className="text-xs text-slate-500">{c.stateNote}</p>
+          </CardContent>
+        </Card>
+
+        {c.duties.length > 0 && (
           <Card className="border-slate-200/80 bg-white/95 shadow-lg shadow-slate-900/5">
             <CardHeader>
               <CardTitle>
-                {tx(locale, "职责说明", "Gorev Tanimlari", "Duties")}
+                <h2>{c.headings.duties}</h2>
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <ul className="list-disc space-y-2 pl-5 text-sm text-muted-foreground">
-                {duties.map((duty) => (
+              <ul className="list-disc space-y-2 pl-5 text-sm text-slate-600">
+                {c.duties.map((duty) => (
                   <li key={duty}>{duty}</li>
                 ))}
               </ul>
@@ -241,80 +154,38 @@ export default async function OccupationDetailsPage({ params }: PageProps) {
           </Card>
         )}
 
-        <Card className="border-cyan-300/90 bg-gradient-to-br from-white via-cyan-50/70 to-emerald-50/70 shadow-2xl shadow-cyan-900/10">
+        <Card className="border-slate-200/80 bg-white/95 shadow-lg shadow-slate-900/5">
           <CardHeader>
-            <CardTitle className="text-xl font-extrabold text-slate-900">
-              AI Duty Match Teaser
+            <CardTitle>
+              <h2>{c.headings.sources}</h2>
             </CardTitle>
-            <p className="text-sm text-slate-600">
-              Try a fast preview and unlock your full duty analysis with occupation-specific PR readiness context.
-            </p>
           </CardHeader>
-          <CardContent>
-            <MiniCvTeaser occupationId={id} />
+          <CardContent className="space-y-2 text-sm text-slate-600">
+            {c.sourceLines.map((line) => (
+              <p key={line}>{line}</p>
+            ))}
+            <p>
+              <a href={c.officialUrl} target="_blank" rel="noopener noreferrer" data-official-source className="font-medium text-cyan-800 underline">
+                {c.officialLabel}
+              </a>
+            </p>
           </CardContent>
         </Card>
 
-        <StateDemandRadar
-          locale={locale}
-          occupationName={occupation.occupation_name}
-          occupationId={id}
-        />
+        <nav aria-label={c.headings.related} className="rounded-2xl border border-slate-200/80 bg-white/95 p-6">
+          <h2 className="text-base font-semibold text-slate-900">{c.headings.related}</h2>
+          <ul className="mt-3 flex flex-wrap gap-x-6 gap-y-2 text-sm">
+            {c.related.map((link) => (
+              <li key={link.path}>
+                <Link href={publicPath(locale, link.path)} className="font-medium text-cyan-800 underline">
+                  {link.label}
+                </Link>
+              </li>
+            ))}
+          </ul>
+        </nav>
 
-        <div className="grid gap-6 md:grid-cols-2">
-          <Card className="border-slate-200/80 bg-white/95 shadow-lg shadow-slate-900/5">
-            <CardHeader>
-              <CardTitle>
-                {tx(locale, "评估机构", "Degerlendirme Kurumu", "Assessing Authority")}
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <p className="text-lg font-semibold">{occupation.authority}</p>
-            </CardContent>
-          </Card>
-
-          <Card className="border-slate-200/80 bg-white/95 shadow-lg shadow-slate-900/5">
-            <CardHeader>
-              <CardTitle>
-                {tx(locale, "常见签证子类", "Uygun Vize Alt Siniflari", "Relevant Subclasses")}
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              {subclasses.length > 0 ? (
-                <ul className="space-y-2">
-                  {subclasses.map((subclass) => (
-                    <li key={subclass} className="text-sm text-muted-foreground">
-                      Subclass {subclass}
-                    </li>
-                  ))}
-                </ul>
-              ) : (
-                <p className="text-sm text-muted-foreground">
-                  {tx(locale, "暂无明确子类。", "Net alt sinif bulunamadi.", "No clear subclass mapping found.")}
-                </p>
-              )}
-            </CardContent>
-          </Card>
-        </div>
-
-        <Card className="border-cyan-200/80 bg-gradient-to-r from-cyan-50 via-white to-emerald-50 shadow-xl shadow-cyan-900/10">
-          <CardContent className="space-y-4 p-8 text-center sm:p-10">
-            <h2 className="text-2xl font-extrabold tracking-tight text-slate-900 sm:text-3xl">
-              {tx(
-                locale,
-                "检查你的职业专属准备度并计算分数",
-                "Bu Meslek Icin Hazirliginizi Kontrol Edin ve Puaninizi Hesaplayin",
-                "Check your specific readiness and calculate points for this occupation"
-              )}
-            </h2>
-            <Button asChild size="lg" className="h-14 rounded-xl bg-cyan-600 px-10 text-base font-bold hover:bg-cyan-500">
-              <Link href={fullCheckHref}>
-                Check Your PR Eligibility Now (Free)
-                <ArrowRight className="ml-2 size-4" />
-              </Link>
-            </Button>
-          </CardContent>
-        </Card>
+        <p className="text-xs text-slate-500">{c.notice}</p>
       </section>
     </main>
   );
