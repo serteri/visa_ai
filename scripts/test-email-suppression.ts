@@ -349,6 +349,7 @@ async function main() {
       "lib/email/pdf-delivery.ts": "low-level sender; every caller is checked below",
       "lib/email/full-check-admin.ts": "low-level sender; every caller is checked below",
       "lib/email/suppression.ts": "the helper itself",
+      "lib/email/provider.ts": "low-level sender (provider rejection handling); every caller is checked below",
     };
     const GUARDED_SENDERS = /\b(sendPdfDeliveryEmail|sendFullCheckAdminEmail|sendReportReadyEmail|sendInternalLeadTierEmail|sendPdfLeadAdminEmail|generateAndSendReport|sendPremiumReportReadyEmail)\s*\(/;
     for (const file of files) {

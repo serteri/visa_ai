@@ -48,6 +48,7 @@ import { sendAgentAssignedEmail } from "@/lib/email/agent-notifications";
 import { shouldSuppressReportEmails } from "@/lib/email/suppression";
 import { safeEqual } from "@/lib/admin-auth";
 
+import { sendChecked } from "@/lib/email/provider";
 const REF_COOKIE = "logivisa_ref";
 
 /**
@@ -397,7 +398,7 @@ async function sendInternalLeadTierEmail(payload: {
     `Full report: ${payload.reportLink}`,
   ];
 
-  await resend.emails.send({
+  await sendChecked("full_check_internal_lead_notice", resend, {
     from: fromEmail,
     to: [notificationEmail],
     subject: `${payload.tier === "Hot" ? "🔥" : "🌤️"} ${payload.tier} lead: ${payload.fullName || "Unknown"} (self-reported, unverified)`,
@@ -543,7 +544,7 @@ async function sendReportReadyEmail(payload: {
 </body>
 </html>`;
 
-  await resend.emails.send({
+  await sendChecked("report_ready_free_check", resend, {
     from: fromEmail,
     to: [payload.email],
     subject,

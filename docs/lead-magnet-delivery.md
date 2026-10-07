@@ -59,3 +59,30 @@ Proposal (not implemented): an indexable HTML "Australian Skilled Occupation Lis
 - The occupation-list PDF legend still lists MLTSSL / STSOL (replaced by the Core Skills Occupation List in Dec 2024 for new applications) - the underlying dataset needs a currency check before the PDF is called current. Not changed here.
 - Turkish and Chinese wording added by this change is machine-assisted and unreviewed (listed in `docs/compliance-review-pack.md`, section O).
 - A second submission after a failed send creates a second CRM lead (the first lead is kept).
+
+## 5. Every transactional email: the shared root cause (added after report and unlock emails also failed)
+
+The same defect was in almost every sender: `await resend.emails.send(...)` with the result ignored. The SDK resolves with `{ data, error }` and does not throw, so a provider rejection (unverified From domain, invalid recipient, rate limit, sandbox sender) produced no log and no failure. Senders and what they did before:
+
+| Email | Code | Checked `{ error }` before |
+|---|---|---|
+| Report ready / unlock link (paid and free-beta) | `lib/services/report-service.ts` | no |
+| Free-check "report ready" and internal lead notice | `app/[locale]/(main)/full-check/actions.ts` | no |
+| Admin new-report / PAID / free-beta notification | `lib/email/full-check-admin.ts` | no |
+| Lead magnet delivery | `lib/email/pdf-delivery.ts` | no (fixed in the previous commit) |
+| Lead magnet admin notice | `app/api/pdf-download/route.ts` | no (fixed) |
+| Guide download (/rehber) user + admin | `app/[locale]/(main)/rehber/actions.ts` | no |
+| Contact form | `app/api/contact/route.ts` | no |
+| Agent assignment | `lib/email/agent-notifications.ts` | no |
+| Points alerts | `lib/alerts/check-points-alerts.ts` | no |
+| Magic link, chat restore | `lib/email/magic-link.ts`, `chat-restore.ts` | yes |
+
+All now go through `lib/email/provider.ts` (`sendChecked`): a rejection throws `EmailRejectedError`, is logged as `[email] <kind> REJECTED by the provider` with the provider's error name and message, and an accepted message logs its id. Callers keep their existing non-blocking handling (an unlock or webhook never fails because a mail was rejected).
+
+Other reasons a report / unlock email is silently skipped (all by design, all logged but easy to miss):
+
+- `ENABLE_TRANSACTIONAL_EMAILS=false` in the environment skips the report-ready / unlock email (`report-service.ts` logs "e-postası atlandı").
+- The recipient is in `ADMIN_EMAILS` or `KNOWN_TEST_EMAILS` (suppression: report, unlock, lead and admin emails are not sent).
+- `FROM_EMAIL` unset falls back to `noreply@logivisa.com`; set to a non-verified or `resend.dev` address every send is rejected (now logged).
+
+To see which applies in production, run `npm run email:health -- --to hotmail.com` with the production env (read-only): it prints the switches, the From domain's Resend verification and SPF / DKIM / return-path record status, live SPF and DMARC DNS records, and Resend's recorded last event (delivered / bounced / suppressed / complained) for recent messages.

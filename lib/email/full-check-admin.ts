@@ -2,6 +2,7 @@ import { Resend } from "resend";
 
 import type { ReadinessInput } from "@/lib/readiness/types";
 
+import { sendChecked } from "@/lib/email/provider";
 export type FullCheckAdminEmailPayload = {
   fullName: string;
   email: string;
@@ -120,7 +121,7 @@ export async function sendFullCheckAdminEmail(payload: FullCheckAdminEmailPayloa
     `source: ${payload.source}`,
   ];
 
-  await resend.emails.send({
+  await sendChecked("full_check_admin_notification", resend, {
     from: fromEmail,
     to: [notificationEmail],
     subject: headline.subject,

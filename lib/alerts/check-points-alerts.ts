@@ -1,5 +1,6 @@
 import { Resend } from "resend";
 
+import { sendChecked } from "@/lib/email/provider";
 import { prisma } from "@/lib/prisma";
 
 type AlertCheckResult = {
@@ -93,7 +94,7 @@ export async function checkAndSendAlerts(): Promise<AlertCheckResult> {
     ].join("\n");
 
     try {
-      await resend.emails.send({
+      await sendChecked("points_alert", resend, {
         from: fromEmail,
         to: [alert.email],
         subject,

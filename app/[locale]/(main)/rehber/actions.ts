@@ -4,6 +4,7 @@ import { headers } from "next/headers"
 import { revalidateTag } from "next/cache"
 import { prisma } from "@/lib/prisma"
 import { Resend } from "resend"
+import { sendChecked } from "@/lib/email/provider"
 import { getDictionary, Dictionary } from "@/lib/i18n/get-dictionary"
 import { Locale } from "@/lib/i18n/config"
 import { shouldSuppressReportEmails } from "@/lib/email/suppression"
@@ -106,8 +107,8 @@ export async function submitDownloadForm(data: {
   try {
     if (!suppressEmails) {
       await Promise.all([
-        resend.emails.send(userEmailPayload),
-        resend.emails.send(adminEmailPayload).catch((err) =>
+        sendChecked("guide_download_user", resend, userEmailPayload),
+        sendChecked("guide_download_admin", resend, adminEmailPayload).catch((err) =>
           console.error("Admin notification failed (non-blocking):", err)
         ),
       ]);

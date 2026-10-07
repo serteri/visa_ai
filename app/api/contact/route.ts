@@ -5,6 +5,7 @@ import { z } from "zod";
 import { db } from "@/db";
 import { contactMessages } from "@/db/schema";
 
+import { sendChecked } from "@/lib/email/provider";
 export const dynamic = "force-dynamic";
 
 function escapeHtml(value: string): string {
@@ -140,7 +141,7 @@ export async function POST(req: NextRequest) {
       // own inbox, returning 200 while silently not delivering otherwise.
       const fromEmail = process.env.FROM_EMAIL || "LogiVisa <noreply@logivisa.com>";
 
-      await resend.emails.send({
+      await sendChecked("contact_form_notification", resend, {
         from: fromEmail,
         to: ["hello@logivisa.com"],
         replyTo: email,

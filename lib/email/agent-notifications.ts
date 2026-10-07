@@ -1,4 +1,5 @@
 import { Resend } from "resend";
+import { sendChecked } from "@/lib/email/provider";
 import { AgentAssignedEmail } from "@/emails/AgentAssigned";
 
 function resolveLeadUrl(leadId: string, locale: string): string {
@@ -37,7 +38,7 @@ export async function sendAgentAssignedEmail(params: {
     // including a misconfigured/unset FROM_EMAIL env var.
     const fromEmail = "LogiVisa <noreply@logivisa.com>";
 
-    await resend.emails.send({
+    await sendChecked("agent_assignment", resend, {
       from: fromEmail,
       to: [params.agentEmail],
       subject: `🎯 New Lead Assigned: ${params.leadName} - LogiVisa CRM`,

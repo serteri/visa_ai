@@ -9,6 +9,7 @@ import { generateReadinessPDF } from "@/lib/readiness/generate-pdf";
 import { getUserReportById, markReportPdfSent } from "@/src/lib/user-reports";
 import { refreshStoredReport } from "@/lib/reports/refresh-report";
 
+import { sendChecked } from "@/lib/email/provider";
 function isEmailDeliveryEnabled(): boolean {
   if (process.env.ENABLE_TRANSACTIONAL_EMAILS === "true") return true;
   if (process.env.ENABLE_TRANSACTIONAL_EMAILS === "false") return false;
@@ -102,7 +103,7 @@ async function sendPremiumReportReadyEmail(payload: {
 </body>
 </html>`;
 
-  await resend.emails.send({
+  await sendChecked("premium_report_ready_unlock_link", resend, {
     from: fromEmail,
     to: [payload.email],
     subject,
