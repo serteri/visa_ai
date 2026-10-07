@@ -85,6 +85,8 @@ jobs:
         run: npm run test:partner-ai-removal
       - name: Agent lead report label (portal and PDF; en / tr / zh-Hans)
         run: npm run test:agent-lead-notice
+      - name: SEO occupation pages (canonical, hreflang, sitemap, noindex, wording; en / tr / zh-Hans)
+        run: npm run test:seo-occupation
 
       # Free admin orders (ADMINFREE promotion code, or an ADMIN_EMAILS / KNOWN_TEST_EMAILS address) must send
       # no report email, internal or customer; normal and other-discount orders send both as before. Runs the
