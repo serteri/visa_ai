@@ -39,6 +39,8 @@ export async function GET(req: Request, ctx: { params: Promise<{ reportId: strin
         "Content-Disposition": `inline; filename="${result.fileName}"`,
         "Cache-Control": "private, no-store",
         "Referrer-Policy": "no-referrer",
+        // Which structure this build renders (a live check without opening the PDF: curl -I).
+        "X-Report-Structure": "information-first",
       },
     });
   } catch (error) {

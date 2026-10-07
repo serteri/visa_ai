@@ -355,20 +355,14 @@ export function FullCheckWaitlistForm({
         document.getElementById("full-report-section")?.scrollIntoView({ behavior: "smooth", block: "start" });
       }, 100);
 
-      // Auto-download PDF from the server route (the same one the success page uses), so the file carries the
-      // stored profile and totals instead of what this browser session happens to hold.
+      // The creating browser sees its report on screen right away: the result page (the same information-first report the
+      // PDF carries) opens for this browser through the signed session cookie set at submit, and offers the PDF download.
+      // The emailed secure link stays the second route. The PDF is downloaded from there or from the button below.
       const reportId = unlockedReportState.reportId;
-      const downloadPdf = async () => {
-        try {
-          setPdfError(null);
-          await downloadReportPdf(reportId ?? "", "LogiVisa_Assessment_Report.pdf", unlockedReportState.accessToken);
-        } catch (error) {
-          console.error("Auto PDF download failed:", error);
-          setPdfError(pdfErrorMessage);
-        }
-      };
-
-      downloadPdf();
+      if (reportId) {
+        const t = unlockedReportState.accessToken ? `&t=${encodeURIComponent(unlockedReportState.accessToken)}` : "";
+        window.location.assign(`/${locale}/full-check/result?reportId=${encodeURIComponent(reportId)}${t}`);
+      }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [unlockedReportState?.isUnlocked, unlockedReportState?.report]);
@@ -445,6 +439,15 @@ export function FullCheckWaitlistForm({
           <p role="alert" className="mb-4 rounded-md border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-700">
             {pdfError}
           </p>
+        )}
+        {unlockedReportState?.reportId && (
+          <a
+            href={`/${locale}/full-check/result?reportId=${encodeURIComponent(unlockedReportState.reportId)}${unlockedReportState.accessToken ? `&t=${encodeURIComponent(unlockedReportState.accessToken)}` : ""}`}
+            className="mb-4 inline-flex items-center rounded-md bg-[#53917E] px-4 py-2 text-sm font-semibold text-white"
+            data-testid="view-report-on-screen"
+          >
+            {isTr ? "Raporu ekranda görüntüle" : isZh ? "在屏幕上查看报告" : "View your report on screen"}
+          </a>
         )}
         <LogiAIAssistant locale={locale} reportData={assistantReportData} />
       </div>
