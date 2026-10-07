@@ -1858,7 +1858,7 @@ export async function generateReadinessPDF(input: PDFGeneratorInput): Promise<Ui
     setBoldFont();
     doc.setFontSize(9);
     doc.setTextColor(COLORS.accent.r, COLORS.accent.g, COLORS.accent.b);
-    doc.text(safeText(text.confidentialAssessment), margin, 16, { charSpace: 0.6 });
+    doc.text(safeText(useRestructuredReport ? getReportView().cover.label : text.confidentialAssessment), margin, 16, { charSpace: 0.6 });
 
     // Wordmark "logo" (gold circle mark + LogiVisa wordmark) in header
     const logoY = 34;
@@ -1881,7 +1881,7 @@ export async function generateReadinessPDF(input: PDFGeneratorInput): Promise<Ui
     setBoldFont();
     doc.setFontSize(28);
     doc.setTextColor(255, 255, 255);
-    const titleText = safeText(text.coverTitle);
+    const titleText = safeText(useRestructuredReport ? getReportView().cover.title : text.coverTitle);
     const titleLines = doc.splitTextToSize(titleText, contentWidth - 20) as string[];
     doc.text(titleLines, margin + 2, 92);
 
@@ -1893,7 +1893,7 @@ export async function generateReadinessPDF(input: PDFGeneratorInput): Promise<Ui
     setBaseFont();
     doc.setFontSize(12);
     doc.setTextColor(COLORS.cream.r, COLORS.cream.g, COLORS.cream.b);
-    doc.text(doc.splitTextToSize(safeText(text.coverSubtitle), contentWidth - 30), margin + 2, ruleY + 12);
+    doc.text(doc.splitTextToSize(safeText(useRestructuredReport ? getReportView().cover.subtitle : text.coverSubtitle), contentWidth - 30), margin + 2, ruleY + 12);
 
     // ── Metadata card ────────────────────────────────────────────────────────
     const cardY = ruleY + 26;
@@ -1950,27 +1950,25 @@ export async function generateReadinessPDF(input: PDFGeneratorInput): Promise<Ui
     }
 
     if (useRestructuredReport) {
-      // Restructured report: name, date and occupation are in the card above; one line states the verdict.
-      const verdict = getReportView().cover.verdictLine;
-      if (verdict) {
-        setBoldFont();
-        doc.setFontSize(13);
-        const lines = doc.splitTextToSize(safeText(verdict), contentWidth - 16) as string[];
-        const boxH = 12 + lines.length * 6;
-        doc.setFillColor(COLORS.primary.r, COLORS.primary.g, COLORS.primary.b);
-        doc.setDrawColor(COLORS.accent.r, COLORS.accent.g, COLORS.accent.b);
-        doc.setLineWidth(0.4);
-        doc.roundedRect(margin, stackY, contentWidth, boxH, 2, 2, "FD");
-        setBoldFont();
-        doc.setFontSize(8.5);
-        doc.setTextColor(COLORS.accent.r, COLORS.accent.g, COLORS.accent.b);
-        doc.text(safeText(getReportView().titles.verdict).toUpperCase(), margin + 6, stackY + 7, { charSpace: 0.3 });
-        setBoldFont();
-        doc.setFontSize(13);
-        doc.setTextColor(255, 255, 255);
-        doc.text(lines, margin + 6, stackY + 14);
-        stackY += boxH + 8;
-      }
+      // Information-first report: name, date and occupation are in the card above; the Target visa and one notice line follow.
+      const cv = getReportView().cover;
+      setBoldFont();
+      doc.setFontSize(13);
+      const targetLines = doc.splitTextToSize(safeText(cv.targetLine), contentWidth - 16) as string[];
+      const boxH = 12 + targetLines.length * 6;
+      doc.setFillColor(COLORS.primary.r, COLORS.primary.g, COLORS.primary.b);
+      doc.setDrawColor(COLORS.accent.r, COLORS.accent.g, COLORS.accent.b);
+      doc.setLineWidth(0.4);
+      doc.roundedRect(margin, stackY, contentWidth, boxH, 2, 2, "FD");
+      doc.setTextColor(255, 255, 255);
+      doc.text(targetLines, margin + 6, stackY + 10);
+      stackY += boxH + 8;
+      setBaseFont();
+      doc.setFontSize(9.5);
+      doc.setTextColor(COLORS.cream.r, COLORS.cream.g, COLORS.cream.b);
+      const noticeLines = doc.splitTextToSize(safeText(cv.notice), contentWidth - 4) as string[];
+      doc.text(noticeLines, margin + 2, stackY);
+      stackY += noticeLines.length * 5 + 6;
       doc.setDrawColor(COLORS.accent.r, COLORS.accent.g, COLORS.accent.b);
       doc.setLineWidth(0.3);
       doc.line(margin, pageHeight - 18, pageWidth - margin, pageHeight - 18);
@@ -2476,6 +2474,11 @@ export async function generateReadinessPDF(input: PDFGeneratorInput): Promise<Ui
     const bodyLineHeight = 4.6;
     const headerLineHeight = 3.4;
 
+    // The header is never left alone at the bottom of a page: it needs room for the first row too.
+    setBaseFont();
+    doc.setFontSize(8.5);
+    const firstRowHeight = rows.length > 0 ? Math.max(12, cellPadY * 2 + Math.max(...rows[0].map((cell, i) => (doc.splitTextToSize(safeText(cell || text.noData), Math.max(14, colWidths[i] - cellPadX * 2)) as string[]).length)) * bodyLineHeight) : 0;
+
     // Word-wrap every header and size the header band to the tallest one so
     // long localized headers never get truncated or collide.
     const drawHeader = () => {
@@ -2485,7 +2488,7 @@ export async function generateReadinessPDF(input: PDFGeneratorInput): Promise<Ui
       const headerMaxLines = Math.max(...headerLines.map((lines) => lines.length));
       const headerHeight = Math.max(10, cellPadY * 2 + headerMaxLines * headerLineHeight);
 
-      ensurePageSpace(headerHeight + 6);
+      ensurePageSpace(headerHeight + firstRowHeight + 2);
       doc.setFillColor(COLORS.primary.r, COLORS.primary.g, COLORS.primary.b);
       doc.roundedRect(margin, yPosition, tableWidth, headerHeight, 1.2, 1.2, "F");
 
@@ -4339,6 +4342,7 @@ export async function generateReadinessPDF(input: PDFGeneratorInput): Promise<Ui
         addPremiumBulletContainer,
         addPremiumKeyValueContainer,
         drawTable,
+        ensureSpace: (mm: number) => ensurePageSpace(mm),
         startNewPage: () => {
           if (yPosition > 21) {
             doc.addPage();
@@ -5247,8 +5251,7 @@ export async function generateReadinessPDF(input: PDFGeneratorInput): Promise<Ui
   // ── Appendix Architecture (CA only) ─────────────────────────────────────
   if (report.country === "CA" && !report.partnerSponsorshipAssessment) drawAppendixSection();
 
-  // Viral CTA banner on final page
-  addViralCTABanner();
+  // No call-to-action banner ("Want to find your own PR points?") on the last page of any report.
 
   // Global running header (gold wordmark + rule) and footer on every page
   drawCoverPointsNote();

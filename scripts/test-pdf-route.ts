@@ -45,7 +45,7 @@ import { deterministicRecommendations, findOpenState } from "../lib/readiness/pa
 import visaTrends from "../src/data/visa-trends.json";
 import { resolveAssessingAuthority } from "../lib/skills-assessment/resolve-authority";
 import { confidenceLevelLabel, frictionBandDefinition, frictionBandLabel, frictionLevelDefinitionGeneric, occupationMatchLine } from "../src/lib/readiness/localization";
-import { matchOccupationToStateAllSubclasses, type StateOccupationSubclass } from "../lib/state-nomination/occupation-match";
+import { matchOccupationToState, matchOccupationToStateAllSubclasses, type StateOccupationSubclass } from "../lib/state-nomination/occupation-match";
 import {
   deferredFeesLine,
   MEDICAL_REGISTRATION_PROCESS,
@@ -306,10 +306,8 @@ async function checkPdf(
   }
 
   const view = buildReportView({ report, locale, profile: { name: "Test Persona", occupation: persona.input.occupation, englishLevel: persona.input.englishLevel }, dateText: "" });
-  // A blocked profile: the verdict names the missing step first (the old cover EOI banner's job).
-  if (expectBanner && !(view.verdict.nextActions[0] && squashAll(flat).includes(squashAll(view.verdict.nextActions[0])))) {
-    ctx.fail(`blocked profile: the verdict does not state the first next action "${view.verdict.nextActions[0]}"`);
-  }
+  // The report names no "next action": a blocked profile is a requirement-map row ("Cannot determine"), not an instruction.
+  if (expectBanner && /Your next 3 actions|Sonraki 3 adımınız|您的下一步/.test(flat)) ctx.fail("a next-actions block is printed");
   const layout = await analyzeLayout(pdfBytes);
   if (layout.offPage.length > 0) ctx.fail(`text runs past the page edge (clipped): ${layout.offPage.slice(0, 3).join(" | ")}`);
   if (layout.overlaps.length > 0) ctx.fail(`${layout.overlaps.length} text overlap(s): ${layout.overlaps.slice(0, 4).join(" | ")}`);
@@ -574,173 +572,66 @@ async function runPointsActionChecks(
   outDir: string,
   fail: (msg: string) => void
 ) {
-  const RUNS_PER_PROFILE = 5; // hostile runs per profile and locale
-  const emptyRag = { visaContext: {}, stateContext: {} } as never;
-
   for (const profile of POINTS_PROFILES) {
     for (const locale of LOCALES) {
       const input: ReadinessInput = { ...profile.input, locale };
       const baseReport = runReadinessEngine(input);
       const plan = baseReport.pointsEstimate?.actionPlan;
       const label = `points ${profile.name}/${locale}`;
+      console.log(`\n=== ${label} ===`);
       if (!plan) {
-        console.log(`\n=== ${label} ===`);
         fail(`${label}: engine produced no actionPlan`);
         continue;
       }
       const ids = plan.actions.map((a) => a.id);
-      const gains = plan.actions.map((a) => a.gain).sort((x, y) => x - y);
       const has = (id: string) => (ids as string[]).includes(id);
 
-      // ── Engine plan expectations (deterministic, before any LLM) ──────────
+      // ── Engine plan expectations (deterministic): the arithmetic the scenarios are built from is unchanged ──
       const planIssues: string[] = [];
       if (has("english_upgrade") !== profile.expectEnglishAction) planIssues.push(`english action ${has("english_upgrade") ? "present" : "absent"}, expected ${profile.expectEnglishAction ? "present" : "absent"}`);
       if (has("education") !== profile.expectEducationAction) planIssues.push(`education action ${has("education") ? "present" : "absent"}, expected ${profile.expectEducationAction ? "present" : "absent"}`);
       if (has("partner_skills") !== profile.expectPartnerAction) planIssues.push(`partner action ${has("partner_skills") ? "present" : "absent"}, expected ${profile.expectPartnerAction ? "present" : "absent"}`);
       if ((plan.enablingSteps.length > 0) !== profile.expectEnablingStep) planIssues.push(`enabling step ${plan.enablingSteps.length > 0 ? "present" : "absent"}, expected ${profile.expectEnablingStep ? "present" : "absent"}`);
       if (plan.actions.some((a) => (a.id as string) === "skills_assessment" || a.gain <= 0)) planIssues.push("plan contains a non-points or zero-gain action");
-      const sorted = [...plan.actions].every((a, i, arr) => i === 0 || arr[i - 1].gain >= a.gain);
-      if (!sorted) planIssues.push("actions are not ordered by gain");
-      if (planIssues.length > 0) {
-        console.log(`\n=== ${label} (engine plan) ===`);
-        planIssues.forEach((m) => fail(m));
+      if (![...plan.actions].every((a, i, arr) => i === 0 || arr[i - 1].gain >= a.gain)) planIssues.push("actions are not ordered by gain");
+      planIssues.forEach((m) => fail(`${label}: ${m}`));
+
+      // ── The PDF (production route): the points calculation and arithmetic-only scenarios, no "ways to add points" ──
+      const report: ReadinessReport = JSON.parse(JSON.stringify(baseReport));
+      const reportId = `points-${profile.name}-${locale}`;
+      rows.set(reportId, { id: reportId, email: "qa@example.com", locale, report_json: report, input_json: JSON.parse(JSON.stringify(input)), agent_id: null, is_unlocked: true, full_name: "Test Persona", preview_data: null });
+      const res = await GET(new Request(`http://localhost/api/reports/${reportId}/pdf`), { params: Promise.resolve({ reportId }) });
+      if (res.status !== 200) {
+        fail(`${label}: route returned HTTP ${res.status}`);
+        continue;
       }
+      const bytes = new Uint8Array(await res.arrayBuffer());
+      const text = await extractPdfText(bytes);
+      await writeFile(path.join(outDir, `points-${profile.name}-${locale}.txt`), text);
+      const flat = locale === "zh-Hans" ? squashAll(text) : flatten(text);
+      const sq = (t: string) => (locale === "zh-Hans" ? squashAll(t) : t);
+      const problems: string[] = [];
 
-      // Runs: N hostile (both attempts hostile -> deterministic fallback), one hostile-then-valid
-      // (retry accepted, model wording used), one valid (first attempt accepted).
-      type Run = { kind: "hostile" | "hostile-then-valid" | "valid"; seed: number };
-      const runs: Run[] = [
-        ...Array.from({ length: RUNS_PER_PROFILE }, (_, i): Run => ({ kind: "hostile", seed: 1000 + i * 7919 })),
-        { kind: "hostile-then-valid", seed: 4242 },
-        { kind: "valid", seed: 0 },
-      ];
+      const layout = await analyzeLayout(bytes);
+      if (layout.overlaps.length > 0) problems.push(`${layout.overlaps.length} text overlap(s): ${layout.overlaps.slice(0, 3).join(" | ")}`);
+      if (layout.offPage.length > 0) problems.push(`text runs past the page edge: ${layout.offPage.slice(0, 3).join(" | ")}`);
 
-      for (const run of runs) {
-        const runLabel = `${label} [${run.kind} seed=${run.seed}]`;
-        console.log(`\n=== ${runLabel} ===`);
-        let runFailed = false;
-        const f = (m: string) => { runFailed = true; fail(`${runLabel}: ${m}`); };
-
-        const rand = mulberry32(run.seed);
-        let calls = 0;
-        const stub: StrategyStub = async () => {
-          calls++;
-          if (run.kind === "valid") return validResult(plan, deterministicRecommendations(baseReport, locale));
-          if (run.kind === "hostile-then-valid" && calls === 2) return validResult(plan, deterministicRecommendations(baseReport, locale));
-          return hostileResult(rand, plan);
-        };
-        // Quiet the expected [llm_text_invariant_violation] logging.
-        const origError = console.error;
-        console.error = () => undefined;
-        let strategy: PremiumStrategyResult;
-        try {
-          strategy = await generatePremiumStrategy(baseReport, emptyRag, locale, stub);
-        } finally {
-          console.error = origError;
-        }
-
-        const expectedCalls = run.kind === "valid" ? 1 : 2;
-        if (calls !== expectedCalls) f(`LLM stub called ${calls}x, expected ${expectedCalls}`);
-
-        // Stored strategy: rows must equal the engine plan exactly.
-        const strat = strategy.pointsBoosterStrategy;
-        if (strat.length !== plan.actions.length) f(`strategy has ${strat.length} rows, engine has ${plan.actions.length}`);
-        strat.forEach((row, i) => {
-          const a = plan.actions[i];
-          if (!a || row.actionId !== a.id || row.pointsGained !== a.gain || row.difficulty !== a.difficulty || row.action !== a.label) {
-            f(`strategy row ${i} (${row.actionId}, +${row.pointsGained}) differs from engine (${a?.id}, +${a?.gain})`);
-          }
-        });
-        if (JSON.stringify(strategy).includes(HOSTILE)) f("hostile text survived validation in the stored strategy");
-
-        // Same path as production: report_json carries aiStrategy, PDF comes from the route handler.
-        const report: ReadinessReport = JSON.parse(JSON.stringify({ ...baseReport, aiStrategy: strategy }));
-        const reportId = `points-${profile.name}-${locale}-${run.kind}-${run.seed}`;
-        rows.set(reportId, {
-          id: reportId,
-          email: "qa@example.com",
-          locale,
-          report_json: report,
-          input_json: JSON.parse(JSON.stringify(input)),
-          agent_id: null,
-          is_unlocked: true,
-          full_name: "Test Persona",
-          preview_data: null,
-        });
-        const res = await GET(new Request(`http://localhost/api/reports/${reportId}/pdf`), { params: Promise.resolve({ reportId }) });
-        if (res.status !== 200) {
-          f(`route returned HTTP ${res.status}`);
-          continue;
-        }
-        const bytes = new Uint8Array(await res.arrayBuffer());
-        const text = await extractPdfText(bytes);
-        const flat = locale === "zh-Hans" ? squashAll(text) : flatten(text);
-        const sq = (t: string) => (locale === "zh-Hans" ? squashAll(t) : t);
-        if (run.seed === 1000 || run.kind !== "hostile") {
-          await writeFile(path.join(outDir, `points-${profile.name}-${locale}-${run.kind}.txt`), text);
-        }
-
-        if (flat.includes(HOSTILE)) f("hostile text appears in the PDF");
-
-        // The longer roadmap/tips must not overlap other text or run off the page.
-        const layout = await analyzeLayout(bytes);
-        if (layout.overlaps.length > 0) f(`${layout.overlaps.length} text overlap(s): ${layout.overlaps.slice(0, 3).join(" | ")}`);
-        if (layout.offPage.length > 0) f(`text runs past the page edge: ${layout.offPage.slice(0, 3).join(" | ")}`);
-
-        // ── Ways to add points (the merged roadmap / tips / simulator table) ─────────────
-        const view = buildReportView({ report, locale, profile: { name: "Test Persona", occupation: input.occupation, englishLevel: input.englishLevel }, dateText: "" });
-        const roadmap = sliceBetween(flat, sq(view.points.waysTitle), [sq(view.points.scenariosTitle), sq(view.titles.visas)]);
-        if (!roadmap) {
-          f("'Ways to add points' section missing from the PDF");
-          continue;
-        }
-        const roadmapGains = plusNumbers(roadmap);
-        if (JSON.stringify(roadmapGains) !== JSON.stringify(gains)) f(`ways to add points [${roadmapGains}] != engine [${gains}]`);
-        for (const a of plan.actions) {
-          if (!roadmap.includes(sq(a.label).slice(0, 40))) f(`ways to add points is missing engine action ${a.id}`);
-        }
-        if (!profile.expectEnglishAction && ENGLISH_RE.test(withoutPartnerWording(roadmap, plan, sq))) f("ways to add points mention English although English is at the maximum");
-        if (!profile.expectEducationAction && EDUCATION_RE.test(withoutPartnerWording(roadmap, plan, sq))) f("ways to add points mention education although it is at the maximum");
-        if (!profile.expectPartnerAction && PARTNER_RE.test(roadmap)) f("ways to add points mention a partner for a single applicant");
-
-        // Enabling step: separate, no points value.
-        const step = plan.enablingSteps[0];
-        if (profile.expectEnablingStep) {
-          if (!step || !roadmap.includes(sq(step.label))) {
-            f("enabling step (skills assessment) row missing");
-          } else {
-            const after = roadmap.slice(roadmap.indexOf(sq(step.label)) + sq(step.label).length);
-            const reasonAt = after.indexOf(sq(step.reason));
-            if (reasonAt < 0 || reasonAt > 120) {
-              f("enabling step lacks its 'unlocks skilled-employment points' sentence right after the label");
-            } else {
-              const enablingBlock = after.slice(0, reasonAt + sq(step.reason).length);
-              if (/[+\d]/.test(enablingBlock)) f(`enabling step carries a points value: "${enablingBlock.slice(0, 120)}"`);
-            }
-          }
-        } else if (/Enabling step|Etkinleştirici adım|前置步骤/.test(roadmap)) {
-          f("enabling step shown although a positive assessment is already on file");
-        }
-
-        // The customer report shows the engine's rows and wording only: the stored model wording (valid or hostile)
-        // is not part of it.
-        if (/TESTWORD|TESTDIFF/.test(flat)) f("stored model wording appears in the PDF");
-        if (/\+10-20|\+10 - 20/.test(flat)) f("static '+10-20' Masters/PhD tip is shown");
-        // Combined scenarios: at most three, each valid for its subclass (never a 189 row with a nomination).
-        if (view.points.scenarios.length > 3) f(`${view.points.scenarios.length} combined scenarios (at most 3)`);
-        for (const sc of view.points.scenarios) {
-          if (/subclass 189|189 子类/.test(sc[0]) && /nomination|adaylık|提名/i.test(sc[0])) f("a scenario scoped to 189 carries a nomination");
-        }
-
-        // ── Whole-PDF: no English improvement advice at the maximum ──
-        if (!profile.expectEnglishAction) {
-          const adviceRe = /(?:improve|upgrad\w*|enhance|retak\w*|retest\w*|raise|boost)[^.]{0,50}english|english[^.]{0,40}\+\s?\d+|english (?:score|test)[^.]{0,30}(?:weight|retest)|(?:dil|ingilizce)[^.]{0,40}(?:yükselt|artır)|(?:提高|提升)[^。]{0,10}(?:语言|英语)/i;
-          const m = adviceRe.exec(withoutPartnerWording(flat, plan, sq));
-          if (m) f(`PDF still advises improving English at the maximum: "...${withoutPartnerWording(flat, plan, sq).slice(Math.max(0, m.index - 30), m.index + 110)}..."`);
-        }
-
-        if (!runFailed) console.log("  ✅ ok");
+      const view = buildReportView({ report, locale, profile: { name: "Test Persona", occupation: input.occupation, occupationRaw: input.occupation, englishLevel: input.englishLevel }, dateText: "" });
+      if (!view.points.applicable) problems.push("the points section is missing for a points-tested profile");
+      for (const b of baseReport.pointsEstimate?.breakdown ?? []) if (!flat.includes(sq(b.label).slice(0, 14))) problems.push(`points row "${b.label}" is not in the PDF`);
+      // Removed: the "ways to add points" table, its enabling step and every instruction-style action label.
+      if (/Ways to add points|Puan ekleme yolları|增加积分的方式|Enabling step|Etkinleştirici adım|前置步骤/.test(text)) problems.push("a 'ways to add points' / enabling-step block is printed");
+      for (const a of plan.actions) if (flat.includes(sq(a.label).slice(0, 40))) problems.push(`the action "${a.label}" is printed as an instruction`);
+      // Scenarios: at most three, arithmetic only (a "+N" and a new total), never an instruction, never a 189 row with a nomination.
+      if (view.points.scenarios.length > 3) problems.push(`${view.points.scenarios.length} combined scenarios (at most 3)`);
+      for (const sc of view.points.scenarios) {
+        if (/subclass 189|189 子类/.test(sc[0]) && /nomination|adaylık|提名/i.test(sc[0])) problems.push("a scenario scoped to 189 carries a nomination");
+        if (/^(?:Obtain|Complete|Reach|Improve|Study|Get|Sit)\b|edinin|tamamlayın|ulaşın|yükseltin|获得|完成|达到|取得/.test(sc[0])) problems.push(`a scenario is phrased as an instruction: "${sc[0]}"`);
+        if (!/^\+\d+$/.test(sc[1]) || !/^\d+$/.test(sc[2])) problems.push(`scenario figures are not arithmetic: ${sc[1]} / ${sc[2]}`);
       }
+      if (/\+10-20|\+10 - 20/.test(flat)) problems.push("static '+10-20' Masters/PhD tip is shown");
+      if (problems.length === 0) console.log("  ✅ ok");
+      else problems.forEach((m) => fail(`${label}: ${m}`));
     }
   }
 }
@@ -842,129 +733,47 @@ async function runPathwayChecks(
         if (p.benchmark !== null && p.benchmark !== (visaTrendsBenchmark(input.occupation, s) ?? -1)) f(`${s}: benchmark ${p.benchmark} is not the visa-trends.json snapshot`);
       }
 
-      // ── LLM step, stubbed hostile ─────────────────────────────────────
-      const RUNS = 5;
-      const hostileRuns: Array<{ kind: "hostile" | "valid"; seed: number }> = [
-        ...Array.from({ length: RUNS }, (_, i) => ({ kind: "hostile" as const, seed: 77 + i * 131 })),
-        { kind: "valid", seed: 0 },
-      ];
-      let lastBytes: Uint8Array | undefined;
-      for (const run of hostileRuns) {
-        const rand = mulberry32(run.seed);
-        let calls = 0;
-        const deterministic = deterministicRecommendations(baseReport, locale);
-        const stub: StrategyStub = async () => {
-          calls++;
-          if (run.kind === "valid") {
-            return {
-              executiveSummary: "A concise, valid summary.",
-              topRecommendedPathways: deterministic,
-              pointsBoosterStrategy: (baseReport.pointsEstimate?.actionPlan?.actions ?? []).map((a) => ({
-                actionId: a.id, action: a.label, pointsGained: a.gain, difficulty: a.difficulty, reason: null, difficultyExplanation: null,
-              })),
-              timelineEstimate: "6-12 months",
-            };
-          }
-          return hostilePathwayResult(rand, baseReport);
-        };
-        const origError = console.error;
-        console.error = () => undefined;
-        let strategy: PremiumStrategyResult;
-        try {
-          strategy = await generatePremiumStrategy(baseReport, emptyRag, locale, stub);
-        } finally {
-          console.error = origError;
-        }
-        const runLabel = `[${run.kind} seed=${run.seed}]`;
-        if (calls !== (run.kind === "valid" ? 1 : 2)) f(`${runLabel} LLM stub called ${calls}x`);
-        const recs = strategy.topRecommendedPathways;
-        // Only recommendable pathways, in ranking order, only open states
-        // ... plus a "Next step required" pathway (only applicant-fixable gates fail), listed after the ready ones as conditional on its steps
-        const isNextStep = (sub: string) => baseReport.visaGates?.[sub]?.status === "next_step_required";
-        const ready = recs.filter((r) => !isNextStep(r.subclass));
-        const positions = ready.map((r) => expectedOrder.indexOf(r.subclass));
-        const afterPending = recs.findIndex((r) => isNextStep(r.subclass));
-        if (afterPending >= 0 && recs.slice(afterPending).some((r) => !isNextStep(r.subclass))) f(`${runLabel} a ready pathway is listed after a next-step pathway`);
-        if (recs.some((r) => !ranking.recommendable.includes(r.subclass as never) && !isNextStep(r.subclass))) f(`${runLabel} recommends a pathway the ranking does not allow: ${recs.map((r) => r.subclass)}`);
-        if (positions.some((p, i) => i > 0 && p < positions[i - 1])) f(`${runLabel} recommendations are not in ranking order`);
-        for (const r of recs) {
-          if ((r.subclass === "190" || r.subclass === "491") && !findOpenState(baseReport, r.state)) f(`${runLabel} recommends state ${r.state}, which is not open in the state data`);
-        }
-        if (ranking.allBlocked && recs.some((r) => !isNextStep(r.subclass))) f(`${runLabel} every pathway is blocked but ${recs.length} recommendations remain`);
-        if (JSON.stringify(strategy).includes(HOSTILE)) f(`${runLabel} hostile text survived validation`);
-        if (run.kind === "hostile" && JSON.stringify(recs) !== JSON.stringify(deterministic)) f(`${runLabel} hostile recommendations were not replaced by the deterministic list`);
-        if (run.kind === "valid" && JSON.stringify(recs) !== JSON.stringify(deterministic)) f(`${runLabel} a valid recommendation list was altered`);
-        if (/\b(?:92|88|81|79)\b/.test(strategy.executiveSummary)) f(`${runLabel} a different score survived in the summary`);
-
-        // Same path as production: report_json carries aiStrategy, PDF from the route handler
-        const report: ReadinessReport = JSON.parse(JSON.stringify({ ...baseReport, aiStrategy: strategy }));
-        const reportId = `pathways-${profile.name}-${locale}-${run.kind}-${run.seed}`;
-        rows.set(reportId, {
-          id: reportId, email: "qa@example.com", locale, report_json: report, input_json: JSON.parse(JSON.stringify(input)),
-          agent_id: null, is_unlocked: true, full_name: "Test Persona", preview_data: null,
-        });
-        const res = await GET(new Request(`http://localhost/api/reports/${reportId}/pdf`), { params: Promise.resolve({ reportId }) });
-        if (res.status !== 200) { f(`${runLabel} route returned HTTP ${res.status}`); continue; }
-        const bytes = new Uint8Array(await res.arrayBuffer());
-        const flatAll = flatten(await extractPdfText(bytes));
-        if (flatAll.includes(HOSTILE)) f(`${runLabel} hostile text appears in the PDF`);
-        lastBytes = bytes;
-      }
-      if (!lastBytes) continue;
-
-      // ── Section checks on the (valid-run) PDF ─────────────────────────
-      const pages = (await extractPdfPages(lastBytes)).map((p) => p.replace(/L o g i V i s a\s*/g, "").replace(/\d+ \/ \d+\s*Generated by[^\n]*\n?/g, "").replace(/-- \d+ of \d+ --/g, ""));
+      // ── The PDF (production route): the points totals table shows the engine's figures side by side ──
+      const report: ReadinessReport = JSON.parse(JSON.stringify(baseReport));
+      const reportId = `pathways-${profile.name}-${locale}`;
+      rows.set(reportId, {
+        id: reportId, email: "qa@example.com", locale, report_json: report, input_json: JSON.parse(JSON.stringify(input)),
+        agent_id: null, is_unlocked: true, full_name: "Test Persona", preview_data: null,
+      });
+      const res = await GET(new Request(`http://localhost/api/reports/${reportId}/pdf`), { params: Promise.resolve({ reportId }) });
+      if (res.status !== 200) { f(`route returned HTTP ${res.status}`); continue; }
+      const bytes = new Uint8Array(await res.arrayBuffer());
+      const pages = (await extractPdfPages(bytes)).map((p) => p.replace(/L o g i V i s a\s*/g, "").replace(/\d+ \/ \d+\s*Generated by[^\n]*\n?/g, "").replace(/-- \d+ of \d+ --/g, ""));
       const raw = pages.join("\n");
       await writeFile(path.join(outDir, `pathways-${profile.name}-${locale}.txt`), raw);
       const flat = locale === "zh-Hans" ? squashAll(raw) : flatten(raw);
-      const sq = (t: string) => (locale === "zh-Hans" ? squashAll(t) : t);
 
-      const view = buildReportView({ report: baseReport, locale, profile: { name: "Test Persona", occupation: input.occupation, englishLevel: input.englishLevel }, dateText: "" });
+      const view = buildReportView({ report: baseReport, locale, profile: { name: "Test Persona", occupation: input.occupation, occupationRaw: input.occupation, englishLevel: input.englishLevel }, dateText: "" });
       const estNow = baseReport.pointsEstimate?.estimatedPoints;
 
-      // 1. One statement per pathway: the verdict table row carries the engine's figures (score now with the nomination the
-      //    visa requires, the 65 minimum, the recent benchmark and the gap) -- and the PDF shows exactly that row.
+      // 1. One row per points-tested subclass, from the one score set: the score from the entries, the nomination points the
+      //    visa requires, their sum, the published minimum and the latest published invitation score (data, with its date).
       for (const s of PATHWAY_SUBCLASSES) {
         const p = scores[s];
-        const row = view.verdict.distance.find((r) => r.visa === s);
-        if (!row) { f(`${s}: no row in the verdict table`); continue; }
+        const row = view.points.totals.find((r) => r[0].includes(s));
+        if (!row) { f(`${s}: no row in the points totals table`); continue; }
         const now = p.baseScore + p.nominationBonus;
-        if (!row.score.startsWith(String(now))) f(`${s}: verdict score "${row.score}" != score now with the required nomination (${now})`);
-        if (p.benchmark !== null) {
-          const gap = p.benchmark - now;
-          if (!row.vsRecent.includes(String(p.benchmark)) || (gap > 0 && !row.vsRecent.includes(String(gap)))) f(`${s}: verdict "vs recent" "${row.vsRecent}" != benchmark ${p.benchmark} / gap ${gap}`);
-        }
-        const cells = [row.visa, row.score, row.vsMinimum, row.vsRecent];
-        if (!cells.every((c) => squashAll(flat).includes(squashAll(c)))) f(`${s}: the verdict table row is not in the PDF: ${cells.join(" | ")}`);
+        if (row[1] !== String(p.baseScore)) f(`${s}: "from your entries" ${row[1]} != base score ${p.baseScore}`);
+        if (s !== "189" && row[2] !== `+${p.nominationBonus}`) f(`${s}: nomination points ${row[2]} != +${p.nominationBonus}`);
+        if (row[3] !== String(now)) f(`${s}: total ${row[3]} != score with the required nomination (${now})`);
+        if (row[4] !== "65") f(`${s}: published minimum ${row[4]} != 65`);
+        if (p.benchmark !== null && !row[5].startsWith(String(p.benchmark))) f(`${s}: published invitation score "${row[5]}" != benchmark ${p.benchmark}`);
+        if (p.benchmark === null && /^\d/.test(row[5])) f(`${s}: an invitation score is shown although no benchmark exists`);
+        if (!squashAll(flat).includes(squashAll(row[0]))) f(`${s}: the totals row is not in the PDF`);
       }
-      // 2. Bonus scores are never presented as current
-      if (/nomination bonus|adaylık bonusu|提名加分|\(base \d+ \+/i.test(flat)) f("old '(base N + nomination bonus M)' wording is still shown");
-      for (const s of ["190", "491"] as const) {
-        const row = view.verdict.distance.find((r) => r.visa === s);
-        if (row && !/incl\. nomination|adaylık dahil|含提名/.test(row.score)) f(`${s}: the score does not say it includes the required nomination`);
-        if (/only if nominated|yalnızca aday gösterilirseniz|仅在获得提名时/.test(flat)) f(`${s}: a benchmark is still compared with the score without the required nomination`);
-      }
-      // 3. The benchmark comparison sentence (the one function) is stated on the verdict page and on the points page: the same numbers.
-      if (estNow !== undefined && PATHWAY_SUBCLASSES.some((s) => scores[s].benchmark !== null)) {
-        const sentence = view.verdict.benchmarkSentence;
-        const n = sentence ? flat.split(sq(sentence)).length - 1 : 0;
-        if (!sentence || n !== 2) f(`the benchmark comparison sentence appears ${n}x, expected twice (verdict + points page)`);
-      }
-      // 4. The best pathway on the verdict is the single ranking's first; the visa blocks follow the report's pathway order.
-      if (view.verdict.best && view.verdict.best.subclass !== expectedOrder[0]) f(`verdict best (${view.verdict.best.subclass}) != ranking #1 (${expectedOrder[0]})`);
-      // every-blocked: nothing is called a fit, and the verdict says what is missing
-      if (ranking.allBlocked) {
-        if (ranking.entries.some((e) => e.fit !== "blocked")) f("allBlocked but a pathway is not blocked");
-        if (/Potential fit|Unclear fit|Unlikely fit|Olası uyum|Belirsiz uyum|可能匹配|匹配度不明/.test(flat)) f("a fit label is shown although every pathway is blocked");
-        if (view.verdict.best && !view.verdict.why && view.verdict.nextActions.length === 0) f("every pathway is blocked but the verdict says neither why nor what to do");
-      }
-
-      // 5. The points page states the estimate; it equals the breakdown total (the cover shows the verdict, not the number).
+      // 2. No comparison with the benchmark ("short", "above"), no ranking, no fit label, no "nomination bonus" wording.
+      if (/\d+ points? short|\d+ puan eksik|差 \d+ 分|\babove\b.*benchmark|nomination bonus|adaylık bonusu|\(base \d+ \+/i.test(flat)) f("a benchmark comparison or the old '(base N + nomination bonus M)' wording is printed");
+      if (/Potential fit|Unclear fit|Unlikely fit|Olası uyum|Belirsiz uyum|可能匹配|匹配度不明|Strongest signal|En güçlü sinyal/.test(flat)) f("a fit label or ranking is printed");
+      // 3. The points page states the calculation; the total equals the breakdown.
       if (estNow !== undefined) {
         const breakdownTotal = (baseReport.pointsEstimate?.breakdown ?? []).reduce((sum, b) => sum + b.points, 0);
-        if (view.points.total !== estNow) f(`points page total ${view.points.total} != estimate ${estNow}`);
-        if (!flat.includes(sq(view.points.totalLine))) f(`the points page does not state "${view.points.totalLine}"`);
         if (breakdownTotal !== estNow && !baseReport.pointsEstimate?.potentialPoints) f(`breakdown total ${breakdownTotal} != estimate ${estNow}`);
+        if (!PATHWAY_SUBCLASSES.every((sc) => view.points.totals.some((r) => r[0].includes(sc)))) f("not every points-tested subclass has a totals row");
       }
       if (!caseFailed) console.log("  ✅ ok");
     }
@@ -1066,20 +875,16 @@ async function runAuthorityChecks(
 
       const view = buildReportView({ report, locale, profile: { name: "Test Persona", occupation: profile.input.occupation, englishLevel: profile.input.englishLevel }, dateText: "" });
 
-      // ── 1. No invitation benchmark: the verdict table says so, plainly -- no level, no "gap exists" sentence ─────────
+      // ── 1. No invitation benchmark: the points totals say so plainly -- no level, no "gap exists" sentence ─────────
       const noBenchmark = PATHWAY_SUBCLASSES.filter((s) => scores[s].benchmark === null);
-      const noLevel = { en: "no recent level available", tr: "yakın dönem seviyesi yok", "zh-Hans": "暂无近期参考分" }[locale];
+      const noLevel = { en: "not available", tr: "mevcut değil", "zh-Hans": "暂无" }[locale];
       if (noBenchmark.length === PATHWAY_SUBCLASSES.length) {
-        if (!view.verdict.distance.every((r) => r.vsRecent === noLevel)) f("a pathway shows a recent level although no pathway has an invitation benchmark");
-        if (!flat.includes(sq(noLevel))) f("the verdict table does not say there is no recent invitation level");
+        if (!view.points.totals.every((r) => r[5] === noLevel)) f("a pathway shows a published invitation score although no pathway has an invitation benchmark");
+        if (!flat.includes(sq(noLevel))) f("the totals table does not say there is no published invitation score");
         if (/A (?:moderate|meaningful|substantial) gap exists between your profile and/.test(flat)) f("a 'gap exists between your profile and recent benchmarks' sentence is shown next to 'no benchmark available'");
       } else if (noBenchmark.length === 0) {
-        if (flat.includes(sq(noLevel))) f("'no recent level available' is shown although benchmarks exist");
-        if (view.verdict.distance.some((r) => /^\D/.test(r.vsRecent))) f("a pathway has no recent level although benchmarks exist");
+        if (view.points.totals.some((r) => r[5] === noLevel)) f("'not available' is shown although benchmarks exist");
       }
-
-      // ── 2. When every pathway is blocked, the verdict says why and what to do (no ranking labels, no "strongest") ──────
-      if (ranking.allBlocked && view.verdict.best && !view.verdict.why && view.verdict.nextActions.length === 0) f("every pathway is blocked but the verdict says neither why nor what to do");
 
       // ── 4. One authority per occupation in the whole text ──────────────────
       const resolved = resolveAssessingAuthority(profile.input.occupation);
@@ -1116,9 +921,9 @@ async function runAuthorityChecks(
             if (!sq(tail).includes(qualifier) && !sq(tail).includes("估算")) f(`fee ${fig} quoted without the qualifier: "...${m[0].slice(-40)}${tail.slice(0, 30)}..."`);
           }
         }
-        const totalLine = sq(`${view.verdict.costLine?.title}: ${view.verdict.costLine?.text}`);
-        const totalCount = flat.split(totalLine.replace(/\.$/, "")).length - 1;
-        if (totalCount !== 1) f(`Estimated total line with the estimate qualifier appears ${totalCount}x (expected once, on the verdict)`);
+        const totalLine = sq(view.costs.totalLines[0] ?? "");
+        const totalCount = totalLine ? flat.split(totalLine.replace(/\.$/, "")).length - 1 : 0;
+        if (totalCount !== 1) f(`Estimated total line with the estimate qualifier appears ${totalCount}x (expected once, in the costs section)`);
         if (!totalLine.includes(qualifier)) f("Estimated total line lacks the estimate qualifier");
         if (total && !sq(formatEstimatedTotalLine({ ...total, completedKinds: [] }, locale)).startsWith(totalLine.replace(/\.$/, "").slice(0, 40))) f("the verdict total is not formatEstimatedTotalLine");
       } else if (flat.includes(qualifier)) {
@@ -1227,25 +1032,17 @@ async function runFrictionChecks(
       const flat = locale === "zh-Hans" ? squashAll(raw) : flatten(raw);
       const sq = (t: string) => (locale === "zh-Hans" ? squashAll(t) : t);
 
-      // ── The customer report states the same facts plainly (no friction levels, no legend) ──────────
-      // 190 / 491 open states: none or one -> "nomination is the main hurdle"; the sentence names the states.
-      const view = buildReportView({ report, locale, profile: { name: "Test Persona", occupation: profile.input.occupation, englishLevel: profile.input.englishLevel }, dateText: "" });
-      for (const sub of ["190", "491"] as const) {
-        const open = availability?.[sub];
-        if (!open) continue;
-        const note = view.states.availabilityNotes.find((n) => n.includes(` ${sub}`) || n.includes(`${sub} `));
-        if (!note) { f(`${sub}: no availability sentence in the states section`); continue; }
-        if (!flat.includes(sq(note))) f(`${sub}: the availability sentence is not in the PDF: "${note}"`);
-        if (open.length <= 1 && !/main hurdle|asıl engel|主要障碍/.test(note)) f(`${sub}: ${open.length} open state(s) but the sentence does not say nomination is the main hurdle: "${note}"`);
-        if (open.length === 1 && !note.includes(open[0])) f(`${sub}: the one open state ${open[0]} is not named: "${note}"`);
-      }
-      // The verdict table shows each pathway's gap to the benchmark (the number behind its level).
+      // ── The customer report prints no friction level, legend or "open to you" availability sentence; the states are
+      //    published information (all eight, a fixed order) and the points totals carry the published invitation score ──
+      const view = buildReportView({ report, locale, profile: { name: "Test Persona", occupation: profile.input.occupation, occupationRaw: profile.input.occupation, englishLevel: profile.input.englishLevel }, dateText: "" });
+      if (/main hurdle|asıl engel|主要障碍|open to you|size açık|对您开放/.test(flat)) f("an availability sentence ('open to you' / 'main hurdle') is printed");
+      if (/Friction|Sürtünme|摩擦|HIGH friction|Low friction/i.test(flat)) f("a friction level or legend is printed");
+      if (view.states.applicable && view.states.rows.length !== 8) f(`${view.states.rows.length} state rows (expected all eight)`);
       for (const s of PATHWAY_SUBCLASSES) {
-        const row = view.verdict.distance.find((r) => r.visa === s);
-        const gapNow = scores[s].benchmark === null ? null : scores[s].benchmark! - (scores[s].baseScore + scores[s].nominationBonus);
-        if (!row) { f(`${s}: no verdict row`); continue; }
-        if (gapNow !== null && gapNow > 0 && !row.vsRecent.includes(String(gapNow))) f(`${s}: the verdict row "${row.vsRecent}" does not carry the gap ${gapNow}`);
-        if (!squashAll(flat).includes(squashAll(row.vsRecent))) f(`${s}: the verdict row "${row.vsRecent}" is not in the PDF`);
+        const row = view.points.totals.find((r) => r[0].includes(s));
+        if (!row) { f(`${s}: no points totals row`); continue; }
+        if (scores[s].benchmark !== null && !row[5].startsWith(String(scores[s].benchmark))) f(`${s}: the totals row "${row[5]}" does not carry the published invitation score ${scores[s].benchmark}`);
+        if (!squashAll(flat).includes(squashAll(row[0]))) f(`${s}: the totals row is not in the PDF`);
       }
       if (!caseFailed) console.log("  ✅ ok");
     }
@@ -1350,7 +1147,7 @@ async function runOccupationMatchChecks(
       await writeFile(path.join(outDir, `occ-match-${profile.name}-${locale}.txt`), raw);
       const flat = locale === "zh-Hans" ? squashAll(raw) : flatten(raw);
       const sq = (t: string) => (locale === "zh-Hans" ? squashAll(t) : t);
-      const view = buildReportView({ report, locale, profile: { name: "Test Persona", occupation: input.occupation, englishLevel: input.englishLevel }, dateText: "" });
+      const view = buildReportView({ report, locale, profile: { name: "Test Persona", occupation: input.occupation, occupationRaw: input.occupation, englishLevel: input.englishLevel }, dateText: "" });
 
       for (const state of states) {
         // Every one of the 8 states must carry a note -- the occupation resolves to a real ANZSCO code here.
@@ -1365,14 +1162,20 @@ async function runOccupationMatchChecks(
         if (state.occupationMatchNote !== expectedLine) {
           f(`${state.code}: engine's occupationMatchNote != independently recomputed line\n    engine:   "${state.occupationMatchNote}"\n    expected: "${expectedLine}"`);
         }
-        // The customer report lists the states open to the applicant with this sourced line; the others in one short
-        // table (state, reason) -- their reason is shown instead.
-        const usable = view.states.available.some((a) => a.code === state.code);
-        if (usable && !sq(flat).includes(sq(expectedLine))) {
-          f(`${state.code}: expected line not found verbatim in the extracted PDF text: "${expectedLine.slice(0, 120)}..."`);
-        }
-        const rowReason = view.states.unavailable.find((u) => u.code === state.code);
-        if (!usable && (!rowReason || !sq(flat).includes(sq(rowReason.reason)))) f(`${state.code}: neither usable nor in the unavailable table with its reason`);
+        // The customer report lists every state (fixed order) with the occupation-list result of the same data: "On the list: <subclasses>"
+        // where the state's list has the occupation, "Not on the published list" where it does not, "Not confirmed" otherwise.
+        const row = view.states.rows.find((r) => r[0].includes(`(${state.code})`));
+        if (!row) { f(`${state.code}: no row in the state and territory table`); continue; }
+        const matches = subclasses.map((sc) => matchOccupationToState(anzscoCode, state.code, sc));
+        const listed = matches.some((m) => m.type === "MATCH" || (m.type === "UNIT_GROUP_ONLY" && m.onUnitGroupList) || (m.type === "NOT_APPLICABLE" && m.onNationalList));
+        const notListed = matches.every((m) => m.type === "NOT_ON_LIST");
+        const listCell = row[1];
+        const LISTED = /^(?:On the (?:unit-group )?list|Listede|Birim grubu listesinde|在清单上|在单元组清单上)/;
+        const NOT_LISTED = /^(?:Not on the published (?:unit-group )?list|Yayımlanmış (?:birim grubu )?listede yok|不在已公布的(?:单元组)?清单上)/;
+        if (listed && !LISTED.test(listCell)) f(`${state.code}: the data has the occupation on the list but the row says "${listCell}"`);
+        if (notListed && !NOT_LISTED.test(listCell)) f(`${state.code}: the data has the occupation off the list but the row says "${listCell}"`);
+        if (!sq(flat).includes(sq(row[0].split(/[ (:（]/)[0]))) f(`${state.code}: the row is not in the PDF`);
+        if (!/20\d\d-\d\d-\d\d/.test(row[3])) f(`${state.code}: the row has no source date`);
       }
       if (!caseFailed) console.log("  ✅ ok");
     }
@@ -1471,7 +1274,8 @@ async function runMedicalRegistrationChecks(
     if (!has(expectedBreakdown)) f(`AHPRA fee breakdown + citation not found verbatim in the PDF: "${expectedBreakdown}"`);
     if (!has("effective 1 August 2026")) f('"effective 1 August 2026" citation missing from the PDF');
     for (const n of ["2,763", "1,661", "1,102"]) if (!flat.includes(n)) f(`Medical Board figure ${n} missing from the PDF`);
-    if (/AUD\s*2[,.]?500\b/.test(flat)) f("PDF still shows the old AUD 2,500 college placeholder");
+    // (Another visa's real base charge, the Student visa's AUD 2,500, is in the report now: only a figure next to the college line is the old placeholder.)
+    if (/(?:college|ECFMG|AMC)[^.]{0,120}AUD\s*2[,.]?500\b/i.test(flat)) f("PDF still shows the old AUD 2,500 college placeholder");
     if (!has(deferred.amountLabel)) f(`AMC / ECFMG / college line not found in the PDF: "${deferred.amountLabel}"`);
     // Whatever follows the deferred line's category up to its amount text must hold no figure either.
     const at = sq(flat).indexOf(sq(deferred.category));
@@ -1480,7 +1284,7 @@ async function runMedicalRegistrationChecks(
       if (/\d{2,}|AUD\s*\d|\$\s*\d/.test(window.replace(sq(deferred.category), ""))) f(`AMC / ECFMG / college line is followed by a number in the PDF: "${window}"`);
     } else f("AMC / ECFMG / college category not found in the PDF");
     if (/53[,.\s]?900/.test(flat)) f("PDF still mentions the 53,900 income threshold");
-    if (!/notices\s*of\s*assessment/.test(flat)) f("PDF does not describe the 191 ATO notices of assessment requirement");
+    // (The 491 -> 191 "Bridge to PR" section is not in the information report; the engine-level 191 check above still runs.)
 
     if (!caseFailed) console.log(`  ✅ ok (AHPRA ${expectedAmount.slice(0, 60)}...; AMC/college line unpriced; 191 = ATO notices)`);
   }

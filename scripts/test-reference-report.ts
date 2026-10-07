@@ -2,20 +2,19 @@
  * The reference profile from real report LVA-20261001-ASDASDASD (non-personal answers, REVIEW_PERSONAS["ref-asd-qld"]):
  * Software Engineer 261313, 38, onshore in Queensland, Superior English, PhD earned outside Australia, partner without
  * Functional English, skills assessment completed, no experience entered. Real PDF text (production PDF route),
- * en / tr / zh-Hans, created on 1 October 2026:
+ * en / tr / zh-Hans, created on 1 October 2026, for the 491 target:
  *
- *   1. No "proceed to the application" / "your profile is strong": the first next action is the EOI (invitation, nomination).
+ *   1. No "proceed to the application" / "your profile is strong"; no next actions, no verdict.
  *   2. A completed skills assessment propagates: no not-yet-assessed wording anywhere; the fee is left out of the
- *      totals with the reason.
- *   3. The verdict names the single ranking's best pathway; pathways with a different gate status / availability never
- *      share one figure; no "HIGH POTENTIAL" / match percentages in the customer report.
- *   4. A report created on or after every contributing source and deploy shows "Generated <creation date>", in full
- *      (not clipped) in the User Information table.
+ *      totals with the reason, and is no cost row.
+ *   3. No "HIGH POTENTIAL" / match percentages / ranking; the points totals show each subclass's own figure and the
+ *      published reference points side by side, without a "short" / "above" comparison.
+ *   4. A report created on or after every contributing source and deploy shows "Generated <creation date>".
  *   5. No English test age tied to the visa grant.
  *   6. No "Low - Limited risk indicators" next to a High alert.
  *   7. Specialist education: the points table carries the engine's note (a degree from an Australian institution); no 485 suggestion.
- *   8. "Eligible, but below recent invitation levels" states score, benchmark and gap (190/491 with the nomination).
- *   9. A state not available because of residence (confirmed or not) is in the "not available" table, never among the usable states.
+ *   8. The published invitation score for 189 is shown as data (with its date), not as a gap.
+ *   9. State and territory information: all eight, in a fixed order, none described as unavailable to the applicant.
  *
  *   npx tsx scripts/test-reference-report.ts
  */
@@ -46,38 +45,36 @@ const NOT_YET_ASSESSED = {
 } as const;
 
 async function main() {
-  const rendered = await renderPersonaPdfTexts({ ref: REVIEW_PERSONAS["ref-asd-qld"] }, undefined, undefined, CREATED_AT);
+  const persona = { ...REVIEW_PERSONAS["ref-asd-qld"], targetVisa: "491", preferredPathway: "491" };
+  const rendered = await renderPersonaPdfTexts({ ref: persona }, undefined, undefined, CREATED_AT);
 
   for (const r of rendered) {
     const L = r.locale;
     const text = flat(r.text);
     const report = r.report as ReadinessReport;
-    const view = buildReportView({ report, locale: L, profile: { name: "Test Persona", occupation: REVIEW_PERSONAS["ref-asd-qld"].occupation, englishLevel: REVIEW_PERSONAS["ref-asd-qld"].englishLevel }, dateText: "" });
+    const view = buildReportView({ report, locale: L, profile: { name: "Test Persona", occupation: persona.occupation, occupationRaw: persona.occupation, englishLevel: persona.englishLevel }, dateText: "" });
     console.log(`\n==================== ${r.id} [${L}] ====================`);
 
     // 1.
     const proceed = BANNED_CLAIMS.slice(-7).filter((re) => re.test(text));
-    const next = { en: "Submit your EOI now", tr: "EOI'nizi şimdi gönderin", "zh-Hans": "立即提交 EOI" }[L];
-    t("1. no 'proceed to the application' / 'profile is strong'; the first next action is the EOI", proceed.length === 0 && squash(text).includes(squash(next)) && squash(view.verdict.nextActions[0] ?? "").includes(squash(next)), proceed.map(String).join(" | "));
+    const nextActions = { en: /Your next 3 actions|Submit your EOI now|fastest way/i, tr: /Sonraki 3 adımınız|EOI'nizi şimdi gönderin|en hızlı yol/i, "zh-Hans": /您的下一步|立即提交 EOI|最快方式/ }[L];
+    t("1. no 'proceed to the application' / 'profile is strong'; no next actions or verdict", proceed.length === 0 && !nextActions.test(text));
 
     // 2.
     const stale = NOT_YET_ASSESSED[L].filter((p) => text.includes(p));
-    t("2. no not-yet-assessed wording (Gantt, timeline, Skills Assessment section, confidence, evidence)", stale.length === 0, stale.join(" | "));
+    t("2. no not-yet-assessed wording", stale.length === 0, stale.join(" | "));
     const total = computeEstimatedTotalAud(report.financialRoadmap)!;
     const reason = { en: "Your skills assessment is already done", tr: "Beceri değerlendirmeniz zaten tamamlandı", "zh-Hans": "您的技能评估已完成" }[L];
-    t("2. the skills-assessment fee is left out of the totals and is no cost row; the PDF says once that it is done", total.completedKinds.includes("skills_assessment") && !total.includedKinds.includes("skills_assessment") && squash(text).split(squash(reason)).length - 1 === 1 && !view.costs.rows.some((row) => /Skills Assessment|Beceri Değerlendirmesi|技能评估/.test(row.item)), JSON.stringify(total));
+    t("2. the skills-assessment fee is left out of the totals and is no cost row; the PDF says once that it is done", total.completedKinds.includes("skills_assessment") && !total.includedKinds.includes("skills_assessment") && squash(text).split(squash(reason)).length - 1 === 1 && !view.costs.rows.some((row) => row.item === report.financialRoadmap.find((i) => i.kind === "skills_assessment")?.category));
 
     // 3.
-    const entries = report.pathwayRanking?.entries ?? [];
-    const best = report.pathwayRanking?.recommendable?.[0] ?? [...entries].sort((a, b) => a.position - b.position)[0]?.subclass;
-    const figures = view.verdict.distance.map((d) => `${d.score}|${d.vsMinimum}|${d.vsRecent}`);
     const highPotential = /HIGH POTENTIAL|YÜKSEK POTANSİYEL|Highly Recommended|Viability Ranking/i.test(r.text) || /\b[A-Z]{2,3}\s+\d{1,3}\s?%/.test(r.text);
-    t("3. the verdict's best pathway is the single ranking's first recommendable one; 189 / 190 / 491 never share one figure (different score, minimum and recent-level cells); no 'HIGH POTENTIAL' or match percentages", view.verdict.best?.subclass === best && new Set(figures).size === figures.length && !highPotential, `${view.verdict.best?.subclass} vs ${best}; ${figures.join(" / ")}`);
-    t("3. ranking order unchanged (the single ranking): the visa blocks follow the report's pathway order", JSON.stringify(view.visas.items.map((b) => b.subclass).filter((v) => ["189", "190", "491"].includes(v))) === JSON.stringify((report.pathwayComparison ?? []).map((p) => p.subclass).filter((v) => ["189", "190", "491"].includes(v))));
+    const shortOrAbove = /\d+ points? short|\d+ puan eksik|差 \d+ 分|\d+ above|üstünde/.test(text);
+    t("3. no 'HIGH POTENTIAL' / match percentages / ranking, no 'short' or 'above' comparison; one row per points-tested subclass of the target", !highPotential && !shortOrAbove && view.points.totals.length === 1 && view.points.totals[0][0].includes("491"));
 
     // 4.
     const generated = { en: "Generated 1 October 2026", tr: "Oluşturulma tarihi 1 Ekim 2026", "zh-Hans": "生成日期：2026年10月1日" }[L];
-    t("4. created on or after every source and deploy date: 'Generated <creation date>'", squash(text).includes(squash(generated)) && !/Updated to reflect data as of|itibarıyla verilere göre güncellendi|已根据截至/.test(text), text.slice(0, 600));
+    t("4. created on or after every source and deploy date: 'Generated <creation date>'", squash(text).includes(squash(generated)) && !/Updated to reflect data as of|itibarıyla verilere göre güncellendi|已根据截至/.test(text));
 
     // 5.
     t("5. no English test age tied to the visa grant", !englishAgeTiedToGrant(text), englishAgeTiedToGrant(text));
@@ -90,25 +87,16 @@ async function main() {
     const specRow = report.pointsEstimate?.breakdown.find((b) => /Specialist|Uzmanlık|专业型/.test(b.label));
     const missing = { en: "INFORMATION MISSING", tr: "BİLGİ EKSİK", "zh-Hans": "信息缺失" }[L];
     const g485 = { en: "Consider 485 Graduate Visa Pathway", tr: "485 Graduate Visa Yolunu Değerlendirin", "zh-Hans": "评估485毕业生签证路径" }[L];
-    t("7. specialist education: the points table carries the engine's note (a degree from an Australian institution); no 485 suggestion", !!specRow?.note && squash(text).includes(squash(specRow.note)) && !text.includes(missing) && !text.includes(g485), specRow?.note ?? "no row");
+    t("7. specialist education: the points table carries the engine's note (a degree from an Australian institution); no 485 suggestion", !!specRow?.note && squash(text).includes(squash(specRow.note.slice(0, 40))) && !text.includes(missing) && !text.includes(g485));
 
     // 8.
-    const lab = {
-      // 190 is no longer "eligible, but below": no state is available for it without a WA job offer (Next step required).
-      en: ["your 65 vs recent 95, 30 points short"],
-      tr: ["sizin puanınız 65, son davetler 95; 30 puan eksik"],
-      "zh-Hans": ["您的 65 分，近期 95 分，差 30 分"],
-    }[L];
-    t("8. below-benchmark labels state score, benchmark and gap (189; 190 is a next step because no state is available without a WA job offer)", lab.every((x) => squash(text).includes(squash(x))), lab.filter((x) => !squash(text).includes(squash(x))).join(" | "));
+    const row189 = report.pathwayScores?.["189"];
+    const v491 = report.pathwayScores?.["491"];
+    t("8. the published invitation score is data with its date (491 shown with the target); 189 is in the Pathway table as a published fact", !!v491 && view.points.totals[0][5].startsWith(String(v491.benchmark)) && (!row189 || view.others.rows.some((x) => x[0].includes("189"))));
 
     // 9.
-    const tr = report.stateNominationTracker!;
-    const act = tr.states.find((s) => s.code === "ACT")!;
-    const firstBlocked = tr.states.findIndex((s) => s.residenceBlock);
-    const lastAvailable = tr.states.map((s) => !s.residenceBlock && s.isOpen).lastIndexOf(true);
-    const usable = new Set(view.states.available.map((a) => a.code));
-    const listedAsUnavailable = ["ACT", "TAS"].every((c) => view.states.unavailable.some((u) => u.code === c) && squash(text).includes(squash(view.states.unavailable.find((u) => u.code === c)!.reason)));
-    t("9. ACT (residence not confirmed) is 0%, like Tasmania, and no residence-blocked state ranks above an available one; both are in the 'not available' table, never among the usable states", act.residenceBlock === "not_confirmed" && act.score === 0 && tr.states.find((s) => s.code === "TAS")!.score === 0 && (lastAvailable < 0 || firstBlocked > lastAvailable) && listedAsUnavailable && !usable.has("ACT") && !usable.has("TAS"), JSON.stringify([...usable]));
+    const rows = view.states.rows;
+    t("9. state and territory information: all eight, fixed order, none described as unavailable to the applicant", rows.length === 8 && rows.every((x, i, a) => i === 0 || a[i - 1][0] < x[0]) && !/not available to you|size açık olmayan|对您不开放/i.test(text));
   }
 
   console.log(`\n${failures === 0 ? "✅ ALL CHECKS PASSED" : `❌ ${failures} CHECK(S) FAILED`}`);

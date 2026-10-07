@@ -85,9 +85,9 @@ async function main() {
   // Real PDF text first: this also installs the stubbed database client every later engine / refresh call reads.
   const rendered = await renderPersonaPdfTexts({
     persona6: PERSONA6,
-    invited: { ...ONSHORE_SE, employerSponsorship: "none", residenceState: "QLD", applicationStage: "invited" },
-    planning: { ...ONSHORE_SE, employerSponsorship: "none", residenceState: "QLD", applicationStage: "planning" },
-    eoi: { ...ONSHORE_SE, employerSponsorship: "none", residenceState: "QLD", applicationStage: "eoi_submitted" },
+    invited: { ...ONSHORE_SE, employerSponsorship: "none", residenceState: "QLD", applicationStage: "invited", targetVisa: "491", preferredPathway: "491" },
+    planning: { ...ONSHORE_SE, employerSponsorship: "none", residenceState: "QLD", applicationStage: "planning", targetVisa: "491", preferredPathway: "491" },
+    eoi: { ...ONSHORE_SE, employerSponsorship: "none", residenceState: "QLD", applicationStage: "eoi_submitted", targetVisa: "491", preferredPathway: "491" },
   });
   const pdf = (id: string, locale: string) => rendered.find((r) => r.id === id && r.locale === locale)!;
 
@@ -190,25 +190,24 @@ async function main() {
 
   console.log("\n==================== B3. application stage (real PDF text) ====================");
   {
-    const TITLE = { en: "Lodgement Preparation", tr: "Başvuru Hazırlığı", "zh-Hans": "签证申请递交准备" } as const;
-    const DEADLINE = { en: "within 60 days of invitation", tr: "60 gün içinde", "zh-Hans": "60天内" } as const;
+    // The report does not tell anyone what to do next: the stage only adds an information line to the points section, and the
+    // typical process (published timeframes) carries the 60-day window and the police / health lead times for the target.
+    const DEADLINE = { en: "within 60 days of the invitation", tr: "60 gün içinde", "zh-Hans": "60 天内" } as const;
     const LEAD = { en: "15 business days", tr: "15 iş günü", "zh-Hans": "15 个工作日" } as const;
     const OVERSEAS = { en: "4-12 weeks", tr: "4-12 hafta", "zh-Hans": "4-12 周" } as const;
     const HEALTH = { en: "Bupa Medical Visa Services", tr: "Bupa Medical Visa Services", "zh-Hans": "Bupa Medical Visa Services" } as const;
-    const POINTS = { en: "Your points", tr: "Puanlarınız", "zh-Hans": "您的积分" } as const;
-    const EOI = { en: "update your EOI in SkillSelect", tr: "EOI'nizi SkillSelect'te güncelleyin", "zh-Hans": "在 SkillSelect 中更新您的 EOI" } as const;
+    const INVITED_NOTE = { en: "You told us you have been invited or nominated", tr: "Davet aldığınızı veya aday gösterildiğinizi belirttiniz", "zh-Hans": "您表示已获邀请或提名" } as const;
+    const EOI_NOTE = { en: "You told us an EOI is submitted", tr: "Bir EOI sunduğunuzu belirttiniz", "zh-Hans": "您表示已提交 EOI" } as const;
+    const DIRECTIVE = { en: /Lodgement Preparation|Your next step is lodging|update your EOI in SkillSelect/i, tr: /Başvuru Hazırlığı|bir sonraki adımınız|güncelleyin/i, "zh-Hans": /签证申请递交准备|您的下一步是递交|更新您的 EOI/ } as const;
     for (const locale of ["en", "tr", "zh-Hans"] as const) {
       const inv = squash(pdf("invited", locale).text);
       const plan = squash(pdf("planning", locale).text);
-      const iTitle = inv.indexOf(squash(TITLE[locale]));
-      const iBooster = inv.indexOf(squash(POINTS[locale]));
-      t(`${locale}: Invited -> the lodgement section is in the PDF (action plan, after the points section)`, iTitle >= 0 && iBooster >= 0 && iTitle > iBooster, `title ${iTitle}, booster ${iBooster}`);
+      const eoi = squash(pdf("eoi", locale).text);
+      t(`${locale}: Invited -> an information line in the points section, no lodgement instructions`, inv.includes(squash(INVITED_NOTE[locale])) && !DIRECTIVE[locale].test(pdf("invited", locale).text));
       const miss = [DEADLINE, LEAD, OVERSEAS, HEALTH].map((m) => m[locale]).filter((m) => !inv.includes(squash(m)));
-      t(`${locale}: ... with the 60-day deadline, police and health lead times`, miss.length === 0, miss.join(" | "));
-      t(`${locale}: Planning -> no lodgement section`, !plan.includes(squash(TITLE[locale])));
-      t(`${locale}: EOI submitted -> points can be updated in the EOI`, squash(pdf("eoi", locale).text).includes(squash(EOI[locale])) && !plan.includes(squash(EOI[locale])));
-      const rep = pdf("invited", locale).report as ReadinessReport;
-      t(`${locale}: Invited -> the first next step is lodgement, not a points booster`, /60/.test(rep.suggestedNextSteps[0] ?? "") && !/points|puan|分数/i.test((rep.suggestedNextSteps[0] ?? "").split(/[:：]/)[0]), rep.suggestedNextSteps[0]);
+      t(`${locale}: ... and the typical process states the 60-day window, police and health lead times`, miss.length === 0, miss.join(" | "));
+      t(`${locale}: Planning -> no stage line`, !plan.includes(squash(INVITED_NOTE[locale])) && !plan.includes(squash(EOI_NOTE[locale])));
+      t(`${locale}: EOI submitted -> its own information line, no instruction`, eoi.includes(squash(EOI_NOTE[locale])) && !DIRECTIVE[locale].test(pdf("eoi", locale).text));
     }
     const stages = ["planning", "skills_assessment_in_progress", "eoi_submitted", "invited"] as const;
     const snaps = stages.map((s) => JSON.stringify(gateSnapshot(runReadinessEngine({ ...ONSHORE_SE, applicationStage: s }))));

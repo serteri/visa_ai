@@ -201,47 +201,28 @@ async function main() {
   }
 
   console.log("\n==================== (5) real PDF text: en / tr / zh-Hans ====================");
-  const NOT_ELIGIBLE = { en: "Not eligible now", tr: "Şu anda uygun değil", "zh-Hans": "目前不符合条件" } as const;
-  const CONDITIONAL = { en: "Conditional", tr: "Koşullu", "zh-Hans": "有条件" } as const;
-  const CITE = { en: "Home Affairs, Subclass", tr: "İçişleri Bakanlığı, Subclass", "zh-Hans": "内政部，" } as const;
+  // The information-first report states the published requirement of the target visa with its Home Affairs citation and a
+  // status of the information (provided / not provided / cannot determine / not applicable); it never labels a pathway
+  // "Not eligible now" / "Next step required" / "Conditional" and recommends nothing.
+  const VERDICT_LABELS = { en: /Not eligible now|Next step required|Eligible to pursue|Conditional\b/, tr: /Şu anda uygun değil|Sonraki adım gerekli|Koşullu\b/, "zh-Hans": /目前不符合条件|需先完成下一步|有条件/ } as const;
   const rendered = await renderPersonaPdfTexts(Object.fromEntries(PERSONAS.map((p) => [p.name, p.input])));
   for (const r of rendered) {
     const locale = r.locale;
-    const flat = r.text.replace(/\s+/g, " ");
     const squash = r.text.replace(/\s+/g, "");
     const report = r.report as ReadinessReport;
     const g = report.visaGates!;
-    const reported = report.pathwayComparison.map((p) => (p.subclass === "801" ? "820" : p.subclass));
     const tag = `${r.id} [${locale}]`;
     const problems: string[] = [];
-    for (const v of new Set(reported)) {
-      const gv = g[v];
-      if (!gv) continue;
-      const label = gv.status === "not_eligible_now" ? NOT_ELIGIBLE[locale] : gv.status === "conditional" ? CONDITIONAL[locale] : pathwayStatusLabel(gv, locale);
-      if (!squash.includes(`${label}`.replace(/\s+/g, ""))) problems.push(`${v}: label "${label}" missing`);
-      if (gv.status === "not_eligible_now") {
-        const first = gv.notMet[0];
-        if (!squash.includes(first.label.replace(/\s+/g, "")) || !squash.includes(first.citation.replace(/\s+/g, ""))) problems.push(`${v}: failed gate "${first.label}" or its citation "${first.citation}" not in the PDF`);
-        if (!flat.includes(CITE[locale].replace(/\s+/g, " ").trim().split(" ")[0])) problems.push(`${v}: no Home Affairs citation`);
+    const key = report.targetVisa === "820_801" ? "820" : report.targetVisa && report.targetVisa !== "not_sure" ? report.targetVisa : undefined;
+    if (key && g[key]) {
+      for (const gate of g[key].gates) {
+        if (!squash.includes(gate.label.replace(/\s+/g, "").slice(0, 14))) problems.push(`${key}: requirement "${gate.label}" not in the PDF`);
       }
-      if (gv.status === "next_step_required" && gv.steps[0] && !squash.includes(gv.steps[0].replace(/\s+/g, ""))) problems.push(`${v}: next step "${gv.steps[0]}" not in the PDF`);
-      if (gv.status === "conditional") {
-        const u = gv.unknown[0];
-        if (u && !squash.includes(u.label.replace(/\s+/g, ""))) problems.push(`${v}: conditional gate "${u.label}" not listed`);
-      }
+      const cites = [...new Set(g[key].gates.map((x) => x.citation))];
+      if (!cites.some((c) => squash.includes(c.replace(/\s+/g, "").slice(0, 18)))) problems.push(`${key}: no Home Affairs citation in the PDF`);
     }
-    // No sentence recommends a pathway with a not-met gate.
-    const closed = notEligibleSubclasses(report);
-    // (Section headings that contain "suggestions" -- the Points Improvement Tips list -- are not recommendations of a visa.)
-    const rec = recommendsClosedVisa(flat.replace(/积分提升建议|Puan Artırma Önerileri|Points Improvement Tips/g, " "), closed);
-    if (rec) problems.push(`a sentence recommends the not-eligible subclass ${rec}`);
-    // Bridge to PR (English section): no 482 / 485 offer while that visa is not eligible now.
-    if (locale === "en") {
-      const bridge = /Bridge to PR \/ Typical Progression Pathways([\s\S]*?)(?:Critical Compliance Alerts|Risk Alerts|Audit-Ready Proof Checklist)/.exec(r.text)?.[1] ?? "";
-      if (g["482"]?.status === "not_eligible_now" && /Employer sponsorship context|subclass 482|482 →/.test(bridge)) problems.push("Bridge to PR still offers 482 (not eligible now)");
-      if (g["485"]?.status === "not_eligible_now" && /485 bridge|Typical post-485/.test(bridge)) problems.push("Bridge to PR still offers 485 (not eligible now)");
-    }
-    if (problems.length === 0) ok(`${tag}: labels, failed gates + citations, conditional lists; nothing recommends a not-eligible pathway (${closed.filter((c) => reported.includes(c)).join(", ") || "-"} closed)`);
+    if (VERDICT_LABELS[locale].test(r.text)) problems.push("a pathway verdict label is printed");
+    if (problems.length === 0) ok(`${tag}: target ${report.targetVisa}: requirements and citations in the PDF; no pathway verdict label`);
     else problems.forEach((m) => fail(`${tag}: ${m}`));
   }
 

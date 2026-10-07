@@ -308,3 +308,43 @@ LLM prompt. Not available to engineering: stored production AI text (can be read
 This pack describes behaviour; it makes no claim of compliance with the *Migration Act 1958* (Cth), the *Migration Agents Regulations*, the Australian
 Consumer Law, privacy law or any other law, and it should not be quoted as such. The final determination, and the product boundary, must come from
 qualified Australian counsel.
+
+---
+
+## L. Implementation notes: the information-first report (Item 5 of the approved plan)
+
+Added after the pack above was written; it describes what the code now does. No compliance claim is made.
+
+**Structure (PDF and result page, one view model: `lib/reports/report-view.ts`).** Cover (name, date, occupation, the Target visa picked, one notice line) ·
+Your target visa (profile facts supplied, labelled; the requirement map: published requirement | what you entered | source | status in {Provided, Not provided,
+Cannot determine, Not applicable}; information not provided) · Your points (the calculation; the published minimum and the latest published invitation score
+side by side; combined scenarios as arithmetic only, never phrased as an instruction) · Other visas, side by side / the Pathway Overview (same columns, fixed
+order 500, 485, 482, 189, 190, 491, 820/801, 186; never ordered by the applicant's data) · State and territory program information (all eight, fixed order) ·
+Typical process and published timeframes (a target visa only; generic steps, no personal dates) · Costs · Appendix. 8-10 pages.
+
+**Removed from the report:** the verdict and "best pathway", the pathway ranking and match percentages, "the fastest way to close the gap", "your next 3 actions",
+the month-by-month action plan, "ways to add points" (with difficulty), the "States you can use" filtering and its availability sentences, pitfalls, the
+"Before you lodge" list and the call-to-action banner on the last page. The partner report scores nothing about a relationship and instructs nothing (Item 2).
+
+**Every line carries a label** (supplied by you | calculation | published requirement | published program or historical data | unknown). Status values describe the
+information the applicant gave, not an outcome.
+
+**Flag for counsel: user-specific content that remains.** (1) "What you entered" next to each published requirement echoes the applicant's own answers. (2) The
+state table's "Occupation on its list (190 / 491)" column matches the occupation the applicant entered against each state's published list. It is shown for every
+state (none is filtered out or ranked), and is labelled as supplied by the applicant; whether matching an entered occupation to a published list is acceptable
+is a question for counsel. (3) The costs table is the engine's financial roadmap for the target visa.
+
+**Modes.** `READINESS_REPORT_MODE` = `REVIEW` (default) or `INFORMATION`: the same information-first report (the paid sale is separately off:
+`READINESS_REPORT_PAID_CHECKOUT_ENABLED`); `DISABLED`: no report is generated for any country (neutral message). Canada generation is off unless
+`CANADA_REPORT_ENABLED` is exactly "true".
+
+**Hidden-cost rule.** A completed skills assessment no longer hides a registration step that is separate from it: for AHPRA occupations the registration row stays in
+the cost table and for nursing the unpriced registration line keeps its note; both say they are separate from the assessment. (The estimated total itself is unchanged.)
+
+**Machine-assisted drafts (not reviewed by a native speaker).** All Turkish and Simplified Chinese wording introduced by this work was drafted with machine
+assistance and has not been reviewed by a native speaker: the report view's section titles, the five labels, the status names and their explanation, the
+requirement-map and overview column headers, the typical-process steps, the cover title / subtitle / notice, the target visa names, the state table headers and
+the points-scenario names. The same applies to the occupation-page strings of the SEO work (`lib/occupations/page-content.ts`).
+
+**Not covered.** Partner (820/801) reports keep their own information-only report (Item 2), not this structure. Stored reports created before the Target visa field
+read as "Not sure". Chat and site copy are out of scope.
