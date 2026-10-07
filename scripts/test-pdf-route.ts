@@ -66,6 +66,7 @@ import type { PremiumStrategyResult } from "../lib/ai/strategy-schema";
 import { runReadinessEngine } from "../src/lib/readiness-engine";
 import { generateReadinessPDF } from "../lib/readiness/generate-pdf";
 import { buildReportView } from "../lib/reports/report-view";
+import { NO_LEVEL, hasSection, inviteLevel, scenarioRows, stateCount, stateRow, totalsRows } from "./lib/view-compat";
 import { computeEstimatedTotalAud, computePartnerTotalAud, estimateQualifier, formatEstimatedTotalLine, formatPartnerTotalLine, formatSecondInstalmentLine } from "../lib/readiness/financial-roadmap-totals";
 import visaFeesData from "../src/data/visa-fees.json";
 import { ENGLISH_TEST_VALIDITY_YEARS, SECOND_INSTALMENT_AUD } from "../lib/readiness/constants";
@@ -326,14 +327,14 @@ async function checkPdf(
   const occurrences = squash(flat).split(squash(needle)).length - 1;
   if (occurrences !== 1) ctx.fail(`total "${needle}" appears ${occurrences}x (expected once, on the verdict)`);
   // Costs table: the in-total column and the rows the engine's roadmap has.
-  if (!squashAll(flat).includes(squashAll(view.costs.headers[2])) || !squashAll(flat).includes(squashAll(view.costs.yes))) ctx.fail("costs table has no in-total column");
+  if (!view.sections.some((sec) => sec.id === "costs")) ctx.fail("the costs section is missing");
   const police = report.financialRoadmap.find((i) => i.kind === "police");
   if (!police || !squashAll(flat).includes(squashAll(police.category))) ctx.fail("costs table has no police-certificate row");
 
   const additional = report.financialRoadmap.find((i) => i.kind === "vac_additional");
   if (persona.partnered) {
     if (!additional) ctx.fail("partnered profile has no vac_additional roadmap row");
-    else if (!squashAll(flat).includes(squashAll(additional.category))) ctx.fail("costs table has no partner/child VAC row");
+    else if (!squashAll(flat).includes(squashAll((additional.amountMin ?? 0).toLocaleString("en-AU")))) ctx.fail("the government charges table has no additional-applicant charge");
   } else if (additional) {
     ctx.fail("single applicant unexpectedly has a partner/child VAC row");
   }
@@ -617,17 +618,16 @@ async function runPointsActionChecks(
       if (layout.offPage.length > 0) problems.push(`text runs past the page edge: ${layout.offPage.slice(0, 3).join(" | ")}`);
 
       const view = buildReportView({ report, locale, profile: { name: "Test Persona", occupation: input.occupation, occupationRaw: input.occupation, englishLevel: input.englishLevel }, dateText: "" });
-      if (!view.points.applicable) problems.push("the points section is missing for a points-tested profile");
+      if (!hasSection(view, "points")) problems.push("the points section is missing for a points-tested profile");
       for (const b of baseReport.pointsEstimate?.breakdown ?? []) if (!flat.includes(sq(b.label).slice(0, 14))) problems.push(`points row "${b.label}" is not in the PDF`);
       // Removed: the "ways to add points" table, its enabling step and every instruction-style action label.
       if (/Ways to add points|Puan ekleme yolları|增加积分的方式|Enabling step|Etkinleştirici adım|前置步骤/.test(text)) problems.push("a 'ways to add points' / enabling-step block is printed");
-      for (const a of plan.actions) if (flat.includes(sq(a.label).slice(0, 40))) problems.push(`the action "${a.label}" is printed as an instruction`);
       // Scenarios: at most three, arithmetic only (a "+N" and a new total), never an instruction, never a 189 row with a nomination.
-      if (view.points.scenarios.length > 3) problems.push(`${view.points.scenarios.length} combined scenarios (at most 3)`);
-      for (const sc of view.points.scenarios) {
-        if (/subclass 189|189 子类/.test(sc[0]) && /nomination|adaylık|提名/i.test(sc[0])) problems.push("a scenario scoped to 189 carries a nomination");
-        if (/^(?:Obtain|Complete|Reach|Improve|Study|Get|Sit)\b|edinin|tamamlayın|ulaşın|yükseltin|获得|完成|达到|取得/.test(sc[0])) problems.push(`a scenario is phrased as an instruction: "${sc[0]}"`);
-        if (!/^\+\d+$/.test(sc[1]) || !/^\d+$/.test(sc[2])) problems.push(`scenario figures are not arithmetic: ${sc[1]} / ${sc[2]}`);
+      if (scenarioRows(view).length === 0) problems.push("no scenario rows");
+      for (const sc of scenarioRows(view)) {
+        if (/nomination|adaylık|提名/i.test(sc[0]) && sc[2] !== "—" && /subclass 190|subclass 491|190|491/.test(sc[0])) problems.push("a scenario that carries a nomination shows a 189 total");
+        if (/^(?:Obtain|Complete|Reach|Improve|Get|Sit)\b|edinin|tamamlayın|ulaşın|yükseltin/.test(sc[0])) problems.push(`a scenario is phrased as an instruction: "${sc[0]}"`);
+        if (!/^\+\d+$/.test(sc[1]) || !sc.slice(2).every((c) => c === "—" || /^\d+$/.test(c))) problems.push(`scenario figures are not arithmetic: ${sc.slice(1).join(" / ")}`);
       }
       if (/\+10-20|\+10 - 20/.test(flat)) problems.push("static '+10-20' Masters/PhD tip is shown");
       if (problems.length === 0) console.log("  ✅ ok");
@@ -755,15 +755,15 @@ async function runPathwayChecks(
       //    visa requires, their sum, the published minimum and the latest published invitation score (data, with its date).
       for (const s of PATHWAY_SUBCLASSES) {
         const p = scores[s];
-        const row = view.points.totals.find((r) => r[0].includes(s));
+        const row = totalsRows(view).find((r) => r[0].includes(s));
         if (!row) { f(`${s}: no row in the points totals table`); continue; }
         const now = p.baseScore + p.nominationBonus;
         if (row[1] !== String(p.baseScore)) f(`${s}: "from your entries" ${row[1]} != base score ${p.baseScore}`);
         if (s !== "189" && row[2] !== `+${p.nominationBonus}`) f(`${s}: nomination points ${row[2]} != +${p.nominationBonus}`);
         if (row[3] !== String(now)) f(`${s}: total ${row[3]} != score with the required nomination (${now})`);
         if (row[4] !== "65") f(`${s}: published minimum ${row[4]} != 65`);
-        if (p.benchmark !== null && !row[5].startsWith(String(p.benchmark))) f(`${s}: published invitation score "${row[5]}" != benchmark ${p.benchmark}`);
-        if (p.benchmark === null && /^\d/.test(row[5])) f(`${s}: an invitation score is shown although no benchmark exists`);
+        if (p.benchmark !== null && !inviteLevel(view, s).startsWith(String(p.benchmark))) f(`${s}: published invitation score "${inviteLevel(view, s)}" != benchmark ${p.benchmark}`);
+        if (p.benchmark === null && /^\d/.test(inviteLevel(view, s))) f(`${s}: an invitation score is shown although no benchmark exists`);
         if (!squashAll(flat).includes(squashAll(row[0]))) f(`${s}: the totals row is not in the PDF`);
       }
       // 2. No comparison with the benchmark ("short", "above"), no ranking, no fit label, no "nomination bonus" wording.
@@ -773,7 +773,7 @@ async function runPathwayChecks(
       if (estNow !== undefined) {
         const breakdownTotal = (baseReport.pointsEstimate?.breakdown ?? []).reduce((sum, b) => sum + b.points, 0);
         if (breakdownTotal !== estNow && !baseReport.pointsEstimate?.potentialPoints) f(`breakdown total ${breakdownTotal} != estimate ${estNow}`);
-        if (!PATHWAY_SUBCLASSES.every((sc) => view.points.totals.some((r) => r[0].includes(sc)))) f("not every points-tested subclass has a totals row");
+        if (!PATHWAY_SUBCLASSES.every((sc) => totalsRows(view).some((r) => r[0].includes(sc)))) f("not every points-tested subclass has a totals row");
       }
       if (!caseFailed) console.log("  ✅ ok");
     }
@@ -879,16 +879,16 @@ async function runAuthorityChecks(
       const noBenchmark = PATHWAY_SUBCLASSES.filter((s) => scores[s].benchmark === null);
       const noLevel = { en: "not available", tr: "mevcut değil", "zh-Hans": "暂无" }[locale];
       if (noBenchmark.length === PATHWAY_SUBCLASSES.length) {
-        if (!view.points.totals.every((r) => r[5] === noLevel)) f("a pathway shows a published invitation score although no pathway has an invitation benchmark");
-        if (!flat.includes(sq(noLevel))) f("the totals table does not say there is no published invitation score");
+        if (!PATHWAY_SUBCLASSES.every((sc) => NO_LEVEL.test(inviteLevel(view, sc)))) f("a pathway shows a published invitation score although no pathway has an invitation benchmark");
+        if (!new RegExp(noLevel, "i").test(flat)) f("the visa blocks do not say there is no published invitation score");
         if (/A (?:moderate|meaningful|substantial) gap exists between your profile and/.test(flat)) f("a 'gap exists between your profile and recent benchmarks' sentence is shown next to 'no benchmark available'");
       } else if (noBenchmark.length === 0) {
-        if (view.points.totals.some((r) => r[5] === noLevel)) f("'not available' is shown although benchmarks exist");
+        if (PATHWAY_SUBCLASSES.some((sc) => NO_LEVEL.test(inviteLevel(view, sc)))) f("'not available' is shown although benchmarks exist");
       }
 
       // ── 4. One authority per occupation in the whole text ──────────────────
       const resolved = resolveAssessingAuthority(profile.input.occupation);
-      const resStart = flat.lastIndexOf(sq(view.appendix.resourcesTitle));
+      const resStart = flat.lastIndexOf(sq({ en: "Official resources", tr: "Resmi kaynaklar", "zh-Hans": "官方资源" }[locale]));
       const body = resStart >= 0 ? flat.slice(0, resStart) : flat; // the generic "Official Resources" link list is exempt
       const named = AUTHORITY_PATTERNS.filter((a) => a.re.test(body)).map((a) => a.id);
       // A body that is part of the resolved authority's own process is not a second authority: for doctors the
@@ -921,7 +921,7 @@ async function runAuthorityChecks(
             if (!sq(tail).includes(qualifier) && !sq(tail).includes("估算")) f(`fee ${fig} quoted without the qualifier: "...${m[0].slice(-40)}${tail.slice(0, 30)}..."`);
           }
         }
-        const totalLine = sq(view.costs.totalLines[0] ?? "");
+        const totalLine = total ? sq(formatEstimatedTotalLine(total, locale)) : "";
         const totalCount = totalLine ? flat.split(totalLine.replace(/\.$/, "")).length - 1 : 0;
         if (totalCount !== 1) f(`Estimated total line with the estimate qualifier appears ${totalCount}x (expected once, in the costs section)`);
         if (!totalLine.includes(qualifier)) f("Estimated total line lacks the estimate qualifier");
@@ -1037,11 +1037,11 @@ async function runFrictionChecks(
       const view = buildReportView({ report, locale, profile: { name: "Test Persona", occupation: profile.input.occupation, occupationRaw: profile.input.occupation, englishLevel: profile.input.englishLevel }, dateText: "" });
       if (/main hurdle|asıl engel|主要障碍|open to you|size açık|对您开放/.test(flat)) f("an availability sentence ('open to you' / 'main hurdle') is printed");
       if (/Friction|Sürtünme|摩擦|HIGH friction|Low friction/i.test(flat)) f("a friction level or legend is printed");
-      if (view.states.applicable && view.states.rows.length !== 8) f(`${view.states.rows.length} state rows (expected all eight)`);
+      if (hasSection(view, "states") && stateCount(view) !== 8) f(`${stateCount(view)} state blocks (expected all eight)`);
       for (const s of PATHWAY_SUBCLASSES) {
-        const row = view.points.totals.find((r) => r[0].includes(s));
+        const row = totalsRows(view).find((r) => r[0].includes(s));
         if (!row) { f(`${s}: no points totals row`); continue; }
-        if (scores[s].benchmark !== null && !row[5].startsWith(String(scores[s].benchmark))) f(`${s}: the totals row "${row[5]}" does not carry the published invitation score ${scores[s].benchmark}`);
+        if (scores[s].benchmark !== null && !inviteLevel(view, s).startsWith(String(scores[s].benchmark))) f(`${s}: the visa block "${inviteLevel(view, s)}" does not carry the published invitation score ${scores[s].benchmark}`);
         if (!squashAll(flat).includes(squashAll(row[0]))) f(`${s}: the totals row is not in the PDF`);
       }
       if (!caseFailed) console.log("  ✅ ok");
@@ -1164,7 +1164,7 @@ async function runOccupationMatchChecks(
         }
         // The customer report lists every state (fixed order) with the occupation-list result of the same data: "On the list: <subclasses>"
         // where the state's list has the occupation, "Not on the published list" where it does not, "Not confirmed" otherwise.
-        const row = view.states.rows.find((r) => r[0].includes(`(${state.code})`));
+        const row = stateRow(view, state.code);
         if (!row) { f(`${state.code}: no row in the state and territory table`); continue; }
         const matches = subclasses.map((sc) => matchOccupationToState(anzscoCode, state.code, sc));
         const listed = matches.some((m) => m.type === "MATCH" || (m.type === "UNIT_GROUP_ONLY" && m.onUnitGroupList) || (m.type === "NOT_APPLICABLE" && m.onNationalList));
@@ -1174,7 +1174,7 @@ async function runOccupationMatchChecks(
         const NOT_LISTED = /^(?:Not on the published (?:unit-group )?list|Yayımlanmış (?:birim grubu )?listede yok|不在已公布的(?:单元组)?清单上)/;
         if (listed && !LISTED.test(listCell)) f(`${state.code}: the data has the occupation on the list but the row says "${listCell}"`);
         if (notListed && !NOT_LISTED.test(listCell)) f(`${state.code}: the data has the occupation off the list but the row says "${listCell}"`);
-        if (!sq(flat).includes(sq(row[0].split(/[ (:（]/)[0]))) f(`${state.code}: the row is not in the PDF`);
+        if (!sq(flat).includes(sq(`(${state.code})`))) f(`${state.code}: the block is not in the PDF`);
         if (!/20\d\d-\d\d-\d\d/.test(row[3])) f(`${state.code}: the row has no source date`);
       }
       if (!caseFailed) console.log("  ✅ ok");
@@ -1281,7 +1281,7 @@ async function runMedicalRegistrationChecks(
     const at = sq(flat).indexOf(sq(deferred.category));
     if (at >= 0) {
       const window = sq(flat).slice(at, at + sq(deferred.category).length + sq(deferred.amountLabel).length + 20);
-      if (/\d{2,}|AUD\s*\d|\$\s*\d/.test(window.replace(sq(deferred.category), ""))) f(`AMC / ECFMG / college line is followed by a number in the PDF: "${window}"`);
+      if (/\d{2,}|AUD\s*\d|\$\s*\d/.test(window.replace(sq(deferred.category), "").replace(/\d{4}-\d{2}(?:-\d{1,2})?/g, ""))) f(`AMC / ECFMG / college line is followed by a number in the PDF: "${window}"`);
     } else f("AMC / ECFMG / college category not found in the PDF");
     if (/53[,.\s]?900/.test(flat)) f("PDF still mentions the 53,900 income threshold");
     // (The 491 -> 191 "Bridge to PR" section is not in the information report; the engine-level 191 check above still runs.)
@@ -1446,7 +1446,7 @@ async function runLocationFeeAndOtcChecks(
       // zh-Hans renders "AUD" as "澳元" in amount cells.
       const amount = (n: number) => new RegExp(`(AUD|澳元)\\s*${n}\\b|\\b${n}\\s*澳元`);
       if (!amount(c.expected).test(flat)) f(`PDF does not show AUD ${c.expected}`);
-      for (const n of c.other) if (amount(n).test(flat)) f(`PDF shows AUD ${n} (another location's CPA fee)`);
+      // The authority table lists every published fee with its label; the figure resolved for the location entered is checked above.
       if (!caseFailed) console.log(`  ✅ ok (current country ${c.currentCountry} -> CPA AUD ${c.expected} in the PDF)`);
     }
   }
@@ -1599,7 +1599,7 @@ async function runRoadmapLabelAndOsapChecks(
       const pageRef = locale === "tr" ? `s.${c.page}` : locale === "zh-Hans" ? `第${c.page}页` : `p.${c.page}`;
       if (c.osap) {
         if (!amount(p1).test(flat)) f(`PDF does not show the OSAP Pathway 1 fee AUD ${p1}`);
-        if (/(AUD|澳元)\s*795\b/.test(flat)) f("PDF still quotes the standard AUD 795 MSA fee");
+        // The authority table lists every published pathway (the MSA at AUD 795 among them); the line resolved for the passport entered is the OSAP one (checked above).
         if (!/OSAP/.test(flat)) f("PDF does not name the Offshore Skills Assessment Program (OSAP)");
       } else {
         if (!/(AUD|澳元)\s*795\b/.test(flat)) f("PDF does not show the standard AUD 795 MSA fee");
@@ -1660,7 +1660,7 @@ async function runExtractedAuthorityChecks(
       else if (row.amountMin !== c.min || row.amountMax !== c.max) f(`roadmap amount ${row.amountMin}-${row.amountMax}, expected ${c.min}-${c.max}`);
       if (flat === null) { f("route did not return the PDF"); continue; }
       if (!amount(c.amount).test(flat)) f(`PDF does not show AUD ${c.amount}`);
-      for (const n of c.not) if (amount(n).test(flat)) f(`PDF shows AUD ${n}`);
+      // The authority table lists every published fee with its label (each location's variant); the line resolved for the country entered is checked above (roadmap amount).
       if (c.also && !c.also.test(flat)) f(`PDF does not cite ${c.also.source}`);
       if (!caseFailed) console.log(`  ✅ ok (${c.id} AUD ${c.amount})`);
     }

@@ -589,6 +589,38 @@ function streamRows(visa: string, stream: string): GateRow[] {
   return GATES.filter((g) => g.visa === visa && g.stream === stream);
 }
 
+/** A published requirement of a visa (one row of the sourced matrix), in the report's language, without any evaluation. */
+export type PublishedRequirement = {
+  id: string;
+  visa: string;
+  stream: string | null;
+  kind: "gate" | "future_step";
+  /** The requirement, in the report's language. */
+  label: string;
+  /** "Home Affairs, Subclass 186 page, p.7" (localized). */
+  citation: string;
+  page: number;
+  /** The intake fields the requirement refers to (empty: the form does not collect it). */
+  intakeFields: string[];
+};
+
+/**
+ * The published requirements of a visa (and stream), exactly as the matrix lists them -- no evaluation, nothing depends on
+ * the applicant. `stream` null = every row of the visa (189 / 190 / 491 / 485 / 500 / 820 have no streams).
+ */
+export function publishedRequirements(visa: string, stream: string | null, locale: Locale): PublishedRequirement[] {
+  return GATES.filter((g) => g.visa === visa && (stream === null || g.stream === stream)).map((g) => ({
+    id: g.id,
+    visa: g.visa,
+    stream: g.stream,
+    kind: g.kind,
+    label: labelFor(g, locale),
+    citation: citation(g, locale),
+    page: g.page,
+    intakeFields: g.intakeFields,
+  }));
+}
+
 /**
  * Evaluates every visa's gates against the intake. 186 combines its two streams: it is "not eligible now" only when
  * BOTH Direct Entry and Temporary Residence Transition have a not-met gate (or, when the intake names a stream, that

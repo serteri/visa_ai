@@ -22,6 +22,7 @@ import type { ReadinessReport } from "../lib/readiness/types";
 import { computeEstimatedTotalAud } from "../lib/readiness/financial-roadmap-totals";
 import { BANNED_CLAIMS, englishAgeTiedToGrant } from "./test-report-banned-phrases";
 import { buildReportView } from "../lib/reports/report-view";
+import { NO_LEVEL, inviteLevel, stateCount, stateRow, totalsRows } from "./lib/view-compat";
 import { REVIEW_PERSONAS, renderPersonaPdfTexts } from "./render-persona-pdfs";
 
 let failures = 0;
@@ -65,12 +66,12 @@ async function main() {
     t("2. no not-yet-assessed wording", stale.length === 0, stale.join(" | "));
     const total = computeEstimatedTotalAud(report.financialRoadmap)!;
     const reason = { en: "Your skills assessment is already done", tr: "Beceri değerlendirmeniz zaten tamamlandı", "zh-Hans": "您的技能评估已完成" }[L];
-    t("2. the skills-assessment fee is left out of the totals and is no cost row; the PDF says once that it is done", total.completedKinds.includes("skills_assessment") && !total.includedKinds.includes("skills_assessment") && squash(text).split(squash(reason)).length - 1 === 1 && !view.costs.rows.some((row) => row.item === report.financialRoadmap.find((i) => i.kind === "skills_assessment")?.category));
+    t("2. the skills-assessment fee is left out of the totals and is no cost row; the PDF says once that it is done", total.completedKinds.includes("skills_assessment") && !total.includedKinds.includes("skills_assessment") && squash(text).split(squash(reason)).length - 1 === 1 && !view.sections.find((x) => x.id === "costs")!.blocks.some((b) => b.kind === "table" && b.rows.some((row) => row[0] === report.financialRoadmap.find((i) => i.kind === "skills_assessment")?.category)));
 
     // 3.
     const highPotential = /HIGH POTENTIAL|YÜKSEK POTANSİYEL|Highly Recommended|Viability Ranking/i.test(r.text) || /\b[A-Z]{2,3}\s+\d{1,3}\s?%/.test(r.text);
     const shortOrAbove = /\d+ points? short|\d+ puan eksik|差 \d+ 分|\d+ above|üstünde/.test(text);
-    t("3. no 'HIGH POTENTIAL' / match percentages / ranking, no 'short' or 'above' comparison; one row per points-tested subclass of the target", !highPotential && !shortOrAbove && view.points.totals.length === 1 && view.points.totals[0][0].includes("491"));
+    t("3. no 'HIGH POTENTIAL' / match percentages / ranking, no 'short' or 'above' comparison; a totals row for every points-tested subclass", !highPotential && !shortOrAbove && totalsRows(view).some((r) => r[0].includes("491")));
 
     // 4.
     const generated = { en: "Generated 1 October 2026", tr: "Oluşturulma tarihi 1 Ekim 2026", "zh-Hans": "生成日期：2026年10月1日" }[L];
@@ -92,11 +93,10 @@ async function main() {
     // 8.
     const row189 = report.pathwayScores?.["189"];
     const v491 = report.pathwayScores?.["491"];
-    t("8. the published invitation score is data with its date (491 shown with the target); 189 is in the Pathway table as a published fact", !!v491 && view.points.totals[0][5].startsWith(String(v491.benchmark)) && (!row189 || view.others.rows.some((x) => x[0].includes("189"))));
+    t("8. the published invitation score is data with its date (491 shown with the target); 189 is in the Pathway table as a published fact", !!v491 && (v491.benchmark === null ? NO_LEVEL.test(inviteLevel(view, "491")) : inviteLevel(view, "491").startsWith(String(v491.benchmark))) && (!row189 || inviteLevel(view, "189").length > 0));
 
     // 9.
-    const rows = view.states.rows;
-    t("9. state and territory information: all eight, fixed order, none described as unavailable to the applicant", rows.length === 8 && rows.every((x, i, a) => i === 0 || a[i - 1][0] < x[0]) && !/not available to you|size açık olmayan|对您不开放/i.test(text));
+        t("9. state and territory information: all eight, fixed order, none described as unavailable to the applicant", stateCount(view) === 8 && ["ACT", "NSW", "NT", "QLD", "SA", "TAS", "VIC", "WA"].every((c) => stateRow(view, c) !== null) && !/not available to you|size açık olmayan|对您不开放/i.test(text));
   }
 
   console.log(`\n${failures === 0 ? "✅ ALL CHECKS PASSED" : `❌ ${failures} CHECK(S) FAILED`}`);

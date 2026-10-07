@@ -348,3 +348,36 @@ the points-scenario names. The same applies to the occupation-page strings of th
 
 **Not covered.** Partner (820/801) reports keep their own information-only report (Item 2), not this structure. Stored reports created before the Target visa field
 read as "Not sure". Chat and site copy are out of scope.
+
+## O. Implementation notes: the rich information report (builds on section L)
+
+**What changed.** The report has more depth and no selection. It is composed from sections of neutral blocks (`lib/reports/report-view.ts`, `report-blocks.ts`) that the
+PDF (`lib/readiness/pdf-report-v2.ts`) and the result page draw identically: Cover ("Personalised visa information report based on official sources") · Your details
+(everything entered, labelled supplied / not provided) · Points (the table, then every single-factor and every valid combined scenario as arithmetic, with totals under
+189, 190 (+5) and 491 (+15); "mathematical scenarios only") · Visa information (one block per visa in the fixed order 500, 485, 482, 186 Direct Entry, 186 Temporary
+Residence Transition, 189, 190, 491, 820/801: overview, published charges with date, typical processing information, recent invitation level with its data date,
+progression pattern, every published requirement with source and page, what was entered per requirement) · State and territory programs (all eight, fixed order) ·
+Invitation history · Costs (government charges per subclass, assessing-authority fees per pathway, other listed items, sums of published charges) · Typical process
+(four pathway families and the steps common to all) · Documents and general points · Sources and advice. About 18-20 pages in English (target 14-18).
+
+**Ordering.** The only user-dependent placement is that the visa chosen as Target visa is listed first and marked "Your selected visa". Everything else is in a fixed
+order that does not depend on the applicant's data (tested with four different profiles). Nothing is selected, ranked, scored, recommended, concluded or instructed.
+
+**Removed permanently:** verdict, rankings, viability labels, match percentages, radar, top states, EOI status, AI strategy, friction / strength / signal / confidence,
+gap analysis, "Calculate your visa chances", any personalised action plan, the "States you can use" filtering. The only advice-like statement is the closing one that
+recommends a registered migration agent or an Australian legal practitioner for advice on the applicant's own situation.
+
+**Flag for counsel: user-specific content that remains.** (1) "What you entered" next to each published requirement and the "Your details" lines echo the applicant's own
+answers. (2) Each state's "Occupation on its list (190 / 491)" line matches the occupation the applicant entered against that state's published list, for all eight
+states. (3) The points scenarios apply the published points table to the applicant's entries ("if this factor applied, the total would be N"); they are arithmetic, not
+a statement about what anyone should do. (4) The cost section's "estimated total" lines (selected visa) apply the cost data to the applicant's entries.
+
+**Data caveats to confirm.** Recent invitation levels by occupation come from `visa-trends.json`, which its own methodology note describes as estimates derived from
+2025-26 trend patterns; the report says so in the sources register. Round-by-round invitation history lists only the rounds recorded with a source (`eoi-rounds.json`,
+non-estimated rows, last updated 2025-11-13). Visa application charges are those in `visa-fees.json` / `fee-provenance.json` (verified dates are printed). State facts are
+the state programs' own published statements as recorded in `state-rules-config.ts`, shown with the source document and the date checked.
+
+**Machine-assisted drafts (not reviewed by a native speaker).** In addition to the list in section L: all Turkish and Simplified Chinese renderings of the 65 state
+key-fact statements (`lib/state-nomination/state-keyfact-translations.ts`; numbers, dates, fees and subclass numbers are carried over as published; where a statement has no
+translation the state's English wording is shown), the visa-block field names and progression sentences, the cost-section headings and notes, the typical-process steps
+common to all pathways, the documents and general-points tables, and the advice statement.

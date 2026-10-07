@@ -281,8 +281,6 @@ function RestructuredReport({
 }) {
   const isTr = locale === "tr";
   const isZh = locale === "zh-Hans";
-  const t = view.target;
-  const p = view.points;
   const th = "px-3 py-2";
   const table = (headers: string[], rows: string[][], attrs?: (row: string[]) => Record<string, string>) => (
     <div className="overflow-x-auto rounded-md border border-slate-200">
@@ -340,178 +338,53 @@ function RestructuredReport({
         </CardHeader>
       </Card>
 
-      <Card data-section="target">
-        <CardHeader>
-          <CardTitle>{view.titles.target}</CardTitle>
-          <p className="text-sm font-medium">{t.subjectLine}</p>
-        </CardHeader>
-        <CardContent className="space-y-4 text-sm">
-          <div className="space-y-2">
-            <p className="font-medium">{t.suppliedTitle}</p>
-            {table([...t.suppliedHeaders], t.supplied.map((r) => [...r]))}
-          </div>
-          {t.requirements.length > 0 ? (
-            <div className="space-y-2">
-              <p className="font-medium">{t.requirementsTitle}</p>
-              {table([...t.requirementsHeaders], t.requirements.map((r) => [r.requirement, r.entered, r.source, r.statusLabel]), (r) => ({ "data-requirement-status": r[3] }))}
-              <p className="text-xs text-muted-foreground">{t.statusLegend}</p>
-            </div>
-          ) : t.notApplicableNote ? (
-            <p className="text-xs text-muted-foreground">{t.notApplicableNote}</p>
-          ) : null}
-          <div className="space-y-1">
-            <p className="font-medium">{t.notProvidedTitle}</p>
-            {t.notProvided.length > 0 ? (
-              <ul className="list-disc space-y-1 pl-5 text-xs">
-                {t.notProvided.map((x) => (
-                  <li key={x}>{x}</li>
-                ))}
-              </ul>
-            ) : (
-              <p className="text-xs">{t.notProvidedNone}</p>
-            )}
-          </div>
-        </CardContent>
-      </Card>
-
-      {p.applicable && (
-        <Card data-section="points">
+      {view.sections.map((section) => (
+        <Card key={section.id} data-section={section.id}>
           <CardHeader>
-            <CardTitle>{view.titles.points}</CardTitle>
-            <p className="text-xs text-muted-foreground">{p.intro}</p>
-            {p.stageNote ? <p className="text-xs text-muted-foreground">{p.stageNote}</p> : null}
+            <CardTitle>{section.title}</CardTitle>
           </CardHeader>
-          <CardContent className="space-y-4 text-sm">
-            {table([...p.headers], p.rows)}
-            {p.totals.length > 0 && (
-              <div className="space-y-2">
-                <p className="font-medium">{p.totalsTitle}</p>
-                {table(p.totalsHeaders, p.totals)}
-                <p className="text-xs text-muted-foreground">{p.totalsNote}</p>
-              </div>
-            )}
-            {p.scenarios.length > 0 && (
-              <div className="space-y-2">
-                <p className="font-medium">{p.scenariosTitle}</p>
-                {table([...p.scenariosHeaders], p.scenarios.map((s) => [...s]))}
-                <p className="text-xs text-muted-foreground">{p.scenariosNote}</p>
-              </div>
-            )}
+          <CardContent className="space-y-3 text-sm">
+            {section.blocks.map((b, i) => {
+              switch (b.kind) {
+                case "heading":
+                  return (
+                    <p key={i} className="pt-2 font-semibold" data-visa-heading={b.text} data-selected-visa={b.marked ? "true" : undefined}>
+                      {b.text}
+                      {b.marked ? <span className="ml-2 rounded bg-slate-100 px-2 py-0.5 text-xs font-medium">{b.marked}</span> : null}
+                    </p>
+                  );
+                case "text":
+                  return (
+                    <p key={i} className="text-xs text-muted-foreground">
+                      {b.text}
+                    </p>
+                  );
+                case "lines":
+                  return (
+                    <ul key={i} className="list-disc space-y-1 pl-5 text-xs">
+                      {b.lines.map((line, j) => (
+                        <li key={j}>{line}</li>
+                      ))}
+                    </ul>
+                  );
+                case "kv":
+                  return (
+                    <dl key={i} className="grid gap-x-3 gap-y-1 rounded-md border border-slate-200 p-3 text-xs sm:grid-cols-[12rem_1fr]">
+                      {b.rows.map(([k, v], j) => (
+                        <div key={j} className="contents">
+                          <dt className="font-medium">{k}</dt>
+                          <dd className="whitespace-pre-line">{v}</dd>
+                        </div>
+                      ))}
+                    </dl>
+                  );
+                case "table":
+                  return <div key={i}>{table(b.headers, b.rows)}</div>;
+              }
+            })}
           </CardContent>
         </Card>
-      )}
-
-      <Card data-section="others">
-        <CardHeader>
-          <CardTitle>{view.others.title}</CardTitle>
-          <p className="text-xs text-muted-foreground">{view.others.intro}</p>
-        </CardHeader>
-        <CardContent className="space-y-2 text-sm">
-          {table(view.others.headers, view.others.rows, (r) => ({ "data-overview-visa": r[0] }))}
-          <p className="text-xs text-muted-foreground">{view.others.note}</p>
-        </CardContent>
-      </Card>
-
-      {view.states.applicable && (
-        <Card data-section="states">
-          <CardHeader>
-            <CardTitle>{view.states.title}</CardTitle>
-            <p className="text-xs text-muted-foreground">{view.states.intro}</p>
-          </CardHeader>
-          <CardContent className="space-y-2 text-sm">
-            {table(view.states.headers, view.states.rows, (r) => ({ "data-state-row": r[0] }))}
-            <p className="text-xs text-muted-foreground">{view.states.note}</p>
-          </CardContent>
-        </Card>
-      )}
-
-      {view.process.applicable && (
-        <Card data-section="process">
-          <CardHeader>
-            <CardTitle>{view.process.title}</CardTitle>
-            <p className="text-xs text-muted-foreground">{view.process.intro}</p>
-          </CardHeader>
-          <CardContent className="space-y-2 text-sm">{table([...view.process.headers], view.process.rows.map((r) => [...r]))}</CardContent>
-        </Card>
-      )}
-
-      <Card data-section="costs">
-        <CardHeader>
-          <CardTitle>{view.titles.costs}</CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-2 text-sm">
-          {view.costs.rows.length > 0 &&
-            table([...view.costs.headers], view.costs.rows.map((r) => [r.item, r.amount, r.included ? view.costs.yes : view.costs.no, r.source]))}
-          {view.costs.totalLines.map((l) => (
-            <p key={l} className="text-xs text-muted-foreground">
-              {l}
-            </p>
-          ))}
-          {view.costs.note ? <p className="text-xs text-muted-foreground">{view.costs.note}</p> : null}
-          {view.costs.notes.map((n) => (
-            <p key={n} className="text-xs text-muted-foreground" data-cost-note>
-              {n}
-            </p>
-          ))}
-          {view.costs.skillsDoneNote ? <p className="text-xs text-muted-foreground">{view.costs.skillsDoneNote}</p> : null}
-          {view.costs.livingLine ? <p className="text-xs text-muted-foreground">{view.costs.livingLine}</p> : null}
-        </CardContent>
-      </Card>
-
-      <Card data-section="appendix">
-        <CardHeader>
-          <CardTitle>{view.titles.appendix}</CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-4 text-sm">
-          {view.appendix.documents.length > 0 && (
-            <div>
-              <p className="font-medium">{view.appendix.documentsTitle}</p>
-              <ul className="list-disc space-y-1 pl-5 text-xs">
-                {view.appendix.documents.map((d) => (
-                  <li key={d.category}>
-                    {d.category}: {d.items}
-                  </li>
-                ))}
-              </ul>
-            </div>
-          )}
-          {view.appendix.resources.length > 0 && (
-            <div>
-              <p className="font-medium">{view.appendix.resourcesTitle}</p>
-              {view.appendix.resources.map((g) => (
-                <div key={g.heading} className="text-xs">
-                  <p className="mt-1 font-medium">{g.heading}</p>
-                  <ul className="list-disc pl-5">
-                    {g.links.map((l) => (
-                      <li key={l.url}>
-                        <a href={l.url} target="_blank" rel="noopener noreferrer" className="underline">
-                          {l.label}
-                        </a>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              ))}
-            </div>
-          )}
-          {view.appendix.sources.length > 0 && (
-            <div>
-              <p className="font-medium">{view.appendix.sourcesTitle}</p>
-              <ul className="list-disc space-y-1 pl-5 text-xs">
-                {view.appendix.sources.map((src) => (
-                  <li key={src}>{src}</li>
-                ))}
-              </ul>
-            </div>
-          )}
-          {view.appendix.disclaimer ? (
-            <div>
-              <p className="font-medium">{view.appendix.disclaimerTitle}</p>
-              <p className="text-xs text-muted-foreground">{view.appendix.disclaimer}</p>
-            </div>
-          ) : null}
-        </CardContent>
-      </Card>
+      ))}
 
       {isUnlocked && downloadHref ? (
         <a

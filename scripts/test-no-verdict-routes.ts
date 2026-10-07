@@ -38,7 +38,7 @@ const OLD_STRUCTURE: Record<L, RegExp> = {
   tr: /Değerlendirmeniz\b|Sonraki 3 adımınız|EOI'nizi şimdi gönderin|Kullanabileceğiniz eyaletler|Eylem planı|Vize vize|en hızlı yolu/,
   "zh-Hans": /您的结论|您的下一步（三项）|立即提交 EOI|您可以使用的州|行动计划|逐个签证分析|最快方式/,
 };
-const NEW_TITLE: Record<L, string> = { en: "Your target visa", tr: "Hedef vizeniz", "zh-Hans": "您的目标签证" };
+const NEW_TITLE: Record<L, string> = { en: "Your details", tr: "Bilgileriniz", "zh-Hans": "您的信息" };
 const squash = (s: string) => s.replace(/\s+/g, "");
 const decode = (s: string) => s.replace(/&amp;/g, "&").replace(/&quot;/g, '"').replace(/&#x27;/g, "'").replace(/&#39;/g, "'").replace(/&lt;/g, "<").replace(/&gt;/g, ">");
 

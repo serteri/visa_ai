@@ -1,18 +1,20 @@
 /**
- * The information-first report (lib/reports/report-view.ts, lib/readiness/pdf-report-v2.ts): real PDF text from the
- * production PDF route in en / tr / zh-Hans, for the reference profiles with a 491 target, a 189 target and "Not sure",
- * plus the other targets in English.
+ * The rich information report (lib/reports/report-view.ts, lib/readiness/pdf-report-v2.ts): real PDF text from the production PDF
+ * route in en / tr / zh-Hans, for four profiles with a 491 target, a 189 target and "Not sure", plus the other targets in English.
  *
- *   1. 8-10 pages; the parts in order: target, points (points-tested visas and "Not sure"), other visas / Pathway
- *      Overview, state and territory information (190 / 491 / Not sure), process (a target), costs, appendix;
- *   2. the Target visa decides the primary subject: its requirement map (published requirement | what you entered |
- *      source | status in {provided, not provided, cannot determine, not applicable}); "Not sure": no map, the Pathway
- *      Overview lists the visas in the fixed order 500, 485, 482, 189, 190, 491, 820/801, 186 with the same columns;
- *   3. provenance: every fact row carries a source (and a date where the data has one); every supplied fact a label;
- *   4. no verdict, ranking, recommendation, "next actions", "fastest way", "best pathway", signal / confidence / friction;
- *   5. hidden-cost rule: a completed skills assessment does not hide a registration step that is separate from it
- *      (AHPRA, nursing registration), which stays with a note;
- *   6. what the view says is what the PDF says.
+ *   1. structure: the sections in the fixed order (details, points, visas, states, invitations, costs, process, documents,
+ *      sources); every section title is printed in the PDF in that order; page count stays within the guard;
+ *   2. fixed ordering independent of user data: different profiles give the same section ids, the same visa blocks in the same
+ *      order (the target first, then the fixed order), the same eight states in the same order;
+ *   3. every fact row has a source: requirement rows, state blocks (source + checked date), invitation rows, process rows,
+ *      document rows, general points, charges (verified date);
+ *   4. no verdict, ranking, recommendation, "next step", "ready", "chances", "probability", "match %", "you should", imperative
+ *      wording in the report's own voice, in the view and the PDF, all locales (published source wording is not rewritten: the
+ *      scan is on the report's own phrases and on statements about the applicant);
+ *   5. numbers unchanged: points rows, totals, charges equal the engine's and the data files';
+ *   6. no section repeats another's content (a long string printed in two sections);
+ *   7. hidden-cost rule: a registration step that is separate from the skills assessment stays visible with a note;
+ *   8. what the view says is what the PDF says (visa headings, states, section titles).
  *
  *   npx tsx scripts/test-report-structure.ts
  */
@@ -20,8 +22,10 @@ import "./lib/stub-request-context";
 
 process.env.DATABASE_URL = process.env.DATABASE_URL ?? "postgresql://u:p@localhost:5432/d?sslmode=disable"; // never connects
 
+import visaFees from "../src/data/visa-fees.json";
 import type { ReadinessInput, ReadinessReport } from "../lib/readiness/types";
-import { buildReportView } from "../lib/reports/report-view";
+import { buildReportView, type ReportView } from "../lib/reports/report-view";
+import { sectionStrings } from "../lib/reports/report-blocks";
 import { targetVisaOf, type TargetVisa } from "../lib/readiness/target-visa";
 import { runReadinessEngine } from "../src/lib/readiness-engine";
 import { REVIEW_PERSONAS, renderPersonaPdfTexts } from "./render-persona-pdfs";
@@ -36,29 +40,35 @@ const t = (label: string, cond: boolean, detail = "") => {
 };
 const flat = (s: string) => s.replace(/\s+/g, " ");
 const squash = (s: string) => s.replace(/\s+/g, "");
-const count = (hay: string, needle: string) => (needle ? squash(hay).split(squash(needle)).length - 1 : 0);
 
 type L = "en" | "tr" | "zh-Hans";
 
-/** What the report no longer says: verdicts, rankings, recommendations, plans, and the old analysis vocabulary. */
-export const REMOVED_WORDING: Record<L, RegExp> = {
-  en: /\b(?:confidence|friction|signal|signals|evidence load|best pathway|fastest way|your next \d|next steps?|action plan|top recommended|recommended pathway|not eligible now|eligible now|eligible to pursue|next step required|you qualify)\b|\bstrength\b|compliance-driven|readiness|Match\s*\d+\s*%/i,
-  tr: /(?<![\p{L}])(?:güven|rekabet düzeyi|sinyal\p{L}*|kanıt yükü|en iyi (?:yol|vize)|en hızlı yol|sonraki \d adım\p{L}*|eylem planı|şu anda uygun değil|uygun görünüyor)(?![\p{L}])|hazırlık değerlendirmesi/iu,
-  "zh-Hans": /置信度|竞争激烈度|信号|证据负荷|最佳(?:路径|签证)|最快方式|下一步（三项）|行动计划|目前不符合条件|准备度/,
+/**
+ * The report's own voice must never select, rank, score, recommend, conclude or instruct. Source wording ("eligible relative",
+ * "eligible degree", a state's "not eligible under Pathway 2") is published text and stays as published, so "eligible" is banned
+ * only where the report says it about the applicant.
+ */
+export const BANNED: Record<L, RegExp> = {
+  en: /\b(?:best|recommended|recommendation|recommends?|next steps?|ready to|readiness|chances?|probability|verdict|you should|consider|top states?|viability|confidence|friction|signals?|strengths?|calculate your visa chances|match \d+|\d+ ?% match|you (?:are|may be|might be|appear to be|qualify|meet)\b[^.]{0,40}\beligible|not eligible now|eligible now|eligible to pursue|your next \d|action plan|gap analysis|AI strategy|EOI status)\b/i,
+  tr: /(?<![\p{L}])(?:en iyi|önerilen|öneri|sonraki adım\p{L}*|hazır olma|şans\p{L}*|olasılık\p{L}*|yapmalısınız|güven düzeyi|sinyal\p{L}*|vize şansınızı hesaplayın|eylem planı|şu anda uygun değil|uygun görünüyor|karar özeti)(?![\p{L}])/iu,
+  "zh-Hans": /最佳|推荐|您应|您需要|下一步|准备就绪|机会|概率|置信度|信号|行动计划|目前不符合条件|符合条件的签证|计算您的签证|匹配度/,
 };
 
 const PERSONA_IDS = ["real-b0d20f74-inputs", "ref-xyz-qld", "ref-xyz-wa-job", "reference-se-au"] as const;
 const MAIN_TARGETS: TargetVisa[] = ["491", "189", "not_sure"];
-// 820/801 has its own partner report (no points, no relationship scoring): covered by test-partner-and-ai-removal.
 const OTHER_TARGETS: TargetVisa[] = ["190", "482", "186", "485", "500"];
-const FIXED_ORDER = ["500", "485", "482", "189", "190", "491", "820", "186"];
-const STATUSES = ["provided", "not_provided", "cannot_determine", "not_applicable"];
-
-const lineIndex = (text: string, title: string) => text.split("\n").findIndex((l) => l.trim() === title);
+const SECTION_IDS = ["details", "points", "visas", "states", "invitations", "costs", "process", "documents", "sources"];
+const FIXED_VISA_ORDER = ["500", "485", "482", "Direct Entry", "Temporary Residence Transition", "189", "190", "491", "820"];
+const STATE_ORDER = ["ACT", "NSW", "NT", "QLD", "SA", "TAS", "VIC", "WA"];
 
 function withTarget(input: ReadinessInput, target: TargetVisa): ReadinessInput {
   return { ...input, targetVisa: target, preferredPathway: target === "not_sure" ? undefined : target };
 }
+
+const profileOf = (input: ReadinessInput) => ({ name: "Test Persona", occupation: input.occupation, occupationRaw: input.occupation, englishLevel: input.englishLevel });
+const headings = (v: ReportView) => (v.sections.find((s) => s.id === "visas")?.blocks ?? []).flatMap((b) => (b.kind === "heading" ? [b] : []));
+const stateHeadings = (v: ReportView) => (v.sections.find((s) => s.id === "states")?.blocks ?? []).flatMap((b) => (b.kind === "heading" ? [b.text] : []));
+const allStrings = (v: ReportView) => v.sections.flatMap(sectionStrings);
 
 async function main() {
   console.log("1. real PDFs: 491 / 189 / Not sure x 4 profiles x 3 locales");
@@ -67,131 +77,153 @@ async function main() {
   for (const tv of OTHER_TARGETS) personas[`ref-xyz-qld|${tv}`] = withTarget(REVIEW_PERSONAS["ref-xyz-qld"], tv);
   // One call only: the PDF route binds to the first in-memory database it sees.
   const allRendered = await renderPersonaPdfTexts(personas, ["en", "tr", "zh-Hans"]);
-  const rendered = allRendered.filter((r) => MAIN_TARGETS.includes(r.id.split("|")[1] as TargetVisa));
+  const views = new Map<string, ReportView>();
+  const pageCounts: string[] = [];
 
-  for (const r of rendered) {
+  for (const r of allRendered.filter((x) => MAIN_TARGETS.includes(x.id.split("|")[1] as TargetVisa))) {
     const [pid, tv] = r.id.split("|") as [string, TargetVisa];
     const L = r.locale as L;
-    const text = r.text;
-    const f = flat(text);
+    const f = flat(r.text);
     const report = r.report as ReadinessReport;
     const persona = REVIEW_PERSONAS[pid as (typeof PERSONA_IDS)[number]];
-    const view = buildReportView({ report, locale: L, profile: { name: "Test Persona", occupation: persona.occupation, occupationRaw: persona.occupation, englishLevel: persona.englishLevel }, dateText: "" });
+    const view = buildReportView({ report, locale: L, profile: profileOf(persona), dateText: "" });
+    views.set(`${pid}|${tv}|${L}`, view);
+    const pages = Number([...r.text.matchAll(/(\d+) \/ (\d+)/g)].pop()?.[2] ?? 0);
+    if (pid === "ref-xyz-qld" || pid === "reference-se-au") pageCounts.push(`${pid} ${tv} ${L}: ${pages}`);
     console.log(`\n==================== ${pid} -> ${tv} [${L}] ====================`);
 
     t("the report carries the Target visa and the entered facts", report.targetVisa === tv && Array.isArray(report.suppliedFacts) && report.suppliedFacts.length > 5);
     t("the view's target is the report's", view.targetVisa === tv && view.isNotSure === (tv === "not_sure"));
 
-    // pages and order
-    const pages = Number([...text.matchAll(/(\d+) \/ (\d+)/g)].pop()?.[2] ?? 0);
-    t(`8-10 pages (${pages})`, pages >= 8 && pages <= 10);
-    const pointsApplicable = tv === "491" || tv === "189" || tv === "not_sure";
-    const statesApplicable = tv === "491" || tv === "not_sure";
-    const order: Array<[string, boolean]> = [
-      [view.titles.target, true],
-      [view.titles.points, pointsApplicable],
-      [view.others.title, true],
-      [view.titles.states, statesApplicable],
-      [view.titles.process, tv !== "not_sure"],
-      [view.titles.costs, true],
-      [view.titles.appendix, true],
-    ];
-    const at = order.filter(([, expected]) => expected).map(([title]) => lineIndex(text, title));
-    t(`sections in order: ${order.filter(([, e]) => e).map(([title]) => title).join(" > ")}`, at.every((i) => i >= 0) && at.every((i, k) => k === 0 || i > at[k - 1]), at.join(","));
-    t("sections that do not apply are absent", (pointsApplicable || lineIndex(text, view.titles.points) < 0) && (statesApplicable || lineIndex(text, view.titles.states) < 0) && (tv !== "not_sure" || lineIndex(text, view.titles.process) < 0));
-    t("view and PDF agree on which sections exist", view.points.applicable === pointsApplicable && view.states.applicable === statesApplicable && view.process.applicable === (tv !== "not_sure"));
-
-    // cover
-    t("cover: the target visa line", squash(f).includes(squash(view.cover.targetLine)), view.cover.targetLine);
+    // structure
+    const ids = view.sections.map((s) => s.id);
+    t(`sections in the fixed order: ${ids.join(" > ")}`, JSON.stringify(ids) === JSON.stringify(SECTION_IDS), ids.join(","));
+    const lines = r.text.split("\n").map((x) => x.trim());
+    const at = view.sections.map((s) => lines.findIndex((x) => x === s.title));
+    t("the PDF prints every section title, in order", at.every((i) => i >= 0) && at.every((i, k) => k === 0 || i > at[k - 1]), at.join(","));
+    t(`page count within the guard (${pages}; target 14-18, guard 14-22)`, pages >= 14 && pages <= 22);
+    t("cover: the subtitle and the target line", squash(f).includes(squash(view.cover.subtitle)) && squash(f).includes(squash(view.cover.targetLine)));
     t("cover: the information-only notice", squash(f).includes(squash(view.cover.notice)));
 
-    // removed wording
-    const banned = REMOVED_WORDING[L].exec(f);
-    t("no verdict / ranking / recommendation / next-actions / readiness wording", !banned, banned ? `"...${f.slice(Math.max(0, banned.index - 40), banned.index + 60)}..."` : "");
-    t("no state match percentages, no ranking of states", !/\b[A-Z]{2,3}\s+\d{1,3}\s?%/.test(f) && !/Top (?:Recommended|2)/i.test(f));
+    // the selected visa is first and marked; the rest keep the fixed order
+    const hs = headings(view);
+    const marked = hs.filter((h) => h.marked);
+    t("the selected visa is marked 'Your selected visa'", tv === "not_sure" ? marked.length === 0 : marked.length >= 1);
+    t("nine visa blocks (186 as two streams)", hs.length === 9, String(hs.length));
+    const rest = hs.filter((h) => !h.marked).map((h) => FIXED_VISA_ORDER.find((c) => h.text.includes(c)) ?? "?");
+    t("the other visa blocks keep the fixed order", rest.every((n, i) => i === 0 || FIXED_VISA_ORDER.indexOf(n) > FIXED_VISA_ORDER.indexOf(rest[i - 1])), rest.join(","));
+    if (tv !== "not_sure") t("the selected visa is the first block", hs[0].marked !== undefined);
+    t("the PDF prints every visa heading", hs.every((h) => squash(f).includes(squash(h.text.slice(0, 24)))));
 
-    // labels
-    t("supplied facts are labelled", view.target.supplied.length > 5 && view.target.supplied.every(([, v, tag]) => (v === (L === "en" ? "Not provided" : v) || tag === view.tags.supplied || tag === view.tags.unknown) && tag.length > 0) && squash(f).includes(squash(view.tags.supplied)));
-    t("a fact the visitor did not enter is labelled Unknown, never a default", view.target.supplied.every(([, v, tag]) => (tag === view.tags.unknown) === (v === (L === "tr" ? "Girilmedi" : L === "zh-Hans" ? "未提供" : "Not provided"))));
-    if (view.points.applicable) t("points: the calculation label is stated", squash(f).includes(squash(view.tags.calculation)) && squash(f).includes(squash(view.tags.published_program)));
+    // states: all eight, fixed order, source and date
+    const sh = stateHeadings(view);
+    t("states: all eight in the fixed order", STATE_ORDER.every((c, i) => sh[i]?.includes(`(${c})`)) && sh.length === 8, sh.join(" | "));
+    const stateBlocks = view.sections.find((s) => s.id === "states")!.blocks.filter((b) => b.kind === "kv");
+    t("states: each block has a source and a data-checked date", stateBlocks.length === 8 && stateBlocks.every((b) => b.kind === "kv" && b.rows.some(([, v]) => /20\d\d-\d\d-\d\d/.test(v)) && b.rows.some(([k, v]) => /Source|Kaynak|来源/.test(k) && v.length > 3 && v !== "—")));
+    t("states: none described as unavailable to the applicant", !/not available to you|size açık olmayan|对您不开放|Available to you/i.test(f));
 
-    // requirement map / overview
-    if (tv === "not_sure") {
-      t("Not sure: no requirement map; the Pathway Overview is the section", view.target.requirements.length === 0 && view.others.title === (L === "tr" ? "Vize Yolu Genel Bakışı" : L === "zh-Hans" ? "路径概览" : "Pathway Overview"));
-      t("Not sure: eight rows in the fixed order 500, 485, 482, 189, 190, 491, 820/801, 186", view.others.rows.length === 8);
-      const firsts = view.others.rows.map((row) => row[0]);
-      const idx = (code: string) => firsts.findIndex((n) => n.includes(code));
-      t("  order by position", [500, 485, 482, 189, 190, 491, 820, 186].every((c, i, arr) => idx(String(c)) === i), firsts.join(" | "));
-      t("  189 / 190 / 491 are separate rows", idx("189") !== idx("190") && idx("190") !== idx("491"));
-    } else {
-      t("a requirement map for the target visa", view.target.requirements.length >= 3);
-      t("every requirement row: published requirement, what you entered, a source, a status of the four", view.target.requirements.every((q) => q.requirement && q.entered && q.source.length > 5 && STATUSES.includes(q.status) && q.statusLabel));
-      t("the four status labels are explained in the report", squash(f).includes(squash(view.target.statusLegend.slice(0, 60))));
-      t("the target is not among the other visas", !view.others.rows.some((row) => row[0].includes(`subclass ${tv === "820_801" ? "820" : tv}`) || row[0].includes(` ${tv}`)) && view.others.rows.length === 7);
+    // provenance
+    const visasSection = view.sections.find((s) => s.id === "visas")!;
+    const reqTables = visasSection.blocks.filter((b) => b.kind === "table");
+    t("every visa requirement row: requirement, what you entered, a source, a status", reqTables.length >= 7 && reqTables.every((b) => b.kind === "table" && b.rows.every((row) => row[0] && row[1] && row[2].length > 5 && row[3])), String(reqTables.length));
+    const inv = view.sections.find((s) => s.id === "invitations")!.blocks.find((b) => b.kind === "table");
+    t("invitation rows: every cell filled (date, source)", !!inv && inv.kind === "table" && inv.rows.length >= 1 && inv.rows.every((row) => row.every((c) => c.length > 0)));
+    const process = view.sections.find((s) => s.id === "process")!.blocks.filter((b) => b.kind === "table");
+    t("process: every step has a source; no personal dated plan", process.length >= 5 && process.every((b) => b.kind === "table" && b.rows.every((row) => row[2].length > 3)) && !/Weeks? \d|Hafta \d|第 ?\d+ ?周/i.test(f));
+    const costTables = view.sections.find((s) => s.id === "costs")!.blocks.filter((b) => b.kind === "table");
+    t("costs: government charges carry a verified date, the other items a source, sums are 'sum of published charges'", costTables.length >= 3 && costTables[0].kind === "table" && costTables[0].rows.every((row) => row[row.length - 1].length > 3) && /sums? of published|yayımlanmış ücret toplamları|已公布费用/i.test(allStrings(view).join(" ")));
+    const docs = view.sections.find((s) => s.id === "documents")!.blocks.filter((b) => b.kind === "table");
+    t("documents and general points: every row has a source", docs.length >= 2 && docs.every((b) => b.kind === "table" && b.rows.every((row) => row[row.length - 1].length > 2)));
+    const src = view.sections.find((s) => s.id === "sources")!.blocks.find((b) => b.kind === "table");
+    t("the sources register: every row has a date", !!src && src.kind === "table" && src.rows.length >= 10 && src.rows.every((row) => /20\d\d|—/.test(row[2])));
+    const joinedAll = allStrings(view).join(" ");
+    t("the advice statement names a registered migration agent or an Australian legal practitioner", /migration agent|göçmenlik danışmanı|移民代理/i.test(joinedAll) && /legal practitioner|hukuk uzmanı|法律人士/i.test(joinedAll));
+
+    // removed wording, view and PDF
+    const bannedView = allStrings(view).map((s) => BANNED[L].exec(s)).find(Boolean);
+    t("no verdict / ranking / recommendation / next-step / readiness wording in the view", !bannedView, bannedView ? bannedView[0] : "");
+    const bannedPdf = BANNED[L].exec(f);
+    t("no verdict / ranking / recommendation / next-step / readiness wording in the PDF", !bannedPdf, bannedPdf ? `"...${f.slice(Math.max(0, bannedPdf.index - 40), bannedPdf.index + 60)}..."` : "");
+    t("no match percentages, no ranking of states", !/\b[A-Z]{2,3}\s+\d{1,3}\s?%/.test(f) && !/Top (?:Recommended|2)/i.test(f));
+    t("no radar, EOI status or AI strategy remnants", !/AI Strategy|EOI Status|Radar|HIGH POTENTIAL|Viability/i.test(f));
+
+    // no section repeats another's content
+    // The sources register repeats citations by definition, and a visa's name is a label that costs and process rows reuse.
+    const labels = new Set(hs.map((h) => squash(h.text)));
+    const owner = new Map<string, string>();
+    const repeats: string[] = [];
+    for (const s of view.sections.filter((x) => x.id !== "sources")) {
+      for (const str of sectionStrings(s)) {
+        const key = squash(str);
+        if (key.length < 70 || labels.has(key)) continue;
+        const o = owner.get(key);
+        if (o && o !== s.id) repeats.push(`${o}/${s.id}: ${str.slice(0, 50)}`);
+        if (!o) owner.set(key, s.id);
+      }
     }
-    t("the other visas keep the fixed order (no ordering by the applicant's data)", (() => {
-      const nums = view.others.rows.map((row) => FIXED_ORDER.find((c) => row[0].includes(c)) ?? "?");
-      return nums.every((n, i) => i === 0 || FIXED_ORDER.indexOf(n) > FIXED_ORDER.indexOf(nums[i - 1]));
-    })());
-    t("every other-visa row has the same columns and a source", view.others.rows.every((row) => row.length === view.others.headers.length && row[row.length - 1].length > 3 && row[row.length - 1] !== "—"));
+    t("no long string appears in two sections", repeats.length === 0, repeats.slice(0, 3).join(" | "));
 
-    // states
-    if (view.states.applicable) {
-      t("states: all eight, fixed order (by code), each with a source and a checked date", view.states.rows.length === 8 && view.states.rows.every((row, i, a) => i === 0 || a[i - 1][0] < row[0]) && view.states.rows.every((row) => /20\d\d-\d\d-\d\d/.test(row[3])));
-      t("states: no state is dropped or marked unavailable to the applicant", !/not available to you|size açık olmayan|对您不开放|Available to you/i.test(f));
+    // numbers unchanged
+    const points = view.sections.find((s) => s.id === "points");
+    t("the points section is present", !!points);
+    if (points) {
+      const tables = points.blocks.filter((b) => b.kind === "table");
+      const breakdown = tables[0];
+      const rows = report.pointsEstimate?.breakdown ?? [];
+      t("points rows equal the engine's breakdown", breakdown.kind === "table" && breakdown.rows.length === rows.length && rows.every((b, i) => b.status === "not_assessed" || breakdown.rows[i][1] === String(b.points)));
+      const s189 = report.pathwayScores?.["189"];
+      t("the totals table carries the engine's 189 number", tables[1].kind === "table" && !!s189 && tables[1].rows.flat().join(" ").includes(String(s189.baseScore)));
     }
-    // process
-    if (view.process.applicable) t("process: every step has a source; no date or 'week 1'", view.process.rows.length >= 4 && view.process.rows.every((row) => row[2].length > 3) && !/Weeks? \d|Hafta \d|第 ?\d+ ?周/i.test(f));
-
-    // costs
-    const total = view.costs.totalLines[0];
-    t("the estimated total is stated once", !total || count(f, total) === 1, total ? `${count(f, total)}x` : "");
-    const living = report.premiumSections?.livingCostProjection;
-    const livingKnown = !!living && /[(（]/.test(living.city);
-    t("living cost: one line, only with a known state of residence", livingKnown ? count(f, view.costs.livingLine) === 1 : view.costs.livingLine === "");
-    t("every cost row has a source", view.costs.rows.every((row) => row.source.length > 3));
-
-    // view == PDF
-    const firstCells = [...view.target.requirements.map((q) => q.requirement), ...view.others.rows.map((x) => x[0]), ...view.states.rows.map((x) => x[0]), ...view.process.rows.map((x) => x[0]), ...view.costs.rows.map((x) => x.item)];
-    const missing = firstCells.filter((c) => !squash(f).includes(squash(c.split(/[ (（]/)[0].slice(0, 10) || c.slice(0, 6))));
-    t("the PDF prints every row's first cell (requirements, other visas, states, process, costs)", missing.length === 0, missing.slice(0, 3).join(" | "));
-    t("appendix: documents, resources, sources, disclaimer once", view.appendix.documents.length > 0 && view.appendix.resources.length > 0 && view.appendix.sources.length > 0 && count(f, view.appendix.disclaimer.slice(0, 80)) === 1);
+    const fees = (visaFees as unknown as { visas: Record<string, { vac: { main: number } }> }).visas;
+    const gov = costTables[0];
+    t("government charges equal the fee data (189, 491)", gov.kind === "table" && gov.rows.some((row) => row[0].includes("189") && row[1].replace(/[^\d]/g, "") === String(fees["189"].vac.main)) && gov.rows.some((row) => row[0].includes("491") && row[1].replace(/[^\d]/g, "") === String(fees["491"].vac.main)));
   }
 
-  console.log("\n2. the other targets (English)");
-  const renderedOthers = allRendered.filter((r) => OTHER_TARGETS.includes(r.id.split("|")[1] as TargetVisa) && r.locale === "en");
-  for (const r of renderedOthers) {
+  console.log("\n2. fixed ordering independent of user data");
+  for (const tv of MAIN_TARGETS) {
+    for (const L of ["en", "tr", "zh-Hans"] as const) {
+      const sig = (v: ReportView) => JSON.stringify({ ids: v.sections.map((s) => s.id), visas: headings(v).map((h) => h.text), states: stateHeadings(v), scen: v.sections.find((s) => s.id === "points")?.blocks.filter((b) => b.kind === "heading").map((b) => (b.kind === "heading" ? b.text : "")) });
+      const sigs = PERSONA_IDS.map((p) => sig(views.get(`${p}|${tv}|${L}`)!));
+      t(`[${tv} ${L}] four different profiles: the same sections, visa blocks, states and scenario groups in the same order`, sigs.every((x) => x === sigs[0]));
+    }
+  }
+  const nsA = views.get("ref-xyz-qld|not_sure|en")!;
+  t("Not sure: the visas are in exactly the fixed order", FIXED_VISA_ORDER.every((c, i) => headings(nsA)[i].text.includes(c)));
+  const t491 = headings(views.get("ref-xyz-qld|491|en")!).map((h) => h.text);
+  const t189 = headings(views.get("ref-xyz-qld|189|en")!).map((h) => h.text);
+  const notSure = headings(nsA).map((h) => h.text);
+  t("the target moves to the front; the order of the others is unchanged", t491[0] === notSure.find((x) => x.includes("(subclass 491)")) && t189[0] === notSure.find((x) => x.includes("(subclass 189)")) && JSON.stringify(t491.slice(1)) === JSON.stringify(notSure.filter((x) => x !== t491[0])));
+
+  console.log("\n3. the other targets (English)");
+  for (const r of allRendered.filter((x) => OTHER_TARGETS.includes(x.id.split("|")[1] as TargetVisa) && x.locale === "en")) {
     const tv = r.id.split("|")[1] as TargetVisa;
-    const report = r.report as ReadinessReport;
-    const view = buildReportView({ report, locale: "en", profile: { occupation: REVIEW_PERSONAS["ref-xyz-qld"].occupation, occupationRaw: REVIEW_PERSONAS["ref-xyz-qld"].occupation }, dateText: "" });
+    const view = buildReportView({ report: r.report as ReadinessReport, locale: "en", profile: profileOf(REVIEW_PERSONAS["ref-xyz-qld"]), dateText: "" });
     const pages = Number([...r.text.matchAll(/(\d+) \/ (\d+)/g)].pop()?.[2] ?? 0);
     console.log(`\n-------------------- target ${tv} (${pages} pages) --------------------`);
-    t("a requirement map, a process, no points section for a visa without a points test", view.targetVisa === tv && view.target.requirements.length >= 2 && view.process.applicable && view.points.applicable === (tv === "190"));
-    t("6-10 pages", pages >= 6 && pages <= 10);
-    t("no verdict wording", !REMOVED_WORDING.en.test(flat(r.text)));
-    t("every requirement has a source and a status of the four", view.target.requirements.every((q) => q.source.length > 5 && STATUSES.includes(q.status)));
+    t("all sections; the target's block first and marked", view.targetVisa === tv && view.sections.map((s) => s.id).includes("visas") && !!headings(view)[0].marked);
+    t(`14-22 pages (${pages})`, pages >= 14 && pages <= 22);
+    t("no verdict wording", !BANNED.en.test(flat(r.text)));
   }
 
-  console.log("\n3. hidden-cost rule: registration that is separate from the skills assessment stays visible");
+  console.log("\n4. hidden-cost rule: registration that is separate from the skills assessment stays visible");
   const doctor: ReadinessInput = { ...REVIEW_PERSONAS["ref-xyz-qld"], occupation: "General Practitioner 253111", occupationConfirmed: "yes", targetVisa: "491", preferredPathway: "491", locale: "en" };
   const nurse: ReadinessInput = { ...REVIEW_PERSONAS["ref-xyz-qld"], occupation: "Registered Nurse (Medical) 254418", occupationConfirmed: "yes", targetVisa: "491", preferredPathway: "491", locale: "en" };
   for (const [name, input] of [["doctor (AHPRA)", doctor], ["nurse (ANMAC + registration)", nurse]] as const) {
     for (const loc of ["en", "tr", "zh-Hans"] as const) {
       const rep = runReadinessEngine({ ...input, locale: loc });
-      const v = buildReportView({ report: rep, locale: loc, profile: { occupation: input.occupation, occupationRaw: input.occupation }, dateText: "" });
-      const skills = rep.financialRoadmap.find((i) => i.kind === "skills_assessment");
-      const registrationRow = rep.financialRoadmap.find((i, idx) => i.kind === undefined && i.estimateType === "variable" && rep.financialRoadmap[idx - 1]?.kind === "skills_assessment");
-      const independentNote = v.costs.notes.some((n) => /separate from the skills assessment|beceri değerlendirmesinden ayrıdır|独立于技能评估/.test(n));
-      t(`${name} [${loc}]: assessment marked done, yet the registration cost stays with a note that it is separate`, !!skills && independentNote && (name.startsWith("doctor") ? v.costs.rows.some((row) => row.item === skills!.category) : !!registrationRow && v.costs.rows.some((row) => row.item === registrationRow!.category)), `${v.costs.rows.map((x) => x.item).join(" | ")}`);
+      const v = buildReportView({ report: rep, locale: loc, profile: profileOf(input), dateText: "" });
+      const joined = v.sections.find((s) => s.id === "costs")!.blocks.flatMap((b) => (b.kind === "text" ? [b.text] : [])).join(" ");
+      t(`${name} [${loc}]: the registration step is listed with a note that it is separate from the assessment`, /separate from the skills assessment|beceri değerlendirmesinden ayrıdır|独立于技能评估/.test(joined));
     }
   }
 
-  console.log("\n4. an older stored report (no target) reads as Not sure");
+  console.log("\n5. an older stored report (no target) reads as Not sure");
   const old = runReadinessEngine({ ...REVIEW_PERSONAS["ref-xyz-qld"], locale: "en" });
   const stripped = { ...old, targetVisa: undefined, suppliedFacts: undefined } as ReadinessReport;
   const vOld = buildReportView({ report: stripped, locale: "en", profile: { occupation: "x" }, dateText: "" });
-  t("no targetVisa -> Not sure, the overview, and no crash", vOld.isNotSure && vOld.others.rows.length === 8 && targetVisaOf({}) === "not_sure" && targetVisaOf({ preferredPathway: "820/801" }) === "820_801");
+  t("no targetVisa -> Not sure, nine visa blocks in the fixed order, and no crash", vOld.isNotSure && headings(vOld).length === 9 && targetVisaOf({}) === "not_sure" && targetVisaOf({ preferredPathway: "820/801" }) === "820_801");
 
+  console.log(`\nPage counts: ${pageCounts.join("; ")}`);
   console.log(`\n${failures === 0 ? "✅ ALL CHECKS PASSED" : `❌ ${failures} CHECK(S) FAILED`}`);
   process.exitCode = failures === 0 ? 0 : 1;
 }

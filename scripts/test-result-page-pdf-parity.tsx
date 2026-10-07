@@ -139,35 +139,44 @@ async function compare(label: string, reportId: string, locale: string) {
   const flatPdf = squash(pdf);
   const stamp = decode(html.match(/data-report-date-stamp[^>]*>([^<]*)</)?.[1] ?? "");
 
-  // The parts, in the same order on the page and in the PDF: cover, target, points (points-tested / Not sure), others, states
-  // (190 / 491 / Not sure), process (a target), costs, appendix.
+  // The parts, in the same order on the page and in the PDF: cover, details, points, visas, states, invitations, costs, process,
+  // documents, sources.
   const sections = [...html.matchAll(/data-section="([a-z]+)"/g)].map((m) => m[1]);
-  const canonical = ["cover", "target", "points", "others", "states", "process", "costs", "appendix"];
+  const canonical = ["cover", "details", "points", "visas", "states", "invitations", "costs", "process", "documents", "sources"];
   const inOrder = sections.every((x, i) => canonical.includes(x) && (i === 0 || canonical.indexOf(x) > canonical.indexOf(sections[i - 1])));
-  if (inOrder && sections.includes("target") && sections.includes("others") && sections.includes("costs") && sections.includes("appendix")) ok(`${label} [${locale}]: the page parts are in order (${sections.join(" > ")})`);
+  if (inOrder && canonical.filter((c) => c !== "points").every((c) => sections.includes(c))) ok(`${label} [${locale}]: the page parts are in order (${sections.join(" > ")})`);
   else fail(`${label} [${locale}]: page parts ${JSON.stringify(sections)}`);
 
-  // Target: the target line, the supplied facts and the requirement map (a visa chosen) are on the PDF.
+  // Every section title of the page is on the PDF, in the same order.
+  const titles = [...html.matchAll(/data-section="(?!cover)[a-z]+"[^>]*>[\s\S]*?<h\d[^>]*>([^<]*)</g)].map((m) => decode(m[1]));
+  const pdfLines = pdf.split("\n").map((x) => x.trim());
+  const titleAt = titles.map((tt) => pdfLines.findIndex((x) => x === tt));
+  if (titles.length >= 8 && titleAt.every((i) => i >= 0) && titleAt.every((i, k) => k === 0 || i > titleAt[k - 1])) ok(`${label} [${locale}]: ${titles.length} section titles, same order on the page and the PDF`);
+  else fail(`${label} [${locale}]: section titles differ -- ${JSON.stringify(titles)} at ${titleAt.join(",")}`);
+
+  // Cover: the target line is on the PDF.
   const targetLine = decode(html.match(/data-target-line[^>]*>([^<]*)</)?.[1] ?? "");
-  const reqRows = rowCells(html, "data-requirement-status");
-  if (targetLine && flatPdf.includes(squash(targetLine)) && reqRows.every((r) => onPdf(flatPdf, [r[0]]))) ok(`${label} [${locale}]: target line and ${reqRows.length} requirement rows identical`);
-  else fail(`${label} [${locale}]: target differs -- line "${targetLine}", rows ${JSON.stringify(reqRows.filter((r) => !onPdf(flatPdf, [r[0]])).slice(0, 2))}`);
+  if (targetLine && flatPdf.includes(squash(targetLine))) ok(`${label} [${locale}]: target line identical`);
+  else fail(`${label} [${locale}]: target line "${targetLine}" is not on the PDF`);
 
-  // Other visas / Pathway Overview: every row, same columns.
-  const overview = rowCells(html, "data-overview-visa");
-  if (overview.length >= 7 && overview.every((r) => onPdf(flatPdf, [r[0]]) && r.length === overview[0].length)) ok(`${label} [${locale}]: ${overview.length} other-visa rows identical`);
-  else fail(`${label} [${locale}]: other visas differ -- ${JSON.stringify(overview.filter((r) => !onPdf(flatPdf, [r[0]])).slice(0, 2))}`);
+  // Visas: nine blocks, each heading on the PDF; the selected visa carries its marker.
+  const visaHtml = html.match(/data-section="visas"[\s\S]*?(?=data-section="states")/)?.[0] ?? "";
+  const visaHeads = [...visaHtml.matchAll(/data-visa-heading="([^"]*)"/g)].map((m) => decode(m[1]));
+  const visaBad = visaHeads.filter((hd) => !flatPdf.includes(squash(hd.slice(0, 24))));
+  if (visaHeads.length === 9 && visaBad.length === 0) ok(`${label} [${locale}]: 9 visa headings identical`);
+  else fail(`${label} [${locale}]: visa headings differ -- ${visaHeads.length}, missing ${JSON.stringify(visaBad.slice(0, 2))}`);
 
-  // States (when shown): all eight rows.
-  const stateRows = rowCells(html, "data-state-row");
-  if (sections.includes("states") ? stateRows.length === 8 && stateRows.every((r) => onPdf(flatPdf, [r[0].split(/[ (:（]/)[0]])) : stateRows.length === 0) ok(`${label} [${locale}]: ${stateRows.length} state rows identical`);
-  else fail(`${label} [${locale}]: state rows differ -- ${stateRows.length}`);
+  // States: all eight named on the page and in the PDF.
+  const codes = ["ACT", "NSW", "NT", "QLD", "SA", "TAS", "VIC", "WA"];
+  const stateHtml = html.match(/data-section="states"[\s\S]*?(?=data-section="invitations")/)?.[0] ?? "";
+  if (codes.every((c) => stateHtml.includes(`(${c})`) && flatPdf.includes(squash(`(${c})`)))) ok(`${label} [${locale}]: 8 state blocks identical`);
+  else fail(`${label} [${locale}]: state blocks differ`);
 
-  // The cost rows: every page row is on the PDF (the PDF wraps cells, so only the first words are compared).
-  const tables = [...html.matchAll(/data-section="costs"[\s\S]*?<tbody>([\s\S]*?)<\/tbody>/g)].map((m) => [...m[1].matchAll(/<tr[^>]*>(.*?)<\/tr>/g)].map((r) => [...r[1].matchAll(/<td[^>]*>(.*?)<\/td>/g)].map((c) => decode(c[1].replace(/<[^>]*>/g, "")))));
-  const costBad = (tables[0] ?? []).filter((r) => !onPdf(flatPdf, [r[0].slice(0, 25)]));
-  if (tables.length === 1 && tables[0].length > 0 && costBad.length === 0) ok(`${label} [${locale}]: ${tables[0].length} cost rows identical`);
-  else fail(`${label} [${locale}]: cost rows differ -- ${JSON.stringify(costBad.slice(0, 3))}`);
+  // Every table row's first cell is on the PDF (the PDF wraps cells, so only the first characters are compared).
+  const bodies = [...html.matchAll(/<tbody>([\s\S]*?)<\/tbody>/g)].flatMap((m) => [...m[1].matchAll(/<tr[^>]*>(.*?)<\/tr>/g)].map((r) => [...r[1].matchAll(/<td[^>]*>(.*?)<\/td>/g)].map((c) => decode(c[1].replace(/<[^>]*>/g, "")))));
+  const rowBad = bodies.filter((r) => r[0] && !flatPdf.includes(squash(r[0]).slice(0, 10)));
+  if (bodies.length > 100 && rowBad.length === 0) ok(`${label} [${locale}]: ${bodies.length} table rows identical`);
+  else fail(`${label} [${locale}]: table rows differ -- ${bodies.length} rows, missing ${JSON.stringify(rowBad.slice(0, 3))}`);
 
   // Stamp: the page's stamp is on the PDF cover.
   if (stamp && flatPdf.includes(squash(stamp))) ok(`${label} [${locale}]: stamp "${stamp}" on the page and the PDF`);

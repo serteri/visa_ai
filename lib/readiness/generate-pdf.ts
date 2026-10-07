@@ -2097,6 +2097,25 @@ export async function generateReadinessPDF(input: PDFGeneratorInput): Promise<Ui
     addSectionHeading("", heading);
   }
 
+  /** A sub-heading inside a section: bold, wrapped to the page width, with a thin rule under it (long visa names do not clip). */
+  function addSubHeading(heading: string) {
+    setBoldFont();
+    doc.setFontSize(10);
+    const lines = doc.splitTextToSize(safeText(heading), contentWidth) as string[];
+    ensurePageSpace(lines.length * 5 + 10);
+    yPosition += 1.5;
+    doc.setTextColor(COLORS.primary.r, COLORS.primary.g, COLORS.primary.b);
+    lines.forEach((line) => {
+      doc.text(line, margin, yPosition);
+      yPosition += 4.8;
+    });
+    doc.setDrawColor(COLORS.accent.r, COLORS.accent.g, COLORS.accent.b);
+    doc.setLineWidth(0.4);
+    doc.line(margin, yPosition - 2.8, margin + contentWidth, yPosition - 2.8);
+    yPosition += 1.2;
+    setBaseFont();
+  }
+
   function addBody(text: string, indent = 0) {
     setBaseFont();
     doc.setFontSize(FONTS.body);
@@ -2465,28 +2484,36 @@ export async function generateReadinessPDF(input: PDFGeneratorInput): Promise<Ui
     rows: string[][],
     colRatios: number[],
     getCellColor?: (rowIndex: number, colIndex: number, cell: string) => { r: number; g: number; b: number } | null,
-    subRows?: Record<number, string>
+    subRows?: Record<number, string>,
+    /** Denser rows (smaller type and padding); no header band when `headers` is empty. */
+    compact = false
   ) {
     const tableWidth = contentWidth;
     const colWidths = colRatios.map((ratio) => tableWidth * ratio);
     const cellPadX = 3;
-    const cellPadY = 3;
-    const bodyLineHeight = 4.6;
+    const cellPadY = compact ? 1.3 : 3;
+    const bodyFont = compact ? 7.3 : 8.5;
+    const minRow = compact ? 5 : 12;
+    const textDrop = compact ? 2.5 : 3.2;
+    const bodyLineHeight = compact ? 3.2 : 4.6;
     const headerLineHeight = 3.4;
 
     // The header is never left alone at the bottom of a page: it needs room for the first row too.
     setBaseFont();
-    doc.setFontSize(8.5);
-    const firstRowHeight = rows.length > 0 ? Math.max(12, cellPadY * 2 + Math.max(...rows[0].map((cell, i) => (doc.splitTextToSize(safeText(cell || text.noData), Math.max(14, colWidths[i] - cellPadX * 2)) as string[]).length)) * bodyLineHeight) : 0;
+    doc.setFontSize(bodyFont);
+    const firstRowHeight = rows.length > 0 ? Math.max(minRow, cellPadY * 2 + Math.max(...rows[0].map((cell, i) => (doc.splitTextToSize(safeText(cell || text.noData), Math.max(14, colWidths[i] - cellPadX * 2)) as string[]).length)) * bodyLineHeight) : 0;
 
     // Word-wrap every header and size the header band to the tallest one so
     // long localized headers never get truncated or collide.
     const drawHeader = () => {
+      if (headers.length === 0) return;
+      setBoldFont();
+      doc.setFontSize(8.5);
       const headerLines = headers.map((h, i) =>
         doc.splitTextToSize(safeText(h), Math.max(14, colWidths[i] - cellPadX * 2))
       );
       const headerMaxLines = Math.max(...headerLines.map((lines) => lines.length));
-      const headerHeight = Math.max(10, cellPadY * 2 + headerMaxLines * headerLineHeight);
+      const headerHeight = Math.max(10, 6 + headerMaxLines * headerLineHeight);
 
       ensurePageSpace(headerHeight + firstRowHeight + 2);
       doc.setFillColor(COLORS.primary.r, COLORS.primary.g, COLORS.primary.b);
@@ -2497,7 +2524,7 @@ export async function generateReadinessPDF(input: PDFGeneratorInput): Promise<Ui
       doc.setFontSize(8.5);
       doc.setTextColor(255, 255, 255);
       headers.forEach((h, i) => {
-        doc.text(headerLines[i], cursorX + cellPadX, yPosition + headerHeight / 2 + 1.2, {
+        doc.text(headerLines[i], cursorX + cellPadX, yPosition + 5.4, {
           maxWidth: colWidths[i] - cellPadX * 2,
           lineHeightFactor: 1.05,
         });
@@ -2510,12 +2537,12 @@ export async function generateReadinessPDF(input: PDFGeneratorInput): Promise<Ui
 
     rows.forEach((row, rowIndex) => {
       setBaseFont();
-      doc.setFontSize(8.5);
+      doc.setFontSize(bodyFont);
       const wrappedCells = row.map((cell, i) =>
         doc.splitTextToSize(safeText(cell || text.noData), Math.max(14, colWidths[i] - cellPadX * 2))
       );
       const maxLines = Math.max(...wrappedCells.map((lines) => lines.length));
-      const rowHeight = Math.max(12, cellPadY * 2 + maxLines * bodyLineHeight);
+      const rowHeight = Math.max(minRow, cellPadY * 2 + maxLines * bodyLineHeight);
 
       if (yPosition + rowHeight > contentBottom) {
         doc.addPage();
@@ -2532,9 +2559,9 @@ export async function generateReadinessPDF(input: PDFGeneratorInput): Promise<Ui
         const customColor = getCellColor?.(rowIndex, i, cell);
         const color = customColor ?? COLORS.text;
         if (customColor) setBoldFont(); else setBaseFont();
-        doc.setFontSize(8.5);
+        doc.setFontSize(bodyFont);
         doc.setTextColor(color.r, color.g, color.b);
-        doc.text(wrappedCells[i], x + cellPadX, yPosition + cellPadY + 3.2, {
+        doc.text(wrappedCells[i], x + cellPadX, yPosition + cellPadY + textDrop, {
           maxWidth: colWidths[i] - cellPadX * 2,
           lineHeightFactor: 1.18,
         });
@@ -4336,12 +4363,14 @@ export async function generateReadinessPDF(input: PDFGeneratorInput): Promise<Ui
       {
         addSectionHeading,
         addHeading,
+        addSubHeading,
         addBody,
         addSmallText,
         addBulletPoints,
         addPremiumBulletContainer,
         addPremiumKeyValueContainer,
         drawTable,
+        drawCompactTable: (headers, rows, widths) => drawTable(headers, rows, widths, undefined, undefined, true),
         ensureSpace: (mm: number) => ensurePageSpace(mm),
         startNewPage: () => {
           if (yPosition > 21) {
