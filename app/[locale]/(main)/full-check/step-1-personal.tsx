@@ -16,6 +16,7 @@ function ErrorText({ message }: { message?: string }) {
 }
 import { isPartnerFamilySponsorship, activeCountries, countryLabels, countryVisaPathways, migrationGoalOptions, getVisaSubclassesForGoals, getMigrationGoalDescription, type SupportedCountry, type MigrationGoalId } from "@/lib/countries";
 import { useTranslation } from "@/contexts/language-context";
+import { TARGET_VISAS, targetVisaOption } from "@/lib/readiness/target-visa";
 import { renderVisaPathwayOptions } from "./full-check-waitlist-form";
 import { SituationFields } from "./situation-fields";
 import { INTAKE_COUNTRIES } from "@/lib/intake/fields";
@@ -127,44 +128,47 @@ export function Step1Personal({
         )}
       </div>
 
-      <div className="space-y-3">
-        <Label>{txt("Birincil göç hedefiniz nedir?", "What is your primary migration goal?", "您的主要移民目标是什么？")}</Label>
-        <div className="grid gap-3 sm:grid-cols-3">
-          {migrationGoalOptions.map((goal) => {
-            const sel = migrationGoals.includes(goal.id);
-            return (
-              <button key={goal.id} type="button" onClick={() => toggleMigrationGoal(goal.id)}
-                className={`rounded-xl border-2 p-4 text-left transition-all ${sel ? "border-primary bg-primary/5 shadow-md ring-1 ring-primary/20" : "border-border/60 bg-background/60 hover:border-primary/40"}`}>
-                <div className="flex items-start gap-2">
-                  <div className={`mt-0.5 h-4 w-4 shrink-0 rounded border-2 flex items-center justify-center ${sel ? "border-primary bg-primary" : "border-muted-foreground/40"}`}>
-                    {sel && <svg className="h-3 w-3 text-white" viewBox="0 0 12 12" fill="none"><path d="M2 6l3 3 5-5" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/></svg>}
-                  </div>
-                  <div>
-                    <p className={`text-sm font-semibold ${sel ? "text-primary" : "text-foreground"}`}>{goal.label[locale as "en" | "tr" | "zh-Hans"] ?? goal.label.en}</p>
-                    <p className="mt-1 text-xs text-gray-400">{getMigrationGoalDescription(goal, selectedCountry)[locale as "en" | "tr" | "zh-Hans"] ?? goal.description.en}</p>
-                  </div>
-                </div>
-              </button>
-            );
-          })}
-        </div>
-        <input type="hidden" name="migrationGoals" value={JSON.stringify(migrationGoals)} />
-        <input type="hidden" name="mainGoal" value={migrationGoals.map((id) => migrationGoalOptions.find((g) => g.id === id)?.label.en ?? id).join(", ")} />
-        {migrationGoals.length === 0 && <p className="text-xs text-muted-foreground">{txt("En az bir hedef seçin.", "Select at least one goal.", "请至少选择一个目标。")}</p>}
-      </div>
-
-      {migrationGoals.length === 0 && (
-        <div className="space-y-2">
-          <Label htmlFor="waitlist-visa-interest">{txt("veya belirli bir vize yolunu seçin", "or select a specific visa pathway", "或选择具体签证路径")}</Label>
-          <select id="waitlist-visa-interest" name="visaInterest" value={visaInterest} onChange={(e) => setVisaInterest(e.target.value)} className={selectClassName}>
-            <option className="bg-gray-900 text-white" value="">{txt("Tüm yollar / Emin değilim", "All pathways / Not sure", "全部路径 / 不确定")}</option>
-            {renderVisaPathwayOptions(countryVisaPathways[selectedCountry], isTr, isZh)}
+      {selectedCountry === "AU" ? (
+        <div className="space-y-2" data-field-error={fieldErrors?.["waitlist-target-visa"] || undefined}>
+          <Label htmlFor="waitlist-target-visa">{txt("Hedef vize", "Target visa", "目标签证")}<RequiredMark /></Label>
+          <select id="waitlist-target-visa" name="visaInterest" value={visaInterest} onChange={(e) => setVisaInterest(e.target.value)} className={`${selectClassName} ${errCls("waitlist-target-visa")}`} required>
+            <option className="bg-gray-900 text-white" value="">{txt("Seçin", "Select", "请选择")}</option>
+            {TARGET_VISAS.map((t) => (
+              <option key={t} className="bg-gray-900 text-white" value={t}>{targetVisaOption(t, isTr ? "tr" : isZh ? "zh-Hans" : "en")}</option>
+            ))}
           </select>
+          <p className="text-xs text-slate-500">{txt("Rapor bu vizeyi ele alır; emin değilseniz bir Vize Yolu Genel Bakışı gösterilir. Bu bir tavsiye değildir.", "The report is about this visa; if you are not sure, a Pathway Overview is shown. This is not advice.", "报告围绕所选签证；如不确定，将显示路径概览。这不是建议。")}</p>
+          {fieldErrors?.["waitlist-target-visa"] && <p className="text-xs text-red-600">{fieldErrors["waitlist-target-visa"]}</p>}
+          <input type="hidden" name="migrationGoals" value="[]" />
+          <input type="hidden" name="mainGoal" value="" />
+        </div>
+      ) : (
+        <div className="space-y-3">
+          <Label>{txt("Birincil göç hedefiniz nedir?", "What is your primary migration goal?", "您的主要移民目标是什么？")}</Label>
+          <div className="grid gap-3 sm:grid-cols-3">
+            {migrationGoalOptions.map((goal) => {
+              const sel = migrationGoals.includes(goal.id);
+              return (
+                <button key={goal.id} type="button" onClick={() => toggleMigrationGoal(goal.id)}
+                  className={`rounded-xl border-2 p-4 text-left transition-all ${sel ? "border-primary bg-primary/5 shadow-md ring-1 ring-primary/20" : "border-border/60 bg-background/60 hover:border-primary/40"}`}>
+                  <p className={`text-sm font-semibold ${sel ? "text-primary" : "text-foreground"}`}>{goal.label[locale as "en" | "tr" | "zh-Hans"] ?? goal.label.en}</p>
+                </button>
+              );
+            })}
+          </div>
+          <input type="hidden" name="migrationGoals" value={JSON.stringify(migrationGoals)} />
+          <input type="hidden" name="mainGoal" value={migrationGoals.map((id) => migrationGoalOptions.find((g) => g.id === id)?.label.en ?? id).join(", ")} />
+          {migrationGoals.length === 0 && (
+            <select id="waitlist-visa-interest" name="visaInterest" value={visaInterest} onChange={(e) => setVisaInterest(e.target.value)} className={selectClassName}>
+              <option className="bg-gray-900 text-white" value="">{txt("Tüm yollar / Emin değilim", "All pathways / Not sure", "全部路径 / 不确定")}</option>
+              {renderVisaPathwayOptions(countryVisaPathways[selectedCountry], isTr, isZh)}
+            </select>
+          )}
+          {migrationGoals.length > 0 && <input type="hidden" name="visaInterest" value={getVisaSubclassesForGoals(migrationGoals, selectedCountry).join(",")} />}
         </div>
       )}
-      {migrationGoals.length > 0 && <input type="hidden" name="visaInterest" value={getVisaSubclassesForGoals(migrationGoals, selectedCountry).join(",")} />}
 
-      {selectedCountry === "AU" && (migrationGoals.includes("direct_pr") || migrationGoals.includes("regional")) && (
+      {selectedCountry === "AU" && (visaInterest === "190" || visaInterest === "491" || visaInterest === "not_sure") && (
         <div className="space-y-2">
           <Label htmlFor="waitlist-preferred-state">{txt("Tercih ettiğiniz eyalet?", "Preferred state?", "您偏好哪个州？")}</Label>
           <select id="waitlist-preferred-state" name="preferredState" value={preferredState} onChange={(e) => setPreferredState(e.target.value)} className={selectClassName}>

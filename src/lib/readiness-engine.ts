@@ -1,3 +1,5 @@
+import { buildSuppliedFacts } from "@/lib/readiness/supplied-facts";
+import { targetVisaOf } from "@/lib/readiness/target-visa";
 import occupationsData from "@/src/data/occupations.json";
 import { isEnglishAtMaximum } from "@/lib/points/parse-english";
 import documentRequirementsData from "@/src/data/document-requirements.json";
@@ -812,7 +814,7 @@ function localizeBaseReportForZh(report: ReadinessReport): ReadinessReport {
   };
 }
 
-export function runReadinessEngine(input: ReadinessInput): ReadinessReport {
+function runReadinessEngineCore(input: ReadinessInput): ReadinessReport {
   const base = runBaseReadinessEngine(input);
 
   // Everything below this point (ranked pathways, AU state nomination
@@ -885,3 +887,12 @@ export function runReadinessEngine(input: ReadinessInput): ReadinessReport {
 }
 
 export { buildLeadQuality } from "@/lib/readiness/engine";
+
+/**
+ * The engine's report plus what the information-first report needs from the intake: the Target visa the visitor picked
+ * and what they entered (null = not provided). Recomputed with the report, so a refreshed report carries them too.
+ */
+export function runReadinessEngine(input: ReadinessInput): ReadinessReport {
+  const report = runReadinessEngineCore(input);
+  return { ...report, targetVisa: targetVisaOf(input), suppliedFacts: buildSuppliedFacts(input, input.locale) };
+}

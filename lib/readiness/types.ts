@@ -61,6 +61,8 @@ export type ReadinessInput = {
   /** Preferred Australian state/territory for 190/491 nomination (NSW, VIC, QLD, SA, WA, TAS, NT, ACT) */
   preferredState?: string;
   preferredPathway?: string;
+  /** The visa the visitor picked as the report's subject (required on the form): 500, 485, 482, 186, 189, 190, 491, 820_801 or not_sure (lib/readiness/target-visa.ts). */
+  targetVisa?: string;
   biggestConcern?: string;
   qualificationLevel?:
     | "High School"
@@ -1016,4 +1018,8 @@ export type ReadinessReport = {
    * treat this as optional.
    */
   aiStrategy?: PremiumStrategyResult;
+  /** The Target visa the report is about (lib/readiness/target-visa.ts); absent on reports made before the field existed (read as not_sure). */
+  targetVisa?: string;
+  /** What the visitor entered, one row per field the report reads (lib/readiness/supplied-facts.ts); value null = not provided. */
+  suppliedFacts?: Array<{ field: string; value: string | null }>;
 };

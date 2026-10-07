@@ -28,3 +28,10 @@ export const CANADA_REPORT_UNAVAILABLE: Record<"en" | "tr" | "zh-Hans", string> 
   tr: "Kanada raporları beta döneminde kullanılamıyor.",
   "zh-Hans": "测试期间暂不提供加拿大报告。",
 };
+
+/** Neutral wording shown when report generation is switched off (READINESS_REPORT_MODE=DISABLED). */
+export const REPORTS_UNAVAILABLE: Record<"en" | "tr" | "zh-Hans", string> = {
+  en: "Report generation is not available at the moment.",
+  tr: "Rapor oluşturma şu anda kullanılamıyor.",
+  "zh-Hans": "报告生成功能暂时不可用。",
+};

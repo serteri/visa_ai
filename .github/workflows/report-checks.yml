@@ -89,6 +89,8 @@ jobs:
         run: npm run test:seo-occupation
       - name: Canada report generation switched off (flag, neutral message; en / tr / zh-Hans)
         run: npm run test:canada-flag
+      - name: Target visa field, DISABLED mode, engine carries the target (en / tr / zh-Hans)
+        run: npm run test:target-visa
 
       # Free admin orders (ADMINFREE promotion code, or an ADMIN_EMAILS / KNOWN_TEST_EMAILS address) must send
       # no report email, internal or customer; normal and other-discount orders send both as before. Runs the

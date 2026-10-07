@@ -15,7 +15,8 @@ import { db } from "@/db";
 import { fullCheckUsage, fullCheckWaitlist, leads } from "@/db/schema";
 import { prisma } from "@/lib/prisma";
 import { getStripeBaseUrl } from "@/lib/stripe";
-import { CANADA_REPORT_UNAVAILABLE, isCanadaReportEnabled } from "@/lib/readiness/report-mode";
+import { normalizeTargetVisa } from "@/lib/readiness/target-visa";
+import { CANADA_REPORT_UNAVAILABLE, REPORTS_UNAVAILABLE, isCanadaReportEnabled, readinessReportMode } from "@/lib/readiness/report-mode";
 import { defaultCountry, isSupportedCountry, isPartnerFamilySponsorship, getVisaSubclassesForGoals, type MigrationGoalId } from "@/lib/countries";
 import { generateAndSendReport, sendReportAccessLink } from "@/lib/services/report-service";
 import {
@@ -706,7 +707,9 @@ export async function submitFullCheckWaitlist(
     migrationGoals as MigrationGoalId[],
     isSupportedCountry(rawTargetCountry) ? rawTargetCountry : defaultCountry
   );
-  const effectiveVisaInterest = visaInterest || mappedVisas.join(",") || "";
+  // The single required Target visa (AU form): "not_sure" evaluates every pathway, like an empty choice always did.
+  const targetVisa = normalizeTargetVisa(visaInterest);
+  const effectiveVisaInterest = targetVisa === "not_sure" ? "" : visaInterest || mappedVisas.join(",") || "";
   const submittedLocale = String(
     formData.get("routeLocale") ?? formData.get("locale") ?? formData.get("preferredLanguage") ?? ""
   ).trim();
@@ -835,6 +838,10 @@ export async function submitFullCheckWaitlist(
     visaInterest,
     mainGoal,
   });
+  // READINESS_REPORT_MODE=DISABLED: no report is generated for any country.
+  if (readinessReportMode() === "DISABLED") {
+    return { status: "error", error: REPORTS_UNAVAILABLE[resolvedLocale === "tr" ? "tr" : resolvedLocale === "zh-Hans" ? "zh-Hans" : "en"] };
+  }
   // Canada report generation is switched off during the beta (lib/readiness/report-mode.ts): nothing is created,
   // stored or emailed for a Canada request; the Canada code stays in place.
   if (targetCountry === "CA" && !isCanadaReportEnabled()) {
@@ -917,6 +924,9 @@ export async function submitFullCheckWaitlist(
           ? "请输入有效的年薪数值。"
           : "Enter a valid annual salary amount.";
     }
+  }
+  if (targetCountry === "AU" && !targetVisa) {
+    errors.targetVisa = isTr ? "Hedef vize gereklidir." : isZh ? "目标签证为必填项。" : "Target visa is required.";
   }
   if (!isPartner && targetCountry === "AU" && !employerSponsorship) {
     errors.employerSponsorship = isTr
@@ -1024,6 +1034,7 @@ export async function submitFullCheckWaitlist(
     timeline: timeline || undefined,
     sponsorOrFamily: sponsorOrFamily || undefined,
     preferredPathway: effectiveVisaInterest || undefined,
+    targetVisa: targetVisa ?? undefined,
     biggestConcern: biggestConcern || undefined,
   });
 
@@ -1161,6 +1172,7 @@ export async function submitFullCheckWaitlist(
       timeline: timeline || undefined,
       sponsorOrFamily: sponsorOrFamily || undefined,
       preferredPathway: effectiveVisaInterest || undefined,
+      targetVisa: targetVisa ?? undefined,
       biggestConcern: biggestConcern || undefined,
       nocCode: nocCode || undefined,
       nocTeer: nocTeer !== undefined && !isNaN(nocTeer) ? nocTeer : undefined,
@@ -1239,6 +1251,7 @@ export async function submitFullCheckWaitlist(
     timeline: timeline || undefined,
     sponsorOrFamily: sponsorOrFamily || undefined,
     preferredPathway: effectiveVisaInterest || undefined,
+    targetVisa: targetVisa ?? undefined,
     biggestConcern: biggestConcern || undefined,
     // Also persisted so lib/reports/refresh-report.ts can recompute the report with the current engine (the PDF is
     // regenerated on every download). Live state data (stateIntelligence/stateNominationConfig) is re-read then.

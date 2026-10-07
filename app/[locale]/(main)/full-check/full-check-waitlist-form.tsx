@@ -166,6 +166,7 @@ export function FullCheckWaitlistForm({
         ["waitlist-employer-sponsorship", txt("İşveren sponsorluğu gerekli", "Employer sponsorship is required", "雇主担保为必填项")],
         ["waitlist-residence-state", txt("Yaşadığınız eyalet gerekli", "State or territory of residence is required", "居住的州或领地为必填项")],
       ];
+      conditional.push(["waitlist-target-visa", txt("Hedef vize gerekli", "Target visa is required", "目标签证为必填项")]);
       for (const [id, msg] of conditional) if (document.getElementById(id)) fields.push([id, msg]);
       const errors: Record<string, string> = {};
       for (const [id, msg] of fields) {
