@@ -1,10 +1,9 @@
 import { NextRequest, after } from "next/server";
 import { revalidateTag } from "next/cache";
-import { Resend } from "resend";
 import { db } from "@/db";
 import { pdfDownloads } from "@/db/schema";
 import { eq, and, inArray, notInArray, count } from "drizzle-orm";
-import { PDF_SLUGS, PDF_LEAD_CATEGORY, type PdfProduct, sendPdfDeliveryEmail } from "@/lib/email/pdf-delivery";
+import { PDF_SLUGS, PDF_LEAD_CATEGORY, type PdfProduct, sendPdfDeliveryEmail, sendPdfLeadAdminEmail } from "@/lib/email/pdf-delivery";
 import { shouldSuppressReportEmails } from "@/lib/email/suppression";
 import { prisma } from "@/lib/prisma";
 import { PDF_LEAD_SOURCE, marketForSlug } from "@/lib/crm/pdf-lead-sources";
@@ -174,41 +173,4 @@ export async function POST(req: NextRequest) {
     console.error("[pdf-download POST]", err);
     return Response.json({ error: "Something went wrong. Please try again." }, { status: 500 });
   }
-}
-
-async function sendPdfLeadAdminEmail(params: {
-  fullName: string;
-  email: string;
-  phone: string;
-  slug: string;
-  category: string;
-  delivered: boolean;
-}): Promise<void> {
-  const apiKey = process.env.RESEND_API_KEY;
-  const notificationEmail = process.env.PDF_LEAD_NOTIFICATION_EMAIL || "serter@logivisa.com";
-
-  if (!apiKey) {
-    console.warn("[pdf-download] RESEND_API_KEY missing; skipping admin notification for", params.email);
-    return;
-  }
-
-  const resend = new Resend(apiKey);
-  const fromEmail = process.env.FROM_EMAIL || "LogiVisa <noreply@logivisa.com>";
-
-  const { error } = await resend.emails.send({
-    from: fromEmail,
-    to: [notificationEmail],
-    subject: `🚀 New Lead: PDF Guide Download [${params.category}]`,
-    text: [
-      "A new PDF guide lead has been captured.",
-      "",
-      `Category: ${params.category}`,
-      `Name: ${params.fullName}`,
-      `Email: ${params.email}`,
-      `Phone: ${params.phone || "-"}`,
-      `Guide: ${params.slug}`,
-      `Delivery email accepted by the provider: ${params.delivered ? "yes" : "NO (the visitor was shown the download link)"}`,
-    ].join("\n"),
-  });
-  if (error) console.error("[pdf-download] admin notification rejected by the provider:", error.message);
 }

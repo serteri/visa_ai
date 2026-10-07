@@ -56,7 +56,7 @@ async function main() {
   globalThis.fetch = realFetch;
 
   console.log("\n2. no unchecked sends");
-  const allowed = new Set(["lib/email/provider.ts", "lib/email/pdf-delivery.ts", "lib/email/chat-restore.ts", "lib/email/magic-link.ts", "app/api/pdf-download/route.ts"]);
+  const allowed = new Set(["lib/email/provider.ts", "lib/email/pdf-delivery.ts", "lib/email/chat-restore.ts", "lib/email/magic-link.ts"]);
   const offenders: string[] = [];
   for (const f of [...walk(path.join(root, "app")), ...walk(path.join(root, "lib")), ...walk(path.join(root, "src"))]) {
     const rel = path.relative(root, f);
@@ -64,16 +64,17 @@ async function main() {
     if (!allowed.has(rel)) offenders.push(rel);
   }
   t("every direct resend.emails.send call is in a file that reads { error } itself", offenders.length === 0, offenders.join(", "));
-  for (const f of ["lib/email/pdf-delivery.ts", "lib/email/chat-restore.ts", "lib/email/magic-link.ts", "app/api/pdf-download/route.ts"]) {
+  for (const f of ["lib/email/pdf-delivery.ts", "lib/email/chat-restore.ts", "lib/email/magic-link.ts"]) {
     t(`${f} reads the provider's error`, /\berror\b/.test(readFileSync(path.join(root, f), "utf8").split("emails.send(")[0].split("\n").slice(-2).join(" ")) || /if \(error/.test(readFileSync(path.join(root, f), "utf8")));
   }
   const migrated: Array<[string, string]> = [
-    ["app/[locale]/(main)/full-check/actions.ts", "report_ready_free_check"],
-    ["app/[locale]/(main)/full-check/actions.ts", "full_check_internal_lead_notice"],
+    ["lib/email/quick-check-emails.ts", "report_ready_free_check"],
+    ["lib/email/quick-check-emails.ts", "full_check_internal_lead_notice"],
     ["lib/services/report-service.ts", "premium_report_ready_unlock_link"],
     ["lib/email/full-check-admin.ts", "full_check_admin_notification"],
-    ["app/api/contact/route.ts", "contact_form_notification"],
-    ["app/[locale]/(main)/rehber/actions.ts", "guide_download_user"],
+    ["lib/email/contact.ts", "contact_form_notification"],
+    ["lib/email/guide-download.ts", "guide_download_user"],
+    ["lib/email/pdf-delivery.ts", "pdf_lead_admin_notification"],
     ["lib/email/agent-notifications.ts", "agent_assignment"],
     ["lib/alerts/check-points-alerts.ts", "points_alert"],
   ];
@@ -85,6 +86,7 @@ async function main() {
   const wh = readFileSync(path.join(root, "app/api/stripe/webhook/route.ts"), "utf8");
   t("stripe webhook: the paid admin notification failure is caught", /PAID admin notification email failed \(non-blocking\)/.test(wh));
   const fc = readFileSync(path.join(root, "app/[locale]/(main)/full-check/actions.ts"), "utf8");
+  t("report-service marks the PDF/email as sent only after the email call returned (the provider accepted it)", (() => { const from = rs.indexOf("export async function generateAndSendReport"); const send = rs.indexOf("await sendPremiumReportReadyEmail({", from); return from > 0 && send > from && rs.indexOf("await markReportPdfSent(reportId)", send) > send; })());
   t("full-check: the customer report email failure is caught", /Customer report email failed \(non-blocking\)/.test(fc));
 
   console.log("\n4. the health script");

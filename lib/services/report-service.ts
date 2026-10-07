@@ -28,7 +28,7 @@ function getBaseUrl(): string {
  * gated by the same is_unlocked check, via /api/reports/[reportId]/pdf --
  * duplicating those bytes into an email is unnecessary exposure, not a feature.
  */
-async function sendPremiumReportReadyEmail(payload: {
+export async function sendPremiumReportReadyEmail(payload: {
   email: string;
   fullName: string;
   locale: "en" | "tr" | "zh-Hans";

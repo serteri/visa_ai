@@ -3,14 +3,11 @@
 import { headers } from "next/headers"
 import { revalidateTag } from "next/cache"
 import { prisma } from "@/lib/prisma"
-import { Resend } from "resend"
-import { sendChecked } from "@/lib/email/provider"
+import { sendGuideDownloadEmails } from "@/lib/email/guide-download"
 import { getDictionary, Dictionary } from "@/lib/i18n/get-dictionary"
 import { Locale } from "@/lib/i18n/config"
 import { shouldSuppressReportEmails } from "@/lib/email/suppression"
 
-// Initialize Resend
-const resend = new Resend(process.env.RESEND_API_KEY)
 
 export async function submitDownloadForm(data: {
   firstName: string
@@ -106,12 +103,7 @@ export async function submitDownloadForm(data: {
   const suppressEmails = shouldSuppressReportEmails({ email: data.email }, "guide_download_emails")
   try {
     if (!suppressEmails) {
-      await Promise.all([
-        sendChecked("guide_download_user", resend, userEmailPayload),
-        sendChecked("guide_download_admin", resend, adminEmailPayload).catch((err) =>
-          console.error("Admin notification failed (non-blocking):", err)
-        ),
-      ]);
+      await sendGuideDownloadEmails(userEmailPayload, adminEmailPayload);
     }
   } catch (emailError) {
     console.error("Failed to send email:", emailError)

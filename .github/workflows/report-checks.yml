@@ -95,6 +95,8 @@ jobs:
         run: npm run test:lead-magnets
       - name: Transactional email provider (a rejection is a failure; no unchecked sends)
         run: npm run test:email-provider
+      - name: Every email sender against a stubbed provider (accepted, rejected, no key; admin diagnostics)
+        run: npm run test:email-senders
       - name: No route can produce the verdict structure (PDF route, result page, agent PDF; en / tr / zh-Hans)
         run: npm run test:no-verdict-routes
 

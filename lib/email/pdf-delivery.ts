@@ -1,4 +1,5 @@
 import { Resend } from "resend";
+import { sendChecked } from "@/lib/email/provider";
 import { LEAD_MAGNETS, PDF_SLUGS, leadMagnetBySlug, pick } from "@/lib/lead-magnets";
 
 // The slugs and names live in lib/lead-magnets.ts (one registry for the modals, the API, this email and the tests); both the free
@@ -163,4 +164,36 @@ export async function sendPdfDeliveryEmail(params: {
     console.error("[pdf-delivery] delivery email threw", error);
     return { sent: false, pdfUrl: built.pdfUrl, skippedReason: "exception", errorMessage: error instanceof Error ? error.message : String(error) };
   }
+}
+
+/** The internal "new lead" notice for a lead-magnet request. Throws on a provider rejection (the caller treats it as non-blocking). */
+export async function sendPdfLeadAdminEmail(params: {
+  fullName: string;
+  email: string;
+  phone: string;
+  slug: string;
+  category: string;
+  delivered: boolean;
+}): Promise<void> {
+  const apiKey = process.env.RESEND_API_KEY;
+  const notificationEmail = process.env.PDF_LEAD_NOTIFICATION_EMAIL || "serter@logivisa.com";
+  if (!apiKey) {
+    console.warn("[email] pdf_lead_admin_notification not sent: RESEND_API_KEY is not configured");
+    return;
+  }
+  await sendChecked("pdf_lead_admin_notification", new Resend(apiKey), {
+    from: process.env.FROM_EMAIL || "LogiVisa <noreply@logivisa.com>",
+    to: [notificationEmail],
+    subject: `🚀 New Lead: PDF Guide Download [${params.category}]`,
+    text: [
+      "A new PDF guide lead has been captured.",
+      "",
+      `Category: ${params.category}`,
+      `Name: ${params.fullName}`,
+      `Email: ${params.email}`,
+      `Phone: ${params.phone || "-"}`,
+      `Guide: ${params.slug}`,
+      `Delivery email accepted by the provider: ${params.delivered ? "yes" : "NO (the visitor was shown the download link)"}`,
+    ].join("\n"),
+  });
 }

@@ -23,6 +23,18 @@ function formatDate(date: Date): string {
   });
 }
 
+/** One alert email. Throws on a provider rejection, so `lastTriggered` is only set for an alert the provider accepted. */
+export async function sendPointsAlertEmail(to: string, subject: string, body: string): Promise<void> {
+  const apiKey = process.env.RESEND_API_KEY;
+  if (!apiKey) throw new Error("RESEND_API_KEY is not configured -- the alert cannot be sent.");
+  await sendChecked("points_alert", new Resend(apiKey), {
+    from: process.env.FROM_EMAIL || "LogiVisa <noreply@logivisa.com>",
+    to: [to],
+    subject,
+    text: body,
+  });
+}
+
 export async function checkAndSendAlerts(): Promise<AlertCheckResult> {
   const apiKey = process.env.RESEND_API_KEY;
   // Must be a verified sending domain -- Resend's onboarding@resend.dev
@@ -94,12 +106,7 @@ export async function checkAndSendAlerts(): Promise<AlertCheckResult> {
     ].join("\n");
 
     try {
-      await sendChecked("points_alert", resend, {
-        from: fromEmail,
-        to: [alert.email],
-        subject,
-        text: body,
-      });
+      await sendPointsAlertEmail(alert.email, subject, body);
 
       await prisma.pointsAlert.update({
         where: { id: alert.id },

@@ -86,3 +86,34 @@ Other reasons a report / unlock email is silently skipped (all by design, all lo
 - `FROM_EMAIL` unset falls back to `noreply@logivisa.com`; set to a non-verified or `resend.dev` address every send is rejected (now logged).
 
 To see which applies in production, run `npm run email:health -- --to hotmail.com` with the production env (read-only): it prints the switches, the From domain's Resend verification and SPF / DKIM / return-path record status, live SPF and DMARC DNS records, and Resend's recorded last event (delivered / bounced / suppressed / complained) for recent messages.
+
+## 6. The regression window (Resend dashboard: normal until ~15-17 days ago, almost nothing since)
+
+Commits touching email sending since 18 Sep 2026 (`git log --since=2026-09-18` over `lib/email`, `report-service`, the stripe webhook, the pdf-download / contact / full-check / rehber actions):
+
+| Date | Commit | Effect on sending |
+|---|---|---|
+| **22 Sep 00:53 AEST** | `ac2f321` Suppress report emails for free admin orders | Adds `shouldSuppressReportEmails` before every report-related sender: no email when the buyer/recipient is in `ADMIN_EMAILS` / `KNOWN_TEST_EMAILS` or the Stripe session used the `ADMINFREE` code. **The only change in the window that stops sends before they reach Resend, and it lands exactly when the dashboard's normal traffic ends.** Everything the owner tested with their own address (report ready, "Premium Report is Ready", hot-lead and admin notifications) stopped appearing from that day, by design. |
+| 26 Sep | `65c4105` | access control for PDF / result page; `isEmailDeliveryEnabled` guard for the access-link email (default: on when `RESEND_API_KEY` is set) |
+| 2 Oct | `7d9d3c7` | webhook grants unlocks only after payment is received |
+| 5 Oct | `85d2c97`, `14a3e8d`, `727b7c5` | paid checkout gated (free beta): no payment, so no paid-confirmation email; beta email wording |
+| 6 Oct | `40c88c5` | free-beta unlock: admin "FREE BETA" notification (suppressed for allow-listed addresses) |
+
+No commit renames an environment variable, removes a sender or adds an early return for ordinary customers; the suppression is an exact-address match against the two env lists. So the code does not explain "no email for a real customer" by itself. What does: every sender ignored the provider's `{ error }` (section 5), and a request the provider rejects before accepting (a revoked or restricted API key: 401; an invalid From: 422; an unverified domain: 403) never appears in the Resend dashboard. That matches "the cimend79 submission never reached Resend" and cannot be told apart from "never called" without the provider's answer, which the old code threw away.
+
+What is now different, so the next occurrence is decisive:
+
+- every sender goes through `sendChecked` (rejection throws, accepted id logged as `[email] <kind> accepted by the provider`, rejection logged as `[email] <kind> REJECTED by the provider` with the provider's error name and message);
+- a suppressed send logs `[email-suppression] suppressed reason=admin_email sender=<name>` (this already existed);
+- an unset `RESEND_API_KEY` now logs `[email] <kind> not sent: RESEND_API_KEY is not configured` for every sender (two senders returned silently before);
+- `report-service` marked the report "PDF sent" even when the provider rejected the message; it now does so only after acceptance (the same applies to the points-alert `lastTriggered`);
+- the admin route `/api/admin/email-health` (below).
+
+### Confirm with a real send after deploy
+
+1. Sign in as admin on https://www.logivisa.com, open the browser console and run (use a real non-test address):
+   `fetch('/api/admin/email-health',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({to:'cimend79@hotmail.com'})}).then(r=>r.json()).then(console.log)`
+   - `{ ok: true, messageId: "..." }`: the provider accepted it. In Resend > Emails, search that id: the status must reach `delivered`.
+   - `{ ok: false, name, message }`: that is the exact reason (for example `API key is invalid`, `domain is not verified`, `restricted_api_key`), and the fix is in Resend / Vercel, not in code.
+2. `fetch('/api/admin/email-health').then(r=>r.json()).then(console.log)`: shows `resendApiKeySet`, `fromEmail`, `fromIsSandbox`, `transactionalEmailsOn`, how many entries `ADMIN_EMAILS` / `KNOWN_TEST_EMAILS` have, the From domain's status in Resend and the last 25 messages with their last event. (`?address=you@example.com` also says whether that address is on the allow-list, i.e. suppressed by design.)
+3. Submit the occupation-list modal with a non-test address; in Vercel logs search `[email]`: you should see `pdf_lead_admin_notification accepted` and `[pdf-delivery] delivery email accepted by the provider` with message ids, and both appear in Resend.
