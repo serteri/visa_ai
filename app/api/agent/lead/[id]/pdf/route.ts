@@ -40,6 +40,7 @@ export async function GET(_req: Request, ctx: { params: Promise<{ id: string }> 
     const pdfBytes = await generateReadinessPDF({
       report,
       locale,
+      audience: "agent",
       userInputSummary: {
         name: lead.fullName ?? undefined,
         email: lead.email,

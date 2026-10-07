@@ -1,3 +1,4 @@
+import { AGENT_LEAD_NOTICE } from "@/lib/readiness/agent-lead-notice";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
@@ -119,7 +120,12 @@ export default async function AgentLeadDetailPage({ params }: PageProps) {
 
       <Card>
         <CardHeader className="flex flex-row items-center justify-between gap-3">
-          <CardTitle className="text-base">Assessment report</CardTitle>
+          <div>
+            <CardTitle className="text-base">Report</CardTitle>
+            <p className="mt-1 text-xs font-medium text-amber-800" data-testid="agent-lead-notice">
+              {AGENT_LEAD_NOTICE.en}
+            </p>
+          </div>
           <Button asChild size="sm">
             <a href={pdfUrl} target="_blank" rel="noopener noreferrer">
               Download PDF
@@ -131,7 +137,7 @@ export default async function AgentLeadDetailPage({ params }: PageProps) {
             <div className="overflow-hidden rounded-lg border border-slate-200">
               <iframe
                 src={pdfUrl}
-                title="Assessment report"
+                title="Automated information summary"
                 className="h-[720px] w-full"
               />
             </div>
