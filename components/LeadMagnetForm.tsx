@@ -1,7 +1,6 @@
 "use client";
 
 import { useState } from "react";
-import { CheckCircle2 } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -20,36 +19,12 @@ import {
   dialForCountryCode,
 } from "@/lib/country-codes";
 import { cn } from "@/lib/utils";
+import { DOCUMENT_IDS, FORM_TEXT, LEAD_MAGNETS, pick } from "@/lib/lead-magnets";
+import { validateLeadFields, type LeadFieldErrors } from "@/lib/lead-magnet-validation";
+import { submitLead } from "@/lib/lead-magnet-client";
+import { LeadMagnetResult } from "@/components/lead-magnet-result";
 
-// ── Document registry ──────────────────────────────────────────────────────────
-// Maps the friendly documentId (used in JSX props) to the slug the
-// /api/pdf-download route and the email delivery system expect. Add new
-// documents here — no other file needs to change.
-const DOCUMENT_SLUG: Record<string, string> = {
-  "csol-2026": "australia-skilled-occupation-list-2026",
-  "guide-global-2026": "australia-guide-2026",
-  "guide-turkish-2026": "avustralya-pr-rehberi-2026",
-};
-
-// Human-readable CRM category sent alongside the lead so the admin dashboard
-// can tag it without re-deriving it from the slug.
-const DOCUMENT_CATEGORY: Record<string, string> = {
-  "csol-2026": "2026 Official Occupation List",
-  "guide-global-2026": "Global Guide",
-  "guide-turkish-2026": "Turkish Guide",
-};
-
-// ── Validation ─────────────────────────────────────────────────────────────────
-// Slightly stricter than the browser's native type="email" — rejects bare
-// addresses without a TLD (e.g. "a@b").
-const STRICT_EMAIL_RE =
-  /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)+$/;
-
-type FieldErrors = {
-  full_name?: string;
-  email?: string;
-  phone?: string;
-};
+type FieldErrors = LeadFieldErrors;
 
 // ── Component ──────────────────────────────────────────────────────────────────
 export interface LeadMagnetFormProps {
@@ -85,8 +60,11 @@ export function LeadMagnetForm({
   // Resolve the API slug; fall back to documentId itself so unexpected values
   // still reach the server with a meaningful identifier rather than silently
   // failing.
-  const slug = DOCUMENT_SLUG[documentId] ?? documentId;
-  const category = DOCUMENT_CATEGORY[documentId] ?? documentName;
+  const magnet = LEAD_MAGNETS[DOCUMENT_IDS[documentId] ?? "turkish"];
+  const slug = magnet.slug;
+  const category = magnet.category;
+  // The file's own name in the visitor's language (the `documentName` prop is only a fallback for an unknown id).
+  const fileName = DOCUMENT_IDS[documentId] ? pick(magnet.name, locale) : documentName;
 
   const isTr = locale === "tr";
   const isZh = locale === "zh-Hans";
@@ -104,7 +82,7 @@ export function LeadMagnetForm({
   );
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
-  const [success, setSuccess] = useState(false);
+  const [result, setResult] = useState<null | { kind: "sent" } | { kind: "not_delivered"; downloadUrl: string; suppressed: boolean }>(null);
   const [fieldErrors, setFieldErrors] = useState<FieldErrors>({});
   const [isTermsAccepted, setIsTermsAccepted] = useState(false);
   const [termsError, setTermsError] = useState(false);
@@ -121,34 +99,7 @@ export function LeadMagnetForm({
   }
 
   function validate(): FieldErrors {
-    const errs: FieldErrors = {};
-
-    if (!form.full_name.trim()) {
-      errs.full_name = tx(
-        "Ad Soyad zorunludur.",
-        "Full Name is required.",
-        "姓名为必填项。"
-      );
-    }
-    if (!form.email.trim()) {
-      errs.email = tx("E-posta zorunludur.", "Email is required.", "邮箱为必填项。");
-    } else if (!STRICT_EMAIL_RE.test(form.email.trim())) {
-      errs.email = tx(
-        "Geçerli bir e-posta adresi girin.",
-        "Enter a valid email address.",
-        "请输入有效的邮箱地址。"
-      );
-    }
-    const digits = form.phone.replace(/\D/g, "");
-    if (form.phone.trim() && digits.length < 6) {
-      errs.phone = tx(
-        "Geçerli bir telefon numarası girin.",
-        "Enter a valid phone number.",
-        "请输入有效的手机号。"
-      );
-    }
-
-    return errs;
+    return validateLeadFields(form, locale);
   }
 
   async function handleSubmit(e: React.FormEvent) {
@@ -166,111 +117,51 @@ export function LeadMagnetForm({
     setLoading(true);
     setError("");
 
-    try {
-      const res = await fetch("/api/pdf-download", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          ...form,
-          phone: `${dialForCountryCode(countryIso)} ${form.phone.trim()}`,
-          slug,
-          category,
-          termsAcceptedAt,
-        }),
-      });
+    const outcome = await submitLead({
+      slug,
+      category,
+      locale,
+      full_name: form.full_name,
+      email: form.email,
+      phone: form.phone.trim() ? `${dialForCountryCode(countryIso)} ${form.phone.trim()}` : "",
+      termsAcceptedAt,
+    });
+    setLoading(false);
 
-      const data = await res.json();
-
-      if (!res.ok) {
-        if (data.alreadyDownloaded) {
-          setError(
-            tx(
-              "Bu IP adresinden daha önce indirildi. Her IP'den yalnızca 1 indirme yapılabilir.",
-              "This document was already requested from this IP. Only 1 request is allowed per IP.",
-              "该 IP 地址已下载过该文件。每个 IP 仅允许下载 1 次。"
-            )
-          );
-        } else {
-          setError(
-            data.error ??
-              tx("Bir hata oluştu.", "Something went wrong.", "发生错误。")
-          );
-        }
-        return;
+    if (outcome.kind === "sent" || outcome.kind === "not_delivered") {
+      setResult(outcome);
+      if (outcome.kind === "sent" && isInline && typeof window !== "undefined") {
+        const anyWindow = window as any;
+        anyWindow.dataLayer = anyWindow.dataLayer || [];
+        anyWindow.dataLayer.push({ event: "lead_magnet_inline_success", form_location: "the_end_of_hope_and_wait_article", document_requested: documentId });
       }
-
-      setSuccess(true);
-      if (isInline) {
-        if (typeof window !== "undefined") {
-          const anyWindow = window as any;
-          anyWindow.dataLayer = anyWindow.dataLayer || [];
-          anyWindow.dataLayer.push({
-            event: "lead_magnet_inline_success",
-            form_location: "the_end_of_hope_and_wait_article",
-            document_requested: documentId,
-          });
-        }
-      }
-      onSuccess?.();
-    } catch {
-      setError(
-        tx(
-          "Bağlantı hatası. Lütfen tekrar deneyin.",
-          "Connection error. Please try again.",
-          "连接错误。请重试。"
-        )
-      );
-    } finally {
-      setLoading(false);
+      if (outcome.kind === "sent") onSuccess?.();
+      return;
     }
+    if (outcome.kind === "payment_required") {
+      setError(pick(FORM_TEXT.generic, locale));
+      return;
+    }
+    if (outcome.fieldErrors) setFieldErrors(outcome.fieldErrors);
+    setError(outcome.message);
   }
 
-  // ── Success state ─────────────────────────────────────────────────────────────
-  if (success) {
-    if (isInline) {
+  // ── Result state ──────────────────────────────────────────────────────────────
+  if (result) {
+    if (isInline && result.kind === "sent") {
       return (
-        <div className="rounded-xl border border-emerald-200 bg-emerald-50/50 p-6 text-emerald-950 dark:bg-emerald-950/20 dark:border-emerald-900/50 dark:text-emerald-300">
+        <div className="rounded-xl border border-emerald-300 bg-emerald-50 p-6 text-emerald-950" role="status" data-lead-result="sent">
           <p className="text-base font-semibold">
             {tx(
-              "Vize Hazırlık Raporunuz gelen kutunuza gönderildi. Aşağıdan okumaya devam edebilirsiniz.",
-              "Your Visa Readiness Report has been sent to your inbox. You can continue reading below.",
-              "您的签证准备度报告已发送至您的收件箱。您可以继续阅读下文。"
+              `${fileName} gelen kutunuza gönderildi. Aşağıdan okumaya devam edebilirsiniz.`,
+              `${fileName} has been sent to your inbox. You can continue reading below.`,
+              `${fileName} 已发送至您的收件箱。您可以继续阅读下文。`
             )}
           </p>
         </div>
       );
     }
-
-    return (
-      <div className="flex flex-col items-center gap-4 py-8 text-center">
-        <span className="flex h-16 w-16 items-center justify-center rounded-full bg-emerald-100 dark:bg-emerald-900/40">
-          <CheckCircle2 className="h-8 w-8 text-emerald-600 dark:text-emerald-400" />
-        </span>
-        <p className="text-lg font-semibold text-slate-900 dark:text-white">
-          {tx(
-            <>
-              Başarılı! <strong>{documentName}</strong>,{" "}
-              <strong>{form.email}</strong> adresine gönderildi.
-            </>,
-            <>
-              Done! <strong>{documentName}</strong> has been sent to{" "}
-              <strong>{form.email}</strong>.
-            </>,
-            <>
-              成功！<strong>{documentName}</strong> 已发送至{" "}
-              <strong>{form.email}</strong>。
-            </>
-          )}
-        </p>
-        <p className="text-sm text-slate-500 dark:text-slate-400">
-          {tx(
-            "Gelen kutunuzu ve spam/gereksiz klasörünü kontrol edin.",
-            "Check your inbox and spam folder.",
-            "请检查您的收件箱和垃圾邮件文件夹。"
-          )}
-        </p>
-      </div>
-    );
+    return <LeadMagnetResult locale={locale} fileName={fileName} email={form.email} state={result} />;
   }
 
   // ── Form ─────────────────────────────────────────────────────────────────────
@@ -284,7 +175,7 @@ export function LeadMagnetForm({
       <div className="space-y-1">
         <Label htmlFor="lmf-full-name">
           {tx("Ad Soyad", "Full Name", "姓名")}
-          <span className="ml-1 text-red-500">*</span>
+          <span className="ml-1 text-red-700">*</span>
         </Label>
         <Input
           id="lmf-full-name"
@@ -300,7 +191,7 @@ export function LeadMagnetForm({
           disabled={loading}
         />
         {fieldErrors.full_name && (
-          <p className="text-xs text-red-600">{fieldErrors.full_name}</p>
+          <p className="text-xs text-red-700">{fieldErrors.full_name}</p>
         )}
       </div>
 
@@ -308,7 +199,7 @@ export function LeadMagnetForm({
       <div className="space-y-1">
         <Label htmlFor="lmf-email">
           {tx("E-posta", "Email", "邮箱")}
-          <span className="ml-1 text-red-500">*</span>
+          <span className="ml-1 text-red-700">*</span>
         </Label>
         <Input
           id="lmf-email"
@@ -325,7 +216,7 @@ export function LeadMagnetForm({
           disabled={loading}
         />
         {fieldErrors.email && (
-          <p className="text-xs text-red-600">{fieldErrors.email}</p>
+          <p className="text-xs text-red-700">{fieldErrors.email}</p>
         )}
       </div>
 
@@ -370,13 +261,17 @@ export function LeadMagnetForm({
           />
         </div>
         {fieldErrors.phone && (
-          <p className="text-xs text-red-600">{fieldErrors.phone}</p>
+          <p className="text-xs text-red-700">{fieldErrors.phone}</p>
         )}
       </div>
 
+      <p className="text-xs text-slate-700" data-required-legend>
+        {pick(FORM_TEXT.legend, locale)}
+      </p>
+
       {/* Global error */}
       {error && (
-        <p className="rounded-md border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-600">
+        <p className="rounded-md border border-red-300 bg-red-50 px-3 py-2 text-sm text-red-800">
           {error}
         </p>
       )}
@@ -422,7 +317,7 @@ export function LeadMagnetForm({
           : tx("📥 E-postama Gönder", "📥 Send to My Email", "📥 发送到我的邮箱")}
       </Button>
 
-      <p className="text-center text-xs text-slate-400">
+      <p className="text-center text-xs text-slate-700">
         {tx(
           "Bilgileriniz yalnızca bu indirme için kullanılır ve üçüncü taraflarla paylaşılmaz.",
           "Your details are used only for this download and are not shared with third parties.",

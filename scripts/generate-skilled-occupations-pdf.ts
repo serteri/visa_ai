@@ -95,6 +95,10 @@ function drawCover() {
   setText({ r: 248, g: 250, b: 252 });
   doc.text("Australia Skilled", margin, pageH / 2 - 22);
   doc.text("Occupation List 2026", margin, pageH / 2 - 8);
+  doc.setFont(FONT, "normal");
+  doc.setFontSize(13);
+  setText({ r: 203, g: 213, b: 225 });
+  doc.text("(compiled from official sources)", margin, pageH / 2 + 2);
 
   doc.setFont(FONT, "normal");
   doc.setFontSize(13);
@@ -102,11 +106,11 @@ function drawCover() {
   doc.text(
     `${occupations.length} occupations · ANZSCO codes · visa pathways · assessing authorities`,
     margin,
-    pageH / 2 + 4
+    pageH / 2 + 14
   );
 
   // Legend box
-  const legendY = pageH / 2 + 20;
+  const legendY = pageH / 2 + 30;
   doc.setFontSize(9);
   setText({ r: 203, g: 213, b: 225 });
   const legend = [
@@ -117,10 +121,23 @@ function drawCover() {
   ];
   legend.forEach((line, i) => doc.text(line, margin, legendY + i * 6));
 
-  doc.setFontSize(8);
-  setText({ r: 100, g: 116, b: 139 });
+  // Provenance: this is a compilation, not a government document, and it says where it came from and when.
+  const compiledOn = new Intl.DateTimeFormat("en-AU", { day: "numeric", month: "long", year: "numeric", timeZone: "Australia/Brisbane" }).format(new Date());
+  doc.setFontSize(9);
+  setText({ r: 203, g: 213, b: 225 });
   doc.text(
-    "General information only, compiled from the official Skilled Occupation List. Not migration advice — verify current status with the Department of Home Affairs or a registered migration agent (MARA).",
+    [
+      "Compiled from official sources: the Department of Home Affairs skilled occupation lists (immi.homeaffairs.gov.au), with ANZSCO codes from the Australian Bureau of Statistics.",
+      `Compiled by LogiVisa on ${compiledOn}. This is not an official or government document.`,
+    ],
+    margin,
+    legendY + 4 * 6 + 8,
+    { maxWidth: contentW }
+  );
+  doc.setFontSize(8);
+  setText({ r: 148, g: 163, b: 184 });
+  doc.text(
+    "General information only. Not migration advice: check the current lists with the Department of Home Affairs, or ask a registered migration agent or an Australian legal practitioner.",
     margin,
     pageH - 16,
     { maxWidth: contentW }

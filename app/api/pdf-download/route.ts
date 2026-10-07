@@ -1,7 +1,6 @@
 import { NextRequest, after } from "next/server";
 import { revalidateTag } from "next/cache";
 import { Resend } from "resend";
-import { z } from "zod";
 import { db } from "@/db";
 import { pdfDownloads } from "@/db/schema";
 import { eq, and, inArray, notInArray, count } from "drizzle-orm";
@@ -9,12 +8,13 @@ import { PDF_SLUGS, PDF_LEAD_CATEGORY, type PdfProduct, sendPdfDeliveryEmail } f
 import { shouldSuppressReportEmails } from "@/lib/email/suppression";
 import { prisma } from "@/lib/prisma";
 import { PDF_LEAD_SOURCE, marketForSlug } from "@/lib/crm/pdf-lead-sources";
+import { FREE_LIMIT as HANDLER_FREE_LIMIT, handlePdfDownload } from "@/lib/pdf-download/handle";
 
 export const dynamic = "force-dynamic";
 export const maxDuration = 60;
 
 // Both the Turkish and Global English guides draw from a single shared free-download pool.
-export const FREE_LIMIT = 18;
+export const FREE_LIMIT = HANDLER_FREE_LIMIT;
 
 // Re-exported for existing importers (e.g. lib/cache/public-read-models.ts) —
 // the canonical definition now lives in lib/email/pdf-delivery.ts so the free
@@ -55,15 +55,6 @@ function resolveSlug(value: string | null): string {
   if (value === PDF_SLUGS.occupation) return PDF_SLUGS.occupation;
   return PDF_SLUGS.turkish;
 }
-
-const pdfDownloadSchema = z.object({
-  full_name: z.string().trim().min(1, "Full name is required."),
-  email: z.string().trim().min(1, "Email is required.").email("Enter a valid email address."),
-  phone: z.string().trim().optional().default(""),
-  slug: z.string().optional(),
-  category: z.string().optional(),
-  termsAcceptedAt: z.string().min(1, "Terms acceptance timestamp is required."),
-});
 
 function getClientIp(req: NextRequest): string {
   return (
@@ -122,144 +113,66 @@ export async function GET(req: NextRequest) {
   }
 }
 
-// POST: register download + return PDF URL
+// POST: the decision logic is in lib/pdf-download/handle.ts (testable without a database or a network); this wires the real side effects.
 export async function POST(req: NextRequest) {
   try {
+    const body = (await req.json().catch(() => ({}))) as Record<string, unknown>;
     const ip = getClientIp(req);
-    const body = await req.json();
-
-    // Zod validation (Level 1 backend enforcement — never trust the client's
-    // own inline validation alone).
-    const parsed = pdfDownloadSchema.safeParse(body);
-    if (!parsed.success) {
-      return Response.json(
-        {
-          error: "Ad soyad ve geçerli bir e-posta adresi zorunludur.",
-          fieldErrors: parsed.error.flatten().fieldErrors,
+    const result = await handlePdfDownload(
+      { body, ip },
+      {
+        isExcludedEmail,
+        countByIpAndSlug: async (ipAddress, slug) => {
+          const [row] = await db.select({ value: count() }).from(pdfDownloads).where(and(eq(pdfDownloads.ip_address, ipAddress), eq(pdfDownloads.pdf_slug, slug)));
+          return Number(row?.value ?? 0);
         },
-        { status: 400 }
-      );
-    }
-
-    const { full_name, email, phone, slug: rawSlug, category: rawCategory, termsAcceptedAt } = parsed.data;
-    const slug = resolveSlug(rawSlug ?? null);
-    // The CRM lead-source bucket is derived from the slug (source of truth)
-    // rather than trusted from the client; the client-sent `category` is only
-    // used as a display fallback if the slug is somehow unrecognized.
-    const category = PDF_LEAD_CATEGORY[slug] ?? rawCategory ?? "Unknown";
-    const isExcluded = isExcludedEmail(email);
-
-    // Server-side enforcement of the Terms gate -- the client already blocks
-    // submission without consent, but the API must not trust that alone.
-    const termsDate = new Date(termsAcceptedAt);
-    if (Number.isNaN(termsDate.getTime())) {
-      return Response.json(
-        { error: "Yasal koşulların kabul edildiği doğrulanamadı." },
-        { status: 400 }
-      );
-    }
-
-    // Block duplicate IPs — scoped per guide, so a visitor can claim each guide
-    // once. Admin/test emails bypass this so the same tester can re-download
-    // repeatedly, mirroring the isAdmin bypass in full-check/actions.ts.
-    if (!isExcluded) {
-      const [ipRow] = await db
-        .select({ value: count() })
-        .from(pdfDownloads)
-        .where(
-          and(eq(pdfDownloads.ip_address, ip), eq(pdfDownloads.pdf_slug, slug))
-        );
-
-      if (Number(ipRow?.value ?? 0) > 0) {
-        return Response.json(
-          { error: "Bu IP adresinden daha önce indirildi.", alreadyDownloaded: true },
-          { status: 409 }
-        );
+        countRealTotal: countRealTotalDownloads,
+        insertLedgerRow: async (row) => {
+          const [saved] = await db
+            .insert(pdfDownloads)
+            .values({ full_name: row.full_name, email: row.email, phone: row.phone, ip_address: row.ip, pdf_slug: row.slug, is_paid: false, terms_accepted_at: row.termsAt })
+            .returning({ id: pdfDownloads.id });
+          revalidateTag("public-guide-download-stats", "max");
+          return saved?.id;
+        },
+        deleteLedgerRow: async (id) => {
+          await db.delete(pdfDownloads).where(eq(pdfDownloads.id, id)).catch((err) => console.error("[pdf-download] could not release the ledger row:", err));
+          revalidateTag("public-guide-download-stats", "max");
+        },
+        isSuppressed: (email, sender) => shouldSuppressReportEmails({ email }, sender),
+        sendDelivery: sendPdfDeliveryEmail,
+        afterResponse: (t) =>
+          after(async () => {
+            await Promise.all([
+              prisma.userReport
+                .create({
+                  data: {
+                    fullName: t.fullName,
+                    email: t.email,
+                    phone: t.phone,
+                    source: PDF_LEAD_SOURCE[t.slug] ?? "pdf_global_guide",
+                    market: marketForSlug(t.slug),
+                    paymentStatus: "n/a",
+                    isUnlocked: true,
+                    reportJson: {},
+                    inputJson: {},
+                    ipAddress: t.ip,
+                  },
+                })
+                .catch((err) => console.error("[pdf-download] CRM lead creation failed (non-blocking):", err)),
+              shouldSuppressReportEmails({ email: t.email }, "pdf_download_admin_notification")
+                ? Promise.resolve()
+                : sendPdfLeadAdminEmail({ fullName: t.fullName, email: t.email, phone: t.phone, slug: t.slug, category: PDF_LEAD_CATEGORY[t.slug] ?? "Unknown", delivered: t.delivered }).catch((err) =>
+                    console.error("[pdf-download] Admin notification failed (non-blocking):", err)
+                  ),
+            ]);
+          }),
       }
-    }
-
-    // Check free limit — shared pool across both guides, excluding admin/test
-    // downloads from the count. Admin/test emails also bypass the gate itself
-    // and do not consume a real free slot.
-    if (!isExcluded) {
-      const totalDownloads = await countRealTotalDownloads();
-      const isFree = totalDownloads < FREE_LIMIT;
-
-      if (!isFree) {
-        return Response.json(
-          { error: "Ücretsiz indirme kotası doldu.", paymentRequired: true },
-          { status: 402 }
-        );
-      }
-    }
-
-    // Save record
-    const normalizedEmail = email.trim().toLowerCase();
-    await db.insert(pdfDownloads).values({
-      full_name: full_name.trim(),
-      email: normalizedEmail,
-      phone: phone.trim(),
-      ip_address: ip,
-      pdf_slug: slug,
-      is_paid: false,
-      terms_accepted_at: termsDate,
-    });
-
-    revalidateTag("public-guide-download-stats", "max");
-
-    // Drop this lead into the Agent CRM pool (unassigned; agents claim it from
-    // /agent/pool) and send PDF delivery + admin notification emails asynchronously.
-    // Wrap in after() so Next.js executes this post-response background work
-    // after the response is sent to the user, preventing Vercel function timeout.
-    after(async () => {
-      const startTime = performance.now();
-      try {
-        await Promise.all([
-          prisma.userReport
-            .create({
-              data: {
-                fullName: full_name.trim(),
-                email: normalizedEmail,
-                phone: phone.trim(),
-                source: PDF_LEAD_SOURCE[slug] ?? "pdf_global_guide",
-                market: marketForSlug(slug),
-                paymentStatus: "n/a",
-                isUnlocked: true,
-                reportJson: {},
-                inputJson: {},
-                ipAddress: ip,
-              },
-            })
-            .catch((err) => console.error("[pdf-download] CRM lead creation failed (non-blocking):", err)),
-          // Admin allow-list address (free admin order): no delivery email and no internal lead notification.
-          shouldSuppressReportEmails({ email: normalizedEmail }, "pdf_download_delivery_email")
-            ? Promise.resolve()
-            : sendPdfDeliveryEmail({ fullName: full_name.trim(), email: normalizedEmail, slug }).catch((err) => {
-                console.error("[pdf-download] Delivery email failed (non-blocking):", err);
-                throw err;
-              }),
-          shouldSuppressReportEmails({ email: normalizedEmail }, "pdf_download_admin_notification")
-            ? Promise.resolve()
-            : sendPdfLeadAdminEmail({
-            fullName: full_name.trim(),
-            email: normalizedEmail,
-            phone: phone.trim(),
-            slug,
-            category,
-          }).catch((err) => console.error("[pdf-download] Admin notification failed (non-blocking):", err)),
-        ]);
-        const duration = ((performance.now() - startTime) / 1000).toFixed(2);
-        console.info(`[LogiVisa Profiler] Background PDF & Email process completed in ${duration} seconds.`);
-      } catch (err) {
-        const duration = ((performance.now() - startTime) / 1000).toFixed(2);
-        console.error(`[LogiVisa Profiler] Background PDF & Email process failed after ${duration} seconds. Error:`, err);
-      }
-    });
-
-    return Response.json({ success: true });
+    );
+    return Response.json(result.json, { status: result.status });
   } catch (err) {
     console.error("[pdf-download POST]", err);
-    return Response.json({ error: "Server error" }, { status: 500 });
+    return Response.json({ error: "Something went wrong. Please try again." }, { status: 500 });
   }
 }
 
@@ -269,6 +182,7 @@ async function sendPdfLeadAdminEmail(params: {
   phone: string;
   slug: string;
   category: string;
+  delivered: boolean;
 }): Promise<void> {
   const apiKey = process.env.RESEND_API_KEY;
   const notificationEmail = process.env.PDF_LEAD_NOTIFICATION_EMAIL || "serter@logivisa.com";
@@ -281,7 +195,7 @@ async function sendPdfLeadAdminEmail(params: {
   const resend = new Resend(apiKey);
   const fromEmail = process.env.FROM_EMAIL || "LogiVisa <noreply@logivisa.com>";
 
-  await resend.emails.send({
+  const { error } = await resend.emails.send({
     from: fromEmail,
     to: [notificationEmail],
     subject: `🚀 New Lead: PDF Guide Download [${params.category}]`,
@@ -293,6 +207,8 @@ async function sendPdfLeadAdminEmail(params: {
       `Email: ${params.email}`,
       `Phone: ${params.phone || "-"}`,
       `Guide: ${params.slug}`,
+      `Delivery email accepted by the provider: ${params.delivered ? "yes" : "NO (the visitor was shown the download link)"}`,
     ].join("\n"),
   });
+  if (error) console.error("[pdf-download] admin notification rejected by the provider:", error.message);
 }

@@ -3,7 +3,7 @@
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 function RequiredMark() {
-  return <span className="text-red-500 ml-1" aria-hidden="true">*</span>;
+  return <span className="text-red-700 ml-1" aria-hidden="true">*</span>;
 }
 
 function ErrorText({ message }: { message?: string }) {
@@ -115,7 +115,7 @@ export function Step2Career(props: Step2Props) {
             <p className="mt-1.5 flex items-center gap-1 text-xs text-muted-foreground">
               {txt("Emin değil misiniz?", "Not sure?", "不确定？")}{" "}
               <button type="button" onClick={() => setOccupationModalOpen(true)} className="inline-flex items-center gap-0.5 text-indigo-500 underline-offset-2 hover:text-indigo-700 hover:underline">
-                {txt("2026 Resmi Meslek Listesini İncele", "Check the 2026 Official Occupation List", "查看 2026 官方职业清单")}
+                {txt("2026 Avustralya Kalifiye Meslek Listesini İncele", "Check the 2026 Australian Skilled Occupation List", "查看 2026 澳大利亚技术职业清单")}
               </button>
             </p>
           )}

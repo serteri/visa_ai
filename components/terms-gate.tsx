@@ -34,7 +34,7 @@ export function TermsGate({
       <label
         className={[
           "flex cursor-pointer items-start gap-2 text-sm font-normal transition-colors",
-          termsError ? "text-rose-400" : "text-slate-800",
+          termsError ? "text-rose-700" : "text-slate-800",
         ].join(" ")}
       >
         <input
@@ -49,7 +49,7 @@ export function TermsGate({
         <span>{label}</span>
       </label>
 
-      {termsError && <p className="text-xs font-medium text-rose-400">{errorText}</p>}
+      {termsError && <p className="text-xs font-medium text-rose-700">{errorText}</p>}
     </div>
   );
 }

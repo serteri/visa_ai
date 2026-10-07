@@ -20,6 +20,8 @@ import { downloadReportPdf } from "@/lib/client/download-report-pdf";
 import type { AssistantReportData, ReadinessReport } from "@/lib/readiness/types";
 import { findOccupationRecord, getSkilledListMembership } from "@/lib/readiness/occupation-eligibility";
 import { LeadMagnetForm } from "@/components/LeadMagnetForm";
+import { RequiredLegend } from "@/components/required-legend";
+import { LEAD_MAGNETS, pick } from "@/lib/lead-magnets";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { Badge } from "@/components/ui/badge";
 import nocListRaw from "@/src/data/countries/ca/noc-list.json";
@@ -104,7 +106,7 @@ function ErrorText({ message }: { message?: string }) {
 }
 
 function RequiredMark() {
-  return <span className="text-red-500 ml-1" aria-hidden="true">*</span>;
+  return <span className="text-red-700 ml-1" aria-hidden="true">*</span>;
 }
 
 function noAutofill(field: string, override?: string): Record<string, string> {
@@ -480,6 +482,7 @@ export function FullCheckWaitlistForm({
 
       {!unlockedReportState?.report && (
         <form action={formAction} onSubmit={handleIntakeSubmit} className="space-y-4 overflow-visible" autoComplete="off" noValidate>
+        <RequiredLegend locale={locale} />
           <input type="hidden" name="routeLocale" value={locale} />
           <input type="hidden" name="locale" value={locale} />
           <input type="hidden" name="preferredLanguage" value={locale} />
@@ -563,10 +566,10 @@ export function FullCheckWaitlistForm({
         <Dialog open={occupationModalOpen} onOpenChange={(v) => !v && setOccupationModalOpen(false)}>
           <DialogContent className="sm:max-w-md">
             <DialogHeader>
-              <DialogTitle className="text-lg font-bold">📋 {txt("2026 Resmi Meslek Listesi", "2026 Official Occupation List", "2026年官方职业清单")}</DialogTitle>
-              <DialogDescription className="text-slate-600">{txt("Bilgilerinizi girin, PDF'in tamamını e-posta adresinize gönderelim.", "Enter your details and we'll send the full PDF straight to your inbox.", "填写您的信息，我们会将完整 PDF 发送到您的邮箱。")}</DialogDescription>
+              <DialogTitle className="text-lg font-bold">{pick(LEAD_MAGNETS.occupation.title, locale)}</DialogTitle>
+              <DialogDescription className="text-slate-700">{pick(LEAD_MAGNETS.occupation.description, locale)}</DialogDescription>
             </DialogHeader>
-            <LeadMagnetForm locale={locale} documentId="csol-2026" documentName="2026 Official Occupation List" onSuccess={() => setOccupationModalOpen(false)} />
+            <LeadMagnetForm locale={locale} documentId="csol-2026" documentName={pick(LEAD_MAGNETS.occupation.name, locale)} />
           </DialogContent>
         </Dialog>
       )}

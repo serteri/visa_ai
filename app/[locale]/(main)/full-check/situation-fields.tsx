@@ -60,7 +60,7 @@ export function SituationFields({
   const [employerSponsorship, setEmployerSponsorship] = useState(initialEmployerSponsorship);
   const show = situationFieldVisibility(currentCountry, employerSponsorship);
   const errCls = (id: string) => (fieldErrors?.[id] ? "border-red-500 focus:ring-red-500 focus:border-red-500" : "");
-  const Req = () => <span className="text-red-500 ml-1" aria-hidden="true">*</span>;
+  const Req = () => <span className="text-red-700 ml-1" aria-hidden="true">*</span>;
   const Err = ({ id }: { id: string }) => (fieldErrors?.[id] ? <p className="text-xs text-red-600">{fieldErrors[id]}</p> : null);
 
   return (

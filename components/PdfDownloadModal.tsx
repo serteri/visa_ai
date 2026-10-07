@@ -9,6 +9,10 @@ import { StripeCheckoutButton } from "@/components/stripe-checkout-button";
 import { getProductPriceDisplay } from "@/lib/pricing";
 import { TermsGate, TermsGateLink } from "@/components/terms-gate";
 import { COUNTRY_CODES, defaultCountryCodeForLocale, dialForCountryCode } from "@/lib/country-codes";
+import { LEAD_MAGNETS, FORM_TEXT, pick, type PdfProduct } from "@/lib/lead-magnets";
+import { validateLeadFields, type LeadFieldErrors } from "@/lib/lead-magnet-validation";
+import { submitLead } from "@/lib/lead-magnet-client";
+import { LeadMagnetResult } from "@/components/lead-magnet-result";
 import {
   Dialog,
   DialogContent,
@@ -17,35 +21,9 @@ import {
   DialogDescription,
 } from "@/components/ui/dialog";
 
-export type PdfProduct = "turkish" | "global" | "occupation";
+export type { PdfProduct };
 
-const PDF_SLUGS: Record<PdfProduct, string> = {
-  turkish: "avustralya-pr-rehberi-2026",
-  global: "australia-guide-2026",
-  occupation: "australia-skilled-occupation-list-2026",
-};
-
-// Lead-source bucket the CRM classifies this submission into, keyed off which
-// guide the modal instance is serving. Sent to the API alongside the form so
-// the admin notification/lead record can tag it without re-deriving it from
-// the slug downstream.
-const LEAD_CATEGORY: Record<PdfProduct, string> = {
-  turkish: "Turkish Guide",
-  global: "Global Guide",
-  occupation: "2026 Official Occupation List",
-};
-
-// Strict RFC-5322-ish format check (Level 1 frontend validation) — deliberately
-// tighter than the browser's native type="email" check, which accepts things
-// like "a@b" with no TLD.
-const STRICT_EMAIL_REGEX =
-  /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)+$/;
-
-type FieldErrors = {
-  full_name?: string;
-  email?: string;
-  phone?: string;
-};
+type FieldErrors = LeadFieldErrors;
 
 interface PdfStatus {
   isFree: boolean;
@@ -68,13 +46,14 @@ export function PdfDownloadModal({
   onClose,
   product = "turkish",
 }: Props) {
-  const slug = PDF_SLUGS[product];
+  const magnet = LEAD_MAGNETS[product];
+  const slug = magnet.slug;
   const [status, setStatus] = useState<PdfStatus | null>(null);
   const [form, setForm] = useState({ full_name: "", email: "", phone: "" });
   const [countryIso, setCountryIso] = useState(() => defaultCountryCodeForLocale(locale));
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
-  const [success, setSuccess] = useState(false);
+  const [result, setResult] = useState<null | { kind: "sent" } | { kind: "not_delivered"; downloadUrl: string; suppressed: boolean }>(null);
   const [fieldErrors, setFieldErrors] = useState<FieldErrors>({});
   const [isTermsAccepted, setIsTermsAccepted] = useState(false);
   const [termsError, setTermsError] = useState(false);
@@ -107,7 +86,7 @@ export function PdfDownloadModal({
     setCountryIso(defaultCountryCodeForLocale(locale));
     setFieldErrors({});
     setError("");
-    setSuccess(false);
+    setResult(null);
     setIsTermsAccepted(false);
     setTermsError(false);
     setTermsAcceptedAt(null);
@@ -127,38 +106,9 @@ export function PdfDownloadModal({
     setFieldErrors((prev) => (prev[name as keyof FieldErrors] ? { ...prev, [name]: undefined } : prev));
   }
 
-  // Level 1 frontend validation: Full Name, Email and Phone are all required;
-  // Email must also pass a strict format check. Runs before the request is sent
-  // so bad input never reaches the API.
+  // Level 1 frontend validation (the same function the API runs): name and email are required, the phone is optional.
   function validate(): FieldErrors {
-    const nextErrors: FieldErrors = {};
-
-    if (!form.full_name.trim()) {
-      nextErrors.full_name = tx("Ad Soyad zorunludur.", "Full Name is required.", "姓名为必填项。");
-    }
-
-    if (!form.email.trim()) {
-      nextErrors.email = tx("E-posta zorunludur.", "Email is required.", "邮箱为必填项。");
-    } else if (!STRICT_EMAIL_REGEX.test(form.email.trim())) {
-      nextErrors.email = tx(
-        "Geçerli bir e-posta adresi girin.",
-        "Enter a valid email address.",
-        "请输入有效的邮箱地址。"
-      );
-    }
-
-    const phoneDigits = form.phone.replace(/[^0-9]/g, "");
-    if (!phoneDigits) {
-      nextErrors.phone = tx("Telefon numarası zorunludur.", "Phone number is required.", "手机号为必填项。");
-    } else if (phoneDigits.length < 6) {
-      nextErrors.phone = tx(
-        "Geçerli bir telefon numarası girin.",
-        "Enter a valid phone number.",
-        "请输入有效的手机号。"
-      );
-    }
-
-    return nextErrors;
+    return validateLeadFields(form, locale);
   }
 
   // Gate passed to StripeCheckoutButton for the paid path -- see handleSubmit
@@ -197,141 +147,67 @@ export function PdfDownloadModal({
     setLoading(true);
     setError("");
 
-    try {
-      const res = await fetch("/api/pdf-download", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          ...form,
-          phone: `${dialForCountryCode(countryIso)} ${form.phone.trim()}`,
-          slug,
-          category: LEAD_CATEGORY[product],
-          termsAcceptedAt,
-        }),
-      });
-      const data = await res.json();
+    const outcome = await submitLead({
+      slug,
+      category: magnet.category,
+      locale,
+      full_name: form.full_name,
+      email: form.email,
+      phone: form.phone.trim() ? `${dialForCountryCode(countryIso)} ${form.phone.trim()}` : "",
+      termsAcceptedAt,
+    });
+    setLoading(false);
 
-      if (!res.ok) {
-        if (data.alreadyDownloaded) {
-          setError(
-            tx(
-              "Bu IP adresinden daha once indirildi. Her IP'den yalnizca 1 indirme yapilabilir.",
-              "This PDF was already downloaded from this IP. Only 1 download is allowed per IP.",
-              "该 IP 地址已下载过该 PDF。每个 IP 仅允许下载 1 次。"
-            )
-          );
-        } else if (data.paymentRequired) {
-          // Slots ran out between opening the modal and submitting — flip to the
-          // paid Stripe path in place (isFree:false swaps the form for the
-          // checkout button below) instead of dead-ending on a contact message.
-          setStatus((prev) =>
-            prev
-              ? { ...prev, isFree: false, freeRemaining: 0 }
-              : { isFree: false, freeRemaining: 0, totalDownloads: 0, alreadyDownloaded: false }
-          );
-          setError(
-            tx(
-              `Ücretsiz kota az önce doldu — aşağıdan ${ebookPrice} ile satın alabilirsiniz.`,
-              `The free quota just filled up — you can purchase below for ${ebookPrice}.`,
-              `免费名额刚刚用完 — 可在下方以 ${ebookPrice} 购买。`
-            )
-          );
-        } else {
-          setError(
-            data.error ??
-              tx("Bir hata olustu.", "Something went wrong.", "发生错误。")
-          );
-        }
-        return;
-      }
-
-      // Delivery Trap: no client-side download trigger. The guide is emailed
-      // to the address the user provided (see the API route) — the UI just
-      // transitions to a success state confirming delivery.
-      setSuccess(true);
-    } catch {
+    if (outcome.kind === "sent" || outcome.kind === "not_delivered") {
+      // "sent" only when the provider accepted the email; otherwise the download link is shown on screen.
+      setResult(outcome);
+      return;
+    }
+    if (outcome.kind === "payment_required") {
+      // Slots ran out between opening the modal and submitting: flip to the paid Stripe path in place.
+      setStatus((prev) =>
+        prev ? { ...prev, isFree: false, freeRemaining: 0 } : { isFree: false, freeRemaining: 0, totalDownloads: 0, alreadyDownloaded: false }
+      );
       setError(
         tx(
-          "Baglanti hatasi. Lutfen tekrar deneyin.",
-          "Connection error. Please try again.",
-          "连接错误。请重试。"
+          `Ücretsiz kota az önce doldu — aşağıdan ${ebookPrice} ile satın alabilirsiniz.`,
+          `The free quota just filled up — you can purchase below for ${ebookPrice}.`,
+          `免费名额刚刚用完 — 可在下方以 ${ebookPrice} 购买。`
         )
       );
-    } finally {
-      setLoading(false);
+      return;
     }
+    if (outcome.fieldErrors) setFieldErrors(outcome.fieldErrors);
+    setError(outcome.message);
   }
 
   const isFree = status?.isFree ?? true;
   const alreadyDownloaded = status?.alreadyDownloaded ?? false;
 
-  const titleText =
-    product === "global"
-      ? tx(
-          "🌏 The Ultimate Australia Migration Blueprint",
-          "🌏 The Ultimate Australia Migration Blueprint",
-          "🌏 终极澳大利亚移民蓝图"
-        )
-      : product === "occupation"
-        ? tx(
-            "📋 2026 Resmi Meslek Listesi",
-            "📋 2026 Official Occupation List",
-            "📋 2026 官方职业清单"
-          )
-        : tx("📘 Avustralya PR Rehberi 2026", "📘 Australia PR Guide 2026", "📘 澳大利亚 PR 指南 2026");
-
-  const descriptionText =
-    product === "global"
-      ? tx(
-          "Skilled migration ve öğrenci vizesi (Subclass 500) yol haritasını, 2026 yaşam maliyeti verileriyle birlikte indirin.",
-          "Download the global English guide covering skilled migration and the Student Visa (Subclass 500) bridge, with 2026 cost-of-living data.",
-          "下载涵盖技术移民和学生签证（500 类别）路径的全球英文指南，附 2026 年生活成本数据。"
-        )
-      : product === "occupation"
-        ? tx(
-            "Avustralya'nin tam resmi kalifiye meslek listesini PDF olarak indirin.",
-            "Download the full official Australian Skilled Occupation List as a PDF.",
-            "下载完整的澳大利亚官方技术职业清单 PDF。"
-          )
-        : tx(
-            "Ucretsiz Turkce PDF rehberini indirin. Gercek verilerle hazirlanmis kapsamli kalici oturma izni kilavuzu.",
-            "Download the free Turkish PDF guide. A comprehensive permanent residency guide built on real data.",
-            "下载免费的土耳其语 PDF 指南。基于真实数据整理的永久居留申请全流程指南。"
-          );
+  const titleText = pick(magnet.title, locale);
+  const descriptionText = pick(magnet.description, locale);
 
   return (
     <Dialog open={open} onOpenChange={(v) => !v && handleClose()}>
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
           <DialogTitle className="text-xl font-bold">{titleText}</DialogTitle>
-          <DialogDescription className="text-slate-600 dark:text-slate-400">
+          <DialogDescription className="text-slate-700">
             {descriptionText}
           </DialogDescription>
         </DialogHeader>
 
         {/* Slot counter */}
-        {!success && (
+        {!result && (
           <div
             className={`rounded-lg px-4 py-2 text-sm font-medium text-center ${
               isFree
-                ? "bg-emerald-50 text-emerald-700 border border-emerald-200"
-                : "bg-amber-50 text-amber-700 border border-amber-200"
+                ? "bg-emerald-50 text-emerald-900 border border-emerald-300"
+                : "bg-amber-50 text-amber-900 border border-amber-300"
             }`}
           >
             {isFree ? (
-              <>
-                {product === "occupation"
-                  ? tx(
-                      "✅ Kapsamlı ve güncel Avustralya Kalifiye Meslek Listesi'ni beceri seviyeleri ve vize türleriyle birlikte edinin.",
-                      "✅ Get the comprehensive, up-to-date Australian Skilled Occupation List with skill levels and visa types.",
-                      "✅ 获取最全面、最新的澳大利亚技术职业清单，包含技能等级和签证类型。"
-                    )
-                  : tx(
-                      "✅ Kapsamlı ve güncel 2026 rehberini hemen edinin.",
-                      "✅ Get the comprehensive, up-to-date 2026 guide right away.",
-                      "✅ 立即获取全面、最新的 2026 指南。"
-                    )}
-              </>
+              <>{pick(magnet.banner, locale)}</>
             ) : (
               <>
                 {tx("💳 Ucretsiz kota doldu. Fiyat: ", "💳 Free quota is full. Price: ", "💳 免费名额已满。价格：")}
@@ -341,29 +217,8 @@ export function PdfDownloadModal({
           </div>
         )}
 
-        {success ? (
-          // Delivery Trap success state: no file has been downloaded to the
-          // browser -- the guide was emailed to the address the user gave us.
-          <div className="space-y-4 text-center py-6">
-            <div className="text-5xl">📬</div>
-            <p className="font-semibold text-white">
-              {tx(
-                <>Başarılı! PR Rehberi <strong>{form.email}</strong> adresine gönderildi.</>,
-                <>Success! The PR Guide has been sent to <strong>{form.email}</strong>.</>,
-                <>成功！PR 指南已发送到 <strong>{form.email}</strong>。</>
-              )}
-            </p>
-            <p className="text-sm text-slate-500">
-              {tx(
-                "Lütfen gelen kutunuzu ve spam/gereksiz klasörünü kontrol edin.",
-                "Please check your inbox and spam folder.",
-                "请检查您的收件箱和垃圾邮件文件夹。"
-              )}
-            </p>
-            <Button onClick={handleClose} className="w-full">
-              {tx("Kapat", "Close", "关闭")}
-            </Button>
-          </div>
+        {result ? (
+          <LeadMagnetResult locale={locale} fileName={pick(magnet.name, locale)} email={form.email} state={result} onClose={handleClose} />
         ) : (
           <form onSubmit={handleSubmit} noValidate className="space-y-4 mt-2">
             {/*
@@ -377,7 +232,7 @@ export function PdfDownloadModal({
               never render for a previously-used IP.
             */}
             {alreadyDownloaded && (
-              <p className="text-xs text-amber-700 bg-amber-50 border border-amber-200 rounded-md px-3 py-2">
+              <p className="text-xs text-amber-900 bg-amber-50 border border-amber-300 rounded-md px-3 py-2">
                 {tx(
                   "Bu IP adresinden daha once bir indirme yapilmis gibi gorunuyor. Normal kullanicilar icin yalnizca 1 indirme hakki vardir.",
                   "It looks like this IP already downloaded a guide. Regular visitors get one download per IP.",
@@ -386,7 +241,10 @@ export function PdfDownloadModal({
               </p>
             )}
             <div className="space-y-1">
-              <Label htmlFor="full_name">{tx("Ad Soyad", "Full Name", "姓名")}</Label>
+              <Label htmlFor="full_name">
+                {tx("Ad Soyad", "Full Name", "姓名")}
+                <span className="text-red-700 ml-1" aria-hidden="true">*</span>
+              </Label>
               <Input
                 id="full_name"
                 name="full_name"
@@ -398,11 +256,14 @@ export function PdfDownloadModal({
                 disabled={loading || !isFree}
               />
               {fieldErrors.full_name && (
-                <p className="text-xs text-red-600">{fieldErrors.full_name}</p>
+                <p className="text-xs text-red-700">{fieldErrors.full_name}</p>
               )}
             </div>
             <div className="space-y-1">
-              <Label htmlFor="email">{tx("E-posta", "Email", "邮箱")}</Label>
+              <Label htmlFor="email">
+                {tx("E-posta", "Email", "邮箱")}
+                <span className="text-red-700 ml-1" aria-hidden="true">*</span>
+              </Label>
               <Input
                 id="email"
                 name="email"
@@ -414,12 +275,11 @@ export function PdfDownloadModal({
                 className={fieldErrors.email ? "border-red-500 focus-visible:ring-red-500" : ""}
                 disabled={loading || !isFree}
               />
-              {fieldErrors.email && <p className="text-xs text-red-600">{fieldErrors.email}</p>}
+              {fieldErrors.email && <p className="text-xs text-red-700">{fieldErrors.email}</p>}
             </div>
             <div className="space-y-1">
               <Label htmlFor="phone">
-                {tx("Telefon Numarası", "Phone Number", "手机号")}
-                <span className="text-red-500 ml-1">*</span>
+                {tx("Telefon Numarası (Opsiyonel)", "Phone Number (Optional)", "手机号（可选）")}
               </Label>
               <div className="flex gap-2">
                 <Select
@@ -442,7 +302,6 @@ export function PdfDownloadModal({
                   id="phone"
                   name="phone"
                   type="tel"
-                  required
                   placeholder={tx("555 000 0000", "412 345 678", "138 0013 8000")}
                   value={form.phone}
                   onChange={handleChange}
@@ -451,11 +310,15 @@ export function PdfDownloadModal({
                   disabled={loading || !isFree}
                 />
               </div>
-              {fieldErrors.phone && <p className="text-xs text-red-600">{fieldErrors.phone}</p>}
+              {fieldErrors.phone && <p className="text-xs text-red-700">{fieldErrors.phone}</p>}
             </div>
 
+            <p className="text-xs text-slate-700" data-required-legend>
+              {pick(FORM_TEXT.legend, locale)}
+            </p>
+
             {error && (
-              <p className="text-sm text-red-600 bg-red-50 border border-red-200 rounded-md px-3 py-2">
+              <p className="text-sm text-red-800 bg-red-50 border border-red-300 rounded-md px-3 py-2">
                 {error}
               </p>
             )}
@@ -497,7 +360,7 @@ export function PdfDownloadModal({
               >
                 {loading
                   ? tx("Gönderiliyor...", "Sending...", "发送中...")
-                  : tx("📥 Listeyi E-postama Gönder", "📥 Send My PDF Guide", "📥 发送我的PDF指南")}
+                  : tx("📥 E-postama Gönder", "📥 Send to My Email", "📥 发送到我的邮箱")}
               </Button>
             ) : (
               <StripeCheckoutButton
@@ -514,7 +377,7 @@ export function PdfDownloadModal({
               />
             )}
 
-            <p className="text-xs text-slate-400 text-center">
+            <p className="text-xs text-slate-700 text-center">
               {tx(
                 "Bilgileriniz yalnizca bu indirme icin kullanilir ve ucuncu taraflarla paylasilmaz.",
                 "Your details are used only for this download and are not shared with third parties.",

@@ -3,7 +3,7 @@
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 function RequiredMark() {
-  return <span className="text-red-500 ml-1" aria-hidden="true">*</span>;
+  return <span className="text-red-700 ml-1" aria-hidden="true">*</span>;
 }
 
 function ErrorText({ message }: { message?: string }) {

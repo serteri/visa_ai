@@ -17,7 +17,7 @@ export const metadata: Metadata = {
 const SOURCE_LABEL: Record<string, string> = {
   pdf_turkish_guide: "Turkish Guide",
   pdf_global_guide: "Global Guide",
-  pdf_occupation_list: "2026 Official Occupation List",
+  pdf_occupation_list: "2026 Skilled Occupation List",
 };
 
 type PageProps = {

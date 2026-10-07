@@ -381,3 +381,5 @@ the state programs' own published statements as recorded in `state-rules-config.
 key-fact statements (`lib/state-nomination/state-keyfact-translations.ts`; numbers, dates, fees and subclass numbers are carried over as published; where a statement has no
 translation the state's English wording is shown), the visa-block field names and progression sentences, the cost-section headings and notes, the typical-process steps
 common to all pathways, the documents and general-points tables, and the advice statement.
+
+**Lead magnets (Oct 2026).** Machine-assisted tr / zh-Hans drafts, not native-reviewed: the lead-magnet registry copy (`lib/lead-magnets.ts`: names, titles, descriptions, banners, form messages, "* Required field"), the delivery email copy (`lib/email/pdf-delivery.ts`) and the rewritten `/resources/occupation-list` page. The occupation list is described as compiled by LogiVisa from official sources, not as an official or government document; the PDF cover states source and date.

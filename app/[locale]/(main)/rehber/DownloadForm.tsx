@@ -9,6 +9,7 @@ import { Button } from "@/components/ui/button"
 import { Progress } from "@/components/ui/progress"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Icons } from "@/components/icons"
+import { RequiredLegend } from "@/components/required-legend"
 import Link from "next/link"
 import type { Dictionary } from "@/lib/i18n/get-dictionary"
 import { COUNTRY_CODES, defaultCountryCodeForLocale, dialForCountryCode } from "@/lib/country-codes"
@@ -161,6 +162,7 @@ export function DownloadForm({
       </div>
 
       <form onSubmit={handleSubmit} className="mt-8 space-y-6">
+        <RequiredLegend locale={locale} />
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
             <Label htmlFor="firstName">{translations.guidePage.form.firstName}</Label>
@@ -199,7 +201,7 @@ export function DownloadForm({
         <div>
           <Label htmlFor="phone">
             {translations.guidePage.form.phone}
-            <span className="text-red-500 ml-1">*</span>
+            <span className="text-red-700 ml-1" aria-hidden="true">*</span>
           </Label>
           <div className="flex gap-2">
             <Select value={countryIso} onValueChange={setCountryIso} disabled={limitReached || isSubmitting}>
