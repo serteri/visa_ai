@@ -12,6 +12,7 @@
  *
  *   npx tsx scripts/test-admin-unlock.ts
  */
+import "./lib/no-live-stripe"; // FIRST: no Stripe variables, no route to stripe.com
 import { cookieJar, setNextAuthSession, signOutAll } from "./lib/stub-request-context";
 
 delete process.env.READINESS_REPORT_PAID_CHECKOUT_ENABLED; // the production default: paid checkout ON
@@ -23,7 +24,7 @@ process.env.RESEND_API_KEY = "re_test_stub_not_a_real_key";
 process.env.FROM_EMAIL = "LogiVisa Test <noreply@example.test>";
 process.env.NEXT_PUBLIC_BASE_URL = "http://localhost:3000";
 process.env.DATABASE_URL = "postgresql://u:p@localhost:5432/d?sslmode=disable"; // never connects
-delete process.env.STRIPE_SECRET_KEY;
+process.env.STRIPE_SECRET_KEY = ""; // An empty string, not `delete`: Prisma's .env load would put a deleted key back (scripts/lib/no-live-stripe.ts).
 delete process.env.ENABLE_TRANSACTIONAL_EMAILS;
 delete process.env.SIMULATE_EMAIL_DELIVERY;
 

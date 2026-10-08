@@ -15,12 +15,13 @@ process.env.RESEND_API_KEY = "re_test_stub_not_a_real_key";
 process.env.FROM_EMAIL = "LogiVisa Test <noreply@example.test>";
 process.env.NEXT_PUBLIC_BASE_URL = "http://localhost:3000";
 process.env.DATABASE_URL = "postgresql://u:p@localhost:5432/d?sslmode=disable"; // never connects
-delete process.env.STRIPE_SECRET_KEY;
+process.env.STRIPE_SECRET_KEY = ""; // An empty string, not `delete`: Prisma's .env load would put a deleted key back (scripts/lib/no-live-stripe.ts).
 process.env.MAX_FREE_REPORTS = "14"; // even when still set in the environment, it must not limit anything
 process.env.NEXT_PUBLIC_IS_FREE_BETA = "true";
 delete process.env.ENABLE_TRANSACTIONAL_EMAILS;
 delete process.env.SIMULATE_EMAIL_DELIVERY;
 
+import "./lib/no-live-stripe"; // FIRST: no Stripe variables, no route to stripe.com
 import { readFileSync } from "node:fs";
 type Row = Record<string, unknown> & { id: string; email: string; is_unlocked: boolean };
 const rows = new Map<string, Row>();
