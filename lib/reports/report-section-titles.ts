@@ -2,12 +2,14 @@
 import type { Locale } from "@/lib/readiness/types";
 import { T } from "@/lib/reports/report-text";
 
-export type ReportSectionId = "details" | "points" | "visas" | "states" | "invitations" | "costs" | "process" | "documents" | "sources";
+export type ReportSectionId = "details" | "glance" | "points" | "visas" | "states" | "invitations" | "costs" | "process" | "documents" | "sources";
 
 export function reportSectionTitle(id: ReportSectionId, l: Locale): string {
   switch (id) {
     case "details":
       return T(l, "Your details", "Bilgileriniz", "您的信息");
+    case "glance":
+      return T(l, "At a glance", "Bir bakışta", "一览");
     case "points":
       return T(l, "Points", "Puanlar", "积分");
     case "visas":
@@ -27,4 +29,4 @@ export function reportSectionTitle(id: ReportSectionId, l: Locale): string {
   }
 }
 
-export const REPORT_SECTION_IDS: ReportSectionId[] = ["details", "points", "visas", "states", "invitations", "costs", "process", "documents", "sources"];
+export const REPORT_SECTION_IDS: ReportSectionId[] = ["details", "glance", "points", "visas", "states", "invitations", "costs", "process", "documents", "sources"];

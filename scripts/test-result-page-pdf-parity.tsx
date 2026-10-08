@@ -139,10 +139,10 @@ async function compare(label: string, reportId: string, locale: string) {
   const flatPdf = squash(pdf);
   const stamp = decode(html.match(/data-report-date-stamp[^>]*>([^<]*)</)?.[1] ?? "");
 
-  // The parts, in the same order on the page and in the PDF: cover, details, points, visas, states, invitations, costs, process,
+  // The parts, in the same order on the page and in the PDF: cover, details, glance, points, visas, states, invitations, costs, process,
   // documents, sources.
   const sections = [...html.matchAll(/data-section="([a-z]+)"/g)].map((m) => m[1]);
-  const canonical = ["cover", "details", "points", "visas", "states", "invitations", "costs", "process", "documents", "sources"];
+  const canonical = ["cover", "details", "glance", "points", "visas", "states", "invitations", "costs", "process", "documents", "sources"];
   const inOrder = sections.every((x, i) => canonical.includes(x) && (i === 0 || canonical.indexOf(x) > canonical.indexOf(sections[i - 1])));
   if (inOrder && canonical.filter((c) => c !== "points").every((c) => sections.includes(c))) ok(`${label} [${locale}]: the page parts are in order (${sections.join(" > ")})`);
   else fail(`${label} [${locale}]: page parts ${JSON.stringify(sections)}`);

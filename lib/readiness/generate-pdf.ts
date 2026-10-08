@@ -721,20 +721,20 @@ function buildIneligiblePathwayEntries(report: ReadinessReport): RankedPathway[]
 function getFeedbackTexts(locale: "en" | "tr" | "zh-Hans") {
   if (locale === "tr") {
     return {
-      note: "Beta surecindeyiz. Raporu nasil buldunuz? Bize yazin:",
+      note: "Raporu nasıl buldunuz? Bize yazın:",
       cta: "Share Feedback",
     };
   }
 
   if (locale === "zh-Hans") {
     return {
-      note: "我们正处于 Beta 阶段。你觉得这份报告如何？欢迎写信告诉我们：",
+      note: "你觉得这份报告如何？欢迎写信告诉我们：",
       cta: "Share Feedback",
     };
   }
 
   return {
-    note: "We are in Beta! How was your report? Help us improve.",
+    note: "How was your report? Tell us:",
     cta: "Share Feedback",
   };
 }
@@ -5095,7 +5095,7 @@ export async function generateReadinessPDF(input: PDFGeneratorInput): Promise<Ui
     yPosition += 3;
   }
 
-  // Beta feedback note on final page
+  // Feedback note on final page
   ensurePageSpace(14);
   yPosition += 2;
   addSmallText(feedbackText.note, 0);
@@ -5103,7 +5103,7 @@ export async function generateReadinessPDF(input: PDFGeneratorInput): Promise<Ui
   doc.setFontSize(FONTS.small);
   doc.setTextColor(COLORS.accent.r, COLORS.accent.g, COLORS.accent.b);
   doc.textWithLink(`${feedbackText.cta}: hello@logivisa.com`, margin, yPosition + 1, {
-    url: "mailto:hello@logivisa.com?subject=Beta%20Feedback%20-%20Visa%20Readiness%20Report",
+    url: "mailto:hello@logivisa.com?subject=Feedback%20-%20Visa%20Information%20Report",
   });
   yPosition += 5;
 

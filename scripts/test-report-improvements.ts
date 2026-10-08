@@ -1,0 +1,195 @@
+/**
+ * Information-report improvements (en / tr / zh-Hans):
+ *   1. numeric requirements show "Your figure" next to "Published figure" (age limits, points minimum, years of experience, CSIT / SSIT); the
+ *      other rows carry only "Information entered" / "Not entered" / "Not collected by the form" (never "Provided" / "Cannot determine");
+ *   2. the 482 Specialist Skills row uses the SSIT, not the CSIT; every published figure is the gate matrix's, not typed text;
+ *   3. an "At a glance" section after "Your details": one row per visa in the fixed order, counts, numeric figures side by side, no verdict wording;
+ *   4. recent invitation levels are labelled as estimates inline; invitation history drops rows without a lowest-points figure (and the table
+ *      when none remains) and marks data older than 12 months;
+ *   5. assessing-authority fees: one row per pathway, excl. GST / incl. GST columns, no duplicate "indicative estimate" row;
+ *   6. state notes drop sentences that repeat the summary; data checked more than 30 days ago is flagged; the re-check list exists;
+ *   7. no "We are in Beta!", no "1 years", no trivial subclass 500 age row.
+ *
+ *   npx tsx scripts/test-report-improvements.ts
+ */
+import { existsSync, readFileSync } from "node:fs";
+import visaGates from "../src/data/visa-gates.json";
+import { runReadinessEngine } from "../src/lib/readiness-engine";
+import { buildReportView, type ReportView } from "../lib/reports/report-view";
+import { buildGlance } from "../lib/reports/report-glance";
+import { buildInvitationInfo } from "../lib/reports/report-misc";
+import { repeatsSummary, stateDataIsStale } from "../lib/reports/report-states";
+import { VISA_ORDER, buildVisaInfos, visaName } from "../lib/reports/report-visas";
+import { yearsText } from "../lib/reports/report-text";
+import { getStateRule } from "../lib/state-nomination/state-rules-config";
+import type { Locale, ReadinessInput } from "../lib/readiness/types";
+import { REVIEW_PERSONAS, renderPersonaPdfTexts } from "./render-persona-pdfs";
+
+let failures = 0;
+const t = (name: string, cond: boolean, detail = "") => {
+  if (cond) console.log(`  ✅ ${name}`);
+  else {
+    failures++;
+    console.error(`  ❌ ${name}${detail ? ` -- ${detail}` : ""}`);
+  }
+};
+
+const LOCALES: Locale[] = ["en", "tr", "zh-Hans"];
+const TH = (visaGates as unknown as { thresholds: { CSIT: { value: number }; SSIT: { value: number }; minimumPoints: number; ageLimits: Record<string, number> } }).thresholds;
+const base = REVIEW_PERSONAS["reference-se-au"];
+const withData = { ...base, offshoreExperienceYears: 3, onshoreExperienceYears: 1, annualSalaryAud: 90000 } as ReadinessInput;
+
+const viewOf = (input: ReadinessInput, locale: Locale, target: string, extra: { asOf?: Date } = {}) => {
+  const full = { ...input, locale, targetVisa: target, preferredPathway: target === "not_sure" ? undefined : target } as ReadinessInput;
+  const report = runReadinessEngine(full);
+  return { report, v: buildReportView({ report, locale, profile: { name: "Test Persona", occupation: full.occupation, occupationRaw: full.occupation, englishLevel: full.englishLevel, age: String(full.age) }, dateText: "", ...extra }) };
+};
+const blocks = (v: ReportView, id: string) => v.sections.find((s) => s.id === id)?.blocks ?? [];
+const visaBlocks = (v: ReportView, needle: string) => {
+  const vb = blocks(v, "visas");
+  const i = vb.findIndex((b) => b.kind === "heading" && b.text.includes(needle));
+  const out: Array<{ headers: string[]; rows: string[][] }> = [];
+  for (let j = i + 2; i >= 0 && j < vb.length && vb[j].kind !== "heading"; j++) {
+    const b = vb[j];
+    if (b.kind === "table") out.push({ headers: b.headers, rows: b.rows });
+  }
+  return out;
+};
+const figureTable = (v: ReportView, needle: string) => visaBlocks(v, needle).find((x) => /^(Your figure|Sizin rakamınız|您的数字)$/.test(x.headers[1]));
+const otherTable = (v: ReportView, needle: string) => visaBlocks(v, needle).find((x) => !/^(Your figure|Sizin rakamınız|您的数字)$/.test(x.headers[1]));
+
+const STATUS = {
+  en: ["Information entered", "Not entered", "Not collected by the form"],
+  tr: ["Bilgi girildi", "Girilmedi", "Formda toplanmıyor"],
+  "zh-Hans": ["已填写信息", "未填写", "表单未收集"],
+} as const;
+const OLD_STATUS = /^(Provided|Cannot determine|Not provided|Girildi|Belirlenemiyor|已提供|无法判断)$/;
+const VERDICT = /\b(eligible|eligibility|meets?|met|qualif(?:y|ies|ied)|pass(?:es|ed)?|fail(?:s|ed)?|recommend)\b|uygun|karşıl|yeterli|符合|满足|合格/i;
+
+async function main() {
+  for (const L of LOCALES) {
+    console.log(`\n==================== [${L}] ====================`);
+
+    console.log("1. numeric requirements: your figure next to the published figure; statuses renamed");
+    const v189 = viewOf(withData, L, "189").v;
+    const f189 = figureTable(v189, "189");
+    t("189: a figure table (requirement | your figure | published figure | source)", !!f189 && f189.headers.length === 4, JSON.stringify(f189?.headers));
+    const ageRow = f189?.rows.find((r) => /\(Age\)|\(Yaş\)|\(年龄\)/.test(r[0]));
+    t("189 age: your figure 28, published figure from the matrix (limit 45)", !!ageRow && ageRow[1] === "28" && ageRow[2].includes(String(TH.ageLimits["189"])), ageRow?.join(" | "));
+    const ptsRow = f189?.rows.find((r) => r[2].includes(String(TH.minimumPoints)));
+    t("189 points: the calculated total from the entries next to the published minimum", !!ptsRow && /^\d+ /.test(ptsRow[1]) && ptsRow[2].includes("65"), ptsRow?.join(" | "));
+    const others = [...new Set(VISA_ORDER)].flatMap((k) => {
+      const needle = { "500": "500", "485": "485", "482": "482", "186DE": "Direct Entry", "186TRT": "Temporary Residence Transition", "189": "189", "190": "190", "491": "491", "820": "820" }[k];
+      const vv = viewOf(withData, L, "not_sure").v;
+      const x = otherTable(vv, needle);
+      return x ? x.rows : [];
+    });
+    const labels = others.map((r) => r[3]);
+    t("other rows: only the three information statuses", labels.length > 10 && labels.every((x) => (STATUS[L] as readonly string[]).includes(x)), [...new Set(labels)].join(" | "));
+    t("no row says Provided / Cannot determine / Not provided", !others.some((r) => OLD_STATUS.test(r[3])));
+    const allFigureRows = VISA_ORDER.flatMap((k) => figureTable(viewOf(withData, L, "not_sure").v, { "500": "500", "485": "485", "482": "482", "186DE": "Direct Entry", "186TRT": "Temporary Residence Transition", "189": "189", "190": "190", "491": "491", "820": "820" }[k])?.rows ?? []);
+    t("numeric rows carry no status column at all", allFigureRows.length > 0 && allFigureRows.every((r) => r.length === 4));
+
+    const nsView = viewOf(withData, L, "not_sure").v;
+    const de = figureTable(nsView, "Direct Entry");
+    const exp = de?.rows.find((r) => /Years of work experience|İş deneyimi yılı|工作经验年数/.test(r[0]));
+    t("186 Direct Entry experience: 3 + 1 = 4 years (breakdown) next to the published 3 years", !!exp && exp[1].startsWith(yearsText(4, L)) && exp[2] === yearsText(3, L), exp?.join(" | "));
+    const sal = de?.rows.find((r) => /Annual salary|Yıllık maaş|年薪/.test(r[0]));
+    t("186 Direct Entry salary: AUD 90,000 next to the CSIT figure from the matrix", !!sal && sal[1].includes("90,000") && sal[2].includes(TH.CSIT.value.toLocaleString("en-AU")), sal?.join(" | "));
+
+    console.log("2. 482 Specialist Skills uses the SSIT");
+    const f482 = figureTable(nsView, "482");
+    const ss = f482?.rows.find((r) => /Specialist Skills/.test(r[0]));
+    const cs = f482?.rows.find((r) => /Core Skills/.test(r[0]) && /CSIT/.test(r[2]));
+    t("482 Specialist Skills row: published figure is the SSIT from the matrix", !!ss && ss[2].includes(TH.SSIT.value.toLocaleString("en-AU")) && ss[2].includes("SSIT"), ss?.join(" | "));
+    t("482 Specialist Skills row: its requirement text names the SSIT, never the CSIT", !!ss && /Specialist Skills Income Threshold \(SSIT\)|SSIT/.test(ss[0]) && !/CSIT|Core Skills Income Threshold/.test(ss[0]), ss?.[0]);
+    t("482 Core Skills row keeps the CSIT", !!cs && cs[2].includes(TH.CSIT.value.toLocaleString("en-AU")), cs?.join(" | "));
+    t("SSIT and CSIT differ (the two rows are not the same figure)", !!ss && !!cs && ss[2] !== cs[2]);
+
+    console.log("7. trivial rows, plurals");
+    const v500 = visaBlocks(nsView, "500");
+    t("subclass 500: no age row (\"6 years or older\")", !v500.flatMap((x) => x.rows).some((r) => /6 years or older|6 yaş veya üzeri|年满 6 岁/.test(r[0])));
+    t("yearsText: 1 year / 2 years (en), no inflection in tr / zh", yearsText(1, "en") === "1 year" && yearsText(2, "en") === "2 years" && yearsText(1, "tr") === "1 yıl" && yearsText(1, "zh-Hans") === "1 年");
+    const oneYear = viewOf({ ...withData, onshoreExperienceYears: 1, offshoreExperienceYears: 0 } as ReadinessInput, L, "186");
+    const oneRow = figureTable(oneYear.v, "Direct Entry")?.rows.find((r) => /Years of work experience|İş deneyimi yılı|工作经验年数/.test(r[0]));
+    t("one year of experience reads \"1 year\", not \"1 years\"", !!oneRow && oneRow[1].startsWith(yearsText(1, L)) && !/\b1 years\b/.test(oneRow[1]), oneRow?.join(" | "));
+
+    console.log("3. at a glance");
+    const ids = nsView.sections.map((s) => s.id);
+    t("the glance section comes right after Your details", ids[0] === "details" && ids[1] === "glance", ids.slice(0, 3).join(","));
+    const glanceTable = blocks(nsView, "glance").find((b) => b.kind === "table");
+    const g1 = glanceTable && glanceTable.kind === "table" ? glanceTable : undefined;
+    t("one row per visa, nine rows, columns: visa | entered | not entered | not collected | figures", !!g1 && g1.rows.length === 9 && g1.headers.length === 5);
+    const firstCols = (x: ReportView) => ((blocks(x, "glance").find((b) => b.kind === "table") as { rows: string[][] }).rows).map((r) => r[0]);
+    const other = viewOf({ ...base, age: "44", englishLevel: "competent", qualificationLevel: "Bachelor" } as ReadinessInput, L, "491").v;
+    t("the order is fixed: the same visas in the same order whatever the target or the data", JSON.stringify(firstCols(nsView)) === JSON.stringify(firstCols(other)) && JSON.stringify(firstCols(nsView)) === JSON.stringify(VISA_ORDER.map((k) => visaName(k, L))));
+    const infos = buildVisaInfos(runReadinessEngine({ ...withData, locale: L, targetVisa: "not_sure" } as ReadinessInput), "not_sure", new Map(), L);
+    const gl = buildGlance(infos, L);
+    t("counts add up to the visa's requirement rows", gl.rows.every((r, i) => Number(r[1]) + Number(r[2]) + Number(r[3]) === infos.find((x) => x.title === r[0])!.requirements.length && i >= 0));
+    const glanceText = JSON.stringify(blocks(nsView, "glance"));
+    t("no verdict wording (eligible / met / meets / qualifies / recommend) in the glance section", !VERDICT.test(glanceText.replace(/“[^”]*”/g, "")), glanceText.match(VERDICT)?.[0]);
+    t("no colour or pass/fail marker in the glance blocks", !/colou?r|✓|✔|✗|✘|🟢|🔴|🟡|pass|fail/i.test(glanceText));
+    t("the figures column puts your figure next to the published figure", !!g1 && g1.rows.some((r) => /28/.test(r[4]) && /45/.test(r[4])), g1?.rows[5]?.[4]);
+
+    console.log("4. invitation levels and history");
+    const ov = visaBlocks; void ov;
+    const invLevel = blocks(nsView, "visas").flatMap((b) => (b.kind === "kv" ? b.rows : [])).filter(([k]) => /Recent invitation level|Son davet seviyesi|近期邀请分/.test(k));
+    t("every recent invitation level is labelled inline as an estimate with its date", invLevel.length === 3 && invLevel.every(([k, val]) => /estimate|tahmin|估算/i.test(k) && /(Estimate from our trend data|Trend verilerimizden tahmin|根据我们趋势数据的估算).*2026-04-30|2026-04-30/.test(val)), JSON.stringify(invLevel));
+    const now = new Date("2026-10-08T00:00:00Z");
+    const mk = (date: string, lowestPoints: number | null) => ({ id: date, date, visaSubclass: "189", visaName: "x", invitations: 100, lowestPoints, notes: null, isEstimated: false, source: "Home Affairs" });
+    const mixed = buildInvitationInfo(L, now, { lastUpdated: "2026-09-01", rounds: [mk("2025-01-15", 85), mk("2026-09-01", 90), mk("2026-09-02", null)] });
+    t("rows without a lowest-points figure are dropped", mixed.rows.length === 2 && mixed.rows.every((r) => /^\d+$/.test(r[3])));
+    t("a round older than 12 months says so", /12/.test(mixed.rows[0][0]) && mixed.rows[0][0].startsWith("2025-01-15") && !mixed.rows[1][0].includes("(") && mixed.ageNote.length > 0, mixed.rows[0][0]);
+    const none = buildInvitationInfo(L, now, { lastUpdated: "2026-09-01", rounds: [mk("2026-09-02", null)] });
+    t("nothing left: no rows (the table is left out) and the section says so", none.rows.length === 0 && none.emptyNote.length > 10);
+    const stale = buildInvitationInfo(L, now, { lastUpdated: "2025-06-01", rounds: [mk("2025-06-01", 80)] });
+    t("data last updated more than 12 months ago is stated", stale.ageNote.includes("2025-06-01"));
+    const invBlocks = blocks(nsView, "invitations");
+    t("the live data has no lowest-points figures: the section carries no table", !invBlocks.some((b) => b.kind === "table") && invBlocks.some((b) => b.kind === "text" && b.text === buildInvitationInfo(L, new Date()).emptyNote));
+
+    console.log("5. assessing-authority fees");
+    const costs = blocks(nsView, "costs");
+    const authIdx = costs.findIndex((b) => b.kind === "heading" && /Assessing authority|değerlendirme kurumu|评估机构/.test(b.text));
+    const auth = costs[authIdx + 2];
+    t("a table with Fee excl. GST and Fee incl. GST columns", auth?.kind === "table" && /excl|hariç|不含/i.test(auth.headers[1]) && /incl|dahil|含 GST/i.test(auth.headers[2]), auth?.kind === "table" ? auth.headers.join(" | ") : "no table");
+    if (auth?.kind === "table") {
+      t("one row per pathway (no pathway twice)", new Set(auth.rows.map((r) => r[0])).size === auth.rows.length);
+      t("no duplicate \"line in the cost data (indicative estimate)\" row", !auth.rows.some((r) => /line in the cost data|maliyet verisindeki satır|费用数据中的条目/.test(r[0])));
+      const post = auth.rows.find((r) => r[1].includes("1,136"));
+      t("ACS Post Australian Study: AUD 1,136 excl. GST and AUD 1,249.60 incl. GST in their columns", !!post && post[1].includes("1,136") && post[2].includes("1,249.60"), JSON.stringify(post));
+    }
+
+    console.log("6. state notes");
+    const stateSection = blocks(nsView, "states").filter((b) => b.kind === "kv");
+    const nsw = stateSection.find((b) => b.kind === "kv" && b.rows.some(([, val]) => /Skilled Nominated visa \(Subclass 190\)/.test(val)));
+    const condText = nsw && nsw.kind === "kv" ? nsw.rows.filter(([k]) => /Published conditions|Yayımlanmış koşullar|已公布的条件| /.test(k)).map(([, val]) => val).join("\n") : "";
+    t("NSW: the sentences that only repeat the summary (closed for 2025-26, already submitted continue) appear once", L !== "en" || ((condText.match(/continue to be assessed/g) ?? []).length === 1 && !/Both the Skilled Nominated \(190\) and Skilled Work Regional \(491\) programs are closed/.test(condText)), condText.slice(0, 200));
+    const flagged = (x: ReportView) => x.sections.find((s) => s.id === "states")!.blocks.filter((b) => b.kind === "kv" && b.rows.some(([, val]) => /may have changed|değişmiş olabilir|可能已变化/.test(val))).length;
+    t("viewed 16 days after the checks: no state is flagged", flagged(viewOf(withData, L, "not_sure", { asOf: new Date("2026-10-08T00:00:00Z") }).v) === 0);
+    t("viewed 60 days after the checks: all eight states say data may have changed since", flagged(viewOf(withData, L, "not_sure", { asOf: new Date("2026-11-30T00:00:00Z") }).v) === 8);
+  }
+
+  console.log("\n6. unit checks (language independent)");
+  t("stateDataIsStale: exactly 30 days is not stale, 31 is", !stateDataIsStale("2026-09-22", new Date("2026-10-22T00:00:00Z")) && stateDataIsStale("2026-09-22", new Date("2026-10-23T00:00:00Z")));
+  const nswRule = getStateRule("NSW")!;
+  t("repeatsSummary: a sentence that restates the summary is a repeat", repeatsSummary(nswRule.keyFacts[0], nswRule.note));
+  t("repeatsSummary: a sentence with its own figures is kept", !repeatsSummary("Subclass 190 residency basis: working 20+ hrs/week in NSW in the nominated occupation, OR 6+ months continuous NSW residence.", nswRule.note));
+  t("repeatsSummary: a negated sentence is not a repeat of an affirmative summary", !repeatsSummary("No nomination fee figure is published by the state.", "Nomination fee figure is published by the state."));
+  t("docs/state-recheck-2026-27.md lists all eight states and their source files", existsSync("docs/state-recheck-2026-27.md") && ["ACT", "NSW", "NT", "QLD", "SA", "TAS", "VIC", "WA"].every((c) => readFileSync("docs/state-recheck-2026-27.md", "utf8").includes(`## ${c}`)));
+
+  console.log("\n7. rendered PDFs");
+  const rendered = await renderPersonaPdfTexts({ a: { ...withData, targetVisa: "not_sure" } as ReadinessInput, b: { ...REVIEW_PERSONAS["offshore-se-in"], onshoreExperienceYears: 1 } as ReadinessInput }, LOCALES);
+  for (const r of rendered) {
+    t(`[${r.id} ${r.locale}] no "We are in Beta" / Beta feedback line`, !/we are in beta|beta surecindeyiz|Beta 阶段|Help us improve/i.test(r.text));
+    t(`[${r.id} ${r.locale}] no "1 years"`, !/\b1 years\b/.test(r.text));
+    t(`[${r.id} ${r.locale}] the glance section and the figure columns are in the PDF`, new RegExp(({ en: "At a glance", tr: "Bir bakışta", "zh-Hans": "一览" } as Record<string, string>)[r.locale]).test(r.text) && new RegExp(({ en: "Published figure", tr: "Yayımlanmış rakam", "zh-Hans": "已公布的数字" } as Record<string, string>)[r.locale]).test(r.text));
+    t(`[${r.id} ${r.locale}] the status words "Provided" / "Cannot determine" are gone from the visa tables`, !/\n(Provided|Cannot determine|Belirlenemiyor|无法判断)\n/.test(r.text));
+  }
+
+  console.log(`\n${failures === 0 ? "✅ ALL CHECKS PASSED" : `❌ ${failures} CHECK(S) FAILED`}`);
+  process.exitCode = failures === 0 ? 0 : 1;
+}
+main().catch((e) => {
+  console.error(e);
+  process.exitCode = 1;
+});

@@ -8,10 +8,12 @@ import feeProvenance from "@/src/data/fee-provenance.json";
 import subclass186 from "@/src/data/visas/subclass-186.json";
 import visaDetails from "@/src/data/visa-details.json";
 import visaFees from "@/src/data/visa-fees.json";
+import visaGatesData from "@/src/data/visa-gates.json";
+import visaTrends from "@/src/data/visa-trends.json";
 import { publishedRequirements } from "@/lib/readiness/visa-gates";
 import type { Locale, ReadinessReport } from "@/lib/readiness/types";
 import type { TargetVisa } from "@/lib/readiness/target-visa";
-import { FactTag, RequirementStatus, T, factLabel, money, statusLabel } from "./report-text";
+import { FactTag, RequirementStatus, T, factLabel, money, statusLabel, yearsText } from "./report-text";
 
 export type VisaKey = "500" | "485" | "482" | "186DE" | "186TRT" | "189" | "190" | "491" | "820";
 export const VISA_ORDER: VisaKey[] = ["500", "485", "482", "186DE", "186TRT", "189", "190", "491", "820"];
@@ -127,7 +129,9 @@ export function processingText(k: VisaKey, l: Locale): string {
 
 // ── requirement rows ──────────────────────────────────────────────────────────────────────────────
 
-export type RequirementRow = { requirement: string; entered: string; source: string; status: RequirementStatus; statusLabel: string };
+/** Your figure next to the published figure, for a requirement that has one (age limit, points minimum, years of experience, income threshold). */
+export type NumericFigure = { label: string; yours: string; published: string; entered: boolean };
+export type RequirementRow = { id: string; requirement: string; entered: string; source: string; status: RequirementStatus; statusLabel: string; numeric?: NumericFigure };
 
 /** The calculated points total from the applicant's entries, and the factors the form could not assess. */
 export type PointsFromEntries = { total: number; notAssessed: string[] };
@@ -137,12 +141,104 @@ const NOT_COLLECTED: Record<string, [string, string, string]> = {
   "485.eligible_degree": ["Award date: not collected by the form", "Verilme tarihi: formda toplanmıyor", "学历授予日期：表单未收集"],
 };
 
+/** Rows that carry no information worth a line (every applicant is the stated age, for one): left out of the report. */
+const TRIVIAL_REQUIREMENTS = new Set(["500.age"]);
+
+// The published figures come from the gate matrix (src/data/visa-gates.json: thresholds), never typed here.
+type Thresholds = {
+  CSIT: { value: number; effectiveFrom?: string };
+  SSIT: { value: number; effectiveFrom?: string };
+  ageLimits: Record<string, number>;
+  minimumPoints: number;
+  minimumExperienceYears: Record<string, number>;
+};
+const THRESHOLDS = (visaGatesData as unknown as { thresholds: Thresholds }).thresholds;
+
+const asNumber = (v: string | null | undefined): number | null => {
+  if (v === null || v === undefined) return null;
+  const n = Number(String(v).replace(/[^0-9.]/g, ""));
+  return String(v).replace(/[^0-9.]/g, "") !== "" && Number.isFinite(n) ? n : null;
+};
+
+const notEntered = (l: Locale) => T(l, "Not entered", "Girilmedi", "未填写");
+
+/** The numeric comparison of a gate row, or undefined when the row has no published figure. */
+function numericFigure(gateId: string, facts: Map<string, string | null>, l: Locale, points?: PointsFromEntries): NumericFigure | undefined {
+  const money0 = (n: number) => `AUD ${money(n)}`;
+  const salary = (th: { value: number; effectiveFrom?: string }, name: string): NumericFigure => {
+    const mine = asNumber(facts.get("annualSalaryAud"));
+    return {
+      label: T(l, "Annual salary", "Yıllık maaş", "年薪"),
+      yours: mine === null ? notEntered(l) : `${money0(mine)} ${T(l, "per year", "yıllık", "每年")}`,
+      published: `${money0(th.value)} ${T(l, "per year", "yıllık", "每年")} (${name}${th.effectiveFrom ? `, ${T(l, "from", "başlangıç", "自")} ${th.effectiveFrom}` : ""})`,
+      entered: mine !== null,
+    };
+  };
+  const ageRow = (limit: number, kind: "under" | "orUnder"): NumericFigure => {
+    const mine = asNumber(facts.get("age"));
+    return {
+      label: T(l, "Age", "Yaş", "年龄"),
+      yours: mine === null ? notEntered(l) : String(mine),
+      published: kind === "under" ? T(l, `under ${limit}`, `${limit} yaşından küçük`, `未满 ${limit} 岁`) : T(l, `${limit} or under`, `${limit} veya altı`, `${limit} 岁及以下`),
+      entered: mine !== null,
+    };
+  };
+  const experience = (need: number, scope: "combined" | "sponsored"): NumericFigure => {
+    const off = asNumber(facts.get("offshoreExperienceYears"));
+    const on = asNumber(facts.get("onshoreExperienceYears"));
+    const sp = asNumber(facts.get("yearsInSponsoredPosition"));
+    const label = scope === "sponsored" ? T(l, "Years under an approved sponsor", "Onaylı sponsor altında yıl", "在经批准的担保方名下的年数") : T(l, "Years of work experience", "İş deneyimi yılı", "工作经验年数");
+    if (scope === "sponsored") {
+      const mine = sp ?? on;
+      return { label, yours: mine === null ? notEntered(l) : yearsText(mine, l), published: yearsText(need, l), entered: mine !== null };
+    }
+    if (off === null && on === null) return { label, yours: notEntered(l), published: yearsText(need, l), entered: false };
+    const total = (off ?? 0) + (on ?? 0);
+    const parts = [off !== null ? `${T(l, "outside Australia", "Avustralya dışında", "澳大利亚境外")} ${yearsText(off, l)}` : "", on !== null ? `${T(l, "in Australia", "Avustralya'da", "澳大利亚境内")} ${yearsText(on, l)}` : ""].filter(Boolean).join(", ");
+    return { label, yours: `${yearsText(total, l)} (${parts})`, published: yearsText(need, l), entered: true };
+  };
+  switch (gateId) {
+    case "189.age":
+    case "190.age":
+    case "491.age":
+      return ageRow(THRESHOLDS.ageLimits[gateId.slice(0, 3)], "under");
+    case "186DE.age":
+    case "186TRT.age":
+      return ageRow(THRESHOLDS.ageLimits["186"], "under");
+    case "485.age":
+      return ageRow(THRESHOLDS.ageLimits["485"], "orUnder");
+    case "189.points":
+    case "190.points":
+    case "491.points": {
+      const published = T(l, `at least ${THRESHOLDS.minimumPoints}`, `en az ${THRESHOLDS.minimumPoints}`, `至少 ${THRESHOLDS.minimumPoints} 分`);
+      const label = T(l, "Points", "Puan", "积分");
+      if (!points) return { label, yours: notEntered(l), published, entered: false };
+      const missing = points.notAssessed.length ? `; ${points.notAssessed.join(", ")} ${T(l, "not assessed", "değerlendirilmedi", "未评估")}` : "";
+      return { label, yours: `${points.total} ${T(l, "from your entries", "girdiklerinizden", "根据您的填写")}${missing}`, published, entered: true };
+    }
+    case "186DE.experience":
+      return experience(THRESHOLDS.minimumExperienceYears["186DE"], "combined");
+    case "482CS.experience":
+      return experience(THRESHOLDS.minimumExperienceYears["482CS"], "combined");
+    case "186TRT.sponsored_employment":
+      return experience(THRESHOLDS.minimumExperienceYears["186TRT (sponsored employment)"], "sponsored");
+    case "186DE.salary":
+    case "482CS.salary":
+      return salary(THRESHOLDS.CSIT, "CSIT");
+    case "482SS.salary":
+      return salary(THRESHOLDS.SSIT, "SSIT");
+    default:
+      return undefined;
+  }
+}
+
 export function requirementRows(k: VisaKey, facts: Map<string, string | null>, l: Locale, points?: PointsFromEntries): RequirementRow[] {
   const spec = SPEC[k];
   const rows = publishedRequirements(spec.gate, spec.stream, l);
   const seen = new Set<string>();
   const out: RequirementRow[] = [];
   for (const g of rows) {
+    if (TRIVIAL_REQUIREMENTS.has(g.id)) continue;
     const label = k === "482" && g.stream ? `[${g.stream}] ${g.label}` : g.label;
     const key = `${label}|${g.citation}`;
     if (seen.has(key)) continue;
@@ -153,24 +249,20 @@ export function requirementRows(k: VisaKey, facts: Map<string, string | null>, l
       : T(l, "Not collected by the form", "Formda toplanmıyor", "表单未收集");
     let status: RequirementStatus;
     let enteredText = entered;
-    if (g.kind === "future_step" || values.length === 0) status = "cannot_determine";
+    if (g.kind === "future_step" || values.length === 0) status = "not_collected";
     else {
       const given = values.filter((x) => x.v !== null).length;
-      status = given === values.length ? "provided" : given === 0 ? "not_provided" : "cannot_determine";
+      status = given === values.length ? "provided" : "not_provided";
     }
     const notCollected = NOT_COLLECTED[g.id];
     if (notCollected) {
-      // The published requirement depends on a date the form does not ask for: it cannot be determined from what was entered.
-      status = "cannot_determine";
+      // The published requirement depends on a date the form does not ask for.
+      status = "not_collected";
       enteredText = `${entered}; ${T(l, ...notCollected)}`;
     }
-    if (/\.points$/.test(g.id) && points) {
-      // "At least 65 points": the calculated total from the entries, with what was not assessed. Provided: the calculation exists.
-      status = "provided";
-      const missing = points.notAssessed.length ? `; ${points.notAssessed.join(", ")} ${T(l, "not assessed", "değerlendirilmedi", "未评估")}` : "";
-      enteredText = `${points.total} ${T(l, "from your entries", "girdiklerinizden", "根据您的填写")}${missing}`;
-    }
-    out.push({ requirement: label, entered: enteredText, source: g.citation, status, statusLabel: statusLabel(status, l) });
+    const numeric = numericFigure(g.id, facts, l, points);
+    if (numeric) status = numeric.entered ? "provided" : "not_provided";
+    out.push({ id: g.id, requirement: label, entered: enteredText, source: g.citation, status, statusLabel: statusLabel(status, l), ...(numeric ? { numeric } : {}) });
   }
   return out;
 }
@@ -196,13 +288,19 @@ export type VisaLabels = {
   progression: string;
 };
 
+const TREND_DATA_DATE = (visaTrends as unknown as { generated_on: string }).generated_on;
+
+/** The inline label every recent invitation level carries: it is an estimate from trend data, with its date. */
+export const invitationEstimateLabel = (asOf: string, l: Locale) =>
+  T(l, `Estimate from our trend data, as of ${asOf}`, `Trend verilerimizden tahmin, ${asOf} itibarıyla`, `根据我们趋势数据的估算，截至 ${asOf}`);
+
 export const visaLabels = (l: Locale): VisaLabels => ({
   type: T(l, "Type", "Tür", "类型"),
   about: T(l, "Overview", "Genel bakış", "概述"),
   pointsTest: T(l, "Points test", "Puan testi", "积分测试"),
   fees: T(l, "Published charges", "Yayımlanmış ücretler", "已公布的费用"),
   processing: T(l, "Typical processing information", "Tipik işlem bilgisi", "典型处理信息"),
-  invitation: T(l, "Recent invitation level in our data", "Verilerimizdeki son davet seviyesi", "我们数据中的近期邀请分"),
+  invitation: T(l, "Recent invitation level (estimate)", "Son davet seviyesi (tahmin)", "近期邀请分（估算）"),
   progression: T(l, "Progression pattern", "İlerleme örüntüsü", "常见衔接路径"),
 });
 
@@ -231,7 +329,7 @@ export function buildVisaInfos(report: ReadinessReport, target: TargetVisa, fact
     overview.push([labels.processing, processingText(k, l)]);
     if (pointsTested) {
       const b = report.pathwayScores?.[k as "189" | "190" | "491"]?.benchmark;
-      overview.push([labels.invitation, b === null || b === undefined ? T(l, "Not available in our data", "Verilerimizde mevcut değil", "我们的数据中暂无") : `${b}${asOf ? ` (${T(l, "data as of", "veri tarihi", "数据截至")} ${asOf})` : ""}`]);
+      overview.push([labels.invitation, b === null || b === undefined ? T(l, "Not available in our data", "Verilerimizde mevcut değil", "我们的数据中暂无") : `${b} — ${invitationEstimateLabel(asOf ?? TREND_DATA_DATE, l)}`]);
     }
     if (PROGRESSION[k]) overview.push([labels.progression, T(l, ...PROGRESSION[k]!)]);
     return { key: k, selected: selected.has(k), title: visaName(k, l), overview, requirements: requirementRows(k, facts, l, pointsFromEntries(report)), tags: [] };

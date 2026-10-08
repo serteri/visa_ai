@@ -1284,7 +1284,7 @@ async function runMedicalRegistrationChecks(
     const sq = (t: string) => (locale === "zh-Hans" ? squashAll(t) : flatten(t));
     const has = (t: string) => sq(flat).includes(sq(t));
 
-    if (!has(expectedAmount)) f(`AHPRA amount not found in the PDF: "${expectedAmount}"`);
+    if (!has(expectedAmount) && !has(expectedAmount.replace(/澳元/g, "AUD"))) f(`AHPRA amount not found in the PDF: "${expectedAmount}"`);
     if (!has(expectedBreakdown)) f(`AHPRA fee breakdown + citation not found verbatim in the PDF: "${expectedBreakdown}"`);
     if (!has("effective 1 August 2026")) f('"effective 1 August 2026" citation missing from the PDF');
     for (const n of ["2,763", "1,661", "1,102"]) if (!flat.includes(n)) f(`Medical Board figure ${n} missing from the PDF`);
@@ -1399,7 +1399,8 @@ async function runNursingChecks(
     const sq = (t: string) => (locale === "zh-Hans" ? squashAll(t) : flatten(t));
     const has = (t: string) => sq(flat).includes(sq(t));
 
-    if (!has(expectedAmount)) f(`ANMAC amount not found in the PDF: "${expectedAmount}"`);
+    // The pathway rows of the authority table write the amount as "AUD n" in every language (the roadmap line used 澳元 in Chinese).
+    if (!has(expectedAmount) && !has(expectedAmount.replace(/澳元/g, "AUD"))) f(`ANMAC amount not found in the PDF: "${expectedAmount}"`);
     if (!has(anmacFeeCitation(full.fee!, locale))) f(`ANMAC fee + citation not found verbatim in the PDF: "${anmacFeeCitation(full.fee!, locale)}"`);
     // A standalone AUD 1,000 -- not the start of a range such as the RMA line's "AUD 1,000–2,500".
     if (/AUD\s*1[,.]?000\b(?!\s*[–-]\s*\d)|澳元\s*1[,.]?000\b(?!\s*[–-]\s*\d)|\b1[,.]?000\s*澳元/.test(flat)) f("PDF still shows the old AUD 1,000 placeholder");

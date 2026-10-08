@@ -13,6 +13,7 @@ type Locale = "en" | "tr" | "zh-Hans";
 /** One neutral line per section of the Visa Information Report: what it lists, nothing it concludes. */
 const SECTION_NOTE: Record<ReportSectionId, [string, string, string]> = {
   details: ["Everything you entered, labelled supplied or not provided", "Girdiğiniz her bilgi, girildi veya girilmedi olarak etiketlenir", "您填写的全部信息，标明已提供或未提供"],
+  glance: ["One row per visa: how many published requirements have information entered, and your figures next to the published figures", "Her vize için bir satır: kaç yayımlanmış gereklilik için bilgi girildiği ve rakamlarınız ile yayımlanmış rakamlar yan yana", "每种签证一行：已公布要求中有多少项已填写信息，以及您的数字与已公布数字并列"],
   points: ["The points table from your entries, with arithmetic scenarios", "Girdilerinizden puan tablosu ve aritmetik senaryolar", "根据您的填写计算的积分表及算术情景"],
   visas: ["Each visa: published requirements, charges and processing information, with sources", "Her vize: yayımlanmış gereklilikler, ücretler ve işlem bilgisi, kaynaklarıyla", "每种签证：已公布的要求、费用和处理信息及来源"],
   states: ["All eight state and territory programs as published, with the date checked", "Sekiz eyalet ve bölge programının tamamı, yayımlandığı şekliyle ve kontrol tarihiyle", "八个州和领地项目的公开信息及核对日期"],

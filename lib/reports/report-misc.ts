@@ -19,29 +19,45 @@ import { T, money } from "./report-text";
 
 // ── invitation history ─────────────────────────────────────────────────────────────────────────────
 
-type Round = { id: string; date: string; visaSubclass: string; visaName: string; invitations: number | null; lowestPoints: number | null; notes: string | null; isEstimated: boolean; source: string };
+export type Round = { id: string; date: string; visaSubclass: string; visaName: string; invitations: number | null; lowestPoints: number | null; notes: string | null; isEstimated: boolean; source: string };
 const ROUNDS = (eoiRounds as unknown as { lastUpdated: string; rounds: Round[] });
 
-export type InvitationInfo = { intro: string; headers: string[]; rows: string[][]; stateNote: string; note: string };
+export type InvitationInfo = { intro: string; headers: string[]; rows: string[][]; emptyNote: string; ageNote: string; stateNote: string; note: string };
 
-export function buildInvitationInfo(l: Locale): InvitationInfo {
-  const rows = ROUNDS.rounds
-    .filter((r) => !r.isEstimated)
+const MONTHS_12_MS = 365 * 24 * 60 * 60 * 1000;
+
+/**
+ * Observed rounds only. A round with no lowest-points figure says nothing about the points and is left out; when none remains the table is
+ * left out. A round older than 12 months (counted from `now`) is marked as such, and so is a data file last updated more than 12 months ago.
+ */
+export function buildInvitationInfo(l: Locale, now: Date = new Date(), data: { lastUpdated: string; rounds: Round[] } = ROUNDS): InvitationInfo {
+  const cutoff = new Date(now.getTime() - MONTHS_12_MS).toISOString().slice(0, 10);
+  const older = T(l, "older than 12 months", "12 aydan eski", "已超过 12 个月");
+  const rows = data.rounds
+    .filter((r) => !r.isEstimated && r.lowestPoints !== null)
     .sort((a, b) => (a.date === b.date ? a.visaSubclass.localeCompare(b.visaSubclass) : a.date.localeCompare(b.date)))
     .map((r) => [
-      r.date,
+      r.date < cutoff ? `${r.date} (${older})` : r.date,
       T(l, `Subclass ${r.visaSubclass}`, `Subclass ${r.visaSubclass}`, `${r.visaSubclass} 子类`),
       r.invitations === null ? "—" : r.invitations.toLocaleString("en-AU"),
-      r.lowestPoints === null ? T(l, "not recorded", "kaydedilmedi", "未记录") : String(r.lowestPoints),
+      String(r.lowestPoints),
       r.notes ?? "—",
-      `${r.source}; ${T(l, "data dated", "veri tarihi", "数据日期")} ${ROUNDS.lastUpdated}`,
+      `${r.source}; ${T(l, "data dated", "veri tarihi", "数据日期")} ${data.lastUpdated}`,
     ]);
+  const dataOld = data.lastUpdated < cutoff;
+  const anyOld = rows.some((r) => r[0].includes(older));
   return {
-    intro: T(l, "SkillSelect invitation rounds recorded in our data, as published by the Department of Home Affairs. Only observed rounds are listed: no forecast, estimate or waiting time is shown.", "Verilerimizde kayıtlı SkillSelect davet turları, İçişleri Bakanlığı tarafından yayımlandığı şekliyle. Yalnızca gözlenen turlar listelenir: tahmin, öngörü veya bekleme süresi gösterilmez.", "我们数据中记录的 SkillSelect 邀请轮次，按澳大利亚内政部公布内容。仅列出已观察到的轮次：不显示预测、估算或等待时间。"),
+    intro: T(l, "SkillSelect invitation rounds recorded in our data, as published by the Department of Home Affairs. Only observed rounds with a recorded lowest-points figure are listed: no forecast, estimate or waiting time is shown.", "Verilerimizde kayıtlı SkillSelect davet turları, İçişleri Bakanlığı tarafından yayımlandığı şekliyle. Yalnızca en düşük puanı kayıtlı gözlenen turlar listelenir: tahmin, öngörü veya bekleme süresi gösterilmez.", "我们数据中记录的 SkillSelect 邀请轮次，按澳大利亚内政部公布内容。仅列出已观察到且记录了最低受邀分数的轮次：不显示预测、估算或等待时间。"),
     headers: [T(l, "Round date", "Tur tarihi", "轮次日期"), T(l, "Visa", "Vize", "签证"), T(l, "Invitations", "Davet sayısı", "邀请数"), T(l, "Lowest points invited", "Davet edilen en düşük puan", "最低受邀分数"), T(l, "Notes", "Notlar", "备注"), T(l, "Source and date", "Kaynak ve tarih", "来源与日期")],
     rows,
+    emptyNote: T(l, "No invitation round with a recorded lowest-points figure is available in our data, so no table is shown.", "Verilerimizde en düşük puanı kayıtlı bir davet turu bulunmadığından tablo gösterilmiyor.", "我们的数据中没有记录了最低受邀分数的邀请轮次，因此不显示表格。"),
+    ageNote: dataOld
+      ? T(l, `Our round data was last updated on ${data.lastUpdated}, which is more than 12 months ago.`, `Tur verilerimiz en son ${data.lastUpdated} tarihinde güncellendi; bu 12 aydan eskidir.`, `我们的轮次数据最后更新于 ${data.lastUpdated}，已超过 12 个月。`)
+      : anyOld
+        ? T(l, "Rounds marked “older than 12 months” are more than 12 months before this report.", "“12 aydan eski” işaretli turlar bu rapordan 12 aydan fazla önceye aittir.", "标注“已超过 12 个月”的轮次早于本报告日期 12 个月以上。")
+        : "",
     stateNote: T(l, "State and territory invitation, allocation and registration information is listed with each state or territory above.", "Eyalet ve bölge davet, kontenjan ve kayıt bilgileri yukarıda her eyalet veya bölgenin altında listelenmiştir.", "各州和领地的邀请、配额和登记信息列于上方各州或领地条目下。"),
-    note: T(l, "The recent invitation level shown for each points-tested visa is the figure recorded in our data for the occupation entered, with its data date.", "Her puan testli vize için gösterilen son davet seviyesi, girilen meslek için verilerimizde kayıtlı rakamdır ve veri tarihiyle verilmiştir.", "每种积分测试签证所示的近期邀请分是我们数据中为所填职业记录的数字，并附数据日期。"),
+    note: T(l, "The recent invitation level shown for each points-tested visa is an estimate from our trend data for the occupation entered, with its data date; it is not a published round result.", "Her puan testli vize için gösterilen son davet seviyesi, girilen meslek için trend verilerimizden bir tahmindir ve veri tarihiyle verilmiştir; yayımlanmış bir tur sonucu değildir.", "每种积分测试签证所示的近期邀请分是根据我们趋势数据对所填职业作出的估算，并附数据日期；它不是已公布的轮次结果。"),
   };
 }
 

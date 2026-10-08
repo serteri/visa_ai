@@ -392,3 +392,13 @@ Drafts written for the paid flow and the rename, not yet reviewed by a native sp
 - Report-ready email subject and intro, paid and unpaid variants (`lib/services/report-email-copy.ts`).
 - Locale JSON keys renamed to "Vize Bilgi Raporu" / "签证信息报告" (`public/locales/{tr,zh-Hans}.json`, `public/locales/zh/common.json`).
 - Product name in the Stripe line item is English only ("Visa Information Report").
+
+## Q. Report improvements (8 Oct): machine-assisted tr / zh-Hans drafts to review
+
+- Requirement tables: "Your figure" / "Published figure"; the three information statuses ("Bilgi girildi" / "Girilmedi" / "Formda toplanmıyor"; "已填写信息" / "未填写" / "表单未收集"); figure labels (age, points, years of work experience, annual salary) and phrases such as "under 45", "at least 65", "from your entries".
+- "At a glance" section: title, introduction, column headers, note (`lib/reports/report-glance.ts`).
+- Inline estimate label for recent invitation levels ("Estimate from our trend data, as of …").
+- Invitation-history notes (no recorded lowest-points figure; "older than 12 months"; data last updated more than 12 months ago).
+- Assessing-authority fee columns ("Fee excl. GST", "Fee incl. GST", "GST not stated by the authority") and its introduction.
+- State data flag: "Data checked <date>: data may have changed since."
+- Feedback line at the end of the PDF (the Beta wording was removed).

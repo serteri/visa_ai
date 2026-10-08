@@ -42,11 +42,17 @@ const view = (input: ReadinessInput, locale: (typeof LOCALES)[number], target: s
   return { v: buildReportView({ report, locale, profile: { name: "Test Persona", occupation: full.occupation, occupationRaw: full.occupation, englishLevel: full.englishLevel }, dateText: "" }), report };
 };
 const blocks = (v: ReportView, id: string) => v.sections.find((s) => s.id === id)?.blocks ?? [];
+/** Every requirement row of a visa block (the numeric table and the other table), up to the next visa heading. */
 const reqRows = (v: ReportView, titleNeedle: string) => {
   const vb = blocks(v, "visas");
   const i = vb.findIndex((b) => b.kind === "heading" && b.text.includes(titleNeedle));
-  const tbl = vb[i + 2];
-  return tbl?.kind === "table" ? tbl.rows : [];
+  if (i < 0) return [];
+  const out: string[][] = [];
+  for (let j = i + 2; j < vb.length && vb[j].kind !== "heading"; j++) {
+    const b = vb[j];
+    if (b.kind === "table") out.push(...b.rows);
+  }
+  return out;
 };
 
 async function main() {
@@ -99,12 +105,12 @@ async function main() {
         const notAssessed = (pe.breakdown ?? []).filter((b) => b.status === "not_assessed");
         if (notAssessed.length) sawNotAssessed++;
         const from = L === "tr" ? "girdiklerinizden" : L === "zh-Hans" ? "根据您的填写" : "from your entries";
-        t(`[${pid} ${L}] ${sub}: the points requirement shows "${pe.estimatedPoints} ${from}${notAssessed.length ? "; ... not assessed" : ""}" with status Provided`, row[1].startsWith(`${pe.estimatedPoints} ${from}`) && (notAssessed.length === 0 || row[1].includes(notAssessed[0].label)) && row[3] === { en: "Provided", tr: "Girildi", "zh-Hans": "已提供" }[L], row.join(" | "));
+        t(`[${pid} ${L}] ${sub}: the points requirement shows "${pe.estimatedPoints} ${from}${notAssessed.length ? "; ... not assessed" : ""}" next to the published minimum 65 (no status)`, row[1].startsWith(`${pe.estimatedPoints} ${from}`) && (notAssessed.length === 0 || row[1].includes(notAssessed[0].label)) && /65/.test(row[2]), row.join(" | "));
       }
 
       // 5. 485 award date
       const r485 = reqRows(view(persona, L, "485").v, "(subclass 485)").concat(reqRows(view(persona, L, "485").v, "485 子类")).find((r) => /6 months|6 ay|6 个月/.test(r[0]) || /eligible degree|uygun.*derece|合资格学历/i.test(r[0]));
-      t(`[${pid} ${L}] 485 eligible degree (award date): status Cannot determine, the missing date is stated`, !!r485 && r485[3] === { en: "Cannot determine", tr: "Belirlenemiyor", "zh-Hans": "无法判断" }[L] && /not collected|toplanmıyor|未收集/.test(r485[1]), r485?.join(" | ") ?? "row not found");
+      t(`[${pid} ${L}] 485 eligible degree (award date): status Not collected by the form, the missing date is stated`, !!r485 && r485[3] === { en: "Not collected by the form", tr: "Formda toplanmıyor", "zh-Hans": "表单未收集" }[L] && /not collected|toplanmıyor|未收集/.test(r485[1]), r485?.join(" | ") ?? "row not found");
     }
   }
   t("the profiles exercised an item with a severity prefix (partnered, second instalment)", sawSeverityItem > 0, String(sawSeverityItem));

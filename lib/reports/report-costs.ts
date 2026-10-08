@@ -75,29 +75,52 @@ export function buildCostsInfo(report: ReadinessReport, occupationRaw: string | 
     return [visaName(k, l), c.main === null ? "—" : `AUD ${money(c.main)}`, f(c.partner), f(c.child), f(c.second), c.verified || T(l, "per the subclass 186 data file", "subclass 186 veri dosyasına göre", "据 186 子类数据文件")];
   });
 
-  // 2. The assessing authority's fees, pathway by pathway.
+  // 2. The assessing authority's fees, one row per pathway, with the amounts the authority states excluding GST and including GST. A figure for
+  //    which the authority states neither is shown in its own column; nothing is converted or assumed here.
   const authority: string[][] = [];
   const resolved = occupationRaw ? resolveAssessingAuthority(occupationRaw) : undefined;
   const auth = resolved?.authority;
+  const skillsItem = items.find((i) => i.kind === "skills_assessment");
   if (auth) {
     const who = `${auth.authorityName} (${auth.authorityId})`;
     const src = `${auth.sourceDocument ?? ""}${auth.lastVerified ? ` — ${checked} ${auth.lastVerified}` : ""}`.trim() || who;
     for (const p of auth.pathways ?? []) {
+      const excl: string[] = [];
+      const incl: string[] = [];
+      const unstated: string[] = [];
+      const notes: string[] = [];
+      // A pathway with one fee item needs no item name in the cell (it is the pathway's name).
+      const oneItem = new Set((p.fees ?? []).filter((f) => (f.amountAUD ?? f.amountCAD) !== undefined).map((f) => resolveLocalized(f.label, "en"))).size <= 1;
       for (const fee of p.fees ?? []) {
         const amount = fee.amountAUD ?? fee.amountCAD;
         if (amount === undefined) continue;
-        const proc = p.processingTimeWeeks?.label ? resolveLocalized(p.processingTimeWeeks.label, l) : p.processingTimeWeeks?.standard !== undefined ? T(l, `${p.processingTimeWeeks.standard} weeks`, `${p.processingTimeWeeks.standard} hafta`, `${p.processingTimeWeeks.standard} 周`) : p.processingNotStated ? resolveLocalized(p.processingNotStated, l) : T(l, "not stated by the authority", "kurum tarafından belirtilmemiş", "机构未说明");
-        const note = [fee.estimated ? T(l, "estimate pending verification", "doğrulama bekleyen tahmin", "估算，待核实") : "", fee.note ? resolveLocalized(fee.note, l) : ""].filter(Boolean).join("; ");
-        authority.push([`${who}: ${resolveLocalized(p.name, l)}`, `${resolveLocalized(fee.label, l)}: AUD ${money(amount)}`, proc, note || "—", src]);
+        const label = resolveLocalized(fee.label, l);
+        const noteEn = fee.note ? resolveLocalized(fee.note, "en") : "";
+        const pending = fee.estimated ? ` (${T(l, "estimate pending verification", "doğrulama bekleyen tahmin", "估算，待核实")})` : "";
+        const line = (n: number) => `${oneItem ? "" : `${label}: `}AUD ${money(n)}${pending}`;
+        const inclInNote = noteEn.match(/AUD\s*([\d,]+(?:\.\d+)?)\s*incl\.?\s*GST/i);
+        if (/^\s*excl\.?\s*GST/i.test(noteEn)) {
+          excl.push(line(amount));
+          if (inclInNote) incl.push(line(Number(inclInNote[1].replace(/,/g, ""))));
+        } else if (/incl\.?\s*GST/i.test(noteEn)) incl.push(line(amount));
+        else unstated.push(line(amount));
+        const extra = fee.note ? resolveLocalized(fee.note, l) : "";
+        if (extra && !/^\s*(excl|incl)\.?\s*GST/i.test(noteEn) && !notes.includes(extra)) notes.push(extra);
       }
+      if (excl.length + incl.length + unstated.length === 0) continue;
+      const proc = p.processingTimeWeeks?.label ? resolveLocalized(p.processingTimeWeeks.label, l) : p.processingTimeWeeks?.standard !== undefined ? T(l, `${p.processingTimeWeeks.standard} weeks`, `${p.processingTimeWeeks.standard} hafta`, `${p.processingTimeWeeks.standard} 周`) : p.processingNotStated ? resolveLocalized(p.processingNotStated, l) : T(l, "not stated by the authority", "kurum tarafından belirtilmemiş", "机构未说明");
+      const cell = (xs: string[]) => (xs.length ? [...new Set(xs)].join("\n") : "—");
+      authority.push([`${who}: ${resolveLocalized(p.name, l)}`, cell(excl), cell(incl), cell(unstated), proc, [...notes, src].join("; ")]);
     }
   }
-  // The roadmap's own row for the entered occupation when the registry carries no priced pathway (e.g. a registration body's fees).
-  const skillsItem = items.find((i) => i.kind === "skills_assessment");
-  if (skillsItem && authority.length > 0) {
-    authority.unshift([`${skillsItem.category} — ${T(l, "line in the cost data (occupation and passport as entered)", "maliyet verisindeki satır (girilen meslek ve pasaport)", "费用数据中的条目（按所填职业和护照）")}`, skillsItem.amountLabel, "—", "—", sourceOfItem(skillsItem, l)]);
-  }
-  if (authority.length === 0 && skillsItem) authority.push([skillsItem.category, skillsItem.amountLabel, "—", cleanNote(skillsItem.explanation) || "—", sourceOfItem(skillsItem, l)]);
+  // The roadmap's own row (an "indicative estimate" line) is kept only when it says something the pathway rows do not: when its figure already
+  // appears in them it is a duplicate and is left out.
+  const figuresOf = (t: string) => (t.match(/\d[\d,]*(?:\.\d+)?/g) ?? []).map((x) => x.replace(/,/g, ""));
+  const shown = new Set(authority.flatMap((r) => figuresOf(r.slice(1, 4).join(" "))));
+  const skillsFigures = skillsItem ? figuresOf(skillsItem.amountLabel).filter((x) => Number(x) >= 100) : [];
+  if (skillsItem && authority.length > 0 && skillsFigures.length > 0 && !skillsFigures.every((x) => shown.has(x)))
+    authority.unshift([`${skillsItem.category} — ${T(l, "line in the cost data (occupation and passport as entered)", "maliyet verisindeki satır (girilen meslek ve pasaport)", "费用数据中的条目（按所填职业和护照）")}`, "—", "—", skillsItem.amountLabel, "—", sourceOfItem(skillsItem, l)]);
+  if (authority.length === 0 && skillsItem) authority.push([skillsItem.category, "—", "—", skillsItem.amountLabel, "—", [cleanNote(skillsItem.explanation), sourceOfItem(skillsItem, l)].filter(Boolean).join("; ")]);
 
   // 3. Every other item of the cost data (English tests, health, police, translations, optional professional services, registration steps).
   const itemRows: string[][] = [];
@@ -151,9 +174,9 @@ export function buildCostsInfo(report: ReadinessReport, occupationRaw: string | 
     govNote: T(l, "Source: Department of Home Affairs fee schedule effective 1 July 2026, as recorded in our fee data. The second instalment applies to applicants 18+ without functional English.", "Kaynak: 1 Temmuz 2026 itibarıyla geçerli İçişleri Bakanlığı ücret tarifesi, ücret verilerimizde kayıtlı olduğu şekliyle. İkinci taksit, işlevsel İngilizcesi olmayan 18 yaş üstü başvuru sahipleri için geçerlidir.", "来源：自 2026 年 7 月 1 日起生效的内政部收费表，按我们费用数据中的记录。第二期费用适用于无功能性英语的 18 岁以上申请人。"),
     authorityTitle: T(l, "Assessing authority fees by pathway", "Yolak bazında değerlendirme kurumu ücretleri", "按评估路径列出的评估机构费用"),
     authorityIntro: auth
-      ? T(l, `The authority listed for the occupation you entered: ${auth.authorityName}. Fees are as the authority publishes them, with its GST note.`, `Girdiğiniz meslek için listelenen kurum: ${auth.authorityName}. Ücretler, kurumun yayımladığı şekliyle, GST notuyla birlikte verilmiştir.`, `您填写的职业所列评估机构：${auth.authorityName}。费用按机构公布的内容列出，并附其 GST 说明。`)
+      ? T(l, `The authority listed for the occupation you entered: ${auth.authorityName}. Fees are as the authority publishes them: one row per pathway, in the column for the GST basis the authority states.`, `Girdiğiniz meslek için listelenen kurum: ${auth.authorityName}. Ücretler kurumun yayımladığı şekliyle verilir: yolak başına bir satır, kurumun belirttiği KDV (GST) esasına göre sütunda.`, `您填写的职业所列评估机构：${auth.authorityName}。费用按机构公布内容列出：每个评估路径一行，按机构所说明的 GST 口径放入相应列。`)
       : T(l, "No assessing authority could be listed for the occupation entered.", "Girilen meslek için bir değerlendirme kurumu listelenemedi.", "无法为所填职业列出评估机构。"),
-    authorityHeaders: [T(l, "Authority and pathway", "Kurum ve yolak", "机构与评估路径"), T(l, "Fee", "Ücret", "费用"), T(l, "Processing time as published", "Yayımlanmış işlem süresi", "已公布的处理时间"), T(l, "Note (GST, estimate status)", "Not (GST, tahmin durumu)", "说明（GST、估算状态）"), T(l, "Source and date", "Kaynak ve tarih", "来源与日期")],
+    authorityHeaders: [T(l, "Authority and pathway", "Kurum ve yolak", "机构与评估路径"), T(l, "Fee excl. GST", "Ücret (KDV hariç, excl. GST)", "费用（不含 GST）"), T(l, "Fee incl. GST", "Ücret (KDV dahil, incl. GST)", "费用（含 GST）"), T(l, "GST not stated by the authority", "KDV durumu kurum tarafından belirtilmemiş", "机构未说明是否含 GST"), T(l, "Processing time", "İşlem süresi", "处理时间"), T(l, "Note and source", "Not ve kaynak", "说明与来源")],
     authority,
     itemsTitle: T(l, "Other listed items", "Listelenen diğer kalemler", "其他列出的项目"),
     itemsHeaders: [T(l, "Item", "Kalem", "项目"), T(l, "Amount", "Tutar", "金额"), T(l, "Type and source", "Tür ve kaynak", "类型与来源"), T(l, "Date", "Tarih", "日期")],

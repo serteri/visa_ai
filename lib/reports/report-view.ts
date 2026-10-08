@@ -22,6 +22,7 @@ import type { Locale, ReadinessInput, ReadinessReport } from "@/lib/readiness/ty
 import type { Block, ReportSection } from "./report-blocks";
 import { buildCostsInfo } from "./report-costs";
 import { agentStatement, buildDocumentsInfo, buildInvitationInfo, buildProcessInfo, buildSources, sourcesHeaders } from "./report-misc";
+import { buildGlance } from "./report-glance";
 import { buildPointsInfo } from "./report-points";
 import { buildStateInfos } from "./report-states";
 import { T, factLabel, tagsFor } from "./report-text";
@@ -80,6 +81,8 @@ export type ReportViewArgs = {
   profile: ReportViewProfile;
   /** The date shown on the cover and the result page ("Last updated <date>" / the generation date). */
   dateText: string;
+  /** The date the report is viewed (drives "older than 12 months" and "data checked more than 30 days ago"); default: now. */
+  asOf?: Date;
 };
 
 export type ReportView = {
@@ -95,6 +98,7 @@ const table = (headers: string[], rows: string[][], widths: number[]): Block => 
 
 export function buildReportView(args: ReportViewArgs): ReportView {
   const { report, locale: l, profile, dateText } = args;
+  const asOf = args.asOf ?? new Date();
   const tags = tagsFor(l);
   const target = targetVisaOf({ targetVisa: report.targetVisa });
   const occupationRaw = profile.occupationRaw ?? profile.occupation;
@@ -126,6 +130,15 @@ export function buildReportView(args: ReportViewArgs): ReportView {
     ],
   });
 
+  // 2b. At a glance: one row per visa in the fixed order, counts of what is entered / not entered / not collected, and the numeric figures side by side.
+  const visaInfos = buildVisaInfos(report, target, facts, l);
+  const glance = buildGlance(visaInfos, l);
+  sections.push({
+    id: "glance",
+    title: reportSectionTitle("glance", l),
+    blocks: [{ kind: "text", text: glance.intro }, table(glance.headers, glance.rows, [0.27, 0.14, 0.1, 0.13, 0.36]), { kind: "text", text: glance.note }],
+  });
+
   // 3. Points: the full table, then every scenario as arithmetic.
   const pts = buildPointsInfo(report, l);
   if (!isCA && pts.applicable) {
@@ -143,15 +156,21 @@ export function buildReportView(args: ReportViewArgs): ReportView {
 
   // 4. Visa information: one block per visa, target first.
   const labels = visaLabels(l);
-  const reqHeaders = [T(l, "Published requirement", "Yayımlanmış gereklilik", "已公布的要求"), T(l, "What you entered", "Girdiğiniz", "您填写的内容"), T(l, "Source", "Kaynak", "来源"), T(l, "Status", "Durum", "状态")];
+  const reqHeaders = [T(l, "Published requirement", "Yayımlanmış gereklilik", "已公布的要求"), T(l, "What you entered", "Girdiğiniz", "您填写的内容"), T(l, "Source", "Kaynak", "来源"), T(l, "Information", "Bilgi durumu", "信息状态")];
+  const figureHeaders = [T(l, "Published requirement", "Yayımlanmış gereklilik", "已公布的要求"), T(l, "Your figure", "Sizin rakamınız", "您的数字"), T(l, "Published figure", "Yayımlanmış rakam", "已公布的数字"), T(l, "Source", "Kaynak", "来源")];
   const visaBlocks: Block[] = [
-    { kind: "text", text: T(l, "Every visa is described with the same fields. The visa you selected is listed first; the others follow in a fixed order. Status describes the information, not an outcome: provided / not provided / cannot determine / not applicable.", "Her vize aynı alanlarla anlatılır. Seçtiğiniz vize ilk sırada, diğerleri sabit sırayla gelir. Durum sonucu değil bilgiyi anlatır: girildi / girilmedi / belirlenemiyor / geçerli değil.", "每种签证使用相同字段介绍。您选择的签证排在最前，其余按固定顺序排列。状态描述的是信息而非结果：已提供 / 未提供 / 无法判断 / 不适用。") },
+    { kind: "text", text: T(l, "Every visa is described with the same fields. The visa you selected is listed first; the others follow in a fixed order. Where a requirement has a published figure, your figure is shown next to it. For the other requirements the last column says only whether information was entered, not entered, or not collected by the form: it is never a statement that a requirement is met.", "Her vize aynı alanlarla anlatılır. Seçtiğiniz vize ilk sırada, diğerleri sabit sırayla gelir. Bir gerekliliğin yayımlanmış rakamı varsa sizin rakamınız yanında gösterilir. Diğer gerekliliklerde son sütun yalnızca bilginin girilip girilmediğini veya formda toplanmadığını söyler: bir gerekliliğin karşılandığı anlamına gelmez.", "每种签证使用相同字段介绍。您选择的签证排在最前，其余按固定顺序排列。要求有已公布数字时，您的数字显示在其旁边。其他要求的最后一列只说明信息已填写、未填写或表单未收集：它绝不表示要求已满足。") },
   ];
-  for (const v of buildVisaInfos(report, target, facts, l)) {
+  for (const v of visaInfos) {
     visaBlocks.push({ kind: "heading", text: v.title, marked: v.selected ? T(l, "Your selected visa", "Seçtiğiniz vize", "您选择的签证") : undefined });
     visaBlocks.push({ kind: "kv", rows: v.overview });
-    if (v.requirements.length) {
-      visaBlocks.push(table(reqHeaders, v.requirements.map((r) => [r.requirement, r.entered, r.source, r.statusLabel]), [0.3, 0.3, 0.24, 0.16]));
+    const numericRows = v.requirements.filter((r) => r.numeric);
+    const otherRows = v.requirements.filter((r) => !r.numeric);
+    if (numericRows.length) {
+      visaBlocks.push(table(figureHeaders, numericRows.map((r) => [`${r.requirement}\n(${r.numeric!.label})`, r.numeric!.yours, r.numeric!.published, r.source]), [0.3, 0.26, 0.26, 0.18]));
+    }
+    if (otherRows.length) {
+      visaBlocks.push(table(reqHeaders, otherRows.map((r) => [r.requirement, r.entered, r.source, r.statusLabel]), [0.3, 0.3, 0.24, 0.16]));
     }
   }
   void labels;
@@ -159,7 +178,7 @@ export function buildReportView(args: ReportViewArgs): ReportView {
 
   // 5. States and territories.
   if (!isCA) {
-    const states = buildStateInfos(report, occupationRaw, l);
+    const states = buildStateInfos(report, occupationRaw, l, asOf);
     if (states.length) {
       const blocks: Block[] = [
         { kind: "text", text: T(l, "Published information for all eight states and territories in a fixed order, as recorded in our sources. The occupation-list line matches the occupation you entered (supplied by you) against each published list. No state is left out or ordered by your details; a list entry is published information, not a nomination.", "Sekiz eyalet ve bölgenin tamamı için, kaynaklarımızda kayıtlı yayımlanmış bilgiler, sabit sırayla. Meslek listesi satırı girdiğiniz mesleği (sizin girdiğiniz) her yayımlanmış listeyle eşleştirir. Hiçbir eyalet dışarıda bırakılmaz veya bilgilerinize göre sıralanmaz; liste kaydı yayımlanmış bilgidir, bir adaylık değildir.", "按固定顺序列出八个州和领地的公开信息，依我们的资料记录。职业清单一行将您填写的职业（由您提供）与各州已公布清单比对。不遗漏任何州，也不按您的信息排序；清单收录是已公布的信息，并非提名。") },
@@ -173,7 +192,7 @@ export function buildReportView(args: ReportViewArgs): ReportView {
             [T(l, "Occupation on its list (190 / 491)", "Meslek listede (190 / 491)", "职业是否在清单上（190 / 491）"), s.occupationList],
             ...(s.conditions.length ? s.conditions : ["—"]).map((c, i): [string, string] => [i === 0 ? T(l, "Published conditions", "Yayımlanmış koşullar", "已公布的条件") : " ", c]),
             [T(l, "Source", "Kaynak", "来源"), s.sources || "—"],
-            [T(l, "Data checked", "Veri kontrol tarihi", "数据核对日期"), s.checked || "—"],
+            [T(l, "Data checked", "Veri kontrol tarihi", "数据核对日期"), s.checked ? `${s.checked}${s.staleNote ? ` — ${T(l, "data may have changed since", "veriler o tarihten sonra değişmiş olabilir", "此后数据可能已变化")}` : ""}` : "—"],
           ],
         });
       }
@@ -182,12 +201,13 @@ export function buildReportView(args: ReportViewArgs): ReportView {
   }
 
   // 6. Invitation history.
-  const inv = buildInvitationInfo(l);
-  sections.push({
-    id: "invitations",
-    title: reportSectionTitle("invitations", l),
-    blocks: [{ kind: "text", text: inv.intro }, table(inv.headers, inv.rows, [0.13, 0.11, 0.11, 0.13, 0.32, 0.2]), { kind: "text", text: inv.stateNote }, { kind: "text", text: inv.note }],
-  });
+  const inv = buildInvitationInfo(l, asOf);
+  const invBlocks: Block[] = [{ kind: "text", text: inv.intro }];
+  if (inv.rows.length) invBlocks.push(table(inv.headers, inv.rows, [0.15, 0.11, 0.1, 0.12, 0.31, 0.21]));
+  else invBlocks.push({ kind: "text", text: inv.emptyNote });
+  if (inv.ageNote) invBlocks.push({ kind: "text", text: inv.ageNote });
+  invBlocks.push({ kind: "text", text: inv.stateNote }, { kind: "text", text: inv.note });
+  sections.push({ id: "invitations", title: reportSectionTitle("invitations", l), blocks: invBlocks });
 
   // 7. Costs.
   const costs = buildCostsInfo(report, occupationRaw, l, target);
@@ -196,7 +216,7 @@ export function buildReportView(args: ReportViewArgs): ReportView {
     table(costs.govHeaders, costs.gov, [0.26, 0.13, 0.14, 0.14, 0.14, 0.19]),
     { kind: "text", text: costs.govNote },
   ];
-  if (costs.authority.length) costBlocks.push({ kind: "heading", text: costs.authorityTitle }, { kind: "text", text: costs.authorityIntro }, table(costs.authorityHeaders, costs.authority, [0.22, 0.18, 0.2, 0.2, 0.2].slice(0, costs.authorityHeaders.length)));
+  if (costs.authority.length) costBlocks.push({ kind: "heading", text: costs.authorityTitle }, { kind: "text", text: costs.authorityIntro }, table(costs.authorityHeaders, costs.authority, [0.2, 0.14, 0.14, 0.12, 0.14, 0.26].slice(0, costs.authorityHeaders.length)));
   costBlocks.push({ kind: "heading", text: costs.itemsTitle }, table(costs.itemsHeaders, costs.items, [0.3, 0.25, 0.25, 0.2].slice(0, costs.itemsHeaders.length)));
   costBlocks.push({ kind: "heading", text: costs.sumsTitle }, table(costs.sumsHeaders, costs.sums, [0.3, 0.2, 0.25, 0.25].slice(0, costs.sumsHeaders.length)));
   costs.selectedTotalLines.forEach((t) => costBlocks.push({ kind: "text", text: t }));
@@ -219,7 +239,7 @@ export function buildReportView(args: ReportViewArgs): ReportView {
   sections.push({ id: "documents", title: reportSectionTitle("documents", l), blocks: docBlocks });
 
   // 10. Sources register and the advice statement.
-  const states = isCA ? [] : buildStateInfos(report, occupationRaw, l);
+  const states = isCA ? [] : buildStateInfos(report, occupationRaw, l, asOf);
   const resources = getResourcesSection(l, isCA ? "CA" : "AU");
   const srcBlocks: Block[] = [table(sourcesHeaders(l), buildSources(report, occupationRaw, states, l).map((r) => [...r]), [0.55, 0.3, 0.15])];
   const links = resources.sections.flatMap((s) => s.links.map((k) => `${k.label} — ${k.url}`));

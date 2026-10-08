@@ -4,7 +4,11 @@ export const T = (l: Locale, en: string, tr: string, zh: string) => (l === "tr" 
 
 /** The label every line carries. */
 export type FactTag = "supplied" | "calculation" | "published_requirement" | "published_program" | "unknown";
-export type RequirementStatus = "provided" | "not_provided" | "cannot_determine" | "not_applicable";
+/**
+ * What the report knows about the information for a requirement, never whether it is met: entered / not entered / not collected by the form.
+ * ("Provided" and "Cannot determine" were removed: they read as "met" and as an unexplained outcome.)
+ */
+export type RequirementStatus = "provided" | "not_provided" | "not_collected";
 
 export const tagsFor = (l: Locale): Record<FactTag, string> => ({
   supplied: T(l, "Supplied by you", "Sizin girdiğiniz", "您提供"),
@@ -16,12 +20,10 @@ export const tagsFor = (l: Locale): Record<FactTag, string> => ({
 
 export const statusLabel = (s: RequirementStatus, l: Locale) =>
   s === "provided"
-    ? T(l, "Provided", "Girildi", "已提供")
+    ? T(l, "Information entered", "Bilgi girildi", "已填写信息")
     : s === "not_provided"
-      ? T(l, "Not provided", "Girilmedi", "未提供")
-      : s === "cannot_determine"
-        ? T(l, "Cannot determine", "Belirlenemiyor", "无法判断")
-        : T(l, "Not applicable", "Geçerli değil", "不适用");
+      ? T(l, "Not entered", "Girilmedi", "未填写")
+      : T(l, "Not collected by the form", "Formda toplanmıyor", "表单未收集");
 
 export const FACT_LABEL: Record<string, [string, string, string]> = {
   occupation: ["Occupation", "Meslek", "职业"],
@@ -38,11 +40,17 @@ export const FACT_LABEL: Record<string, [string, string, string]> = {
   passportCountry: ["Passport country", "Pasaport ülkesi", "护照国家"],
   residenceState: ["State of residence", "İkamet edilen eyalet", "居住的州"],
   preferredState: ["State of interest", "İlgilenilen eyalet", "感兴趣的州"],
-  yearsInSponsoredPosition: ["Years under an approved sponsor", "Onaylı sponsor altında yıl", "在获批担保方名下的年数"],
+  yearsInSponsoredPosition: ["Years under an approved sponsor", "Onaylı sponsor altında yıl", "在经批准的担保方名下的年数"],
 };
 export const factLabel = (field: string, l: Locale) => {
   const f = FACT_LABEL[field];
   return f ? T(l, f[0], f[1], f[2]) : field;
+};
+
+/** "1 year" / "3 years" (Turkish and Chinese do not inflect the unit). */
+export const yearsText = (n: number, l: Locale) => {
+  const v = Number.isInteger(n) ? String(n) : n.toFixed(1);
+  return l === "tr" ? `${v} yıl` : l === "zh-Hans" ? `${v} 年` : n === 1 ? `${v} year` : `${v} years`;
 };
 
 export const money = (n: number) => n.toLocaleString("en-AU", { minimumFractionDigits: Number.isInteger(n) ? 0 : 2, maximumFractionDigits: 2 });

@@ -7,7 +7,7 @@
 import { POINTS_TESTED } from "@/lib/readiness/target-visa";
 import type { PointsAction, PointsBoosterScenario, ReadinessReport } from "@/lib/readiness/types";
 import type { Locale } from "@/lib/readiness/types";
-import { T } from "./report-text";
+import { T, yearsText } from "./report-text";
 
 export type ScenarioRow = { label: string; added: string; totals: [string, string, string] };
 
@@ -47,9 +47,9 @@ function neutralName(a: Pick<PointsAction, "id" | "label">, l: Locale): string {
     case "professional_year":
       return T(l, "Australian Professional Year", "Avustralya Mesleki Yıl (Professional Year)", "澳大利亚职业年（Professional Year）");
     case "overseas_employment":
-      return T(l, `${years} years of skilled overseas employment`, `Yurt dışında ${years} yıl nitelikli istihdam`, `海外技术工作经验 ${years} 年`);
+      return T(l, `${yearsText(Number(years), "en")} of skilled overseas employment`, `Yurt dışında ${years} yıl nitelikli istihdam`, `海外技术工作经验 ${years} 年`);
     case "australian_employment":
-      return T(l, `${years} years of skilled Australian employment`, `Avustralya'da ${years} yıl nitelikli istihdam`, `澳大利亚技术工作经验 ${years} 年`);
+      return T(l, `${yearsText(Number(years), "en")} of skilled Australian employment`, `Avustralya'da ${years} yıl nitelikli istihdam`, `澳大利亚技术工作经验 ${years} 年`);
     case "australian_study":
       return T(l, `Australian qualification (at least 2 academic years of study in Australia)${conditional ? ", conditional" : ""}`, `Avustralya'da yeterlilik (Avustralya'da en az 2 akademik yıl eğitim)${conditional ? ", koşullu" : ""}`, `澳大利亚学历（在澳大利亚至少学习 2 个学年）${conditional ? "，有条件" : ""}`);
     case "regional_study":

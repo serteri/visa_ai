@@ -111,6 +111,8 @@ jobs:
         run: npm run test:no-submission-quota
       - name: use server / use client is the first statement of every file (a build breaker)
         run: npm run test:directive-order
+      - name: Report improvements (figures side by side, SSIT row, at a glance, estimate labels, authority fees, state notes, small fixes; en / tr / zh-Hans)
+        run: npm run test:report-improvements
       - name: No route can produce the verdict structure (PDF route, result page, agent PDF; en / tr / zh-Hans)
         run: npm run test:no-verdict-routes
 
