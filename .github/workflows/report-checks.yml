@@ -99,6 +99,8 @@ jobs:
         run: npm run test:email-senders
       - name: Report fixes (one disclaimer, no severity label, Not sure totals, points requirement, 485 award date)
         run: npm run test:report-fixes
+      - name: Pre-payment preview gate (no report content in props or HTML while locked; full after unlock)
+        run: npm run test:preview-gate
       - name: No route can produce the verdict structure (PDF route, result page, agent PDF; en / tr / zh-Hans)
         run: npm run test:no-verdict-routes
 

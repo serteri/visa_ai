@@ -31,7 +31,7 @@ async function run() {
   console.log("Preview created:", {
     reportId: submitState.reportId,
     estimatedPoints: submitState.preview?.estimatedPoints,
-    pathways: submitState.preview?.pathways.map((p) => `${p.subclass}:${p.confidenceLevel}`),
+    sectionTitles: submitState.preview?.sectionTitles,
   });
 
   const unlockForm = new FormData();

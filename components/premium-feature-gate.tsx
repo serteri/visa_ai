@@ -164,146 +164,105 @@ export function PremiumFeatureGate({
       ? "请接受法律条款以继续。"
       : "Please accept the legal terms to proceed.";
 
+  const productName = isTr ? "Vize Bilgi Raporu" : isZh ? "签证信息报告" : "Visa Information Report";
+  const price = isTr ? PREMIUM_PRICE_DISPLAY.tr : isZh ? PREMIUM_PRICE_DISPLAY["zh-Hans"] : PREMIUM_PRICE_DISPLAY.en;
+
   return (
-    <section className="space-y-5">
+    <section className="space-y-5" data-report-preview>
+      {/* Pre-payment preview: the visitor's own details, the points total from their entries and the section titles. Nothing else is in the page. */}
       <Card className="border-emerald-200 bg-white shadow-sm">
         <CardHeader>
           <div className="flex flex-wrap items-center gap-2">
-            <CardTitle className="text-base">
-              {isTr ? "Quick Pathway Check Sonucu" : isZh ? "快速路径评估结果" : "Quick Pathway Check Result"}
-            </CardTitle>
-            <Badge variant="secondary">{isTr ? "Ücretsiz görünüm" : isZh ? "免费预览" : "Free preview"}</Badge>
-            {!paidCheckoutEnabled && <Badge>{isTr ? "Ücretsiz beta" : isZh ? "免费测试版" : "Free beta"}</Badge>}
+            <CardTitle className="text-base">{preview.title}</CardTitle>
+            <Badge variant="secondary">{isTr ? "Ön izleme" : isZh ? "预览" : "Preview"}</Badge>
           </div>
         </CardHeader>
         <CardContent className="space-y-4">
-          <div className="rounded-md border border-emerald-200 bg-emerald-50 px-4 py-3">
-            <p className="text-xs font-semibold uppercase tracking-wide text-emerald-700">
-              {isTr ? "Temel puan" : isZh ? "基础分" : "Base points"}
-            </p>
-            <p className="mt-1 text-2xl font-bold text-emerald-800">
-              {preview.estimatedPoints ?? "-"}
-            </p>
-          </div>
-
-          <div className="space-y-2">
-            <p className="text-sm font-medium text-foreground">
-              {isTr ? "Muhtemel vize yolları" : isZh ? "可能签证路径" : "Likely visa pathways"}
-            </p>
-            <div className="grid gap-2">
-              {preview.pathways.map((item) => (
-                <div key={`${item.subclass}-${item.visaName}`} className="rounded-md border border-slate-200 bg-white shadow-sm px-3 py-2">
-                  <p className="text-sm font-medium">{item.visaName} ({item.subclass})</p>
-                  <p className="text-xs text-muted-foreground">{item.reason}</p>
-                </div>
+          <div className="space-y-2" data-preview-details>
+            <p className="text-sm font-medium text-foreground">{preview.detailsTitle}</p>
+            <ul className="list-disc space-y-1 pl-5 text-xs text-slate-700">
+              {preview.details.map((line) => (
+                <li key={line}>{line}</li>
               ))}
-            </div>
+            </ul>
           </div>
+          {preview.pointsLine ? (
+            <div className="rounded-md border border-emerald-300 bg-emerald-50 px-4 py-3" data-preview-points>
+              <p className="text-xs font-semibold uppercase tracking-wide text-emerald-900">{preview.pointsTitle}</p>
+              <p className="mt-1 text-xl font-bold text-emerald-950">{preview.pointsLine}</p>
+            </div>
+          ) : null}
         </CardContent>
       </Card>
 
-      <Card className="relative overflow-hidden border-dashed border-primary/40 bg-background">
-        <CardHeader className="opacity-45 blur-[1.6px]">
-          <CardTitle>{isTr ? "Premium bölümler" : isZh ? "高级内容模块" : "Premium sections"}</CardTitle>
+      <Card className="border-dashed border-primary/40 bg-background">
+        <CardHeader>
+          <CardTitle className="text-base">{preview.sectionsTitle}</CardTitle>
         </CardHeader>
-        <CardContent className="grid gap-2 opacity-45 blur-[1.6px]">
-          {(isTr
-            ? [
-                "Stratejik Gantt Tablosu",
-                "Mali Yol Haritası",
-                "Belge Düzeyinde Ayrıntı",
-                "Vize Yolu Rekabet Analizi",
-                "Acil Eylem Planı",
-              ]
-            : isZh
-            ? [
-                "战略甘特图",
-                "财务路线图",
-                "文件级具体性",
-                "路径阻力分析",
-                "立即行动计划",
-              ]
-            : [
-                "Strategic Gantt Chart",
-                "Financial Roadmap",
-                "Document-Level Specificity",
-                "Pathway Friction Analysis",
-                "Immediate Action Plan",
-              ]
-          ).map((title) => (
-            <div key={title} className="rounded-md border px-3 py-2 text-sm">
-              {title}
-            </div>
-          ))}
-        </CardContent>
+        <CardContent className="space-y-4">
+          {preview.sectionTitles.length > 0 && (
+            <ul className="grid gap-2" data-preview-sections>
+              {preview.sectionTitles.map((title) => (
+                <li key={title} className="flex items-center gap-2 rounded-md border px-3 py-2 text-sm text-slate-800">
+                  <Lock className="size-3.5 shrink-0 text-slate-600" aria-hidden="true" />
+                  {title}
+                </li>
+              ))}
+            </ul>
+          )}
 
-        <div className="absolute inset-0 flex items-center justify-center bg-background/70 p-4 backdrop-blur-[3px]">
-          <div className="w-full max-w-md rounded-2xl border border-primary/20 bg-card/95 p-5 shadow-2xl ring-1 ring-primary/15">
-            <div className="mb-3 inline-flex items-center gap-2 rounded-full border border-primary/30 bg-primary/10 px-3 py-1 text-xs font-semibold text-primary">
-              <Lock className="size-3.5" />
-              <span>{paidCheckoutEnabled ? (isTr ? "Premium Access" : isZh ? "高级访问" : "Premium Access") : isTr ? "Ücretsiz beta" : isZh ? "免费测试版" : "Free beta"}</span>
-            </div>
-
+          <div className="rounded-2xl border border-primary/20 bg-card p-5 shadow-sm">
             <h3 className="text-xl font-bold tracking-tight">
               {paidCheckoutEnabled
-                ? isTr ? "Unlock Full Report" : isZh ? "解锁完整报告" : "Unlock Full Report"
-                : isTr ? "Tam raporu aç (ücretsiz beta)" : isZh ? "打开完整报告（免费测试版）" : "Open the full report (free beta)"}
+                ? isTr ? `${productName}'nu aç` : isZh ? `解锁${productName}` : `Unlock the ${productName}`
+                : isTr ? `${productName}'nu aç` : isZh ? `打开${productName}` : `Open the ${productName}`}
             </h3>
-
-            <p className="mt-1 text-sm text-muted-foreground">
+            <p className="mt-1 text-sm text-slate-700">
               {paidCheckoutEnabled
                 ? isTr
-                  ? "Detaylı rapor, stratejik tablo ve PDF teslimini açın."
+                  ? "Tek seferlik ödemeyle tam raporu ekranda açın ve PDF olarak indirin. Güvenli bağlantı e-postayla da gönderilir."
                   : isZh
-                    ? "解锁完整分析、高级图表与 PDF 交付。"
-                    : "Unlock full analysis, premium sections, and PDF delivery."
+                    ? "一次付款即可在屏幕上打开完整报告并下载 PDF。安全链接也会通过邮件发送给您。"
+                    : "Pay once to open the full report on screen and download it as a PDF. A secure link is also emailed to you."
                 : isTr
-                  ? "Rapor şu anda ücretsiz beta olarak sunuluyor; ödeme gerekmez."
+                  ? "Bu rapor için ödeme alınmaz."
                   : isZh
-                    ? "该报告目前为免费测试版，无需付款。"
-                    : "The report is currently offered as a free beta; no payment is taken."}
+                    ? "此报告不收取费用。"
+                    : "No payment is taken for this report."}
             </p>
 
-            <div className="mt-4 rounded-xl border border-border/70 bg-background/70 p-3">
-              <div className="flex items-end justify-between gap-3">
-                <p className="text-xs uppercase tracking-wide text-muted-foreground">
-                  {paidCheckoutEnabled ? (isTr ? "Premium Rapor" : isZh ? "高级报告" : "Premium Report") : isTr ? "Tam rapor" : isZh ? "完整报告" : "Full report"}
-                </p>
-                <p className="text-lg font-bold text-primary">
-                  {paidCheckoutEnabled
-                    ? isTr ? PREMIUM_PRICE_DISPLAY.tr : isZh ? PREMIUM_PRICE_DISPLAY["zh-Hans"] : PREMIUM_PRICE_DISPLAY.en
-                    : isTr ? "Ücretsiz beta" : isZh ? "免费测试版" : "Free beta"}
-                </p>
+            {paidCheckoutEnabled && (
+              <div className="mt-4 flex items-end justify-between gap-3 rounded-xl border border-border/70 bg-background p-3">
+                <p className="text-xs uppercase tracking-wide text-slate-700">{productName}</p>
+                <p className="text-lg font-bold text-primary" data-report-price>{price}</p>
               </div>
-            </div>
+            )}
 
-            <Button
-              size="lg"
-              className="mt-4 h-12 w-full text-base"
-              onClick={() => setShowModal(true)}
-            >
+            <Button size="lg" className="mt-4 h-12 w-full text-base" onClick={() => setShowModal(true)}>
               <Sparkles className="size-4" />
               {paidCheckoutEnabled
-                ? isTr ? "Unlock Your Full Readiness Report" : isZh ? "解锁完整准备度报告" : "Unlock Your Full Readiness Report"
-                : isTr ? "Tam hazırlık raporunu aç" : isZh ? "打开完整准备度报告" : "Open your full readiness report"}
+                ? isTr ? `${productName}'nu aç` : isZh ? `解锁${productName}` : `Unlock your ${productName}`
+                : isTr ? `${productName}'nu aç` : isZh ? `打开${productName}` : `Open your ${productName}`}
             </Button>
 
-            <div className="mt-3 grid gap-2 text-xs text-muted-foreground sm:grid-cols-3">
-              <div className="flex items-center gap-1.5 rounded-md border border-border/60 bg-background/70 px-2 py-1.5">
-                <ShieldCheck className="size-3.5 text-primary" />
-                <span>{paidCheckoutEnabled ? "Secure Checkout" : isTr ? "Ücretsiz beta" : isZh ? "免费测试版" : "Free beta"}</span>
-              </div>
-              <div className="flex items-center gap-1.5 rounded-md border border-border/60 bg-background/70 px-2 py-1.5">
+            <div className="mt-3 grid gap-2 text-xs text-slate-700 sm:grid-cols-3">
+              {paidCheckoutEnabled && (
+                <div className="flex items-center gap-1.5 rounded-md border border-border/60 px-2 py-1.5">
+                  <ShieldCheck className="size-3.5 text-primary" />
+                  <span>{isTr ? "Güvenli ödeme" : isZh ? "安全支付" : "Secure Checkout"}</span>
+                </div>
+              )}
+              <div className="flex items-center gap-1.5 rounded-md border border-border/60 px-2 py-1.5">
                 <Zap className="size-3.5 text-primary" />
                 <span>{isTr ? "Anında Erişim" : isZh ? "即时访问" : "Instant Access"}</span>
               </div>
-              <div className="flex items-center gap-1.5 rounded-md border border-border/60 bg-background/70 px-2 py-1.5">
+              <div className="flex items-center gap-1.5 rounded-md border border-border/60 px-2 py-1.5">
                 <Lock className="size-3.5 text-primary" />
-                <span>{isTr ? "Data Encrypted" : isZh ? "Data Encrypted" : "Data Encrypted"}</span>
+                <span>{isTr ? "Şifreli veri" : isZh ? "数据加密" : "Data Encrypted"}</span>
               </div>
             </div>
           </div>
-        </div>
+        </CardContent>
       </Card>
 
       {showModal && typeof document !== "undefined" && createPortal(
@@ -320,19 +279,19 @@ export function PremiumFeatureGate({
         <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/50 p-4 overflow-y-auto">
           <Card className="relative w-full max-w-lg my-auto shadow-2xl">
             <CardHeader className="space-y-2">
-              <CardTitle>{isTr ? "Raporu aç" : isZh ? "解锁报告" : "Unlock report"}</CardTitle>
+              <CardTitle>{isTr ? "Vize Bilgi Raporunu aç" : isZh ? "解锁签证信息报告" : "Unlock the Visa Information Report"}</CardTitle>
               <p className="text-sm text-muted-foreground">
                 {paidCheckoutEnabled
                   ? isTr
-                    ? "Ödeme sonrası premium raporunuz açılır ve size güvenli bir indirme bağlantısı e-posta ile gönderilir."
+                    ? "Ödemeden sonra rapor ekranda açılır, PDF olarak indirebilirsiniz ve güvenli bağlantı e-postayla gönderilir."
                     : isZh
-                      ? "支付完成后，您的高级报告将被解锁，并通过邮件向您发送安全下载链接。"
-                      : "After payment, your premium report is unlocked and a secure download link is emailed to you."
+                      ? "付款后，报告会在屏幕上打开，您可下载 PDF，安全链接也会通过邮件发送。"
+                      : "After payment the report opens on screen, you can download it as a PDF, and a secure link is emailed to you."
                   : isTr
-                    ? "Ücretsiz beta: raporu bu tarayıcıda hemen açarsınız; güvenli bağlantı raporun oluşturulduğu e-posta adresine de gönderilir. Ödeme alınmaz."
+                    ? "Rapor bu tarayıcıda hemen açılır; güvenli bağlantı raporun oluşturulduğu e-posta adresine de gönderilir. Ödeme alınmaz."
                     : isZh
-                      ? "免费测试版：您可在此浏览器中立即打开报告；安全链接也会发送到创建报告时使用的邮箱。不收取任何费用。"
-                      : "Free beta: the report opens here in this browser right away, and the secure link is also emailed to the address the report was created with. No payment is taken."}
+                      ? "报告会在此浏览器中立即打开；安全链接也会发送到创建报告时使用的邮箱。不收取费用。"
+                      : "The report opens here in this browser right away, and the secure link is also emailed to the address the report was created with. No payment is taken."}
               </p>
             </CardHeader>
             <CardContent className="space-y-4">
@@ -379,7 +338,7 @@ export function PremiumFeatureGate({
                   <input type="hidden" name="unlockMethod" value={paidCheckoutEnabled ? "payment" : "beta_free"} />
                   <div className="h-12 flex items-center rounded-xl border border-primary/30 bg-primary/5 px-3 text-sm font-medium text-primary">
                     {!paidCheckoutEnabled
-                      ? isTr ? "🔓 Ücretsiz beta" : isZh ? "🔓 免费测试版" : "🔓 Free beta"
+                      ? isTr ? "🔓 Ödeme gerekmez" : isZh ? "🔓 无需付款" : "🔓 No payment needed"
                       : isTr
                         ? `🔓 Ödeme ile aç (${PREMIUM_PRICE_DISPLAY.tr})`
                         : isZh
@@ -418,14 +377,14 @@ export function PremiumFeatureGate({
                   <Button type="submit" className="h-12 flex-1 rounded-xl" disabled={unlockPending || (unlockState.status === "success" && !unlockState.report)}>
                     {unlockPending
                       ? isTr ? "İşleniyor..." : isZh ? "处理中..." : "Processing..."
-                      : isTr ? "Raporu aç" : isZh ? "解锁报告" : "Unlock report"}
+                      : paidCheckoutEnabled ? (isTr ? "Ödemeye geç" : isZh ? "前往付款" : "Continue to payment") : (isTr ? "Raporu aç" : isZh ? "打开报告" : "Open report")}
                   </Button>
                 </div>
 
                 <div className="grid gap-2 text-xs text-muted-foreground sm:grid-cols-3">
                   <div className="flex items-center gap-1.5 rounded-md border border-border/60 px-2 py-1.5">
                     <ShieldCheck className="size-3.5 text-primary" />
-                    <span>{paidCheckoutEnabled ? "Secure Checkout" : "Free beta"}</span>
+                    <span>{paidCheckoutEnabled ? (isTr ? "Güvenli ödeme" : isZh ? "安全支付" : "Secure Checkout") : (isTr ? "Ödeme yok" : isZh ? "无需付款" : "No payment")}</span>
                   </div>
                   <div className="flex items-center gap-1.5 rounded-md border border-border/60 px-2 py-1.5">
                     <CheckCircle2 className="size-3.5 text-primary" />

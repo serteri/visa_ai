@@ -61,7 +61,7 @@ type Case = {
 };
 
 const RECIPIENT = "customer@example.org";
-const preview = { estimatedPoints: 70, pathways: [{ subclass: "189", visaName: "Skilled Independent", confidenceLevel: "medium" as const, reason: "r" }] };
+const preview = { title: "Visa Information Report: preview", detailsTitle: "Your details", details: ["Occupation: Software Engineer"], pointsTitle: "Points", pointsLine: "Total from your entries: 70 points", sectionsTitle: "The full report contains these sections", sectionTitles: ["Your details", "Points", "Visa information"], estimatedPoints: 70 };
 const cases: Case[] = [
   { name: "lead magnet delivery", to: RECIPIENT, onReject: "sent_false", run: () => sendPdfDeliveryEmail({ fullName: "Jane", email: RECIPIENT, slug: "australia-skilled-occupation-list-2026", locale: "en" }) },
   { name: "lead magnet admin notice", to: "serter@logivisa.com", onReject: "throws", run: () => sendPdfLeadAdminEmail({ fullName: "Jane", email: RECIPIENT, phone: "", slug: "australia-guide-2026", category: "Global Guide", delivered: true }) },

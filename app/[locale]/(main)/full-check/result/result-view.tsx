@@ -19,8 +19,10 @@ type ResultViewProps = {
   isAdminBypass: boolean;
   /** The PDF route link with the report's access token (issued by the server page); null while locked. */
   downloadHref: string | null;
-  report: ReadinessReport;
-  previewData: FullCheckQuickPreview | null;
+  /** null while the report is locked: the full report never reaches the browser before it is unlocked (or for a non-admin). */
+  report: ReadinessReport | null;
+  /** The pre-payment preview (lib/reports/report-preview.ts); the only report-derived data a locked page carries. */
+  preview: FullCheckQuickPreview | null;
   fullName?: string;
   email: string;
   /** "Last updated <date>" when the content was recomputed, otherwise "Generated <date>" (same text as the PDF). */
@@ -41,7 +43,7 @@ export function ResultView({
   isAdminBypass,
   downloadHref,
   report,
-  previewData,
+  preview,
   fullName,
   email,
   dateStamp,
@@ -52,17 +54,16 @@ export function ResultView({
   const isZh = locale === "zh-Hans";
   const showFullView = isUnlocked || isAdminBypass;
 
-  const estimatedPoints =
-    report.pointsBoosterSimulator?.currentEstimate ?? report.pointsEstimate?.estimatedPoints;
-  const pathways = report.pathwayComparison?.slice(0, 5) ?? [];
-  const states = stateRows(report);
-  const booster = boosterRows(report);
+  const estimatedPoints = report ? (report.pointsBoosterSimulator?.currentEstimate ?? report.pointsEstimate?.estimatedPoints) : undefined;
+  const pathways = report?.pathwayComparison?.slice(0, 5) ?? [];
+  const states = report ? stateRows(report) : [];
+  const booster = report ? boosterRows(report) : [];
 
   if (showFullView && view) {
     return <RestructuredReport view={view} locale={locale} isUnlocked={isUnlocked} isAdminBypass={isAdminBypass} downloadHref={downloadHref} dateStamp={dateStamp} />;
   }
 
-  if (showFullView) {
+  if (showFullView && report) {
     return (
       <main className="mx-auto max-w-3xl space-y-6 px-4 py-10">
         {isAdminBypass && !isUnlocked && (
@@ -86,10 +87,10 @@ export function ResultView({
           <CardHeader>
             <div className="flex flex-wrap items-center gap-2">
               <CardTitle>
-                {isTr ? "Tam Hazırlık Raporunuz" : isZh ? "您的完整准备度报告" : "Your Full Readiness Report"}
+                {isTr ? "Vize Bilgi Raporunuz" : isZh ? "您的签证信息报告" : "Your Visa Information Report"}
               </CardTitle>
               <Badge variant="secondary">
-                {paidCheckoutEnabled ? (isTr ? "Premium" : isZh ? "高级版" : "Premium") : isTr ? "Ücretsiz beta" : isZh ? "免费测试版" : "Free beta"}
+                {isTr ? "Vize Bilgi Raporu" : isZh ? "签证信息报告" : "Visa Information Report"}
               </Badge>
             </div>
             {dateStamp ? (
@@ -242,15 +243,7 @@ export function ResultView({
         locale={locale}
         reportId={reportId}
         preview={
-          previewData ?? {
-            estimatedPoints,
-            pathways: pathways.map((p) => ({
-              subclass: p.subclass,
-              visaName: p.visaName,
-              confidenceLevel: p.confidenceLevel,
-              reason: p.reason,
-            })),
-          }
+          preview ?? { title: "", detailsTitle: "", details: [], pointsTitle: null, pointsLine: null, sectionsTitle: "", sectionTitles: [], estimatedPoints: estimatedPoints ?? null }
         }
         defaultEmail={email}
         defaultName={fullName}

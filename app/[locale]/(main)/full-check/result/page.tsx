@@ -6,7 +6,7 @@ import { getReportRequester } from "@/lib/reports/report-access-server";
 import { refreshStoredReport } from "@/lib/reports/refresh-report";
 import { reportDateStamp } from "@/lib/reports/report-date-stamp";
 import { buildReportView, reportViewProfile } from "@/lib/reports/report-view";
-import type { FullCheckQuickPreview } from "../actions";
+import { buildBasicPreview, buildReportPreview } from "@/lib/reports/report-preview";
 import { isPaidReportCheckoutEnabled } from "@/lib/readiness/paid-checkout";
 import { ReportAccessRequired } from "./report-access-required";
 import { ResultView } from "./result-view";
@@ -51,13 +51,38 @@ export default async function FullCheckResultPage({
   // The same current-engine refresh and fallback as the PDF (lib/reports/refresh-report.ts), so the page and the
   // downloaded PDF always show the same content and the same "Last updated" / "Generated" stamp.
   const refreshed = await refreshStoredReport(record.report, record.input, { generatedAt: record.createdAt });
-  // The same eight-part view the PDF is drawn from (Canada and partner reports keep their own layout).
   const viewLocale = locale === "tr" ? "tr" : locale === "zh-Hans" ? "zh-Hans" : "en";
   const dateText = reportDateStamp(viewLocale, refreshed.stamp)?.text ?? "";
-  const view =
-    refreshed.report.country !== "CA" && !refreshed.report.partnerSponsorshipAssessment
-      ? buildReportView({ report: refreshed.report, locale: viewLocale, profile: reportViewProfile(record.input, record.fullName, viewLocale), dateText })
-      : null;
+  const hasRestructuredView = refreshed.report.country !== "CA" && !refreshed.report.partnerSponsorshipAssessment;
+  const fullView = hasRestructuredView
+    ? buildReportView({ report: refreshed.report, locale: viewLocale, profile: reportViewProfile(record.input, record.fullName, viewLocale), dateText })
+    : null;
+
+  // A LOCKED report (not unlocked, and the requester is not an admin) gets the preview only: the visitor's details, the points total from their
+  // entries and the section titles. The report and the full view are NOT passed to the client component, so none of their content is in the
+  // page source (the RSC payload) -- this is a server-side gate, not CSS.
+  const showFull = record.isUnlocked || requester.isAdmin;
+  if (!showFull) {
+    const estimated = refreshed.report.pointsBoosterSimulator?.currentEstimate ?? refreshed.report.pointsEstimate?.estimatedPoints ?? null;
+    const preview = fullView ? buildReportPreview(fullView, typeof estimated === "number" ? estimated : null) : buildBasicPreview(refreshed.report, viewLocale);
+    return (
+      <ResultView
+        locale={locale}
+        reportId={record.id}
+        isUnlocked={false}
+        isAdminBypass={false}
+        downloadHref={null}
+        report={null}
+        dateStamp={null}
+        view={null}
+        preview={preview}
+        fullName={record.fullName ?? undefined}
+        email={record.email}
+        paidCheckoutEnabled={isPaidReportCheckoutEnabled()}
+      />
+    );
+  }
+  const view = fullView;
   return (
     <ResultView
       locale={locale}
@@ -68,7 +93,7 @@ export default async function FullCheckResultPage({
       report={refreshed.report}
       dateStamp={reportDateStamp(locale, refreshed.stamp)?.text ?? null}
       view={view}
-      previewData={(record.previewData as FullCheckQuickPreview | null) ?? null}
+      preview={null}
       fullName={record.fullName ?? undefined}
       email={record.email}
       paidCheckoutEnabled={isPaidReportCheckoutEnabled()}

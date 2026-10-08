@@ -6,6 +6,7 @@
 import { Resend } from "resend";
 
 import { sendChecked } from "@/lib/email/provider";
+import { reportDisclaimer } from "@/lib/reports/report-disclaimer";
 import type { FullCheckQuickPreview } from "@/app/[locale]/(main)/full-check/actions";
 
 type SupportedLocale = "en" | "tr" | "zh-Hans";
@@ -101,47 +102,30 @@ export async function sendReportReadyEmail(payload: {
     : isTr ? "Merhaba," : isZh ? "您好，" : "Hi,";
 
   const subject = isTr
-    ? "LogiVisa AI Hazırlık Raporunuz Hazır 🇦🇺"
+    ? "Vize Bilgi Raporunuzun ön izlemesi hazır 🇦🇺"
     : isZh
-      ? "您的 LogiVisa AI 准备度报告已生成 🇦🇺"
-      : "Your LogiVisa AI Readiness Report is Ready 🇦🇺";
+      ? "您的签证信息报告预览已生成 🇦🇺"
+      : "Your Visa Information Report preview is ready 🇦🇺";
 
   const headline = isTr
-    ? "Hazırlık Raporunuz<br>Hazır 🇦🇺"
+    ? "Vize Bilgi Raporunuzun<br>ön izlemesi hazır 🇦🇺"
     : isZh
-      ? "您的准备度报告<br>已生成 🇦🇺"
-      : "Your Readiness Report<br>is Ready 🇦🇺";
+      ? "您的签证信息报告<br>预览已生成 🇦🇺"
+      : "Your Visa Information Report<br>preview is ready 🇦🇺";
 
   const intro = isTr
-    ? "Avustralya PR yol haritası analiziniz tamamlandı. Profilinizi nitelikli göç yolları, puan uygunluğu ve temel risk faktörleri açısından değerlendirdik."
+    ? "Raporunuz, girdiğiniz bilgilerden ve yayımlanmış kaynaklardan oluşturuldu. Bu ön izleme bilgilerinizi, girdilerinizden hesaplanan puan toplamını ve tam raporun bölümlerini gösterir."
     : isZh
-      ? "您的澳大利亚PR路径分析已完成。我们已从技术移民路径、积分资格和关键风险因素等方面评估了您的档案。"
-      : "Your AI-generated Australian PR pathway analysis is complete. We've assessed your profile across skilled migration pathways, points eligibility, and key risk factors.";
+      ? "您的报告根据您填写的信息和公开来源生成。此预览显示您的信息、根据您的填写计算出的积分总分，以及完整报告包含的部分。"
+      : "Your report was built from the details you entered and published sources. This preview shows your details, the points total calculated from your entries and the sections of the full report.";
 
-  // Actual numbers from this submission's Quick Pathway Check, not generic
-  // bullet labels -- payload.preview is the same object persisted to
-  // UserReport.previewData and shown on the locked result page, so this
-  // email and that page never disagree about what was calculated.
-  const includesLabel = isTr ? "Hızlı Sonuçlarınız" : isZh ? "您的快速结果" : "Your Quick Results";
-  const pointsLine = isTr
-    ? `Tahmini puan: ${payload.preview.estimatedPoints ?? "-"}`
-    : isZh
-      ? `预估积分：${payload.preview.estimatedPoints ?? "-"}`
-      : `Estimated points: ${payload.preview.estimatedPoints ?? "-"}`;
-  const items = [
-    pointsLine,
-    ...payload.preview.pathways.slice(0, 3).map(
-      (p) => `${p.visaName} (${p.subclass})`
-    ),
-  ];
+  // The same preview object the locked result page shows (lib/reports/report-preview.ts): this email and that page never disagree.
+  const includesLabel = isTr ? "Ön izleme" : isZh ? "预览" : "Your preview";
+  const items = [...(payload.preview.pointsLine ? [payload.preview.pointsLine] : []), ...payload.preview.sectionTitles];
 
-  const ctaLabel = isTr ? "Tam Raporumu Görüntüle →" : isZh ? "查看完整报告 →" : "View My Full Report →";
+  const ctaLabel = isTr ? "Raporumu Aç →" : isZh ? "打开我的报告 →" : "Open My Report →";
   const orCopy = isTr ? "Veya bu bağlantıyı kopyalayın:" : isZh ? "或复制此链接：" : "Or copy this link:";
-  const footerText = isTr
-    ? "LogiVisa otomatik bir analiz aracıdır ve göçmenlik tavsiyesi sağlamaz. Hukuki danışmanlık için kayıtlı bir MARA acentesiyle görüşün. Bu rapor yalnızca genel bilgi amaçlıdır."
-    : isZh
-      ? "LogiVisa是一款自动分析工具，不提供移民建议。如需法律建议，请咨询注册MARA顾问。本报告仅供一般信息参考。"
-      : "LogiVisa is an automated analysis tool and does not provide migration advice. For legal advice, consult a registered MARA agent. This report is for general information purposes only.";
+  const footerText = reportDisclaimer(payload.locale);
 
   const html = `<!DOCTYPE html>
 <html lang="${payload.locale}">
@@ -163,7 +147,7 @@ export async function sendReportReadyEmail(payload: {
           <tr>
             <td style="padding:36px 40px 20px;">
               <p style="margin:0;font-size:22px;font-weight:800;color:#06b6d4;letter-spacing:-0.5px;">LogiVisa</p>
-              <p style="margin:3px 0 0;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:2.5px;color:#475569;">AI-Powered Australian Migration Intelligence</p>
+              <p style="margin:3px 0 0;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:2.5px;color:#475569;">Australian visa information from published sources</p>
             </td>
           </tr>
 

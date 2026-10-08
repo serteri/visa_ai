@@ -49,6 +49,8 @@ import { shouldSuppressReportEmails } from "@/lib/email/suppression";
 import { safeEqual } from "@/lib/admin-auth";
 
 import { sendInternalLeadTierEmail, sendReportReadyEmail } from "@/lib/email/quick-check-emails";
+import { buildBasicPreview, buildReportPreview, type ReportPreview } from "@/lib/reports/report-preview";
+import { buildReportView, reportViewProfile } from "@/lib/reports/report-view";
 const REF_COOKIE = "logivisa_ref";
 
 /**
@@ -72,15 +74,7 @@ async function resolveReferralAgent(): Promise<{ id: string; email: string; name
 
 type SupportedLocale = "en" | "tr" | "zh-Hans";
 
-export type FullCheckQuickPreview = {
-  estimatedPoints?: number;
-  pathways: Array<{
-    subclass: string;
-    visaName: string;
-    confidenceLevel: "low" | "medium" | "high";
-    reason: string;
-  }>;
-};
+export type FullCheckQuickPreview = ReportPreview;
 
 export type FullCheckWaitlistState = {
   status: "idle" | "success" | "error";
@@ -416,17 +410,15 @@ async function createCheckoutSession(input: {
 
 // ─── Shared ───────────────────────────────────────────────────────────────────
 
-function buildQuickPreview(report: ReadinessReport): FullCheckQuickPreview {
-  return {
-    estimatedPoints:
-      report.pointsBoosterSimulator?.currentEstimate ?? report.pointsEstimate?.estimatedPoints,
-    pathways: report.pathwayComparison.slice(0, 3).map((item) => ({
-      subclass: item.subclass,
-      visaName: item.visaName,
-      confidenceLevel: item.confidenceLevel,
-      reason: item.reason,
-    })),
-  };
+/**
+ * The pre-payment preview (lib/reports/report-preview.ts): the visitor's details, the points total from their entries and the report's section
+ * titles. No visa, state, fee or scenario content leaves the server before the report is unlocked.
+ */
+function buildQuickPreview(report: ReadinessReport, locale: SupportedLocale, input: Partial<ReadinessInput>, fullName?: string): FullCheckQuickPreview {
+  const estimated = report.pointsBoosterSimulator?.currentEstimate ?? report.pointsEstimate?.estimatedPoints ?? null;
+  if (report.country === "CA" || report.partnerSponsorshipAssessment) return buildBasicPreview(report, locale);
+  const view = buildReportView({ report, locale, profile: reportViewProfile(input, fullName ?? null, locale), dateText: "" });
+  return buildReportPreview(view, typeof estimated === "number" ? estimated : null);
 }
 
 function normalizeSubmittedLocale(value: string): SupportedLocale {
@@ -1079,7 +1071,7 @@ export async function submitFullCheckWaitlist(
     // when a valid agent ?ref= cookie is present.
     agentId: referralAgent?.id,
     assignedViaRef: Boolean(referralAgent),
-    previewData: buildQuickPreview(generatedReport),
+    previewData: buildQuickPreview(generatedReport, resolvedLocale, readinessInputForReport, fullName),
   });
 
   // This browser may open its own report on screen (and download its PDF) -- lib/reports/report-session.ts.
@@ -1166,7 +1158,7 @@ export async function submitFullCheckWaitlist(
       fullName,
       reportLink,
       locale: resolvedLocale,
-      preview: buildQuickPreview(generatedReport),
+      preview: buildQuickPreview(generatedReport, resolvedLocale, readinessInputForReport, fullName),
     }).catch((err) => console.error("Customer report email failed (non-blocking):", err)),
     internalLeadTier === "Cold" || skipInternalEmail
       ? Promise.resolve()
@@ -1197,7 +1189,7 @@ export async function submitFullCheckWaitlist(
       : isZh
         ? "快速结果已生成。解锁后可查看完整报告。"
         : "Quick results are ready. Unlock to access the full report.",
-    preview: buildQuickPreview(generatedReport),
+    preview: buildQuickPreview(generatedReport, resolvedLocale, readinessInputForReport, fullName),
     reportId: reportRecord.id,
     userInput: {
       name: fullName || undefined,
