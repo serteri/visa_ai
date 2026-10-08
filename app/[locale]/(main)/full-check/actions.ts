@@ -46,6 +46,7 @@ import {
 import { getAgentUser } from "@/lib/crm/leads";
 import { sendAgentAssignedEmail } from "@/lib/email/agent-notifications";
 import { shouldSuppressReportEmails } from "@/lib/email/suppression";
+import { sendOpsAlert } from "@/lib/email/ops-alert";
 import { safeEqual } from "@/lib/admin-auth";
 
 import { sendInternalLeadTierEmail, sendReportReadyEmail } from "@/lib/email/quick-check-emails";
@@ -1080,7 +1081,7 @@ export async function submitFullCheckWaitlist(
   // Best-effort: the lead is already persisted and (if applicable) assigned
   // above, so a broken RESEND_API_KEY or a send failure here must never fail
   // the submission the visitor is waiting on.
-  if (referralAgent && !isAdmin && !shouldSuppressReportEmails({ email }, "quick_check_agent_assigned_email")) {
+  if (referralAgent && !shouldSuppressReportEmails({ email }, "quick_check_agent_assigned_email")) {
     try {
       await sendAgentAssignedEmail({
         agentEmail: referralAgent.email,
@@ -1131,7 +1132,9 @@ export async function submitFullCheckWaitlist(
     if (!isMissingRelationError(error, "leads")) {
       throw error;
     }
-    console.warn("leads table missing; skipping lead persistence.");
+    // Not a silent skip: the lead is lost, so log an error and alert the operator (throttled). Fix: run
+    // prisma/manual-migrations/2026-10-08-create-missing-tables.sql (docs/missing-tables.md).
+    await sendOpsAlert("leads_table_missing", `A lead was NOT saved (report ${reportRecord.id}): the leads table does not exist in this database.`);
   }
 
   if (analysisProgressId) {
@@ -1147,8 +1150,8 @@ export async function submitFullCheckWaitlist(
 
   // Free admin order (the submitter's address is on the admin allow-list): neither the customer "report
   // ready" email nor the internal lead-tier notification is sent. The lead and report are saved as usual.
-  const skipCustomerEmail = isAdmin || shouldSuppressReportEmails({ email }, "quick_check_customer_report_email");
-  const skipInternalEmail = internalLeadTier !== "Cold" && (isAdmin || shouldSuppressReportEmails({ email }, "quick_check_internal_lead_email"));
+  const skipCustomerEmail = shouldSuppressReportEmails({ email }, "quick_check_customer_report_email");
+  const skipInternalEmail = internalLeadTier !== "Cold" && shouldSuppressReportEmails({ email }, "quick_check_internal_lead_email");
 
   Promise.all([
     skipCustomerEmail
@@ -1416,7 +1419,7 @@ async function unlockPremiumReportInternal(
   // Only the isAdmin branch reaches here now -- every non-admin unlock
   // returns via the /api/checkout redirect above.
   // An admin session unlocks a report without Stripe and without a promotion code, from the normal form and unlock modal; the unlock is
-  // recorded as admin_free (not as a free-beta or paid unlock) and sends no customer email.
+  // recorded as admin_free (not as a free-beta or paid unlock). Emails follow the recipient address only.
   const effectiveUnlockMethod: UnlockMethod = "admin_free";
 
   // ── PDF generation & email delivery ──────────────────────────────────────
@@ -1427,7 +1430,9 @@ async function unlockPremiumReportInternal(
   // the on-screen report regardless of whether the emailed PDF went out).
   let pdfSent = false;
   try {
-    const result = await generateAndSendReport(reportId, record.email, fullName || undefined, { suppressEmail: true });
+    // The email goes to the report's own address and is suppressed only if THAT address is on ADMIN_EMAILS /
+    // KNOWN_TEST_EMAILS -- never because the browser holds an admin session.
+    const result = await generateAndSendReport(reportId, record.email, fullName || undefined);
     pdfSent = result.pdfSent;
     if (!pdfSent && !result.suppressed && isEmailDeliveryEnabled()) {
       console.error(`unlockPremiumReport: generateAndSendReport reported failure for report ${reportId}`);

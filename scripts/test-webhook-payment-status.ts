@@ -26,6 +26,7 @@ process.env.KNOWN_TEST_EMAILS = "";
 delete process.env.SIMULATE_EMAIL_DELIVERY;
 delete process.env.ENABLE_TRANSACTIONAL_EMAILS;
 
+export {};
 let failures = 0;
 function check(cond: boolean, msg: string) {
   if (cond) console.log(`  ✅ ${msg}`);

@@ -297,12 +297,12 @@ export async function generateAndSendReport(
   email: string,
   fullName?: string,
   options?: { suppressEmail?: boolean; /** The free-beta unlock: the email must not claim a payment. */ freeBeta?: boolean }
-): Promise<{ pdfSent: boolean; suppressed?: boolean }> {
+): Promise<{ pdfSent: boolean; suppressed?: boolean; skippedReason?: string }> {
   try {
     const record = await getUserReportById(reportId);
     if (!record) {
       console.error(`[report-service] generateAndSendReport: report ${reportId} not found`);
-      return { pdfSent: false };
+      return { pdfSent: false, skippedReason: "report_not_found" };
     }
 
     const recipientEmail = email || record.email;
@@ -311,8 +311,10 @@ export async function generateAndSendReport(
     // demand; pdf_sent stays false because no email went out. (The Stripe webhook passes suppressEmail from
     // its server-side check of the session's promotion code; the allow-list check here also covers the
     // admin fast path in unlockPremiumReport.)
-    if (options?.suppressEmail || shouldSuppressReportEmails({ email: [recipientEmail, record.email] }, "report_service_customer_email")) {
-      return { pdfSent: false, suppressed: true };
+    // Only the RECIPIENT address decides (the allow-lists); the caller's browser session never does.
+    if (options?.suppressEmail || shouldSuppressReportEmails({ email: recipientEmail }, "report_service_customer_email")) {
+      console.log(`[report-service] customer email NOT sent for report ${reportId}: reason=${options?.suppressEmail ? "caller_suppressed" : "recipient_listed"}`);
+      return { pdfSent: false, suppressed: true, skippedReason: options?.suppressEmail ? "caller_suppressed" : "recipient_listed" };
     }
 
     if (process.env.SIMULATE_EMAIL_DELIVERY === "true") {
@@ -325,9 +327,9 @@ export async function generateAndSendReport(
 
     if (!isEmailDeliveryEnabled()) {
       console.warn(
-        `[report-service] Müşteri e-postası atlandı (RESEND_API_KEY yok / ENABLE_TRANSACTIONAL_EMAILS=false) -- report ${reportId} → ${recipientEmail}`
+        `[report-service] customer email NOT sent for report ${reportId}: reason=email_delivery_disabled (RESEND_API_KEY missing or ENABLE_TRANSACTIONAL_EMAILS=false)`
       );
-      return { pdfSent: false };
+      return { pdfSent: false, skippedReason: "email_delivery_disabled" };
     }
 
     const locale = record.locale === "tr" ? "tr" : record.locale === "zh-Hans" ? "zh-Hans" : "en";
@@ -344,8 +346,8 @@ export async function generateAndSendReport(
         freeBeta: options?.freeBeta === true,
       });
     } catch (emailErr) {
-      console.error(`[report-service] Müşteri e-postası GÖNDERİLEMEDİ -- report ${reportId} → ${recipientEmail}:`, emailErr);
-      return { pdfSent: false };
+      console.error(`[report-service] customer email NOT sent for report ${reportId}: reason=provider_error`, emailErr);
+      return { pdfSent: false, skippedReason: "provider_error" };
     }
 
     await markReportPdfSent(reportId);
@@ -353,8 +355,8 @@ export async function generateAndSendReport(
 
     return { pdfSent: true };
   } catch (err) {
-    console.error(`[report-service] generateAndSendReport failed for report ${reportId}:`, err);
-    return { pdfSent: false };
+    console.error(`[report-service] generateAndSendReport failed for report ${reportId}: reason=exception`, err);
+    return { pdfSent: false, skippedReason: "exception" };
   }
 }
 

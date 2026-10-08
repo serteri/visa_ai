@@ -211,9 +211,9 @@ async function handleReportUnlock(stripe: Stripe, session: Stripe.Checkout.Sessi
     // and the DB unlock above already succeeded, so a Resend failure here
     // must never fail this webhook and trigger a Stripe retry of a charge
     // that already went through.
-    // Free admin order (ADMINFREE on the session, or an admin allow-list address): neither the internal
-    // notification below nor the customer email further down is sent. The unlock, the commission ledger
-    // and the on-demand PDF are unaffected.
+    // Owner/test order: ONLY a buyer address on ADMIN_EMAILS / KNOWN_TEST_EMAILS (or the one coupon id in
+    // ADMIN_FREE_COUPON_ID, if set) skips the internal notification and the customer email. A zero-amount session, a
+    // 100% coupon or any other promotion code is an ordinary order and gets both. Every skip logs its reason.
     const promotionCodes = await getSessionPromotionCodes(stripe, session);
     const suppressionInput = {
       email: [email, session.metadata?.email, session.customer_email, session.customer_details?.email, record.email],
@@ -221,11 +221,15 @@ async function handleReportUnlock(stripe: Stripe, session: Stripe.Checkout.Sessi
     };
 
     try {
-      if (!shouldSuppressReportEmails(suppressionInput, "stripe_webhook_admin_notification")) {
-        await sendFullCheckAdminEmail(fullCheckAdminPayload(record, email));
+      if (shouldSuppressReportEmails(suppressionInput, "stripe_webhook_admin_notification")) {
+        console.log(`Webhook: PAID admin notification NOT sent for report ${reportId}: reason=buyer_listed_or_admin_coupon`);
+      } else {
+        const adminResult = await sendFullCheckAdminEmail(fullCheckAdminPayload(record, email));
+        if (adminResult.sent) console.log(`Webhook: PAID admin notification sent for report ${reportId}`);
+        else console.error(`Webhook: PAID admin notification NOT sent for report ${reportId}: reason=${adminResult.skippedReason}`);
       }
     } catch (adminEmailErr) {
-      console.error("Webhook: PAID admin notification email failed (non-blocking):", adminEmailErr);
+      console.error(`Webhook: PAID admin notification NOT sent for report ${reportId}: reason=provider_error`, adminEmailErr);
     }
 
     // Generate PDF and send email -- shared with the free-promo grant in
@@ -235,10 +239,10 @@ async function handleReportUnlock(stripe: Stripe, session: Stripe.Checkout.Sessi
     // PDF/email failure here must never fail this webhook and cause Stripe
     // to retry a charge that already went through.
     try {
-      const { pdfSent } = await generateAndSendReport(reportId, email, record.fullName ?? undefined, {
+      const { pdfSent, skippedReason } = await generateAndSendReport(reportId, email, record.fullName ?? undefined, {
         suppressEmail: shouldSuppressReportEmails(suppressionInput, "stripe_webhook_customer_report_email"),
       });
-      console.log(`Webhook: Report ${reportId} unlock processed, pdfSent=${pdfSent}`, { email });
+      console.log(`Webhook: Report ${reportId} unlock processed, pdfSent=${pdfSent}${pdfSent ? "" : ` customerEmailSkipped reason=${skippedReason ?? "unknown"}`}`, { amountTotal: session.amount_total, paymentStatus: session.payment_status });
     } catch (emailErr) {
       console.error("Webhook: PDF generation or email delivery failed:", emailErr);
       // Payment was successful, so we don't fail the webhook

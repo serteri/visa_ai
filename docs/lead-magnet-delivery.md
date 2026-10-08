@@ -117,3 +117,8 @@ What is now different, so the next occurrence is decisive:
    - `{ ok: false, name, message }`: that is the exact reason (for example `API key is invalid`, `domain is not verified`, `restricted_api_key`), and the fix is in Resend / Vercel, not in code.
 2. `fetch('/api/admin/email-health').then(r=>r.json()).then(console.log)`: shows `resendApiKeySet`, `fromEmail`, `fromIsSandbox`, `transactionalEmailsOn`, how many entries `ADMIN_EMAILS` / `KNOWN_TEST_EMAILS` have, the From domain's status in Resend and the last 25 messages with their last event. (`?address=you@example.com` also says whether that address is on the allow-list, i.e. suppressed by design.)
 3. Submit the occupation-list modal with a non-test address; in Vercel logs search `[email]`: you should see `pdf_lead_admin_notification accepted` and `[pdf-delivery] delivery email accepted by the provider` with message ids, and both appear in Resend.
+
+## 7. Suppression correction (8 Oct)
+
+Report emails are now suppressed only when the recipient/buyer address is in `ADMIN_EMAILS` / `KNOWN_TEST_EMAILS`, or the Stripe coupon id equals the optional `ADMIN_FREE_COUPON_ID`.
+The hard-coded `ADMINFREE` code, the browser's admin session and zero-amount / 100%-coupon sessions no longer suppress anything. Every skip logs `reason=...`.

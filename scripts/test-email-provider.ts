@@ -82,9 +82,9 @@ async function main() {
 
   console.log("\n3. callers keep their non-blocking catch");
   const rs = readFileSync(path.join(root, "lib/services/report-service.ts"), "utf8");
-  t("report-service: the unlock email failure is caught (the unlock stands)", /Müşteri e-postası GÖNDERİLEMEDİ/.test(rs) && /sendReportAccessLink failed/.test(rs));
+  t("report-service: the unlock email failure is caught (the unlock stands)", /reason=provider_error/.test(rs) && /sendReportAccessLink failed/.test(rs));
   const wh = readFileSync(path.join(root, "app/api/stripe/webhook/route.ts"), "utf8");
-  t("stripe webhook: the paid admin notification failure is caught", /PAID admin notification email failed \(non-blocking\)/.test(wh));
+  t("stripe webhook: the paid admin notification failure is caught", /PAID admin notification NOT sent for report .*reason=provider_error/.test(wh));
   const fc = readFileSync(path.join(root, "app/[locale]/(main)/full-check/actions.ts"), "utf8");
   t("report-service marks the PDF/email as sent only after the email call returned (the provider accepted it)", (() => { const from = rs.indexOf("export async function generateAndSendReport"); const send = rs.indexOf("await sendPremiumReportReadyEmail({", from); return from > 0 && send > from && rs.indexOf("await markReportPdfSent(reportId)", send) > send; })());
   t("full-check: the customer report email failure is caught", /Customer report email failed \(non-blocking\)/.test(fc));

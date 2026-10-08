@@ -5,7 +5,7 @@ import type Stripe from "stripe";
  *
  * The webhook event carries a session whose `discounts` are unexpanded ids, so the session is re-retrieved
  * with the discount objects expanded. Returned strings are the promotion code text plus the coupon id and
- * name, so an "ADMINFREE" promotion code AND an "ADMINFREE" coupon both show up (callers compare
+ * name, so a promotion code AND a coupon both show up (callers compare
  * case-insensitively). A lookup failure returns whatever was read so far (usually nothing) and warns without
  * any customer data: the caller then treats the order as a normal one, so a Stripe outage can never silently
  * swallow a real customer's email.

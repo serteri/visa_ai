@@ -81,14 +81,17 @@ export function fullCheckAdminHeadline(payload: Pick<FullCheckAdminEmailPayload,
  * every submission regardless of payment, which meant most of these emails
  * were for visitors who filled the form and never paid.
  */
-export async function sendFullCheckAdminEmail(payload: FullCheckAdminEmailPayload): Promise<void> {
+export async function sendFullCheckAdminEmail(payload: FullCheckAdminEmailPayload): Promise<{ sent: boolean; skippedReason?: string }> {
   const apiKey = process.env.RESEND_API_KEY;
   const notificationEmail =
     process.env.FULL_CHECK_NOTIFICATION_EMAIL ||
     process.env.REFERRAL_NOTIFICATION_EMAIL ||
     "serter@logivisa.com";
 
-  if (!apiKey) return;
+  if (!apiKey) {
+    console.error("[email] full_check_admin_notification NOT sent: reason=resend_api_key_missing");
+    return { sent: false, skippedReason: "resend_api_key_missing" };
+  }
 
   const resend = new Resend(apiKey);
   const fromEmail = process.env.FROM_EMAIL || "LogiVisa <noreply@logivisa.com>";
@@ -127,4 +130,5 @@ export async function sendFullCheckAdminEmail(payload: FullCheckAdminEmailPayloa
     subject: headline.subject,
     text: bodyLines.join("\n"),
   });
+  return { sent: true };
 }

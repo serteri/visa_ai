@@ -23,6 +23,7 @@ process.env.FULL_CHECK_NOTIFICATION_EMAIL = "internal-notify@example.test";
 process.env.PDF_LEAD_NOTIFICATION_EMAIL = "pdf-lead@example.test";
 process.env.NEXT_PUBLIC_BASE_URL = "https://example.test";
 // Quotes/whitespace/case in the list on purpose: the parser must cope with a value pasted verbatim.
+process.env.ADMIN_FREE_COUPON_ID = "ADMINFREE"; // the one configured coupon id that marks an owner order
 process.env.ADMIN_EMAILS = ' admin@example.test , "Second.Admin@Example.Test" ';
 process.env.KNOWN_TEST_EMAILS = "known-test@example.test";
 delete process.env.SIMULATE_EMAIL_DELIVERY;

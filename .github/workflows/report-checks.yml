@@ -105,6 +105,8 @@ jobs:
         run: npm run test:product-naming
       - name: Admin session unlocks without Stripe (paid checkout on); non-admin goes to Stripe
         run: npm run test:admin-unlock
+      - name: Email suppression by recipient address only (no admin session, no coupon, no zero amount); every skip logs its reason; lead-persistence alert
+        run: npm run test:recipient-suppression
       - name: No route can produce the verdict structure (PDF route, result page, agent PDF; en / tr / zh-Hans)
         run: npm run test:no-verdict-routes
 

@@ -7,7 +7,7 @@
  *      stays locked; no promotion code or admin shortcut exists for them (a typed admin address does not unlock);
  *   2. admin session (NextAuth ADMIN, then the signed admin cookie): the same form creates a report with NO customer / internal / agent email; the unlock
  *      returns the report and its access token in the same browser, never calls /api/checkout, creates no Stripe session, needs no promotion code,
- *      records the unlock as admin_free and sends no email at all, even to an address that is not on the admin / test lists;
+ *      records the unlock as admin_free. Emails depend on the RECIPIENT address only: a non-listed customer is emailed even in an admin session; a listed address is not;
  *   3. the checkout route itself still demands payment from a non-admin (paid flag on) and the PDF route answers an admin for the unlocked report.
  *
  *   npx tsx scripts/test-admin-unlock.ts
@@ -161,7 +161,7 @@ async function main() {
     const adminMade = await submitFullCheckWaitlist({ status: "idle" }, submitForm(customer, locale));
     await flush();
     check(adminMade.status === "success" && !!adminMade.reportId, "the normal form creates a new report");
-    check(sent.length === 0, "a new admin report sends no customer, internal or agent email", JSON.stringify(sent));
+    check(sent.some((m) => m.to.includes(customer)), "an admin session does NOT suppress the preview email to a non-listed customer", JSON.stringify(sent));
     const aid = adminMade.reportId ?? newId;
     seed(aid, customer, locale);
     checkoutCalls = 0;
@@ -171,7 +171,8 @@ async function main() {
     check(unlocked.status === "success" && !!unlocked.report && !!unlocked.accessToken, "the unlock returns the report and its access token in the same browser", JSON.stringify({ s: unlocked.status, m: unlocked.message }));
     check(checkoutCalls === 0 && stripeCalls === 0 && !unlocked.redirectUrl, "no /api/checkout request, no Stripe session, no redirect, no promotion code");
     check(rows.get(aid)!.is_unlocked === true && rows.get(aid)!.unlock_method === "admin_free" && rows.get(aid)!.payment_status === "admin_free", "the report is unlocked and recorded as admin_free");
-    check(sent.length === 0, "the unlock sends no email at all (the address is not on any admin / test list)", JSON.stringify(sent));
+    check(sent.some((m) => m.to.includes(customer) && /Information Report|Bilgi Raporu|信息报告/.test(m.subject)), "the unlock emails the report link to the non-listed customer (an admin session suppresses nothing)", JSON.stringify(sent));
+    check(sent.every((m) => m.to.includes(customer)), "nothing goes to anyone else", JSON.stringify(sent));
 
     console.log("\n2b. admin session (signed admin cookie)");
     signOutAll();
@@ -185,7 +186,18 @@ async function main() {
     checkoutCalls = 0;
     const cookieUnlocked = await unlockPremiumReport({ status: "idle" }, unlockForm(cid, customer));
     await flush();
-    check(cookieMade.status === "success" && cookieUnlocked.status === "success" && !!cookieUnlocked.report && checkoutCalls === 0 && sent.length === 0 && rows.get(cid)!.unlock_method === "admin_free", "the admin cookie: new report, unlock without Stripe, no email");
+    check(cookieMade.status === "success" && cookieUnlocked.status === "success" && !!cookieUnlocked.report && checkoutCalls === 0 && sent.some((m) => m.to.includes(customer)) && rows.get(cid)!.unlock_method === "admin_free", "the admin cookie: new report, unlock without Stripe, customer still emailed");
+
+    console.log("\n2c. admin session + a LISTED recipient address: suppressed by the address");
+    const listed = "owner-admin@example.com";
+    sent.length = 0;
+    const lm = await submitFullCheckWaitlist({ status: "idle" }, submitForm(listed, locale));
+    await flush();
+    const lid = lm.reportId ?? newId;
+    seed(lid, listed, locale);
+    await unlockPremiumReport({ status: "idle" }, unlockForm(lid, listed));
+    await flush();
+    check(sent.length === 0, "listed address: no email", JSON.stringify(sent));
     signOutAll();
   }
 

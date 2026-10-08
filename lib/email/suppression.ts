@@ -1,20 +1,23 @@
 /**
  * Report-email suppression for free admin orders.
  *
- * A report/PDF obtained for free by the site owner must not notify anyone: not the internal LogiVisa
- * inbox, not the customer address. An order is a "free admin order" when EITHER
- *   1. the Stripe Checkout session had the ADMINFREE promotion code / coupon applied (case-insensitive) --
- *      determined server-side from the Stripe session (lib/stripe/session-discounts.ts), never from a value
- *      the browser sends; or
- *   2. the buyer/customer email (trimmed, lower-cased) is in the existing admin allow-list configuration:
- *      the ADMIN_EMAILS and KNOWN_TEST_EMAILS environment variables.
+ * Report emails are suppressed ONLY for these two reasons, nothing else:
+ *   1. the recipient / buyer address (trimmed, lower-cased, quotes stripped) is in ADMIN_EMAILS or KNOWN_TEST_EMAILS; or
+ *   2. the Stripe Checkout session had the one coupon whose id is set in ADMIN_FREE_COUPON_ID (optional; unset = never)
+ *      -- determined server-side from the Stripe session (lib/stripe/session-discounts.ts).
+ * The browser's admin session, cookies, NextAuth role, a zero-amount session, a 100% coupon or any other promotion
+ * code NEVER suppress an email: a customer who is not on the lists always gets the customer email and the admin
+ * notification.
  *
  * Every report-related sender calls shouldSuppressReportEmails() BEFORE sending. Authentication/password
  * mail, the contact form and agent-portal notifications are not report emails and never call it.
  * The log line carries a reason code and the sender name only -- never an email address.
  */
 
-export const ADMIN_FREE_PROMO_CODE = "ADMINFREE";
+/** The optional single coupon id (env var) that marks an owner's free order. Unset: no coupon suppresses anything. */
+export function adminFreeCouponId(): string {
+  return (process.env.ADMIN_FREE_COUPON_ID ?? "").trim().replace(/^["']+|["']+$/g, "").trim().toLowerCase();
+}
 
 export type EmailSuppressionReason = "admin_email" | "admin_promo";
 
@@ -50,7 +53,8 @@ export function isAdminAllowListedEmail(email: MaybeString): boolean {
 }
 
 export function isAdminPromoCode(code: MaybeString): boolean {
-  return (code ?? "").trim().toUpperCase() === ADMIN_FREE_PROMO_CODE;
+  const configured = adminFreeCouponId();
+  return configured !== "" && (code ?? "").trim().toLowerCase() === configured;
 }
 
 /** Pure decision: why the report emails are suppressed, or null when they should go out. */
