@@ -7,8 +7,8 @@ import { PDF_SLUGS, sendPdfDeliveryEmail } from "@/lib/email/pdf-delivery";
 import { recordCommissionTransaction, recordCommissionTransactionForLead, hasRecordedTransaction } from "@/lib/stripe/commission";
 import { getStripeClient } from "@/lib/stripe";
 import { fullCheckAdminPayload, sendFullCheckAdminEmail } from "@/lib/email/full-check-admin";
-import { shouldSuppressReportEmails } from "@/lib/email/suppression";
-import { getSessionPromotionCodes } from "@/lib/stripe/session-discounts";
+import { getReportEmailSuppressionDecision, shouldSkipInternalNotification, shouldSuppressReportEmails } from "@/lib/email/suppression";
+import { getSessionCouponIds } from "@/lib/stripe/session-discounts";
 import { recordCreditPurchase } from "@/lib/chat/purchases";
 
 export const dynamic = "force-dynamic";
@@ -131,10 +131,10 @@ async function handlePdfBookPurchase(stripe: Stripe, session: Stripe.Checkout.Se
 
   // Free admin order (ADMINFREE applied on the session, or an admin allow-list address): no delivery email.
   // Decided server-side from the Stripe session, never from anything the browser sent.
-  const promotionCodes = await getSessionPromotionCodes(stripe, session);
+  const couponIds = await getSessionCouponIds(stripe, session);
   if (
     shouldSuppressReportEmails(
-      { email: [email, session.metadata?.email, session.customer_email, session.customer_details?.email], promotionCode: promotionCodes },
+      { email: [email, session.metadata?.email, session.customer_email, session.customer_details?.email], promotionCode: couponIds },
       "stripe_webhook_pdf_delivery"
     )
   ) {
@@ -151,6 +151,11 @@ async function handlePdfBookPurchase(stripe: Stripe, session: Stripe.Checkout.Se
   });
 }
 
+/** One grep-able line per paid report order: what happened to the PAID admin notification and to the customer email, and why. */
+function logPaidOrderSummary(reportId: string | undefined, admin: string, customer: string, extra: Record<string, unknown> = {}) {
+  console.log(`[webhook-summary] report=${reportId ?? "-"} paid_admin_notification=${admin} customer_email=${customer}`, extra);
+}
+
 async function handleReportUnlock(stripe: Stripe, session: Stripe.Checkout.Session): Promise<Response> {
   // assessmentId is the explicit metadata key set by app/api/checkout/route.ts
   // for this purpose; reportId is kept as a fallback for older sessions
@@ -160,6 +165,8 @@ async function handleReportUnlock(stripe: Stripe, session: Stripe.Checkout.Sessi
 
   if (!reportId) {
     console.error("Webhook: Missing reportId in session metadata");
+    console.error("Webhook: PAID admin notification NOT sent: reason=missing_report_id");
+    logPaidOrderSummary(undefined, "skipped:missing_report_id", "skipped:missing_report_id");
     return new Response("Missing reportId", { status: 400 });
   }
 
@@ -180,6 +187,8 @@ async function handleReportUnlock(stripe: Stripe, session: Stripe.Checkout.Sessi
 
     if (!record) {
       console.error(`Webhook: Report ${reportId} not found`);
+      console.error(`Webhook: PAID admin notification NOT sent for report ${reportId}: reason=report_not_found`);
+      logPaidOrderSummary(reportId, "skipped:report_not_found", "skipped:report_not_found");
       return new Response("Report not found", { status: 404 });
     }
 
@@ -205,31 +214,35 @@ async function handleReportUnlock(stripe: Stripe, session: Stripe.Checkout.Sessi
       console.error("Webhook: Commission transaction recording failed (non-blocking):", commissionErr);
     }
 
-    // Admin "assessment completed" notification -- moved here from the free
-    // quick-check form submission (see lib/email/full-check-admin.ts) so it
-    // only fires once payment has actually succeeded. Best-effort: payment
-    // and the DB unlock above already succeeded, so a Resend failure here
-    // must never fail this webhook and trigger a Stripe retry of a charge
-    // that already went through.
-    // Owner/test order: ONLY a buyer address on ADMIN_EMAILS / KNOWN_TEST_EMAILS (or the one coupon id in
-    // ADMIN_FREE_COUPON_ID, if set) skips the internal notification and the customer email. A zero-amount session, a
-    // 100% coupon or any other promotion code is an ordinary order and gets both. Every skip logs its reason.
-    const promotionCodes = await getSessionPromotionCodes(stripe, session);
+    // What may skip an email -- and nothing else: the CUSTOMER's address on ADMIN_EMAILS / KNOWN_TEST_EMAILS, or the single coupon ID in
+    // ADMIN_FREE_COUPON_ID (unset = never). The amount, payment status, a 100% coupon, any other promotion code, and the notification's own recipient
+    // never suppress anything. Every skip logs its reason.
+    const couponIds = await getSessionCouponIds(stripe, session);
     const suppressionInput = {
       email: [email, session.metadata?.email, session.customer_email, session.customer_details?.email, record.email],
-      promotionCode: promotionCodes,
+      promotionCode: couponIds,
     };
+    const decision = getReportEmailSuppressionDecision(suppressionInput);
+    console.log(`Webhook: report ${reportId} order facts`, { amountTotal: session.amount_total, paymentStatus: session.payment_status, couponCount: couponIds.length, suppression: decision ? `${decision.reason}:${decision.list}` : "none" });
 
+    let adminOutcome = "";
     try {
-      if (shouldSuppressReportEmails(suppressionInput, "stripe_webhook_admin_notification")) {
-        console.log(`Webhook: PAID admin notification NOT sent for report ${reportId}: reason=buyer_listed_or_admin_coupon`);
+      if (shouldSkipInternalNotification({ email: suppressionInput.email, couponId: couponIds }, "stripe_webhook_admin_notification")) {
+        adminOutcome = `skipped:${decision?.reason === "admin_promo" ? "admin_coupon" : "customer_address_listed"}`;
+        console.log(`Webhook: PAID admin notification NOT sent for report ${reportId}: reason=${adminOutcome.slice(8)} (list=${decision?.list})`);
       } else {
         const adminResult = await sendFullCheckAdminEmail(fullCheckAdminPayload(record, email));
-        if (adminResult.sent) console.log(`Webhook: PAID admin notification sent for report ${reportId}`);
-        else console.error(`Webhook: PAID admin notification NOT sent for report ${reportId}: reason=${adminResult.skippedReason}`);
+        if (adminResult.sent) {
+          adminOutcome = "sent";
+          console.log(`Webhook: PAID admin notification sent for report ${reportId}`);
+        } else {
+          adminOutcome = `skipped:${adminResult.skippedReason}`;
+          console.error(`Webhook: PAID admin notification NOT sent for report ${reportId}: reason=${adminResult.skippedReason}`);
+        }
       }
     } catch (adminEmailErr) {
-      console.error(`Webhook: PAID admin notification NOT sent for report ${reportId}: reason=provider_error`, adminEmailErr);
+      adminOutcome = "failed:provider_error";
+      console.error(`Webhook: PAID admin notification FAILED for report ${reportId}: reason=provider_error`, adminEmailErr);
     }
 
     // Generate PDF and send email -- shared with the free-promo grant in
@@ -238,17 +251,25 @@ async function handleReportUnlock(stripe: Stripe, session: Stripe.Checkout.Sessi
     // still wrapped: payment already succeeded and was recorded above, so a
     // PDF/email failure here must never fail this webhook and cause Stripe
     // to retry a charge that already went through.
+    let customerOutcome = "";
     try {
+      const customerDecision = decision;
       const { pdfSent, skippedReason } = await generateAndSendReport(reportId, email, record.fullName ?? undefined, {
         suppressEmail: shouldSuppressReportEmails(suppressionInput, "stripe_webhook_customer_report_email"),
+        suppressReason: customerDecision ? (customerDecision.reason === "admin_promo" ? "admin_coupon" : "customer_address_listed") : undefined,
       });
+      customerOutcome = pdfSent ? "sent" : `skipped:${skippedReason ?? "unknown"}`;
       console.log(`Webhook: Report ${reportId} unlock processed, pdfSent=${pdfSent}${pdfSent ? "" : ` customerEmailSkipped reason=${skippedReason ?? "unknown"}`}`, { amountTotal: session.amount_total, paymentStatus: session.payment_status });
     } catch (emailErr) {
+      customerOutcome = "failed:exception";
       console.error("Webhook: PDF generation or email delivery failed:", emailErr);
       // Payment was successful, so we don't fail the webhook
     }
+    logPaidOrderSummary(reportId, adminOutcome, customerOutcome);
   } catch (err) {
     console.error("Webhook: Failed to process checkout.session.completed:", err);
+    console.error(`Webhook: PAID admin notification NOT sent for report ${reportId}: reason=processing_error`);
+    logPaidOrderSummary(reportId, "failed:processing_error", "failed:processing_error");
     return new Response("Processing failed", { status: 500 });
   }
 
@@ -315,6 +336,7 @@ export async function POST(request: NextRequest) {
         return new Response("Already processed", { status: 200 });
       }
 
+      console.log(`[webhook-summary] paid_admin_notification=not_applicable:campaign_pdf_purchase (no report order; the buyer gets the delivery email)`);
       try {
         await handlePdfBookPurchase(stripe, session, campaignPdfSlug);
       } catch (err) {
@@ -344,6 +366,7 @@ export async function POST(request: NextRequest) {
     const pdfSlug = resolvePdfSlug(metadata.productType);
 
     if (pdfSlug) {
+      console.log(`[webhook-summary] paid_admin_notification=not_applicable:pdf_book_purchase (no report order; the buyer gets the delivery email)`);
       try {
         await handlePdfBookPurchase(stripe, session, pdfSlug);
       } catch (err) {
@@ -357,6 +380,7 @@ export async function POST(request: NextRequest) {
     // 100% promotion code, total A$0). An async method (e.g. BECS direct debit) completes Checkout as "unpaid";
     // that grant waits for checkout.session.async_payment_succeeded below.
     if (!GRANTABLE_PAYMENT_STATUSES.has(session.payment_status)) {
+      console.log("[webhook-summary] paid_admin_notification=deferred:awaiting_async_payment");
       console.warn("[stripe webhook] checkout completed but payment not yet received; waiting for async payment", {
         sessionId: session.id,
         paymentStatus: session.payment_status,
@@ -397,6 +421,9 @@ function grantCreditsOrUnlock(stripe: Stripe, session: Stripe.Checkout.Session):
   const metadata = (session.metadata || {}) as CheckoutSessionMeta;
   // AI-assistant credit packages (checked before the reportId fallback -- this checkout flow never sets reportId,
   // so falling through to handleReportUnlock would just log a "Missing reportId" error).
-  if (metadata.visitorId) return handleCreditsPurchase(session);
+  if (metadata.visitorId) {
+    console.log("[webhook-summary] paid_admin_notification=not_applicable:chat_credits_purchase");
+    return handleCreditsPurchase(session);
+  }
   return handleReportUnlock(stripe, session);
 }

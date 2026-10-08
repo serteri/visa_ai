@@ -4,6 +4,7 @@
  * Never throws and never blocks the visitor's request.
  */
 import { Resend } from "resend";
+import { adminNotificationRecipients } from "@/lib/email/admin-recipient";
 import { sendChecked } from "@/lib/email/provider";
 
 const lastSent = new Map<string, number>();
@@ -23,7 +24,7 @@ export async function sendOpsAlert(kind: string, detail: string): Promise<{ sent
     lastSent.set(kind, now);
     await sendChecked(`ops_alert_${kind}`, new Resend(apiKey), {
       from: process.env.FROM_EMAIL || "LogiVisa <noreply@logivisa.com>",
-      to: [process.env.FULL_CHECK_NOTIFICATION_EMAIL || process.env.REFERRAL_NOTIFICATION_EMAIL || "serter@logivisa.com"],
+      to: adminNotificationRecipients({ env: ["FULL_CHECK_NOTIFICATION_EMAIL", "REFERRAL_NOTIFICATION_EMAIL"], fallback: "serter@logivisa.com" }),
       subject: `[LogiVisa ALERT] ${kind}`,
       text: `${kind}\n\n${detail}\n\nThis alert is sent at most once an hour per kind.`,
     });

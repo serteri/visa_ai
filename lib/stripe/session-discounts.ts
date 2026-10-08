@@ -11,16 +11,29 @@ import type Stripe from "stripe";
  * swallow a real customer's email.
  */
 export async function getSessionPromotionCodes(stripe: Stripe, session: Stripe.Checkout.Session): Promise<string[]> {
+  return (await getSessionDiscountInfo(stripe, session)).all;
+}
+
+/** The coupon IDs applied to the session (what ADMIN_FREE_COUPON_ID is compared with, exactly; names and promotion-code texts never count). */
+export async function getSessionCouponIds(stripe: Stripe, session: Stripe.Checkout.Session): Promise<string[]> {
+  return (await getSessionDiscountInfo(stripe, session)).couponIds;
+}
+
+async function getSessionDiscountInfo(stripe: Stripe, session: Stripe.Checkout.Session): Promise<{ all: string[]; couponIds: string[] }> {
   const found = new Set<string>();
+  const couponIds = new Set<string>();
   const add = (value: string | null | undefined) => {
     if (value && value.trim()) found.add(value.trim());
   };
 
   const addCoupon = (coupon: string | Stripe.Coupon | null | undefined) => {
     if (!coupon) return;
-    if (typeof coupon === "string") add(coupon);
-    else {
+    if (typeof coupon === "string") {
+      add(coupon);
+      couponIds.add(coupon.trim());
+    } else {
       add(coupon.id);
+      couponIds.add(coupon.id.trim());
       add(coupon.name);
     }
   };
@@ -61,5 +74,5 @@ export async function getSessionPromotionCodes(stripe: Stripe, session: Stripe.C
     console.warn("[session-discounts] could not read the session's discounts; treating any unread discount as absent:", err instanceof Error ? err.message : "unknown error");
   }
 
-  return [...found];
+  return { all: [...found], couponIds: [...couponIds] };
 }

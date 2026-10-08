@@ -185,8 +185,8 @@ async function main() {
 
   function assertNoAddressesInSuppressionLogs(label: string) {
     for (const line of suppressionLines()) {
-      if (/@|example\.test/i.test(line)) check(false, `${label}: suppression log line leaks an address: "${line}"`);
-      if (!/^\[email-suppression\] suppressed reason=(admin_email|admin_promo) sender=[a-z_]+$/.test(line)) check(false, `${label}: suppression log line is not "reason code + sender" only: "${line}"`);
+      if (/@/.test(line)) check(false, `${label}: suppression log line leaks an address: "${line}"`);
+      if (!/^\[email-suppression\] suppressed reason=(admin_email|admin_promo) sender=[a-z_]+ kind=(customer|internal) list=[A-Z_]+( addr=[^@\s]+)?$/.test(line)) check(false, `${label}: suppression log line is not "reason, sender, rule, masked address" only: "${line}"`);
     }
   }
 
@@ -216,30 +216,32 @@ async function main() {
   }
 
   // ── 2. Stripe webhook: report unlock ─────────────────────────────────────
-  console.log("\n=== webhook: ADMINFREE promotion code (customer address is NOT on the admin list) ===");
-  for (const [label, code] of [["ADMINFREE", "ADMINFREE"], ["lower-case", "adminfree"], ["mixed case + spaces", "  AdminFree  "]] as const) {
+  console.log("\n=== webhook: ADMIN_FREE_COUPON_ID matches the coupon ID only (customer address is NOT on the admin list) ===");
+  for (const [label, id] of [["exact id", "ADMINFREE"], ["lower-case id", "adminfree"], ["id with spaces", "  AdminFree  "]] as const) {
     const before = failures;
-    const res = await runWebhook({ id: `cs_promo_${label.replace(/\W/g, "")}`, email: CUSTOMER, amountTotal: 0, discounts: [{ promotion_code: { code } }] });
+    const res = await runWebhook({ id: `cs_couponid_${label.replace(/\W/g, "")}`, email: CUSTOMER, amountTotal: 0, discounts: [{ coupon: { id, name: null }, promotion_code: null }] });
     check(res.status === 200, `${label}: webhook status ${res.status}`);
     check(sent.length === 0, `${label}: expected zero emails, got ${sent.length}: ${JSON.stringify(sent)}`);
-    check(suppressionLines().some((l) => l.includes("reason=admin_promo")), `${label}: expected an admin_promo suppression log line`);
+    check(suppressionLines().some((l) => l.includes("reason=admin_promo") && l.includes("list=ADMIN_FREE_COUPON_ID")), `${label}: expected an admin_promo suppression log line`);
     expectRecordsKept(label);
     assertNoAddressesInSuppressionLogs(label);
     if (failures === before) ok(`${label}: zero emails (internal and customer), records kept`);
   }
 
-  console.log("\n=== webhook: ADMINFREE as a coupon (promotion code given only as an id) ===");
+  console.log("\n=== webhook: a coupon NAME or a promotion-code TEXT equal to the configured id does NOT suppress (only the coupon ID does) ===");
   {
     const before = failures;
     promotionFixtures.set("promo_admin_1", "ADMINFREE");
-    let res = await runWebhook({ id: "cs_coupon_id", email: CUSTOMER, amountTotal: 0, discounts: [{ coupon: { id: "AdminFree", name: null }, promotion_code: null }] });
-    check(res.status === 200 && sent.length === 0, `coupon id: expected zero emails, got ${sent.length}`);
-    res = await runWebhook({ id: "cs_coupon_name", email: CUSTOMER, amountTotal: 0, discounts: [{ coupon: { id: "c_x1", name: "adminfree" }, promotion_code: null }] });
-    check(res.status === 200 && sent.length === 0, `coupon name: expected zero emails, got ${sent.length}`);
-    res = await runWebhook({ id: "cs_promo_by_id", email: CUSTOMER, amountTotal: 0, discounts: [{ promotion_code: "promo_admin_1" }] });
-    check(res.status === 200 && sent.length === 0, `promotion code id resolved server-side: expected zero emails, got ${sent.length}`);
-    expectRecordsKept("coupon");
-    if (failures === before) ok("coupon id / coupon name / promotion-code id all recognised");
+    for (const [id, discounts] of [
+      ["cs_name_only", [{ coupon: { id: "c_x1", name: "adminfree" }, promotion_code: null }]],
+      ["cs_code_text_only", [{ promotion_code: { code: "ADMINFREE" } }]],
+      ["cs_promo_id_resolves_to_text", [{ promotion_code: "promo_admin_1" }]],
+      ["cs_lookalike_id", [{ coupon: { id: "AdminFree2", name: null }, promotion_code: null }]],
+    ] as const) {
+      const res = await runWebhook({ id, email: CUSTOMER, amountTotal: 0, discounts: [...discounts] });
+      check(res.status === 200 && internalSent().length === 1 && customerSent().length === 1, `${id}: both emails must be sent, got ${JSON.stringify(sent)}`);
+    }
+    if (failures === before) ok("name / code text / look-alike id: both emails sent");
   }
 
   console.log("\n=== webhook: admin allow-list address, PAID session ===");
@@ -294,7 +296,7 @@ async function main() {
     const before = failures;
     let res = await runWebhook({ id: "cs_pdf_normal", email: CUSTOMER, productType: "pdf_book_global", amountTotal: 1999 });
     check(res.status === 200 && sent.length === 1 && sent[0].to.includes(CUSTOMER), `normal PDF purchase: expected the customer delivery email, got ${JSON.stringify(sent)}`);
-    res = await runWebhook({ id: "cs_pdf_promo", email: CUSTOMER, productType: "pdf_book_global", amountTotal: 0, discounts: [{ promotion_code: { code: "adminfree" } }] });
+    res = await runWebhook({ id: "cs_pdf_promo", email: CUSTOMER, productType: "pdf_book_global", amountTotal: 0, discounts: [{ coupon: { id: "adminfree", name: null }, promotion_code: null }] });
     check(res.status === 200 && sent.length === 0, `ADMINFREE PDF purchase: expected zero emails, got ${sent.length}`);
     res = await runWebhook({ id: "cs_pdf_admin", email: " Admin@Example.Test", productType: "pdf_book", amountTotal: 1999 });
     check(res.status === 200 && sent.length === 0, `admin-address PDF purchase: expected zero emails, got ${sent.length}`);

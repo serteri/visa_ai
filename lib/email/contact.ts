@@ -1,5 +1,6 @@
 import { Resend } from "resend";
 
+import { adminNotificationRecipients } from "@/lib/email/admin-recipient";
 import { sendChecked } from "@/lib/email/provider";
 
 function escapeHtml(value: string): string {
@@ -83,7 +84,7 @@ export async function sendContactNotification(m: { full_name: string; email: str
   }
   await sendChecked("contact_form_notification", new Resend(apiKey), {
     from: process.env.FROM_EMAIL || "LogiVisa <noreply@logivisa.com>",
-    to: ["hello@logivisa.com"],
+    to: adminNotificationRecipients({ fallback: "hello@logivisa.com" }),
     replyTo: m.email,
     subject: `New contact form message from ${m.full_name}`,
     html: buildContactEmailHtml({ fullName: m.full_name, email: m.email, phone: m.phone ?? undefined, message: m.message }),

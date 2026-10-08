@@ -296,7 +296,7 @@ export async function generateAndSendReport(
   reportId: string,
   email: string,
   fullName?: string,
-  options?: { suppressEmail?: boolean; /** The free-beta unlock: the email must not claim a payment. */ freeBeta?: boolean }
+  options?: { suppressEmail?: boolean; /** Why the caller suppressed (logged). */ suppressReason?: string; /** The free-beta unlock: the email must not claim a payment. */ freeBeta?: boolean }
 ): Promise<{ pdfSent: boolean; suppressed?: boolean; skippedReason?: string }> {
   try {
     const record = await getUserReportById(reportId);
@@ -313,8 +313,8 @@ export async function generateAndSendReport(
     // admin fast path in unlockPremiumReport.)
     // Only the RECIPIENT address decides (the allow-lists); the caller's browser session never does.
     if (options?.suppressEmail || shouldSuppressReportEmails({ email: recipientEmail }, "report_service_customer_email")) {
-      console.log(`[report-service] customer email NOT sent for report ${reportId}: reason=${options?.suppressEmail ? "caller_suppressed" : "recipient_listed"}`);
-      return { pdfSent: false, suppressed: true, skippedReason: options?.suppressEmail ? "caller_suppressed" : "recipient_listed" };
+      console.log(`[report-service] customer email NOT sent for report ${reportId}: reason=${options?.suppressEmail ? (options.suppressReason ?? "caller_suppressed") : "recipient_listed"}`);
+      return { pdfSent: false, suppressed: true, skippedReason: options?.suppressEmail ? (options.suppressReason ?? "caller_suppressed") : "recipient_listed" };
     }
 
     if (process.env.SIMULATE_EMAIL_DELIVERY === "true") {

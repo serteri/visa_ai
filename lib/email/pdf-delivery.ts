@@ -1,3 +1,4 @@
+import { adminNotificationRecipients } from "@/lib/email/admin-recipient";
 import { Resend } from "resend";
 import { sendChecked } from "@/lib/email/provider";
 import { LEAD_MAGNETS, PDF_SLUGS, leadMagnetBySlug, pick } from "@/lib/lead-magnets";
@@ -176,14 +177,14 @@ export async function sendPdfLeadAdminEmail(params: {
   delivered: boolean;
 }): Promise<void> {
   const apiKey = process.env.RESEND_API_KEY;
-  const notificationEmail = process.env.PDF_LEAD_NOTIFICATION_EMAIL || "serter@logivisa.com";
+  const notificationEmail = adminNotificationRecipients({ env: ["PDF_LEAD_NOTIFICATION_EMAIL"], fallback: "serter@logivisa.com" });
   if (!apiKey) {
     console.warn("[email] pdf_lead_admin_notification not sent: RESEND_API_KEY is not configured");
     return;
   }
   await sendChecked("pdf_lead_admin_notification", new Resend(apiKey), {
     from: process.env.FROM_EMAIL || "LogiVisa <noreply@logivisa.com>",
-    to: [notificationEmail],
+    to: notificationEmail,
     subject: `🚀 New Lead: PDF Guide Download [${params.category}]`,
     text: [
       "A new PDF guide lead has been captured.",

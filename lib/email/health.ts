@@ -4,6 +4,7 @@
  */
 import { Resend } from "resend";
 
+import { adminNotificationRecipients } from "@/lib/email/admin-recipient";
 import { isAdminAllowListedEmail } from "@/lib/email/suppression";
 import { EmailRejectedError, sendChecked } from "@/lib/email/provider";
 
@@ -22,8 +23,9 @@ export function emailConfigSummary() {
     transactionalEmailsOn: process.env.ENABLE_TRANSACTIONAL_EMAILS === "true" ? true : process.env.ENABLE_TRANSACTIONAL_EMAILS === "false" ? false : Boolean(process.env.RESEND_API_KEY),
     adminEmailsEntries: entries(process.env.ADMIN_EMAILS),
     knownTestEmailsEntries: entries(process.env.KNOWN_TEST_EMAILS),
-    internalLeadNotificationEmail: process.env.INTERNAL_LEAD_NOTIFICATION_EMAIL || "hello@logivisa.com",
-    pdfLeadNotificationEmail: process.env.PDF_LEAD_NOTIFICATION_EMAIL || "serter@logivisa.com",
+    adminNotificationEmailSet: Boolean(process.env.ADMIN_NOTIFICATION_EMAIL),
+    internalLeadNotificationEmail: adminNotificationRecipients({ env: ["INTERNAL_LEAD_NOTIFICATION_EMAIL"], fallback: "hello@logivisa.com" }).map(maskAddress),
+    pdfLeadNotificationEmail: adminNotificationRecipients({ env: ["PDF_LEAD_NOTIFICATION_EMAIL"], fallback: "serter@logivisa.com" }).map(maskAddress),
   };
 }
 

@@ -72,7 +72,7 @@ async function main() {
   const { NextRequest } = await import("next/server");
 
   let n = 0;
-  async function webhook(email: string, opts: { amount?: number; coupon?: { id: string; name?: string } | null } = {}) {
+  async function webhook(email: string, opts: { amount?: number; paymentStatus?: string; coupon?: { id: string; name?: string } | null } = {}) {
     sent.length = 0;
     logs.length = 0;
     reportEmail = email;
@@ -84,7 +84,7 @@ async function main() {
       customer_email: email,
       customer_details: { email, name: "Test Person" },
       amount_total: amount,
-      payment_status: amount === 0 ? "no_payment_required" : "paid",
+      payment_status: opts.paymentStatus ?? (amount === 0 ? "no_payment_required" : "paid"),
       currency: "aud",
       metadata: { productType: "premium", email, assessmentId: "rep-1", reportId: "rep-1", leadId: "rep-1", agentId: "" },
     };
@@ -114,7 +114,7 @@ async function main() {
   for (const addr of ["serter@logivisa.com", "SERTER@LogiVisa.com", "test@example.com", "jane.doe@example.com"]) {
     await webhook(addr);
     check(sent.length === 0, `${addr}: no email at all`, JSON.stringify(sent));
-    check(logged(/\[email-suppression\] suppressed reason=admin_email sender=stripe_webhook_admin_notification/) && logged(/PAID admin notification NOT sent .*reason=/) && logged(/customerEmailSkipped reason=caller_suppressed/), `${addr}: every skip logs its reason`);
+    check(logged(/\[email-suppression\] suppressed reason=admin_email sender=stripe_webhook_admin_notification/) && logged(/PAID admin notification NOT sent .*reason=/) && logged(/customerEmailSkipped reason=customer_address_listed/) && logged(/\[webhook-summary\] .*paid_admin_notification=skipped:customer_address_listed customer_email=skipped:customer_address_listed/), `${addr}: every skip logs its reason`);
   }
 
   console.log("5. the one configured coupon id (ADMIN_FREE_COUPON_ID) may suppress; any other coupon may not");
@@ -132,7 +132,7 @@ async function main() {
   delete process.env.ENABLE_TRANSACTIONAL_EMAILS;
   providerError = true;
   await webhook("cimend79@hotmail.com");
-  check(logged(/customerEmailSkipped reason=provider_error/) && logged(/PAID admin notification NOT sent .*reason=provider_error/), "provider rejection -> reason=provider_error for the customer email and the admin notification");
+  check(logged(/customerEmailSkipped reason=provider_error/) && logged(/PAID admin notification FAILED .*reason=provider_error/), "provider rejection -> reason=provider_error for the customer email and the admin notification");
   providerError = false;
   const key = process.env.RESEND_API_KEY;
   delete process.env.RESEND_API_KEY;
@@ -150,6 +150,48 @@ async function main() {
   reportEmail = "serter@logivisa.com";
   const b = await generateAndSendReport("rep-1", "serter@logivisa.com", "Test");
   check(b.pdfSent === false && b.skippedReason === "recipient_listed" && sent.length === 0, "listed recipient: suppressed with skippedReason=recipient_listed");
+
+  console.log("9. the production case: amount_total 0, payment_status 'paid', a promotion code that is NOT the AdminFree coupon, a non-listed customer");
+  const zeroPaid = { amount: 0, paymentStatus: "paid", coupon: { id: "TESTFREE_COUPON", name: "TESTFREE" } } as const;
+  for (const configured of [undefined, "AdminFree"]) {
+    if (configured) process.env.ADMIN_FREE_COUPON_ID = configured;
+    else delete process.env.ADMIN_FREE_COUPON_ID;
+    await webhook("cimend79@hotmail.com", zeroPaid);
+    const tag = `ADMIN_FREE_COUPON_ID=${configured ?? "(unset)"}`;
+    check(customer("cimend79@hotmail.com").length === 1, `${tag}: the customer email is sent`, JSON.stringify(sent));
+    check(internal().length === 1, `${tag}: the PAID admin notification is sent`, JSON.stringify(sent));
+    check(logged(/PAID admin notification sent for report/) && logged(/\[webhook-summary\] .*paid_admin_notification=sent customer_email=sent/), `${tag}: the log says sent / sent`);
+    check(!logs.some((l) => /\[email-suppression\]|caller_suppressed|customerEmailSkipped/.test(l)), `${tag}: nothing was suppressed`);
+  }
+  delete process.env.ADMIN_FREE_COUPON_ID;
+
+  console.log("10. internal notifications are never silenced by the recipient lists (serter@ is on ADMIN_EMAILS)");
+  process.env.ADMIN_NOTIFICATION_EMAIL = "serter@logivisa.com, hello@logivisa.com";
+  delete process.env.FULL_CHECK_NOTIFICATION_EMAIL;
+  await webhook("cimend79@hotmail.com");
+  const adminMail = sent.find((m) => /PAID Assessment Completed/.test(m.subject));
+  check(!!adminMail && adminMail.to.includes("serter@logivisa.com") && adminMail.to.includes("hello@logivisa.com"), "PAID notification goes to both addresses of the single env var, though serter@ is on ADMIN_EMAILS", JSON.stringify(sent));
+  const { shouldSkipInternalNotification } = await import("../lib/email/suppression");
+  check(shouldSkipInternalNotification({ email: "cimend79@hotmail.com" }, "t") === false, "a non-listed customer never skips an internal notification");
+  check(shouldSkipInternalNotification({ email: "serter@logivisa.com" }, "t") === true, "only a listed CUSTOMER address skips it (the owner's own tests)");
+  const { sendInternalLeadTierEmail } = await import("../lib/email/quick-check-emails");
+  sent.length = 0;
+  const leadSent = await sendInternalLeadTierEmail({ tier: "Hot", fullName: "Cust", email: "cimend79@hotmail.com", occupationDisplay: "Civil Engineer", country: "AU", preferredPathway: "189", englishLevel: "superior", reportLink: "https://example.test/r" } as never);
+  check(leadSent === true && sent.some((m) => m.to.includes("serter@logivisa.com") && m.to.includes("hello@logivisa.com")), "the quick-check lead-tier notice reaches the listed recipients", JSON.stringify(sent));
+  const { sendPdfLeadAdminEmail } = await import("../lib/email/pdf-delivery");
+  sent.length = 0;
+  await sendPdfLeadAdminEmail({ fullName: "C", email: "cimend79@hotmail.com", phone: "", slug: "australia-guide-2026", category: "g", delivered: true });
+  check(sent.some((m) => m.to.includes("serter@logivisa.com") && m.to.includes("hello@logivisa.com")), "the guide-lead notice reaches the listed recipients", JSON.stringify(sent));
+  const { sendContactNotification } = await import("../lib/email/contact");
+  sent.length = 0;
+  await sendContactNotification({ full_name: "C", email: "cimend79@hotmail.com", message: "hi" });
+  check(sent.some((m) => m.to.includes("serter@logivisa.com") && m.to.includes("hello@logivisa.com")), "the contact notice reaches the listed recipients", JSON.stringify(sent));
+  // eslint-disable-next-line @typescript-eslint/no-require-imports
+  const fs = require("node:fs") as typeof import("node:fs");
+  const internalSenders = ["lib/email/full-check-admin.ts", "lib/email/quick-check-emails.ts", "lib/email/pdf-delivery.ts", "lib/email/contact.ts", "lib/email/ops-alert.ts"];
+  check(internalSenders.every((f) => !/isAdminAllowListedEmail|shouldSuppressReportEmails|shouldSkipInternalNotification|ADMIN_EMAILS/.test(fs.readFileSync(f, "utf8"))), "no internal sender consults the allow-lists about its own recipient");
+  delete process.env.ADMIN_NOTIFICATION_EMAIL;
+  process.env.FULL_CHECK_NOTIFICATION_EMAIL = "internal-notify@example.test";
 
   console.log("8. a failed lead persistence is visible: error log + operator alert (throttled), never a silent warn");
   const { sendOpsAlert } = await import("../lib/email/ops-alert");

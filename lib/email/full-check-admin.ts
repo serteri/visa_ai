@@ -1,3 +1,4 @@
+import { adminNotificationRecipients } from "@/lib/email/admin-recipient";
 import { Resend } from "resend";
 
 import type { ReadinessInput } from "@/lib/readiness/types";
@@ -83,10 +84,7 @@ export function fullCheckAdminHeadline(payload: Pick<FullCheckAdminEmailPayload,
  */
 export async function sendFullCheckAdminEmail(payload: FullCheckAdminEmailPayload): Promise<{ sent: boolean; skippedReason?: string }> {
   const apiKey = process.env.RESEND_API_KEY;
-  const notificationEmail =
-    process.env.FULL_CHECK_NOTIFICATION_EMAIL ||
-    process.env.REFERRAL_NOTIFICATION_EMAIL ||
-    "serter@logivisa.com";
+  const notificationEmail = adminNotificationRecipients({ env: ["FULL_CHECK_NOTIFICATION_EMAIL", "REFERRAL_NOTIFICATION_EMAIL"], fallback: "serter@logivisa.com" });
 
   if (!apiKey) {
     console.error("[email] full_check_admin_notification NOT sent: reason=resend_api_key_missing");
@@ -126,7 +124,7 @@ export async function sendFullCheckAdminEmail(payload: FullCheckAdminEmailPayloa
 
   await sendChecked("full_check_admin_notification", resend, {
     from: fromEmail,
-    to: [notificationEmail],
+    to: notificationEmail,
     subject: headline.subject,
     text: bodyLines.join("\n"),
   });

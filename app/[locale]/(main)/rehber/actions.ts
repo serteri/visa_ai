@@ -1,3 +1,4 @@
+import { adminNotificationRecipients } from "@/lib/email/admin-recipient";
 "use server"
 
 import { headers } from "next/headers"
@@ -88,7 +89,7 @@ export async function submitDownloadForm(data: {
 
   const adminEmailPayload = {
     from: "LogiVisa <no-reply@logivisa.com>",
-    to: [process.env.PDF_LEAD_NOTIFICATION_EMAIL || "serter@logivisa.com"],
+    to: adminNotificationRecipients({ env: ["PDF_LEAD_NOTIFICATION_EMAIL"], fallback: "serter@logivisa.com" }),
     subject: "🚀 New Lead: PDF Guide Download",
     text: [
       "A new PDF guide lead has been captured.",

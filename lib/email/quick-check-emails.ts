@@ -1,3 +1,4 @@
+import { adminNotificationRecipients } from "@/lib/email/admin-recipient";
 /**
  * The quick-check emails: the customer "your report is ready" email and the internal Hot/Warm lead notice. They live here (not in the
  * "use server" actions file, where every export would become a callable server action) so each can be tested on its own. Both go through
@@ -29,7 +30,7 @@ export async function sendInternalLeadTierEmail(payload: {
   reportLink: string;
 }): Promise<boolean> {
   const apiKey = process.env.RESEND_API_KEY;
-  const notificationEmail = process.env.INTERNAL_LEAD_NOTIFICATION_EMAIL || "hello@logivisa.com";
+  const notificationEmail = adminNotificationRecipients({ env: ["INTERNAL_LEAD_NOTIFICATION_EMAIL"], fallback: "hello@logivisa.com" });
 
   if (!apiKey) {
     console.warn("[email] full_check_internal_lead_notice not sent: RESEND_API_KEY is not configured");
@@ -67,7 +68,7 @@ export async function sendInternalLeadTierEmail(payload: {
 
   await sendChecked("full_check_internal_lead_notice", resend, {
     from: fromEmail,
-    to: [notificationEmail],
+    to: notificationEmail,
     subject: `${payload.tier === "Hot" ? "🔥" : "🌤️"} ${payload.tier} lead: ${payload.fullName || "Unknown"} (self-reported, unverified)`,
     text: bodyLines.join("\n"),
   });

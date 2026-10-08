@@ -43,7 +43,7 @@ import {
 } from "@/src/lib/user-reports";
 import { getAgentUser } from "@/lib/crm/leads";
 import { sendAgentAssignedEmail } from "@/lib/email/agent-notifications";
-import { shouldSuppressReportEmails } from "@/lib/email/suppression";
+import { shouldSkipInternalNotification, shouldSuppressReportEmails } from "@/lib/email/suppression";
 import { sendOpsAlert } from "@/lib/email/ops-alert";
 import { safeEqual } from "@/lib/admin-auth";
 
@@ -968,7 +968,7 @@ export async function submitFullCheckWaitlist(
   // Free admin order (the submitter's address is on the admin allow-list): neither the customer "report
   // ready" email nor the internal lead-tier notification is sent. The lead and report are saved as usual.
   const skipCustomerEmail = shouldSuppressReportEmails({ email }, "quick_check_customer_report_email");
-  const skipInternalEmail = internalLeadTier !== "Cold" && shouldSuppressReportEmails({ email }, "quick_check_internal_lead_email");
+  const skipInternalEmail = internalLeadTier !== "Cold" && shouldSkipInternalNotification({ email }, "quick_check_internal_lead_email");
 
   Promise.all([
     skipCustomerEmail
@@ -1122,7 +1122,7 @@ async function unlockPremiumReportInternal(
     if (firstUnlock) {
       await markUserReportUnlocked({ reportId, email: record.email, phone: phone || undefined, unlockMethod: "beta_free", pdfSent: false });
       try {
-        if (!shouldSuppressReportEmails({ email: [email, record.email] }, "free_beta_admin_notification")) {
+        if (!shouldSkipInternalNotification({ email: [email, record.email] }, "free_beta_admin_notification")) {
           const today = await countFreeBetaUnlocksToday();
           await sendFullCheckAdminEmail({ ...fullCheckAdminPayload({ fullName: record.fullName, locale: record.locale, source: "full_check", inputJson: record.input }, record.email), variant: "free_beta", freeUnlocksToday: today });
         }

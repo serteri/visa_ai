@@ -4,7 +4,7 @@ import { db } from "@/db";
 import { pdfDownloads } from "@/db/schema";
 import { eq, and, inArray, notInArray, count } from "drizzle-orm";
 import { PDF_SLUGS, PDF_LEAD_CATEGORY, type PdfProduct, sendPdfDeliveryEmail, sendPdfLeadAdminEmail } from "@/lib/email/pdf-delivery";
-import { shouldSuppressReportEmails } from "@/lib/email/suppression";
+import { shouldSkipInternalNotification, shouldSuppressReportEmails } from "@/lib/email/suppression";
 import { prisma } from "@/lib/prisma";
 import { PDF_LEAD_SOURCE, marketForSlug } from "@/lib/crm/pdf-lead-sources";
 import { FREE_LIMIT as HANDLER_FREE_LIMIT, handlePdfDownload } from "@/lib/pdf-download/handle";
@@ -159,7 +159,7 @@ export async function POST(req: NextRequest) {
                   },
                 })
                 .catch((err) => console.error("[pdf-download] CRM lead creation failed (non-blocking):", err)),
-              shouldSuppressReportEmails({ email: t.email }, "pdf_download_admin_notification")
+              shouldSkipInternalNotification({ email: t.email }, "pdf_download_admin_notification")
                 ? Promise.resolve()
                 : sendPdfLeadAdminEmail({ fullName: t.fullName, email: t.email, phone: t.phone, slug: t.slug, category: PDF_LEAD_CATEGORY[t.slug] ?? "Unknown", delivered: t.delivered }).catch((err) =>
                     console.error("[pdf-download] Admin notification failed (non-blocking):", err)
