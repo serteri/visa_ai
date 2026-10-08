@@ -17,3 +17,9 @@
 3. Re-run step 1: `nothing missing`. Missing COLUMNS on existing tables are not covered by this script.
 
 While the table is missing, every submission logs `[ops-alert] leads_table_missing` (error) and emails the internal address, at most once an hour.
+
+## Update: only 3 tables are missing
+
+Production check: only `full_check_waitlist`, `leads`, `full_check_usage` are missing. Apply `prisma/manual-migrations/2026-10-08-create-3-missing-tables.sql`
+(three `CREATE TABLE IF NOT EXISTS`, one transaction, nothing else). Do NOT apply `2026-10-08-create-missing-tables.sql` (all tables, with ALTER TABLE ... ADD CONSTRAINT on live tables).
+Read the warning about `MAX_FREE_REPORTS` in the commit/report before creating `full_check_usage`.
