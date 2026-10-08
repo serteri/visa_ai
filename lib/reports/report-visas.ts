@@ -129,7 +129,15 @@ export function processingText(k: VisaKey, l: Locale): string {
 
 export type RequirementRow = { requirement: string; entered: string; source: string; status: RequirementStatus; statusLabel: string };
 
-export function requirementRows(k: VisaKey, facts: Map<string, string | null>, l: Locale): RequirementRow[] {
+/** The calculated points total from the applicant's entries, and the factors the form could not assess. */
+export type PointsFromEntries = { total: number; notAssessed: string[] };
+
+/** Requirements whose evidence the form does not collect, whatever the other fields say. Gate data is untouched; the view only reports what the form has. */
+const NOT_COLLECTED: Record<string, [string, string, string]> = {
+  "485.eligible_degree": ["Award date: not collected by the form", "Verilme tarihi: formda toplanmıyor", "学历授予日期：表单未收集"],
+};
+
+export function requirementRows(k: VisaKey, facts: Map<string, string | null>, l: Locale, points?: PointsFromEntries): RequirementRow[] {
   const spec = SPEC[k];
   const rows = publishedRequirements(spec.gate, spec.stream, l);
   const seen = new Set<string>();
@@ -144,12 +152,25 @@ export function requirementRows(k: VisaKey, facts: Map<string, string | null>, l
       ? values.map(({ f, v }) => `${factLabel(f, l)}: ${v ?? T(l, "not provided", "girilmedi", "未提供")}`).join("; ")
       : T(l, "Not collected by the form", "Formda toplanmıyor", "表单未收集");
     let status: RequirementStatus;
+    let enteredText = entered;
     if (g.kind === "future_step" || values.length === 0) status = "cannot_determine";
     else {
       const given = values.filter((x) => x.v !== null).length;
       status = given === values.length ? "provided" : given === 0 ? "not_provided" : "cannot_determine";
     }
-    out.push({ requirement: label, entered, source: g.citation, status, statusLabel: statusLabel(status, l) });
+    const notCollected = NOT_COLLECTED[g.id];
+    if (notCollected) {
+      // The published requirement depends on a date the form does not ask for: it cannot be determined from what was entered.
+      status = "cannot_determine";
+      enteredText = `${entered}; ${T(l, ...notCollected)}`;
+    }
+    if (/\.points$/.test(g.id) && points) {
+      // "At least 65 points": the calculated total from the entries, with what was not assessed. Provided: the calculation exists.
+      status = "provided";
+      const missing = points.notAssessed.length ? `; ${points.notAssessed.join(", ")} ${T(l, "not assessed", "değerlendirilmedi", "未评估")}` : "";
+      enteredText = `${points.total} ${T(l, "from your entries", "girdiklerinizden", "根据您的填写")}${missing}`;
+    }
+    out.push({ requirement: label, entered: enteredText, source: g.citation, status, statusLabel: statusLabel(status, l) });
   }
   return out;
 }
@@ -185,6 +206,12 @@ export const visaLabels = (l: Locale): VisaLabels => ({
   progression: T(l, "Progression pattern", "İlerleme örüntüsü", "常见衔接路径"),
 });
 
+function pointsFromEntries(report: ReadinessReport): PointsFromEntries | undefined {
+  const pe = report.pointsEstimate;
+  if (!pe || typeof pe.estimatedPoints !== "number") return undefined;
+  return { total: pe.estimatedPoints, notAssessed: (pe.breakdown ?? []).filter((b) => b.status === "not_assessed").map((b) => b.label) };
+}
+
 export function buildVisaInfos(report: ReadinessReport, target: TargetVisa, facts: Map<string, string | null>, l: Locale): VisaInfo[] {
   const labels = visaLabels(l);
   const selected = new Set(selectedKeys(target));
@@ -207,6 +234,6 @@ export function buildVisaInfos(report: ReadinessReport, target: TargetVisa, fact
       overview.push([labels.invitation, b === null || b === undefined ? T(l, "Not available in our data", "Verilerimizde mevcut değil", "我们的数据中暂无") : `${b}${asOf ? ` (${T(l, "data as of", "veri tarihi", "数据截至")} ${asOf})` : ""}`]);
     }
     if (PROGRESSION[k]) overview.push([labels.progression, T(l, ...PROGRESSION[k]!)]);
-    return { key: k, selected: selected.has(k), title: visaName(k, l), overview, requirements: requirementRows(k, facts, l), tags: [] };
+    return { key: k, selected: selected.has(k), title: visaName(k, l), overview, requirements: requirementRows(k, facts, l, pointsFromEntries(report)), tags: [] };
   });
 }

@@ -26,6 +26,7 @@ import { buildPointsInfo } from "./report-points";
 import { buildStateInfos } from "./report-states";
 import { T, factLabel, tagsFor } from "./report-text";
 import { buildVisaInfos, visaLabels } from "./report-visas";
+import { reportDisclaimer } from "./report-disclaimer";
 import { getResourcesSection } from "@/lib/readiness/pdf-content/resources";
 
 export type { FactTag, RequirementStatus } from "./report-text";
@@ -188,7 +189,7 @@ export function buildReportView(args: ReportViewArgs): ReportView {
   });
 
   // 7. Costs.
-  const costs = buildCostsInfo(report, occupationRaw, l);
+  const costs = buildCostsInfo(report, occupationRaw, l, target);
   const costBlocks: Block[] = [
     { kind: "heading", text: costs.govTitle },
     table(costs.govHeaders, costs.gov, [0.26, 0.13, 0.14, 0.14, 0.14, 0.19]),
@@ -237,9 +238,9 @@ export function buildReportView(args: ReportViewArgs): ReportView {
       title: T(l, "LogiVisa Visa Information Report", "LogiVisa Vize Bilgi Raporu", "LogiVisa 签证信息报告"),
       label: T(l, "Information report", "Bilgi raporu", "信息报告"),
       subtitle: T(l, "Personalised visa information report based on official sources", "Resmi kaynaklara dayalı kişiselleştirilmiş vize bilgi raporu", "基于官方来源的个性化签证信息报告"),
-      notice: T(l, "General information from published sources. It is not migration advice, does not assess your situation and has not been reviewed by a migration agent.", "Yayımlanmış kaynaklardan genel bilgi. Göçmenlik danışmanlığı değildir, durumunuzu değerlendirmez ve bir göçmenlik danışmanı tarafından incelenmemiştir.", "来自公开来源的一般信息。不构成移民建议，不评估您的情况，也未经移民代理审阅。"),
+      notice: reportDisclaimer(l),
     },
     sections,
-    disclaimer: report.disclaimer ?? "",
+    disclaimer: reportDisclaimer(l),
   };
 }

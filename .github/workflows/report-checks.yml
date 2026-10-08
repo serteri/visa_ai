@@ -97,6 +97,8 @@ jobs:
         run: npm run test:email-provider
       - name: Every email sender against a stubbed provider (accepted, rejected, no key; admin diagnostics)
         run: npm run test:email-senders
+      - name: Report fixes (one disclaimer, no severity label, Not sure totals, points requirement, 485 award date)
+        run: npm run test:report-fixes
       - name: No route can produce the verdict structure (PDF route, result page, agent PDF; en / tr / zh-Hans)
         run: npm run test:no-verdict-routes
 

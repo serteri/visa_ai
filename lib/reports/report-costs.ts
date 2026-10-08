@@ -51,6 +51,10 @@ function sourceOfItem(item: FinancialRoadmapItem, l: Locale): string {
   return who ? `${who}; ${kindLabel}` : kindLabel;
 }
 
+/** The engine prefixes some roadmap items with a severity word ("High - Second-instalment charge ..."): the report lists the item, not a severity. */
+const SEVERITY_PREFIX = /^\s*(?:High|Medium|Low|Yüksek|Orta|Düşük|高|中|低)\s*[-–—]\s*/i;
+export const withoutSeverity = (category: string) => category.replace(SEVERITY_PREFIX, "");
+
 const DANGLING = /(?:occupation-specific matrix|mesleğe özel matris|职业特定矩阵|aşağıdaki[^.。]*matris|下方职业)/i;
 const cleanNote = (text: string) =>
   text
@@ -60,7 +64,7 @@ const cleanNote = (text: string) =>
     .replace(/\s+—\s*$/, "")
     .trim();
 
-export function buildCostsInfo(report: ReadinessReport, occupationRaw: string | undefined, l: Locale): CostsInfo {
+export function buildCostsInfo(report: ReadinessReport, occupationRaw: string | undefined, l: Locale, targetVisa?: string): CostsInfo {
   const items = report.financialRoadmap ?? [];
   const checked = T(l, "checked", "kontrol", "核对");
 
@@ -103,8 +107,8 @@ export function buildCostsInfo(report: ReadinessReport, occupationRaw: string | 
   items.forEach((i, idx) => {
     if (i.kind === "vac" || i.kind === "vac_additional" || i.kind === "skills_assessment") return;
     const follows = i.kind === undefined && i.estimateType === "variable" && items[idx - 1]?.kind === "skills_assessment";
-    itemRows.push([i.category, i.amountLabel, sourceOfItem(i, l), `${T(l, "cost data dated", "maliyet verisi tarihi", "费用数据日期")} ${FEES_GENERATED_ON}`]);
-    if (follows) notes.push(`${i.category}: ${registrationNote}`);
+    itemRows.push([withoutSeverity(i.category), i.amountLabel, sourceOfItem(i, l), `${T(l, "cost data dated", "maliyet verisi tarihi", "费用数据日期")} ${FEES_GENERATED_ON}`]);
+    if (follows) notes.push(`${withoutSeverity(i.category)}: ${registrationNote}`);
   });
   // The engine's own explanation of the skills-assessment line (it carries passport-specific notes such as the OSAP range), while the assessment is not done.
   const skillsDone = report.assessmentState?.fieldsPresent?.skillsAssessment === true || total0?.completedKinds.includes("skills_assessment");
@@ -126,7 +130,8 @@ export function buildCostsInfo(report: ReadinessReport, occupationRaw: string | 
   });
   // The totals the cost data already states (estimate qualifier, partner total, second instalment), stated once.
   const selectedTotalLines: string[] = [];
-  if (total) {
+  // "Not sure": no single visa was selected, so the 189-only estimated total and its partner / second-instalment lines are not shown; the per-subclass sums stay.
+  if (total && targetVisa !== "not_sure") {
     const line = formatEstimatedTotalLine({ ...total, completedKinds: [] }, l);
     if (line) selectedTotalLines.push(line);
     const partner = computePartnerTotalAud(items);

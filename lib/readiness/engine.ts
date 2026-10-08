@@ -1,3 +1,4 @@
+import { reportDisclaimer } from "@/lib/reports/report-disclaimer";
 import {
   CURRENT_CSIT,
   BASE_VAC_AUD,
@@ -4191,11 +4192,7 @@ function buildDisclaimer(locale: Locale, country: "AU" | "CA" = "AU"): string {
     // express-entry.json has no zh-Hans disclaimer yet; falls back to its English text.
     return expressEntryConfig.disclaimerText[locale === "tr" ? "tr" : "en"];
   }
-  return locale === "tr"
-    ? "Bu rapor otomatik bir veri analizidir ve göçmenlik tavsiyesi teşkil etmez. Resmi başvurularınız için kayıtlı bir MARA acentesine danışın."
-    : locale === "zh-Hans"
-      ? "本报告为自动化数据分析，仅供一般信息参考，不构成移民或法律建议。涉及签证策略规划与正式申请，请咨询注册移民代理（MARA）。"
-      : "This report is an automated data analysis for general information only and does not constitute migration or legal advice. For strategic planning and visa applications, please consult a registered migration agent (MARA).";
+  return reportDisclaimer(locale);
 }
 
 function buildKeyVisaRequirements(

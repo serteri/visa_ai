@@ -386,6 +386,10 @@ function RestructuredReport({
         </Card>
       ))}
 
+      <p className="text-xs text-slate-700" data-report-disclaimer>
+        {view.disclaimer}
+      </p>
+
       {isUnlocked && downloadHref ? (
         <a
           href={downloadHref}

@@ -1,4 +1,5 @@
 import { buildSuppliedFacts } from "@/lib/readiness/supplied-facts";
+import { reportDisclaimer } from "@/lib/reports/report-disclaimer";
 import { targetVisaOf } from "@/lib/readiness/target-visa";
 import occupationsData from "@/src/data/occupations.json";
 import { isEnglishAtMaximum } from "@/lib/points/parse-english";
@@ -810,7 +811,7 @@ function localizeBaseReportForZh(report: ReadinessReport): ReadinessReport {
     riskIndicators: report.riskIndicators.map((risk) => localizeRiskIndicator(risk, estimatedPoints)),
     frictionAnalysis,
     missingInformation: report.missingInformation.map((item) => localizeText("zh-Hans", item)),
-    disclaimer: "本报告为自动化数据分析，仅供一般信息参考，不构成移民或法律建议。涉及签证策略规划与正式申请，请咨询注册移民代理（MARA）。",
+    disclaimer: reportDisclaimer("zh-Hans"),
   };
 }
 

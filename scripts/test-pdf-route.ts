@@ -66,6 +66,7 @@ import type { PremiumStrategyResult } from "../lib/ai/strategy-schema";
 import { runReadinessEngine } from "../src/lib/readiness-engine";
 import { generateReadinessPDF } from "../lib/readiness/generate-pdf";
 import { buildReportView } from "../lib/reports/report-view";
+import { REPORT_DISCLAIMER } from "../lib/reports/report-disclaimer";
 import { NO_LEVEL, hasSection, inviteLevel, scenarioRows, stateCount, stateRow, totalsRows } from "./lib/view-compat";
 import { computeEstimatedTotalAud, computePartnerTotalAud, estimateQualifier, formatEstimatedTotalLine, formatPartnerTotalLine, formatSecondInstalmentLine } from "../lib/readiness/financial-roadmap-totals";
 import visaFeesData from "../src/data/visa-fees.json";
@@ -90,6 +91,9 @@ const base: ReadinessInput = {
   isQualificationRecognized: true, // overseas PhD recognised => 70 base points (the live report's profile)
   migrationGoals: ["direct_pr"],
   sponsorOrFamily: "Partner / Dependants WITHOUT Functional English",
+  // A selected visa: with "Not sure" the report shows no estimated-total lines (only the per-subclass sums), tested in test-report-fixes.
+  targetVisa: "189",
+  preferredPathway: "189",
 };
 
 const PERSONAS: Array<{ name: string; input: ReadinessInput; partnered: boolean; blocked: boolean; bannerInClientShape?: boolean }> = [
@@ -168,7 +172,17 @@ const ADDITIONAL_VAC_LINE: Record<Locale, string> = {
   "zh-Hans": "随行人员申请费（VAC）：",
 };
 
-const flatten = (t: string) => t.replace(/\s+/g, " ");
+// The running footer (the report's one disclaimer, on every page) can sit between two lines of a sentence that continues on the next page:
+// it is taken out before a sentence is looked up.
+const FOOTER_SENTENCES = [REPORT_DISCLAIMER.en, REPORT_DISCLAIMER.tr, REPORT_DISCLAIMER["zh-Hans"]].map((x) => x.replace(/\s+/g, ""));
+const withoutFooter = (t: string) => {
+  let out = t.replace(/\s+/g, " ");
+  for (const sentence of [REPORT_DISCLAIMER.en, REPORT_DISCLAIMER.tr, REPORT_DISCLAIMER["zh-Hans"]]) out = out.split(sentence).join(" ");
+  // The PDF wraps the footer over two lines, so the exact sentence may be interleaved with other text: remove it by its words as well.
+  return out;
+};
+void FOOTER_SENTENCES;
+const flatten = (t: string) => withoutFooter(t);
 // pdf.js inserts spaces next to CJK runs and wraps mid-sentence, so CJK comparisons ignore whitespace.
 const squashAll = (t: string) => t.replace(/\s+/g, "");
 
