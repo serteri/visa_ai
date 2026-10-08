@@ -66,7 +66,7 @@ export function PremiumReportShowcase() {
           <p className="mt-4 text-lg font-medium leading-relaxed text-slate-700">
             {t(
               "home.reportShowcase.subtitle",
-              "Stop guessing. Get the exact AI-powered blueprint used by migration experts, detailing your precise points, hidden risks, and a clear roadmap to Permanent Residency. All for A$39.99 inc. GST."
+              "Published facts for every visa and every state and territory, each with its source and date, plus the points total calculated from your entries. Information only, not migration advice. A$39.99 inc. GST."
             )}
           </p>
         </div>

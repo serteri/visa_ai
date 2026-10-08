@@ -15,9 +15,8 @@ export function StatsBar({ locale }: StatsBarProps) {
       label: locale === "tr" ? "ANZSCO ve NOC Verisi" : locale === "zh-Hans" ? "ANZSCO 与 NOC 数据" : "ANZSCO & NOC Data",
     },
     {
-      value: locale === "tr" ? "AI Destekli" : locale === "zh-Hans" ? "AI 驱动" : "AI-Powered",
-      label:
-        locale === "tr" ? "Eşleştirme Hassasiyeti" : locale === "zh-Hans" ? "匹配精准度" : "Matching Precision",
+      value: "3",
+      label: locale === "tr" ? "Dilde Bilgi" : locale === "zh-Hans" ? "种语言的信息" : "Languages",
     },
     { value: "2026", label: locale === "tr" ? "Göç Verileri" : locale === "zh-Hans" ? "移民数据" : "Immigration Data" },
   ];

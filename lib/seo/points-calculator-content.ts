@@ -16,11 +16,11 @@ const content: Record<string, PageContent> = {
     toolLabel: "Points Test Guide",
     aboutTitle: "About the Australian Points Test Calculator",
     intro:
-      "The Australian skilled migration points test is the scoring system used by the Department of Home Affairs to rank Expression of Interest (EOI) applications in the SkillSelect pool. To be eligible for an invitation to apply, you need a minimum of 65 points — but in practice most subclass 189 invitations go to applicants with 80 or more points. Understanding how the test works and how to maximise your score is one of the most important steps in planning your visa journey.",
+      "The Australian skilled migration points test is the scoring system used by the Department of Home Affairs to rank Expression of Interest (EOI) applications in the SkillSelect pool. The minimum score to submit an EOI is 65 points; invitation rounds published by the Department show the scores at which recent invitations were issued. This page explains how the test works.",
     sections: [
       {
         heading: "How the Australian Points Test Works",
-        body: "When you lodge an EOI through SkillSelect, the points test converts your age, English ability, work experience, education, and other factors into a numerical score. The Department of Home Affairs holds regular invitation rounds and invites the highest-scoring applicants in each visa subclass. Your score is calculated at the time of invitation, not when you first submitted your EOI, so updating your profile as your situation improves can significantly increase your chances.",
+        body: "When you lodge an EOI through SkillSelect, the points test converts your age, English ability, work experience, education, and other factors into a numerical score. The Department of Home Affairs holds regular invitation rounds and invites the highest-scoring applicants in each visa subclass. Your score is calculated at the time of invitation, not when you first submitted your EOI, so a score can change when the details in an EOI are updated.",
       },
       {
         heading: "Key Factors: Age, English, Experience and Education",
@@ -28,15 +28,15 @@ const content: Record<string, PageContent> = {
       },
       {
         heading: "What Score Do You Need?",
-        body: "The minimum score to submit an EOI is 65 points. However, this threshold has never been enough to receive an invitation in recent rounds. For subclass 189 (Skilled Independent) the cutoff for most occupations has been 85–95 points. For subclass 190 (State Nominated) the state-specific cutoff is typically 75–90, while subclass 491 (Skilled Work Regional) may invite at lower thresholds. You should aim for the highest score achievable and check the latest invitation round data to understand what score is competitive for your occupation.",
+        body: "The minimum score to submit an EOI is 65 points. However, this threshold has never been enough to receive an invitation in recent rounds. For subclass 189 (Skilled Independent) the cutoff for most occupations has been 85–95 points. For subclass 190 (State Nominated) the state-specific cutoff is typically 75–90, while subclass 491 (Skilled Work Regional) may invite at lower thresholds. Invitation round data published by the Department shows the scores at which recent invitations were issued.",
       },
       {
         heading: "Common Mistakes People Make",
-        body: "The most frequent mistakes include: misclassifying English proficiency level, underestimating years of work experience due to incorrect date calculations, selecting the wrong ANZSCO code for your occupation, forgetting to include all eligible education qualifications, and failing to update the EOI when circumstances change. Some applicants also overlook the partner skills bonus, which adds up to 10 points if a partner holds a positive skills assessment and meets English requirements. Always verify your claimed points against official DHA guidelines before lodging.",
+        body: "The most frequent mistakes include: misclassifying English proficiency level, underestimating years of work experience due to incorrect date calculations, selecting the wrong ANZSCO code for your occupation, omitting education qualifications that count for points, and failing to update the EOI when circumstances change. Some applicants also overlook the partner skills bonus, which adds up to 10 points if a partner holds a positive skills assessment and meets English requirements. Official DHA guidelines set out how each claimed point is assessed.",
       },
       {
         heading: "Maximising Your Points Score",
-        body: "There are several proven strategies to increase your score. Sitting an English test to achieve Superior level (IELTS 8+ in all bands) adds 20 points and is often the fastest way to improve your score. Accumulating additional years of Australian or overseas work experience also adds significant points. If you are close to an age bracket boundary, timing your EOI submission carefully can preserve higher age points. State nomination (190 or 491) adds 5 or 15 extra points respectively and can make the difference between receiving an invitation or waiting in the pool.",
+        body: "The points test awards points for several factors, and some of them can change over time. Superior English (IELTS 8+ in all bands) adds 20 points. Additional years of Australian or overseas work experience also add points. Age points depend on the applicant's age bracket. State nomination (190 or 491) adds 5 or 15 points respectively.",
       },
     ],
     faqs: [
@@ -50,7 +50,7 @@ const content: Record<string, PageContent> = {
       },
       {
         q: "What happens if my points change after I submit my EOI?",
-        a: "You must update your EOI to reflect any changes in your circumstances. Your score is recalculated at the time of invitation based on the information in your EOI at that date. You can update your EOI at any time without losing your original submission date.",
+        a: "An EOI must be updated to reflect changes in circumstances. Your score is recalculated at the time of invitation based on the information in your EOI at that date. You can update your EOI at any time without losing your original submission date.",
       },
       {
         q: "Does the points calculator cover all skilled visa subclasses?",
@@ -58,7 +58,7 @@ const content: Record<string, PageContent> = {
       },
       {
         q: "How long does an EOI remain active in the SkillSelect pool?",
-        a: "An EOI is valid for two years from the date of submission. If you are not invited within two years, your EOI expires and you must submit a new one. You can update your EOI at any time during the two-year validity period.",
+        a: "An EOI is valid for two years from the date of submission. If no invitation is issued within two years, the EOI expires and a new one must be submitted. You can update your EOI at any time during the two-year validity period.",
       },
     ],
     faqTitle: "Frequently Asked Questions — Points Test",
@@ -124,7 +124,7 @@ const content: Record<string, PageContent> = {
     sections: [
       {
         heading: "澳大利亚积分测试如何运作",
-        body: "当您通过SkillSelect提交EOI时，积分测试将您的年龄、英语能力、工作经验、教育程度和其他因素转换为数字分数。内政部定期举行邀请轮次，邀请每个签证子类中得分最高的申请人。您的分数在邀请时计算，而不是在您首次提交EOI时，因此随着您情况的改善更新您的资料可以显著提高您的机会。",
+        body: "当您通过SkillSelect提交EOI时，积分测试将您的年龄、英语能力、工作经验、教育程度和其他因素转换为数字分数。内政部定期举行邀请轮次，邀请每个签证子类中得分最高的申请人。您的分数在邀请时计算，而不是在您首次提交EOI时，因此更新 EOI 中的信息后，分数可能随之变化。",
       },
       {
         heading: "关键因素：年龄、英语、经验和教育",
@@ -140,7 +140,7 @@ const content: Record<string, PageContent> = {
       },
       {
         heading: "如何最大化您的积分",
-        body: "有几种经过验证的策略可以提高您的分数。参加英语考试达到优秀级别（所有IELTS单项8分以上）可增加20分，通常是提高分数最快的方式。积累更多澳大利亚或海外工作经验也会增加可观的分数。州提名（190或491）分别增加5或15分。",
+        body: "积分测试对多个因素计分，其中部分因素会随时间变化。参加英语考试达到优秀级别（所有IELTS单项8分以上）可增加20分，通常是提高分数最快的方式。积累更多澳大利亚或海外工作经验也会增加可观的分数。州提名（190或491）分别增加5或15分。",
       },
     ],
     faqs: [

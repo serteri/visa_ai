@@ -7,6 +7,7 @@
  */
 import "./lib/stub-request-context";
 
+import { execSync } from "node:child_process";
 import { readFileSync } from "node:fs";
 
 process.env.DATABASE_URL = "postgresql://u:p@localhost:5432/d?sslmode=disable"; // never connects
@@ -18,6 +19,8 @@ import { activeLocales, type Locale } from "../lib/i18n/config";
 import { occupationPageContent, occupationPageText } from "../lib/occupations/page-content";
 import { buildOccupationSlug, getUniqueOccupations } from "../lib/occupations/seo";
 import { findBannedPhrases } from "../lib/seo/banned-phrases";
+import { searchConsoleVerification } from "../lib/seo/search-console";
+import { scanDestinationPages } from "./lib/destination-compliance";
 import { languageAlternates, publicPath, publicUrl, SITE_ORIGIN } from "../lib/seo/urls";
 
 let failures = 0;
@@ -127,9 +130,35 @@ async function main() {
   check(/trackEvent\("calculator_start"/.test(readFileSync("app/[locale]/(main)/tools/points-calculator/points-calculator-client.tsx", "utf8")) && /trackEvent\("calculator_complete"/.test(readFileSync("app/[locale]/(main)/tools/points-calculator/points-calculator-client.tsx", "utf8")), "calculator start / complete events wired");
   check(/comparison_page_view/.test(readFileSync("app/[locale]/(main)/tools/visa-comparison/page.tsx", "utf8")) && /occupation_page_view/.test(readFileSync("components/analytics/occupation-view-tracker.tsx", "utf8")), "comparison and occupation page-view events wired");
 
-  console.log("\n6. Search Console verification");
-  const root = readFileSync("app/layout.tsx", "utf8");
-  check(/process\.env\.SEARCH_CONSOLE_VERIFICATION/.test(root), "the verification tag reads SEARCH_CONSOLE_VERIFICATION");
+  console.log("\n6. Search Console verification (no built-in token)");
+  check(searchConsoleVerification(undefined) === undefined, "variable unset -> no verification tag");
+  check(searchConsoleVerification("") === undefined && searchConsoleVerification("   ") === undefined, "variable empty or whitespace -> no verification tag");
+  check(JSON.stringify(searchConsoleVerification("  abc123  ")) === JSON.stringify({ google: "abc123" }), "variable set -> the tag carries exactly the trimmed value");
+  const root = readFileSync("app/layout.tsx", "utf8").replace(/^\s*\/\/.*$/gm, "");
+  check(/verification:\s*searchConsoleVerification\(process\.env\.SEARCH_CONSOLE_VERIFICATION\)/.test(root), "the root layout builds the tag only through searchConsoleVerification(process.env.SEARCH_CONSOLE_VERIFICATION)");
+  check(!/verification:[^\n]*\|\|/.test(root) && !/google:\s*["']/.test(root), "the root layout has no fallback and no literal verification value");
+  check(!/["'][A-Za-z0-9_-]{40,}["']/.test(root), "the root layout holds no token-shaped string literal");
+  // The retired token, split here so this file never contains it whole. No tracked file may contain it.
+  const retired = ["foOddNGs8xqNCNQ7", "4vzcc0AheCIMssYqDONHUOkWgCk"].join("");
+  const tracked = execSync("git ls-files", { encoding: "utf8", maxBuffer: 64 * 1024 * 1024 })
+    .split("\n")
+    .filter((f) => f && !/\.(png|jpe?g|webp|ico|pdf|woff2?|ttf|otf|xlsx|zip)$/i.test(f));
+  const holding = tracked.filter((f) => {
+    try {
+      return readFileSync(f, "utf8").includes(retired);
+    } catch {
+      return false;
+    }
+  });
+  check(holding.length === 0, "the retired hard-coded token appears in no tracked file", holding.join(", "));
+
+  console.log("\n7. acquisition destination pages (tools, visa pages, homepage hero / stats, full-check, locale strings)");
+  const destinationHits = scanDestinationPages();
+  check(
+    destinationHits.length === 0,
+    "no eligibility / recommendation / strategy / readiness / chances wording on the destination pages",
+    destinationHits.slice(0, 5).map((h) => `${h.source} [${h.id}] ${h.excerpt}`).join(" || ")
+  );
 
   if (failures) { console.error(`\n❌ ${failures} check(s) failed`); process.exit(1); }
   console.log("\n✅ ALL CHECKS PASSED");

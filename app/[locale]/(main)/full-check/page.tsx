@@ -153,10 +153,10 @@ export default async function FullCheckPage({ params, searchParams }: FullCheckP
               {(cameFromReadinessReview || cameFromResults) && (
                 <p className="mb-6 rounded-xl border border-indigo-100 bg-indigo-50/50 px-4 py-3 text-sm font-medium text-indigo-900 backdrop-blur-sm">
                   {isTr
-                    ? `${cameFromResults ? "Hızlı kontrol sonuçlarından" : "Hazırlık incelemesinden"} gelen bilgiler eklendi. Göndermeden önce düzenleyebilirsiniz.`
+                    ? `${cameFromResults ? "Hızlı kontrol sonuçlarından" : "Önceki incelemeden"} gelen bilgiler eklendi. Göndermeden önce düzenleyebilirsiniz.`
                     : isZh
-                    ? `${cameFromResults ? "快速评估结果" : "准备度预览"}中的信息已填充。提交前可编辑各字段。`
-                    : `Details from the ${cameFromResults ? "quick check" : "readiness review"} were added. Fields can be edited before submitting.`}
+                    ? `${cameFromResults ? "快速评估结果" : "此前的预览"}中的信息已填充。提交前可编辑各字段。`
+                    : `Details from the ${cameFromResults ? "quick check" : "earlier review"} were added. Fields can be edited before submitting.`}
                 </p>
               )}
             </>

@@ -15,7 +15,7 @@ function getMeta(locale: string) {
     return {
       title: "189 vs 190 vs 491 Vize Karsilastirmasi | LogiVisa",
       description:
-        "189, 190 ve 491 vizelerini yan yana karsilastirin. Hangi yolun sizin icin daha uygun oldugunu quiz ile gorun.",
+        "189, 190 ve 491 alt siniflarinin yayimlanmis temel ozelliklerini yan yana karsilastirin: vize tipi, ek puan, sponsor, islem suresi ve ucret.",
     };
   }
 
@@ -23,14 +23,14 @@ function getMeta(locale: string) {
     return {
       title: "189 vs 190 vs 491 签证对比 | LogiVisa",
       description:
-        "并排比较189、190和491签证，通过3题小测快速判断更适合你的路径。",
+        "并排比较 189、190 和 491 子类已公布的主要特点：签证类型、额外加分、担保、处理周期和费用。",
     };
   }
 
   return {
     title: "189 vs 190 vs 491 Visa Comparison | LogiVisa",
     description:
-      "Compare subclass 189, 190, and 491 side by side and use a quick 3-question quiz to find your best pathway.",
+      "Compare the published features of subclasses 189, 190 and 491 side by side: visa type, extra points, sponsorship, processing time and fees.",
   };
 }
 
