@@ -16,7 +16,6 @@ import { Faq } from "@/components/landing/Faq";
 import { Testimonials } from "@/components/landing/Testimonials";
 import { LandingFooter } from "@/components/landing/footer";
 
-const ASSESSMENT_SLOTS_FALLBACK = 14;
 
 interface HomeContentProps {
   /**
@@ -36,7 +35,6 @@ interface HomeContentProps {
    * Starts at 14 and decreases by 1 per real submission, floored at 2. Same
    * seed-once pattern as initialFreeDownloadsLeft — avoids the hydration flicker.
    */
-  initialAssessmentSlotsLeft?: number;
 }
 
 /**
@@ -46,7 +44,7 @@ interface HomeContentProps {
  * content/logic lives in components/landing/*; this file only owns the
  * state that's shared across sections (free-download counter, PDF modal).
  */
-export function HomeContent({ initialFreeDownloadsLeft, initialAssessmentSlotsLeft }: HomeContentProps) {
+export function HomeContent({ initialFreeDownloadsLeft }: HomeContentProps) {
   const params = useParams();
   const locale = params.locale as string;
 
@@ -57,10 +55,8 @@ export function HomeContent({ initialFreeDownloadsLeft, initialAssessmentSlotsLe
     section.scrollIntoView({ behavior: "smooth", block: "start" });
   }
 
-  const [assessmentSlotsLeft] = useState(initialAssessmentSlotsLeft ?? ASSESSMENT_SLOTS_FALLBACK);
   const [activePdfModal, setActivePdfModal] = useState<PdfProduct | null>(null);
 
-  const hasFreeAssessmentSlots = assessmentSlotsLeft > 0;
 
   return (
     <div className="case-file">

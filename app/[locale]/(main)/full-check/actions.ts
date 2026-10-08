@@ -5,14 +5,12 @@ import { hasReportSession, isAdminSession, rememberReportSession } from "@/lib/r
 import { refreshStoredReport } from "@/lib/reports/refresh-report";
 import { fullCheckAdminPayload, sendFullCheckAdminEmail } from "@/lib/email/full-check-admin";
 import { nonAdminUnlockMode } from "@/lib/readiness/paid-checkout";
-import { eq, sql } from "drizzle-orm";
 import { cookies, headers } from "next/headers";
-import { revalidateTag } from "next/cache";
 import { Resend } from "resend";
 import { z } from "zod";
 
 import { db } from "@/db";
-import { fullCheckUsage, fullCheckWaitlist, leads } from "@/db/schema";
+import { fullCheckWaitlist, leads } from "@/db/schema";
 import { prisma } from "@/lib/prisma";
 import { getStripeBaseUrl } from "@/lib/stripe";
 import { normalizeTargetVisa } from "@/lib/readiness/target-visa";
@@ -81,7 +79,6 @@ export type FullCheckWaitlistState = {
   status: "idle" | "success" | "error";
   error?: string;
   message?: string;
-  requirePayment?: boolean;
   errors?: Record<string, string>;
   preview?: FullCheckQuickPreview;
   reportId?: string;
@@ -176,15 +173,6 @@ const optionalCourseCompletionStatusSchema = z.preprocess(
   z.enum(["studying", "completed"]).optional()
 );
 
-// ─── Feature flags ────────────────────────────────────────────────────────────
-
-type FreeBetaStatus = {
-  isFreeActive: boolean;
-  freeReportsUsed: number;
-  freeLimit: number;
-  usageTrackingUnavailable?: boolean;
-};
-
 function isMissingRelationError(error: unknown, relationName: string): boolean {
   const target = relationName.toLowerCase();
 
@@ -203,60 +191,6 @@ function isMissingRelationError(error: unknown, relationName: string): boolean {
   return scan(error);
 }
 
-async function getFreeBetaStatus(): Promise<FreeBetaStatus> {
-  const maxFree = parseInt(process.env.MAX_FREE_REPORTS ?? "14", 10);
-  const freeBetaEnabled = process.env.NEXT_PUBLIC_IS_FREE_BETA !== "false";
-  const excludedEmails = getExcludedEmailSet();
-
-  try {
-    // Ensure singleton usage row exists for environments where seed hasn't run yet.
-    await db
-      .insert(fullCheckUsage)
-      .values({
-        id: 1,
-        free_reports_used: 0,
-        free_limit: maxFree,
-        is_free_active: true,
-      })
-      .onConflictDoNothing();
-
-    const rows = await db
-      .select()
-      .from(fullCheckUsage)
-      .where(eq(fullCheckUsage.id, 1))
-      .limit(1);
-
-    const row = rows[0];
-    if (!row) {
-      return {
-        isFreeActive: freeBetaEnabled,
-        freeReportsUsed: 0,
-        freeLimit: maxFree,
-      };
-    }
-
-    const used = row.free_reports_used ?? 0;
-    const active = row.is_free_active === true && used < maxFree;
-
-    return { isFreeActive: active, freeReportsUsed: used, freeLimit: maxFree };
-  } catch (error) {
-    if (isMissingRelationError(error, "full_check_usage")) {
-      console.warn("full_check_usage table missing; falling back to user_reports-based counter.");
-
-      const consumed = await countFallbackConsumedFreeUsers(excludedEmails);
-      const remaining = Math.max(0, maxFree - consumed);
-
-      return {
-        isFreeActive: freeBetaEnabled && remaining > 0,
-        freeReportsUsed: consumed,
-        freeLimit: maxFree,
-        usageTrackingUnavailable: true,
-      };
-    }
-    throw error;
-  }
-}
-
 async function getClientIp(): Promise<string> {
   const headersList = await headers();
   return (
@@ -270,60 +204,6 @@ async function getClientIp(): Promise<string> {
 
 function isValidEmail(email: string): boolean {
   return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
-}
-
-// Strips surrounding quote characters in addition to whitespace: if an env
-// var value like ADMIN_EMAILS="a@b.com,c@d.com" gets pasted verbatim
-// (quotes included) into a dashboard UI, trim() alone won't remove the
-// quotes, silently breaking every email in the list.
-function parseEmailList(raw: string | undefined): string[] {
-  return (raw ?? "")
-    .split(",")
-    .map((item) => item.trim().replace(/^["']+|["']+$/g, "").trim().toLowerCase())
-    .filter(Boolean);
-}
-
-function getAdminEmailSet(): Set<string> {
-  return new Set(parseEmailList(process.env.ADMIN_EMAILS));
-}
-
-function getKnownTestEmailSet(): Set<string> {
-  return new Set(parseEmailList(process.env.KNOWN_TEST_EMAILS));
-}
-
-function getExcludedEmailSet(): Set<string> {
-  return new Set([...getAdminEmailSet(), ...getKnownTestEmailSet()]);
-}
-
-async function countFallbackConsumedFreeUsers(excludedEmails: Set<string>): Promise<number> {
-  const rows = await prisma.userReport.findMany({
-    where: { source: "full_check" },
-    select: {
-      email: true,
-      isUnlocked: true,
-      paymentStatus: true,
-      unlockMethod: true,
-    },
-  });
-
-  const consumedUsers = new Set<string>();
-
-  for (const row of rows) {
-    const email = row.email?.trim().toLowerCase() ?? "";
-    if (!email) continue;
-    if (excludedEmails.has(email)) continue;
-
-    const hasClaimedFreeSlot =
-      row.isUnlocked === true ||
-      row.paymentStatus === "beta_free" ||
-      row.unlockMethod === "beta_free";
-
-    if (hasClaimedFreeSlot) {
-      consumedUsers.add(email);
-    }
-  }
-
-  return consumedUsers.size;
 }
 
 function isEmailDeliveryEnabled(): boolean {
@@ -636,9 +516,6 @@ export async function submitFullCheckWaitlist(
   if (targetCountry === "CA" && !isCanadaReportEnabled()) {
     return { status: "error", error: CANADA_REPORT_UNAVAILABLE[resolvedLocale === "tr" ? "tr" : resolvedLocale === "zh-Hans" ? "zh-Hans" : "en"] };
   }
-  // Admin = a verified admin session (signed admin cookie or NextAuth ADMIN), never the typed email.
-  const isAdmin = await isAdminSession();
-
   const isPartner = isPartnerFamilySponsorship(visaInterest);
 
   const relationshipType = String(formData.get("relationshipType") ?? "").trim();
@@ -827,69 +704,8 @@ export async function submitFullCheckWaitlist(
     biggestConcern: biggestConcern || undefined,
   });
 
-  // ── Dynamic free beta status ──────────────────────────────────────────────
-  const betaStatus = await getFreeBetaStatus();
-
-  // ── Atomic usage counter ──────────────────────────────────────────────────
-  if (isAdmin) {
-    // Admin test runs bypass free quota checks and do not consume usage count.
-  } else if (betaStatus.isFreeActive) {
-    if (betaStatus.usageTrackingUnavailable) {
-      // Degrade gracefully when production DB is missing full_check_usage.
-      console.warn("Skipping full_check_usage increment because table is unavailable.");
-    } else {
-      // Atomically increment only when under limit
-      try {
-        const atomicResult = await db.execute(sql`
-          UPDATE full_check_usage
-          SET free_reports_used = free_reports_used + 1, updated_at = NOW()
-          WHERE id = 1
-            AND is_free_active = TRUE
-            AND free_reports_used < ${betaStatus.freeLimit}
-          RETURNING free_reports_used
-        `);
-
-        if (atomicResult.rows.length === 0) {
-          // Limit just got exhausted between check and update — fall through to payment
-          if (analysisProgressId) {
-            await failFullCheckProgress(analysisProgressId, "Free access limit reached");
-          }
-          return {
-            status: "error",
-            error: "Free access limit reached",
-            message: isTr
-              ? "Ücretsiz rapor limiti doldu. Devam etmek için ödeme yapın."
-              : isZh
-                ? "免费报告额度已用完。请付费继续。"
-                : "Free report limit reached. Please pay to continue.",
-            requirePayment: true,
-          };
-        }
-
-        revalidateTag("public-full-check-usage", "max");
-      } catch (error) {
-        if (!isMissingRelationError(error, "full_check_usage")) {
-          throw error;
-        }
-        console.warn("Skipping full_check_usage increment after missing table error.");
-      }
-    }
-  } else {
-    // Free beta is exhausted — require payment
-    if (analysisProgressId) {
-      await failFullCheckProgress(analysisProgressId, "Free access limit reached");
-    }
-    return {
-      status: "error",
-      error: "Free access limit reached",
-      message: isTr
-        ? "Ücretsiz rapor limiti doldu. Devam etmek için ödeme yapın."
-        : isZh
-          ? "免费报告额度已用完。请付费继续。"
-          : "Free report limit reached. Please pay to continue.",
-      requirePayment: true,
-    };
-  }
+  // No free-report counter gates a submission: creating a report is free and the full report is paid at unlock
+  // (checkout), so no visitor is ever blocked by a quota and nothing here depends on a usage table.
 
   if (analysisProgressId) {
     await updateFullCheckProgress(analysisProgressId, "scanning_occupations");
@@ -1004,7 +820,8 @@ export async function submitFullCheckWaitlist(
     if (!isMissingRelationError(error, "full_check_waitlist")) {
       throw error;
     }
-    console.warn("full_check_waitlist table missing; skipping waitlist persistence.");
+    // Not a silent skip: the waitlist row is lost, so log an error and alert the operator (throttled).
+    await sendOpsAlert("full_check_waitlist_table_missing", `A waitlist row was NOT saved (email domain ${email.split("@")[1] ?? "?"}): the full_check_waitlist table does not exist in this database.`);
   }
   if (analysisProgressId) {
     await updateFullCheckProgress(analysisProgressId, "applying_deductions");
@@ -1367,7 +1184,7 @@ async function unlockPremiumReportInternal(
   // Every non-admin unlock -- regardless of unlockMethod ("payment" or
   // "lead_capture") -- goes through /api/checkout now. unlockMethod used to
   // pick between this branch and a local free/lead-capture unlock below
-  // based on the OLD full_check_usage-backed getFreeBetaStatus() quota, which
+  // based on the OLD usage-table-backed free quota (since removed), which
   // let the client's default unlockMethod="lead_capture" skip /api/checkout
   // (and its own, newer isFreePromo-backed 14-free-report quota) entirely --
   // the redirect would just never happen. /api/checkout is the only place

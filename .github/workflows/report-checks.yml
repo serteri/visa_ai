@@ -107,6 +107,8 @@ jobs:
         run: npm run test:admin-unlock
       - name: Email suppression by recipient address only (no admin session, no coupon, no zero amount); every skip logs its reason; lead-persistence alert
         run: npm run test:recipient-suppression
+      - name: No free-report quota blocks a submission (visitors 1, 15, 100, 1000 with checkout on)
+        run: npm run test:no-submission-quota
       - name: No route can produce the verdict structure (PDF route, result page, agent PDF; en / tr / zh-Hans)
         run: npm run test:no-verdict-routes
 

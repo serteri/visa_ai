@@ -19,7 +19,7 @@ This project uses **both Prisma** (`prisma/schema.prisma`) **and Drizzle** (`db/
 - `contact_messages`
 - `pdf_downloads`
 
-Drizzle also declares a few tables that don't exist in the live database yet (`full_check_usage`, `full_check_waitlist`, `leads`, `visa_types`, `visa_structured_data`, `source_snapshots`) — application code already handles their absence gracefully (see the `*_table_missing` warnings in server logs), and they're not Prisma's concern since they aren't in the DB to begin with.
+Drizzle also declares a few tables that don't exist in the live database yet (`full_check_usage` (no longer used by any code), `full_check_waitlist`, `leads`, `visa_types`, `visa_structured_data`, `source_snapshots`) — application code already handles their absence gracefully (see the `*_table_missing` warnings in server logs), and they're not Prisma's concern since they aren't in the DB to begin with.
 
 **Rules going forward:**
 1. Before running `prisma db push`, run it **without** `--accept-data-loss` first and read the output. If it proposes dropping or altering a table you don't recognize as Prisma-owned, stop.

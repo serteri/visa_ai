@@ -22,4 +22,11 @@ While the table is missing, every submission logs `[ops-alert] leads_table_missi
 
 Production check: only `full_check_waitlist`, `leads`, `full_check_usage` are missing. Apply `prisma/manual-migrations/2026-10-08-create-3-missing-tables.sql`
 (three `CREATE TABLE IF NOT EXISTS`, one transaction, nothing else). Do NOT apply `2026-10-08-create-missing-tables.sql` (all tables, with ALTER TABLE ... ADD CONSTRAINT on live tables).
-Read the warning about `MAX_FREE_REPORTS` in the commit/report before creating `full_check_usage`.
+`full_check_usage` is NOT needed and must not be created: the free-report quota was removed, nothing reads or writes that table, and `MAX_FREE_REPORTS` / `NEXT_PUBLIC_IS_FREE_BETA` no longer exist in the code (you can delete them from Vercel).
+
+## Backfill of full_check_waitlist
+
+`scripts/backfill-full-check-waitlist.ts` copies full-check submissions from `user_reports` into `full_check_waitlist` (id reused, ON CONFLICT DO NOTHING, so re-running is safe).
+Dry run (default, read only, uses `PROD_DATABASE_URL`): `npx tsx scripts/backfill-full-check-waitlist.ts [--since YYYY-MM-DD]`.
+Write (production, uses `DATABASE_URL`): add `--apply`.
+`leads` needs no backfill: nothing reads it (`/admin/leads` reads `user_reports`).

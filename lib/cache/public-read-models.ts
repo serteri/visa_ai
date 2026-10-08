@@ -1,13 +1,11 @@
-import { eq, inArray, notInArray, and, count } from "drizzle-orm";
+import { inArray, notInArray, and, count } from "drizzle-orm";
 import { unstable_cache } from "next/cache";
 
 import { db } from "@/db";
-import { fullCheckUsage, pdfDownloads } from "@/db/schema";
+import { pdfDownloads } from "@/db/schema";
 import { FREE_LIMIT as PDF_FREE_LIMIT, PDF_SLUGS } from "@/app/api/pdf-download/route";
 import { getUniqueOccupations } from "@/lib/occupations/seo";
 import { prisma } from "@/lib/prisma";
-
-const FALLBACK_FREE_LIMIT = 50;
 
 // Strips surrounding quote characters in addition to whitespace: if an env
 // var value like ADMIN_EMAILS="a@b.com,c@d.com" gets pasted verbatim
@@ -27,37 +25,6 @@ function getKnownTestEmailSet(): Set<string> {
 function getExcludedEmailSet(): Set<string> {
   const adminEmails = new Set(parseEmailList(process.env.ADMIN_EMAILS));
   return new Set([...adminEmails, ...getKnownTestEmailSet()]);
-}
-
-async function countFallbackConsumedFreeUsers(excludedEmails: Set<string>): Promise<number> {
-  const rows = await prisma.userReport.findMany({
-    where: { source: "full_check" },
-    select: {
-      email: true,
-      isUnlocked: true,
-      paymentStatus: true,
-      unlockMethod: true,
-    },
-  });
-
-  const consumedUsers = new Set<string>();
-
-  for (const row of rows) {
-    const email = row.email?.trim().toLowerCase() ?? "";
-    if (!email) continue;
-    if (excludedEmails.has(email)) continue;
-
-    const hasClaimedFreeSlot =
-      row.isUnlocked === true ||
-      row.paymentStatus === "beta_free" ||
-      row.unlockMethod === "beta_free";
-
-    if (hasClaimedFreeSlot) {
-      consumedUsers.add(email);
-    }
-  }
-
-  return consumedUsers.size;
 }
 
 export const getCachedInvitationRounds = unstable_cache(
@@ -127,46 +94,6 @@ export const getCachedPdfLeadDownloadStats = unstable_cache(
   { revalidate: 60, tags: ["public-guide-download-stats"] },
 );
 
-export const getCachedFullCheckUsage = unstable_cache(
-  async () => {
-    const maxFree = parseInt(process.env.MAX_FREE_REPORTS ?? "14", 10);
-    const excludedEmails = getExcludedEmailSet();
-    let usageRows: Array<{ freeReportsUsed: number | null; isFreeActive: boolean | null }> = [];
-
-    try {
-      usageRows = await db
-        .select({
-          freeReportsUsed: fullCheckUsage.free_reports_used,
-          isFreeActive: fullCheckUsage.is_free_active,
-        })
-        .from(fullCheckUsage)
-        .where(eq(fullCheckUsage.id, 1))
-        .limit(1);
-    } catch {
-      const consumed = await countFallbackConsumedFreeUsers(excludedEmails);
-
-      const remainingSpots = Math.max(0, maxFree - consumed);
-
-      return {
-        maxFree,
-        remainingSpots,
-        isFreeActive: remainingSpots > 0,
-      };
-    }
-
-    const used = usageRows[0]?.freeReportsUsed ?? 0;
-    const remainingSpots = Math.max(0, maxFree - used);
-    const dbFreeActive = usageRows[0]?.isFreeActive !== false;
-
-    return {
-      maxFree,
-      remainingSpots,
-      isFreeActive: dbFreeActive && remainingSpots > 0,
-    };
-  },
-  ["public-full-check-usage"],
-  { revalidate: 300, tags: ["public-full-check-usage"] },
-);
 
 export const getCachedSeoOccupations = unstable_cache(
   async () => {

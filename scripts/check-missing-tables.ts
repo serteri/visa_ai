@@ -1,5 +1,7 @@
 /**
- * Lists every table the code expects (prisma/manual-migrations/2026-10-08-create-missing-tables.sql) that production does not have.
+ * Lists every table the code needs that production does not have: the Prisma models and the Drizzle tables the code still writes
+ * (leads, full_check_waitlist), taken from prisma/manual-migrations/2026-10-08-create-missing-tables.sql. full_check_usage is no longer used by any
+ * code (the free-report quota was removed) and is not required.
  * READ ONLY: runs through PROD_DATABASE_URL in a READ ONLY transaction (scripts/lib/prod-db.ts). Writes nothing.
  *
  *   npx tsx scripts/check-missing-tables.ts
@@ -8,7 +10,8 @@ import { readFileSync } from "node:fs";
 import { withProdReadOnly } from "./lib/prod-db";
 
 const sql = readFileSync("prisma/manual-migrations/2026-10-08-create-missing-tables.sql", "utf8");
-export const expectedTables = [...sql.matchAll(/CREATE TABLE IF NOT EXISTS "?([a-z_]+)"?/g)].map((m) => m[1]);
+const NO_LONGER_USED = new Set(["full_check_usage"]);
+export const expectedTables = [...sql.matchAll(/CREATE TABLE IF NOT EXISTS "?([a-z_]+)"?/g)].map((m) => m[1]).filter((t) => !NO_LONGER_USED.has(t));
 
 async function main() {
   const live = await withProdReadOnly(async (tx) => {
