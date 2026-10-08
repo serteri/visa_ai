@@ -1,9 +1,9 @@
-import { adminNotificationRecipients } from "@/lib/email/admin-recipient";
 "use server"
 
 import { headers } from "next/headers"
 import { revalidateTag } from "next/cache"
 import { prisma } from "@/lib/prisma"
+import { adminNotificationRecipients } from "@/lib/email/admin-recipient"
 import { sendGuideDownloadEmails } from "@/lib/email/guide-download"
 import { getDictionary, Dictionary } from "@/lib/i18n/get-dictionary"
 import { Locale } from "@/lib/i18n/config"
