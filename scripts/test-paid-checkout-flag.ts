@@ -14,11 +14,12 @@
  *
  * No network, no database, no Stripe.   npx tsx scripts/test-paid-checkout-flag.ts
  */
+import { assertNoLiveStripeKey } from "./lib/no-live-stripe"; // FIRST: no Stripe variables, no route to stripe.com
 import { readFileSync } from "node:fs";
 import path from "node:path";
 
 process.env.DATABASE_URL = "postgresql://u:p@localhost:5432/d?sslmode=disable"; // never connects
-delete process.env.STRIPE_SECRET_KEY; // no key: the payment path cannot create a session
+process.env.STRIPE_SECRET_KEY = ""; // no key: the payment path cannot create a session. An empty string, not `delete`: Prisma's .env load would put a deleted key back (scripts/lib/no-live-stripe.ts).
 process.env.NEXT_PUBLIC_BASE_URL = "https://example.test";
 
 import { NextRequest } from "next/server";
@@ -46,6 +47,7 @@ async function main() {
   check(isPaidReportCheckoutEnabled({}), "ON when the variable is not set at all (the production default)");
 
   const { POST } = await import("../app/api/checkout/route");
+  assertNoLiveStripeKey();
 
   console.log("\n2. /api/checkout, flag OFF");
   process.env[PAID_CHECKOUT_FLAG] = "false";
