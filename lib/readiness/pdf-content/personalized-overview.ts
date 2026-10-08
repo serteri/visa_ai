@@ -106,10 +106,10 @@ export function getPersonalizedOverview(
 
   // ── Title ─────────────────────────────────────────────────────────────
   const title = isTr
-    ? `${name} — Hazırlık Raporu Özeti`
+    ? `${name} — Rapor Özeti`
     : isZh
-      ? `${name} — 准备报告摘要`
-      : `${name} — Readiness Report Summary`;
+      ? `${name} — 报告摘要`
+      : `${name} — Report Summary`;
 
   // ── Executive Summary (goal-adaptive) ────────────────────────────────
   const goals = migrationGoals ?? [];

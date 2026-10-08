@@ -62,9 +62,9 @@ export function ResultsContent({ locale, matchedVisas, goal = "" }: ResultsConte
     viewDetails: isTr ? "Detayları görüntüle" : "View details",
     ctaTitle: isTr ? "Daha kapsamlı inceleme gerekli mi?" : "Need a deeper review?",
     ctaText: isTr
-      ? "Tam hazırlık raporu; vize yolu karşılaştırması, risk göstergeleri, kanıt hazırlığı, tahmini maliyet yol haritası, önerilen sonraki adımlar ve PDF indirme içerecek şekilde tasarlanmıştır."
-      : "The full readiness report is designed to include pathway comparison, risk indicators, evidence readiness, financial roadmap, suggested next steps, and PDF download.",
-    ctaButton: isTr ? "Hazırlık raporunuzu oluşturun" : "Generate your readiness report",
+      ? "Vize Bilgi Raporu, her vize ile her eyalet ve bölge için yayımlanmış bilgileri kaynak ve tarihleriyle, maliyet haritasını ve PDF indirmeyi içerir."
+      : "The Visa Information Report lists the published facts for every visa and every state and territory, with sources and dates, a cost map, and a PDF download.",
+    ctaButton: isTr ? "Vize Bilgi Raporunuzu oluşturun" : "Generate your Visa Information Report",
     agentButton: isTr
       ? "Tam değerlendirmenize devam edin"
       : "Continue to your full assessment",

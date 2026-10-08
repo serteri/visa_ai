@@ -338,7 +338,7 @@ export default async function IncreasePrPoints2026GuidePage({ params }: PageProp
                 className="h-14 rounded-2xl bg-[var(--color-electric-iris)] px-10 text-base font-bold text-white shadow-xl hover:opacity-90"
               >
                 <Link href={`/${locale}/full-check`}>
-                  {tx(locale, "生成我的签证准备度报告", "Vize Hazırlık Raporumu Oluştur", "Generate My Visa Readiness Report")}
+                  {tx(locale, "生成我的签证信息报告", "Vize Bilgi Raporumu Oluştur", "Generate My Visa Information Report")}
                   <ArrowRight className="ml-2 h-5 w-5" />
                 </Link>
               </Button>

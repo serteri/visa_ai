@@ -423,10 +423,10 @@ export function Hero({ locale, onScrollToPdfSection }: HeroProps) {
             {t(
               "hero.pricingBadgePrefix",
               isTr
-                ? "Premium AI Hazırlık Analizi —"
+                ? "Vize Bilgi Raporu —"
                 : isZh
-                  ? "高级 AI 准备度分析 —"
-                  : "Premium AI Readiness Analysis —"
+                  ? "签证信息报告 —"
+                  : "Visa Information Report —"
             )}
           </span>
           <span className="font-bold text-slate-900">

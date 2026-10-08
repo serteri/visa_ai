@@ -9,7 +9,7 @@ import type { StripeProductType } from "@/lib/stripe";
 // Stripe Price carried.
 const CHECKOUT_PRODUCTS: Readonly<Record<StripeProductType, { name: string; taxCode: string; unitAmount: number }>> = {
   // General - Electronically Supplied Services.
-  premium: { name: "Full Visa Readiness Report (Premium)", taxCode: "txcd_10000000", unitAmount: PREMIUM_PRICE_AUD_CENTS },
+  premium: { name: "Visa Information Report", taxCode: "txcd_10000000", unitAmount: PREMIUM_PRICE_AUD_CENTS },
   // Digital books.
   pdf_book: { name: "Avustralya PR Rehberi 2026 (PDF)", taxCode: "txcd_10202003", unitAmount: PRODUCT_PRICE_AUD_CENTS.pdf_book },
   pdf_book_global: { name: "Australia PR Guide 2026 (PDF)", taxCode: "txcd_10000000", unitAmount: PRODUCT_PRICE_AUD_CENTS.pdf_book_global },

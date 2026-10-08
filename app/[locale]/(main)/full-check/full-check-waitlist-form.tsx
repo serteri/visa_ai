@@ -134,7 +134,7 @@ export function FullCheckWaitlistForm({
   initialValues = {},
   isFreeActive = true,
   remainingSpots = 0,
-  paidCheckoutEnabled = false,
+  paidCheckoutEnabled = true,
   canadaReportEnabled = false,
   onCountryChange,
 }: {
@@ -547,7 +547,7 @@ export function FullCheckWaitlistForm({
             <>
               <TermsGate isTermsAccepted={isTermsAccepted} termsError={termsError} onToggle={(c) => { setIsTermsAccepted(c); if (c) setTermsError(false); }} label={termsLabel} errorText={termsErrorText} />
               <Button type="submit" className="h-11 w-full rounded-lg text-sm font-semibold" disabled={isPending}>
-                {isPending ? txt("Oluşturuluyor...", "Generating...", "生成中...") : txt("Hazırlık raporunuzu oluşturun", "Generate your readiness report", "生成准备度报告")}
+                {isPending ? txt("Oluşturuluyor...", "Generating...", "生成中...") : txt("Vize Bilgi Raporunuzu oluşturun", "Generate your Visa Information Report", "生成您的签证信息报告")}
               </Button>
             </>
           )}

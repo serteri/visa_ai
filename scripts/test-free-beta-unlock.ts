@@ -14,7 +14,7 @@
  */
 import { cookieJar, signOutAll } from "./lib/stub-request-context";
 
-delete process.env.READINESS_REPORT_PAID_CHECKOUT_ENABLED; // the production default: free beta
+process.env.READINESS_REPORT_PAID_CHECKOUT_ENABLED = "false"; // the sale switched off: the report opens without payment
 process.env.AUTH_SECRET = "test-auth-secret-for-free-beta";
 process.env.ADMIN_EMAILS = "owner-admin@example.com";
 process.env.KNOWN_TEST_EMAILS = "";
@@ -138,8 +138,8 @@ async function main() {
     check(other.status === "success" && !other.report && !other.accessToken && !other.redirectUrl, `${locale}: no cookie -> success message only, no report, no token`, JSON.stringify({ s: other.status, r: !!other.report, t: !!other.accessToken }));
     check(rows.get(id)!.is_unlocked === true && rows.get(id)!.unlock_method === "beta_free", `${locale}: the report is unlocked as beta_free`);
     const customerMail = sent.find((m) => m.to.includes(owner));
-    check(!!customerMail && !/payment|premium|ödeme|付款|高级/i.test(customerMail.subject) && /beta|测试版/i.test(customerMail.subject), `${locale}: the customer email is free-beta wording, no payment claim`, customerMail?.subject);
-    check(locale === "en" ? /^Free beta:/.test(other.message ?? "") : locale === "tr" ? /^Ücretsiz beta:/.test(other.message ?? "") : /^免费测试版/.test(other.message ?? ""), `${locale}: the message is localised`, other.message);
+    check(!!customerMail && !/payment|premium|ödeme|付款|高级/i.test(customerMail.subject) && /Information Report|Bilgi Raporu|信息报告/.test(customerMail.subject), `${locale}: the customer email is Visa Information Report wording, no payment claim`, customerMail?.subject);
+    check(!/free beta|ücretsiz beta|免费测试版/i.test(other.message ?? "") && locale === "en" ? /emailed/.test(other.message ?? "") : locale === "tr" ? /gönderildi/.test(other.message ?? "") : /已发送/.test(other.message ?? ""), `${locale}: the message is localised, no beta label`, other.message);
     check(!(await pdf(id)).ok, `${locale}: the other browser cannot download the PDF (404)`);
     const wrong = await unlockPremiumReport({ status: "idle" }, form(id, "someone-else@example.com"));
     check(wrong.status === "error" && !wrong.report, `${locale}: wrong email without a cookie -> error, nothing returned`);

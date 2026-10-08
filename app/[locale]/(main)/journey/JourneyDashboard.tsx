@@ -654,14 +654,14 @@ function PremiumUpsellCard({ locale }: { locale: string }) {
           <div>
             <span className="inline-flex items-center gap-1.5 text-xs font-bold uppercase tracking-wide text-[#53917E]">
               <Sparkles className="h-3.5 w-3.5" />
-              {tx(locale, "Premium AI Strategy Report", "Premium AI Strateji Raporu", "Premium AI 策略报告")}
+              {tx(locale, "Visa Information Report", "Vize Bilgi Raporu", "签证信息报告")}
             </span>
             <p className="mt-2 max-w-md text-sm leading-6 text-slate-600">
               {tx(
                 locale,
-                "Generate your Premium Report to find out which state is actively seeking your occupation and your exact points score.",
-                "Hangi eyaletin mesleğinizi aradığını ve net puanınızı öğrenmek için Premium Raporunuzu oluşturun.",
-                "生成您的Premium报告，了解哪个州正在寻求您的职业以及您的确切积分。"
+                "Generate your Visa Information Report: published facts for every visa and state program, and the points total from your entries.",
+                "Vize Bilgi Raporunuzu oluşturun: her vize ve eyalet programı için yayımlanmış bilgiler ve girdilerinizden puan toplamı.",
+                "生成您的签证信息报告：每种签证和各州项目的公开信息，以及根据您的填写计算的积分总分。"
               )}
             </p>
           </div>

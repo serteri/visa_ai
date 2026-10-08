@@ -43,12 +43,12 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // The Readiness Report is a free beta: its paid checkout stays closed unless READINESS_REPORT_PAID_CHECKOUT_ENABLED
-    // is exactly "true" (lib/readiness/paid-checkout.ts). Enforced here, on the server, before anything else happens
+    // The Visa Information Report is sold unless READINESS_REPORT_PAID_CHECKOUT_ENABLED is exactly "false"; with it off the paid checkout is closed
+    // (lib/readiness/paid-checkout.ts). Enforced here, on the server, before anything else happens
     // (no report lookup, no Stripe call); hiding the button is not the gate. The ebooks (pdf_book*) are unaffected.
     if (productType === "premium" && !isPaidReportCheckoutEnabled()) {
       return NextResponse.json(
-        { error: "paid_checkout_disabled", message: "The Readiness Report is currently a free beta; paid checkout is not available." },
+        { error: "paid_checkout_disabled", message: "Paid checkout for the Visa Information Report is switched off." },
         { status: 403 }
       );
     }

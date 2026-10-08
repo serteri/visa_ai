@@ -37,7 +37,7 @@ export function PremiumFeatureGate({
   defaultEmail,
   defaultName,
   onUnlocked,
-  paidCheckoutEnabled = false,
+  paidCheckoutEnabled = true,
 }: {
   locale: string;
   reportId: string;
@@ -47,7 +47,7 @@ export function PremiumFeatureGate({
   onUnlocked: (payload: { report: ReadinessReport; email?: string; name?: string; isUnlocked?: boolean; accessToken?: string }) => void;
   /**
    * The server-side READINESS_REPORT_PAID_CHECKOUT_ENABLED flag (lib/readiness/paid-checkout.ts), passed down by the
-   * page. Anything but an explicit true means free beta: no price, no payment wording, no checkout events.
+   * page. On by default (lib/readiness/paid-checkout.ts); false means no payment is taken: no price, no checkout events.
    */
   paidCheckoutEnabled?: boolean;
 }) {

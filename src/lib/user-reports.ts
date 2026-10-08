@@ -24,11 +24,12 @@ export type CreateUserReportInput = {
   previewData?: unknown;
 };
 
-export type UnlockMethod = "payment" | "lead_capture" | "beta_free";
+export type UnlockMethod = "payment" | "lead_capture" | "beta_free" | "admin_free";
 
 function paymentStatusForMethod(method: UnlockMethod): string {
   if (method === "payment") return "paid";
   if (method === "beta_free") return "beta_free";
+  if (method === "admin_free") return "admin_free";
   return "lead_captured";
 }
 

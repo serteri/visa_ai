@@ -48,7 +48,7 @@ export function ResultView({
   email,
   dateStamp,
   view,
-  paidCheckoutEnabled = false,
+  paidCheckoutEnabled = true,
 }: ResultViewProps) {
   const isTr = locale === "tr";
   const isZh = locale === "zh-Hans";

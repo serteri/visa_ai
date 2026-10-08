@@ -161,7 +161,7 @@ interface PDFGeneratorInput {
 function getLocalizedText(locale: "en" | "tr" | "zh-Hans") {
   if (locale === "tr") {
     return {
-      title: "Tam Vize Hazırlık Raporu",
+      title: "Vize Bilgi Raporu",
       generatedDate: "Oluşturma Tarihi",
       userInfo: "Kullanıcı Bilgileri",
       signalSnapshot: "Sinyal Özeti",
@@ -259,7 +259,7 @@ function getLocalizedText(locale: "en" | "tr" | "zh-Hans") {
       stateRadarSubtitle: "Eyalet adaylığı sinyalleri, profil uyum skoruna göre görselleştirilmiştir.",
       stateRadarMissingFieldsPrefix: "Eksik veriler:",
       noClearSecondarySignal: "Belirgin ikincil sinyal yok",
-      downloadablePdfDescription: "Bu dosya, oluşturulan tam vize hazırlık raporunun indirilebilir PDF sürümüdür.",
+      downloadablePdfDescription: "Bu dosya, oluşturulan Vize Bilgi Raporunun indirilebilir PDF sürümüdür.",
       urgent: "ACIL",
       important: "ÖNEMLİ",
       ready: "HAZIR",
@@ -278,7 +278,7 @@ function getLocalizedText(locale: "en" | "tr" | "zh-Hans") {
       qualitativeFitPotential: "Olası uyum",
       qualitativeFitUnclear: "Belirsiz uyum",
       qualitativeFitUnlikely: "Olası değil",
-      coverTitle: "LogiVisa Premium Hazırlık Analizi",
+      coverTitle: "LogiVisa Vize Bilgi Raporu",
       coverSubtitle: "Resmi kaynaklara dayalı kişiselleştirilmiş vize hazırlık değerlendirmesi",
       preparedFor: "Hazırlanan Kişi",
       advisoryIntro: "Bu rapor, resmi kaynaklara dayalı, kişiselleştirilmiş bir vize hazırlık değerlendirmesidir.",
@@ -330,7 +330,7 @@ function getLocalizedText(locale: "en" | "tr" | "zh-Hans") {
 
   if (locale === "zh-Hans") {
     return {
-      title: "完整签证准备度报告",
+      title: "签证信息报告",
       generatedDate: "生成日期",
       userInfo: "用户信息",
       signalSnapshot: "匹配度概览",
@@ -428,7 +428,7 @@ function getLocalizedText(locale: "en" | "tr" | "zh-Hans") {
       stateRadarSubtitle: "州担保信号根据档案匹配分数进行可视化。",
       stateRadarMissingFieldsPrefix: "缺失信息：",
       noClearSecondarySignal: "暂无明显次要信号",
-      downloadablePdfDescription: "本文件为已生成完整签证准备度报告的可下载 PDF 版本。",
+      downloadablePdfDescription: "本文件为已生成的签证信息报告的可下载 PDF 版本。",
       urgent: "紧急",
       important: "重要",
       ready: "建议",
@@ -447,7 +447,7 @@ function getLocalizedText(locale: "en" | "tr" | "zh-Hans") {
       qualitativeFitPotential: "可能匹配",
       qualitativeFitUnclear: "匹配度不明确",
       qualitativeFitUnlikely: "匹配可能性低",
-      coverTitle: "\u004c\u006f\u0067\u0069\u0056\u0069\u0073\u0061 \u9ad8\u7ea7\u51c6\u5907\u5ea6\u8bc4\u4f30",
+      coverTitle: "LogiVisa 签证信息报告",
       coverSubtitle: "基于官方来源的个性化签证准备度评估",
       preparedFor: "\u4e3a\u4ee5\u4e0b\u7533\u8bf7\u4eba\u51c6\u5907",
       advisoryIntro: "本报告是基于官方来源的个性化签证准备度评估。",
@@ -498,7 +498,7 @@ function getLocalizedText(locale: "en" | "tr" | "zh-Hans") {
   }
 
   return {
-    title: "Full Visa Readiness Report",
+    title: "Visa Information Report",
     generatedDate: "Generated Date",
     userInfo: "User Information",
     signalSnapshot: "Signal Snapshot",
@@ -596,7 +596,7 @@ function getLocalizedText(locale: "en" | "tr" | "zh-Hans") {
     stateRadarSubtitle: "State nomination signals visualized by profile match score.",
     stateRadarMissingFieldsPrefix: "Missing:",
     noClearSecondarySignal: "No clear secondary signal",
-    downloadablePdfDescription: "This file is the downloadable PDF version of the generated full visa readiness report.",
+    downloadablePdfDescription: "This file is the downloadable PDF version of the generated Visa Information Report.",
     urgent: "URGENT",
     important: "IMPORTANT",
     ready: "READY",
@@ -615,7 +615,7 @@ function getLocalizedText(locale: "en" | "tr" | "zh-Hans") {
     qualitativeFitPotential: "Potential fit",
     qualitativeFitUnclear: "Unclear fit",
     qualitativeFitUnlikely: "Unlikely fit",
-    coverTitle: "LogiVisa Premium Readiness Assessment",
+    coverTitle: "LogiVisa Visa Information Report",
     coverSubtitle: "A personalised visa readiness assessment based on official sources",
     preparedFor: "Prepared for",
     advisoryIntro: "This report is a personalised visa readiness assessment based on official sources.",

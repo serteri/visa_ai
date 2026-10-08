@@ -383,3 +383,12 @@ translation the state's English wording is shown), the visa-block field names an
 common to all pathways, the documents and general-points tables, and the advice statement.
 
 **Lead magnets (Oct 2026).** Machine-assisted tr / zh-Hans drafts, not native-reviewed: the lead-magnet registry copy (`lib/lead-magnets.ts`: names, titles, descriptions, banners, form messages, "* Required field"), the delivery email copy (`lib/email/pdf-delivery.ts`) and the rewritten `/resources/occupation-list` page. The occupation list is described as compiled by LogiVisa from official sources, not as an official or government document; the PDF cover states source and date.
+
+## P. Paid checkout restored (Visa Information Report) — machine-assisted tr / zh-Hans drafts to review
+
+Drafts written for the paid flow and the rename, not yet reviewed by a native speaker or the compliance reviewer:
+- Locked-report card and unlock modal (`components/premium-feature-gate.tsx`): preview labels, price line, unlock button, modal text.
+- Result-page preview and full-check sidebar (`full-check-interactive-section.tsx`, `result-view.tsx`, `lib/reports/report-section-titles.ts`).
+- Report-ready email subject and intro, paid and unpaid variants (`lib/services/report-email-copy.ts`).
+- Locale JSON keys renamed to "Vize Bilgi Raporu" / "签证信息报告" (`public/locales/{tr,zh-Hans}.json`, `public/locales/zh/common.json`).
+- Product name in the Stripe line item is English only ("Visa Information Report").

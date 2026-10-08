@@ -1,27 +1,28 @@
 /**
- * Subject and intro of the "your report is ready" email (lib/services/report-service.ts). During the free beta
- * (lib/readiness/paid-checkout.ts) no payment exists, so the email must never say one was confirmed.
+ * Subject and intro of the "your report is ready" email (lib/services/report-service.ts). Paid: the payment was confirmed. Unpaid (the sale
+ * switched off, or an admin unlock): no payment exists, so the email must never say one was confirmed. The product is the
+ * Visa Information Report.
  */
 export type ReportEmailLocale = "en" | "tr" | "zh-Hans";
 
-export function reportReadyEmailCopy(locale: ReportEmailLocale, freeBeta: boolean): { subject: string; intro: string } {
+export function reportReadyEmailCopy(locale: ReportEmailLocale, withoutPayment: boolean): { subject: string; intro: string } {
   const pick = (en: string, tr: string, zh: string) => (locale === "tr" ? tr : locale === "zh-Hans" ? zh : en);
-  if (freeBeta) {
+  if (withoutPayment) {
     return {
-      subject: pick("Your Readiness Report is Ready (free beta) 🎉", "Hazırlık Raporunuz Hazır (ücretsiz beta) 🎉", "您的准备度报告已就绪（免费测试版）🎉"),
+      subject: pick("Your Visa Information Report is ready 🎉", "Vize Bilgi Raporunuz hazır 🎉", "您的签证信息报告已就绪 🎉"),
       intro: pick(
-        "Your full visa readiness report is available as part of the free beta.",
-        "Tam vize hazırlık raporunuz ücretsiz beta kapsamında kullanıma açıldı.",
-        "您的完整签证准备度报告已在免费测试版中开放。",
+        "Your full Visa Information Report is available.",
+        "Tam Vize Bilgi Raporunuz kullanıma açıldı.",
+        "您的完整签证信息报告已开放。",
       ),
     };
   }
   return {
-    subject: pick("Your Premium Report is Ready 🎉", "Premium Raporunuz Hazır 🎉", "您的高级报告已就绪 🎉"),
+    subject: pick("Your Visa Information Report is ready 🎉", "Vize Bilgi Raporunuz hazır 🎉", "您的签证信息报告已就绪 🎉"),
     intro: pick(
-      "Your payment has been confirmed and your full visa readiness report is now unlocked.",
-      "Ödemeniz onaylandı ve tam vize hazırlık raporunuz kilidi açıldı.",
-      "您的付款已确认，完整签证准备度报告已解锁。",
+      "Your payment has been confirmed and your full Visa Information Report is now unlocked.",
+      "Ödemeniz onaylandı ve tam Vize Bilgi Raporunuzun kilidi açıldı.",
+      "您的付款已确认，完整的签证信息报告已解锁。",
     ),
   };
 }

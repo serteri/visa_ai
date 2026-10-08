@@ -1080,7 +1080,7 @@ export async function submitFullCheckWaitlist(
   // Best-effort: the lead is already persisted and (if applicable) assigned
   // above, so a broken RESEND_API_KEY or a send failure here must never fail
   // the submission the visitor is waiting on.
-  if (referralAgent && !shouldSuppressReportEmails({ email }, "quick_check_agent_assigned_email")) {
+  if (referralAgent && !isAdmin && !shouldSuppressReportEmails({ email }, "quick_check_agent_assigned_email")) {
     try {
       await sendAgentAssignedEmail({
         agentEmail: referralAgent.email,
@@ -1147,8 +1147,8 @@ export async function submitFullCheckWaitlist(
 
   // Free admin order (the submitter's address is on the admin allow-list): neither the customer "report
   // ready" email nor the internal lead-tier notification is sent. The lead and report are saved as usual.
-  const skipCustomerEmail = shouldSuppressReportEmails({ email }, "quick_check_customer_report_email");
-  const skipInternalEmail = internalLeadTier !== "Cold" && shouldSuppressReportEmails({ email }, "quick_check_internal_lead_email");
+  const skipCustomerEmail = isAdmin || shouldSuppressReportEmails({ email }, "quick_check_customer_report_email");
+  const skipInternalEmail = internalLeadTier !== "Cold" && (isAdmin || shouldSuppressReportEmails({ email }, "quick_check_internal_lead_email"));
 
   Promise.all([
     skipCustomerEmail
@@ -1283,8 +1283,8 @@ async function unlockPremiumReportInternal(
   const isAdmin = await isAdminSession();
   console.log("Adım 2: Checkout gate değerlendiriliyor", { isAdmin, unlockMethod });
 
-  // ── Free beta (paid checkout flag OFF) ────────────────────────────────────
-  // The Readiness Report is a free beta unless READINESS_REPORT_PAID_CHECKOUT_ENABLED is "true"
+  // ── Sale switched off (READINESS_REPORT_PAID_CHECKOUT_ENABLED=false) ────────────────────────────────────
+  // The Visa Information Report is sold unless READINESS_REPORT_PAID_CHECKOUT_ENABLED is exactly "false"
   // (lib/readiness/paid-checkout.ts): /api/checkout is never asked for a Stripe session. Two routes to the report:
   //   1. the BROWSER SESSION THAT CREATED IT (signed httpOnly cookie set when the form was submitted,
   //      lib/reports/report-session.ts) sees it on screen right away -- the report and its access token are returned;
@@ -1307,12 +1307,12 @@ async function unlockPremiumReportInternal(
           await sendFullCheckAdminEmail({ ...fullCheckAdminPayload({ fullName: record.fullName, locale: record.locale, source: "full_check", inputJson: record.input }, record.email), variant: "free_beta", freeUnlocksToday: today });
         }
       } catch (err) {
-        console.error("unlockPremiumReport (free beta): admin notification failed (non-blocking):", err);
+        console.error("unlockPremiumReport (sale off): admin notification failed (non-blocking):", err);
       }
       try {
         await generateAndSendReport(reportId, record.email, fullName || undefined, { freeBeta: true });
       } catch (err) {
-        console.error("unlockPremiumReport (free beta): generateAndSendReport threw unexpectedly", err);
+        console.error("unlockPremiumReport (sale off): generateAndSendReport threw unexpectedly", err);
       }
     }
     if (sameBrowser) {
@@ -1320,16 +1320,16 @@ async function unlockPremiumReportInternal(
       try {
         shown = (await refreshStoredReport(record.report, record.input, { generatedAt: record.createdAt })).report;
       } catch (err) {
-        console.error("unlockPremiumReport (free beta): refresh failed, showing the stored report", err);
+        console.error("unlockPremiumReport (sale off): refresh failed, showing the stored report", err);
       }
       return {
         status: "success",
         message:
           betaLocale === "tr"
-            ? "Ücretsiz beta: raporunuz açıldı. Güvenli bağlantı, raporun oluşturulduğu e-posta adresine de gönderildi."
+            ? "Raporunuz açıldı. Güvenli bağlantı, raporun oluşturulduğu e-posta adresine de gönderildi."
             : betaLocale === "zh-Hans"
-              ? "免费测试版：报告已打开。安全链接也已发送到创建报告时使用的邮箱。"
-              : "Free beta: your report is open. The secure link was also emailed to the address the report was created with.",
+              ? "报告已打开。安全链接也已发送到创建报告时使用的邮箱。"
+              : "Your report is open. The secure link was also emailed to the address the report was created with.",
         accessToken: reportAccessToken(reportId) ?? undefined,
         report: shown,
         userInput: {
@@ -1353,10 +1353,10 @@ async function unlockPremiumReportInternal(
       status: "success",
       message:
         betaLocale === "tr"
-          ? "Ücretsiz beta: raporunuzun güvenli bağlantısı, raporun oluşturulduğu e-posta adresine gönderildi (PDF, rapor sayfasından indirilir). Birkaç dakika içinde gelmezse gereksiz klasörüne bakın."
+          ? "Raporunuzun güvenli bağlantısı, raporun oluşturulduğu e-posta adresine gönderildi (PDF, rapor sayfasından indirilir). Birkaç dakika içinde gelmezse gereksiz klasörüne bakın."
           : betaLocale === "zh-Hans"
-            ? "免费测试版：报告的安全链接已发送到创建报告时使用的邮箱（PDF 可在报告页面下载）。如几分钟内未收到，请检查垃圾邮件文件夹。"
-            : "Free beta: the secure link to your report was emailed to the address the report was created with (the PDF can be downloaded from the report page). If nothing arrives within a few minutes, check your spam folder.",
+            ? "报告的安全链接已发送到创建报告时使用的邮箱（PDF 可在报告页面下载）。如几分钟内未收到，请检查垃圾邮件文件夹。"
+            : "The secure link to your report was emailed to the address the report was created with (the PDF can be downloaded from the report page). If nothing arrives within a few minutes, check your spam folder.",
     };
   }
 
@@ -1415,7 +1415,9 @@ async function unlockPremiumReportInternal(
   // ── Effective unlock method ───────────────────────────────────────────────
   // Only the isAdmin branch reaches here now -- every non-admin unlock
   // returns via the /api/checkout redirect above.
-  const effectiveUnlockMethod: UnlockMethod = "beta_free";
+  // An admin session unlocks a report without Stripe and without a promotion code, from the normal form and unlock modal; the unlock is
+  // recorded as admin_free (not as a free-beta or paid unlock) and sends no customer email.
+  const effectiveUnlockMethod: UnlockMethod = "admin_free";
 
   // ── PDF generation & email delivery ──────────────────────────────────────
   // Shared with the free-promo and Stripe-webhook unlock paths -- see
@@ -1425,7 +1427,7 @@ async function unlockPremiumReportInternal(
   // the on-screen report regardless of whether the emailed PDF went out).
   let pdfSent = false;
   try {
-    const result = await generateAndSendReport(reportId, record.email, fullName || undefined);
+    const result = await generateAndSendReport(reportId, record.email, fullName || undefined, { suppressEmail: true });
     pdfSent = result.pdfSent;
     if (!pdfSent && !result.suppressed && isEmailDeliveryEnabled()) {
       console.error(`unlockPremiumReport: generateAndSendReport reported failure for report ${reportId}`);

@@ -15,8 +15,8 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 
   return {
     metadataBase: siteUrl,
-    title: "Get Your Free Visa Readiness Report | LogiVisa",
-    description: "Choose your destination country and get a free, structured visa readiness report.",
+    title: "Get Your Visa Information Report | LogiVisa",
+    description: "Choose your destination country and get a structured Visa Information Report: published facts with sources and dates.",
     alternates: {
       canonical: `/${locale}/reports`,
       languages: {
@@ -40,10 +40,10 @@ export default async function ReportsCountrySelectPage({ params }: PageProps) {
       : "Choose your destination country";
 
   const subtitle = isTr
-    ? "Hangi ülke için ücretsiz hazırlık raporu istiyorsunuz?"
+    ? "Hangi ülke için Vize Bilgi Raporu istiyorsunuz?"
     : isZh
-      ? "您希望针对哪个国家生成免费准备度报告？"
-      : "Which country would you like your free readiness report for?";
+      ? "您希望针对哪个国家生成签证信息报告？"
+      : "Which country would you like your Visa Information Report for?";
 
   const ctaBtn = isTr ? "Devam Et" : isZh ? "继续" : "Continue";
 

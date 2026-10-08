@@ -101,6 +101,10 @@ jobs:
         run: npm run test:report-fixes
       - name: Pre-payment preview gate (no report content in props or HTML while locked; full after unlock)
         run: npm run test:preview-gate
+      - name: Product name (Visa Information Report, en / tr / zh-Hans); no old names, no beta labels
+        run: npm run test:product-naming
+      - name: Admin session unlocks without Stripe (paid checkout on); non-admin goes to Stripe
+        run: npm run test:admin-unlock
       - name: No route can produce the verdict structure (PDF route, result page, agent PDF; en / tr / zh-Hans)
         run: npm run test:no-verdict-routes
 

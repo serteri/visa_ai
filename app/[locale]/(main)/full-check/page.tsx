@@ -34,17 +34,17 @@ export async function generateMetadata({ params }: FullCheckPageProps): Promise<
 
   const title =
     locale === "tr"
-      ? "Hazirlik raporunuzu olusturun"
+      ? "Vize Bilgi Raporunuzu oluşturun"
       : locale === "zh-Hans"
-        ? "生成准备度报告"
-        : "Generate your readiness report";
+        ? "生成签证信息报告"
+        : "Generate your Visa Information Report";
 
   const description =
     locale === "tr"
-      ? "Avustralya PR sureciniz icin yapilandirilmis hazirlik raporu olusturun."
+      ? "Yayımlanmış kaynaklara dayalı, her vize ve eyalet için yapılandırılmış Vize Bilgi Raporu oluşturun."
       : locale === "zh-Hans"
-        ? "为澳大利亚 PR 流程生成结构化准备度报告。"
-        : "Generate a structured readiness report for your Australia PR pathway.";
+        ? "生成基于公开来源的结构化签证信息报告，涵盖每种签证和各州项目。"
+        : "Generate a structured Visa Information Report: published facts for every Australian visa and state program, with sources and dates.";
 
   return {
     metadataBase: new URL(BASE_URL),
@@ -115,7 +115,7 @@ export default async function FullCheckPage({ params, searchParams }: FullCheckP
     // Keep defaults when DB is temporarily unavailable
   }
 
-  // Free beta unless the server-side flag is on (lib/readiness/paid-checkout.ts): no price is shown.
+  // Paid unless the server-side flag is explicitly "false" (lib/readiness/paid-checkout.ts): with it off, no price is shown.
   const paidCheckoutEnabled = isPaidReportCheckoutEnabled();
   const canadaReportEnabled = isCanadaReportEnabled();
 
@@ -133,20 +133,20 @@ export default async function FullCheckPage({ params, searchParams }: FullCheckP
             <>
               <div className="mb-6 flex flex-wrap items-center justify-between gap-4 border-b border-slate-200 pb-6">
                 <p className="text-lg font-medium text-slate-600">
-                  {tx("Full Visa Readiness Report", "Tam Vize Hazırlık Raporu", "完整签证准备度报告")}
+                  {tx("Visa Information Report", "Vize Bilgi Raporu", "签证信息报告")}
                 </p>
                 <p className="whitespace-nowrap">
                   <span className="text-3xl font-extrabold text-slate-900">
                     {paidCheckoutEnabled
                       ? tx(PREMIUM_PRICE_DISPLAY.en, PREMIUM_PRICE_DISPLAY.tr, PREMIUM_PRICE_DISPLAY["zh-Hans"])
-                      : tx("Free beta", "Ücretsiz beta", "免费测试版")}
+                      : tx("No payment", "Ödeme yok", "无需付款")}
                   </span>
                 </p>
               </div>
 
               <div className="mb-6 space-y-3">
                 <h2 className="text-3xl font-extrabold tracking-tight text-foreground">
-                  {tx("Generate your readiness report", "Hazırlık raporunuzu oluşturun", "生成准备度报告")}
+                  {tx("Generate your Visa Information Report", "Vize Bilgi Raporunuzu oluşturun", "生成您的签证信息报告")}
                 </h2>
               </div>
 

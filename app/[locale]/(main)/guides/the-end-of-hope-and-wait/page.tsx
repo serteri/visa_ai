@@ -289,7 +289,7 @@ export default async function HopeAndWaitGuidePage({ params }: PageProps) {
             </div>
             {locale.toLowerCase() === "zh-hans" && (
               <p className="mb-4 text-sm font-semibold text-amber-500">
-                Please note: The Visa Readiness Report is currently generated in English.
+                Please note: The Visa Information Report is currently generated in English.
               </p>
             )}
             <LeadMagnetForm
@@ -404,9 +404,9 @@ export default async function HopeAndWaitGuidePage({ params }: PageProps) {
               </p>
               <p>
                 {tx(
-                  "The immediate deliverable of this methodology is your Visa Readiness Report. This report is a structured, data-driven diagnostic document that shows your exact points score, quantifies your points gap, ranks your viable pathways, and evaluates your documentation checklist against case-officer audit standards. It strips away the vagueness of traditional migration advice and replaces it with clear, actionable logic.",
-                  "Bu metodolojinin doğrudan çıktısı, vize hazırlık raporunuzdur (Visa Readiness Report). Bu rapor, puanlarınızı, puan açığınızı, geçerli yollarınızı ve belgelerinizin denetim standartlarına uyumunu gösteren veri odaklı bir analizdir. Göç sürecindeki belirsizlikleri ortadan kaldırır.",
-                  "这一方法论的直接交付物就是您的《签证准备度报告》。这份报告是一份结构化的、数据驱动的诊断文件，展示您准确的积分、量化您的分数差距、为您可行的路径进行排名，并对照签证官审计标准评估您的材料清单。它剥离了传统移民建议的模糊性，并代之以清晰、可操作的逻辑。"
+                  "The immediate deliverable of this methodology is your Visa Information Report. It lists the published facts for every visa and every state and territory, each with its source and date, and shows the points total calculated from your entries. It is information only: it does not assess your situation and is not migration advice.",
+                  "Bu metodolojinin doğrudan çıktısı Vize Bilgi Raporunuzdur. Her vize ile her eyalet ve bölge için yayımlanmış bilgileri, kaynakları ve tarihleriyle listeler ve girdilerinizden hesaplanan puan toplamını gösterir. Yalnızca bilgidir: durumunuzu değerlendirmez ve göçmenlik tavsiyesi değildir.",
+                  "这一方法论的直接交付物是您的《签证信息报告》。它列出每种签证及每个州和领地的公开信息，均标明来源和日期，并显示根据您的填写计算的积分总分。仅为信息：不评估您的情况，也不构成移民建议。"
                 )}
               </p>
               <p className="font-semibold text-slate-900 mt-6">
@@ -446,7 +446,7 @@ export default async function HopeAndWaitGuidePage({ params }: PageProps) {
                 className="w-full sm:w-auto h-14 rounded-2xl bg-gradient-to-r from-indigo-600 to-purple-600 text-lg font-bold text-white shadow-xl shadow-indigo-500/30 hover:opacity-90"
               >
                 <Link href={`/${locale}/full-check`}>
-                  {tx("Generate My Visa Readiness Report", "Vize Hazırlık Raporumu Oluştur", "生成我的签证准备度报告")}
+                  {tx("Generate My Visa Information Report", "Vize Bilgi Raporumu Oluştur", "生成我的签证信息报告")}
                   <ArrowRight className="ml-2 h-5 w-5" />
                 </Link>
               </Button>

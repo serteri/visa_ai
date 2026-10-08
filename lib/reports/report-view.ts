@@ -27,6 +27,7 @@ import { buildStateInfos } from "./report-states";
 import { T, factLabel, tagsFor } from "./report-text";
 import { buildVisaInfos, visaLabels } from "./report-visas";
 import { reportDisclaimer } from "./report-disclaimer";
+import { reportSectionTitle } from "./report-section-titles";
 import { getResourcesSection } from "@/lib/readiness/pdf-content/resources";
 
 export type { FactTag, RequirementStatus } from "./report-text";
@@ -117,7 +118,7 @@ export function buildReportView(args: ReportViewArgs): ReportView {
   if (profile.migrationGoals?.length) extras.push(`${T(l, "Migration goals", "Göç hedefleri", "移民目标")}: ${profile.migrationGoals.join(", ")}  [${tags.supplied}]`);
   sections.push({
     id: "details",
-    title: T(l, "Your details", "Bilgileriniz", "您的信息"),
+    title: reportSectionTitle("details", l),
     blocks: [
       { kind: "text", text: `${T(l, "Target visa", "Hedef vize", "目标签证")}: ${targetVisaName(target, l)}  [${tags.supplied}]` },
       { kind: "lines", lines: [...detailLines, ...extras] },
@@ -137,7 +138,7 @@ export function buildReportView(args: ReportViewArgs): ReportView {
     if (pts.singles.length) blocks.push({ kind: "heading", text: pts.singlesTitle }, table(pts.scenarioHeaders, pts.singles, [0.43, 0.13, 0.14, 0.15, 0.15]));
     if (pts.combined.length) blocks.push({ kind: "heading", text: pts.combinedTitle }, table(pts.scenarioHeaders, pts.combined, [0.43, 0.13, 0.14, 0.15, 0.15]));
     blocks.push({ kind: "text", text: pts.note });
-    sections.push({ id: "points", title: T(l, "Points", "Puanlar", "积分"), blocks });
+    sections.push({ id: "points", title: reportSectionTitle("points", l), blocks });
   }
 
   // 4. Visa information: one block per visa, target first.
@@ -154,7 +155,7 @@ export function buildReportView(args: ReportViewArgs): ReportView {
     }
   }
   void labels;
-  sections.push({ id: "visas", title: T(l, "Visa information", "Vize bilgileri", "签证信息"), blocks: visaBlocks });
+  sections.push({ id: "visas", title: reportSectionTitle("visas", l), blocks: visaBlocks });
 
   // 5. States and territories.
   if (!isCA) {
@@ -176,7 +177,7 @@ export function buildReportView(args: ReportViewArgs): ReportView {
           ],
         });
       }
-      sections.push({ id: "states", title: T(l, "State and territory programs", "Eyalet ve bölge programları", "各州和领地项目"), blocks });
+      sections.push({ id: "states", title: reportSectionTitle("states", l), blocks });
     }
   }
 
@@ -184,7 +185,7 @@ export function buildReportView(args: ReportViewArgs): ReportView {
   const inv = buildInvitationInfo(l);
   sections.push({
     id: "invitations",
-    title: T(l, "Invitation history", "Davet geçmişi", "邀请历史"),
+    title: reportSectionTitle("invitations", l),
     blocks: [{ kind: "text", text: inv.intro }, table(inv.headers, inv.rows, [0.13, 0.11, 0.11, 0.13, 0.32, 0.2]), { kind: "text", text: inv.stateNote }, { kind: "text", text: inv.note }],
   });
 
@@ -201,21 +202,21 @@ export function buildReportView(args: ReportViewArgs): ReportView {
   costs.selectedTotalLines.forEach((t) => costBlocks.push({ kind: "text", text: t }));
   costs.notes.forEach((t) => costBlocks.push({ kind: "text", text: t }));
   if (costs.livingLine) costBlocks.push({ kind: "text", text: costs.livingLine });
-  sections.push({ id: "costs", title: T(l, "Costs", "Maliyetler", "费用"), blocks: costBlocks });
+  sections.push({ id: "costs", title: reportSectionTitle("costs", l), blocks: costBlocks });
 
   // 8. Typical process.
   const processBlocks: Block[] = [{ kind: "text", text: T(l, "The usual steps for each pathway family and what the sources publish about each. It is generic: it has no dates for you.", "Her yol ailesi için olağan adımlar ve kaynakların her biri hakkında yayımladıkları. Geneldir: size özel tarih içermez.", "各类路径的常见步骤及资料对每一步的公开说明。内容为通用信息，不含针对您的日期。") }];
   for (const f of buildProcessInfo(report, occupationRaw, l)) {
     processBlocks.push({ kind: "heading", text: f.title }, { kind: "text", text: f.applies }, table([T(l, "Step", "Adım", "步骤"), T(l, "Published information", "Yayımlanmış bilgi", "已公布的信息"), T(l, "Source", "Kaynak", "来源")], f.rows.map((r) => [...r]), [0.2, 0.55, 0.25]));
   }
-  sections.push({ id: "process", title: T(l, "Typical process", "Tipik süreç", "典型流程"), blocks: processBlocks });
+  sections.push({ id: "process", title: reportSectionTitle("process", l), blocks: processBlocks });
 
   // 9. Documents and general points.
   const docs = buildDocumentsInfo(report, l);
   const docBlocks: Block[] = [];
   if (docs.rows.length) docBlocks.push(table(docs.headers, docs.rows, [0.2, 0.42, 0.18, 0.2]));
   docBlocks.push(table(docs.extraHeaders, docs.extra, [0.16, 0.62, 0.22]), { kind: "heading", text: docs.pointsTitle }, table(docs.pointsHeaders, docs.points, [0.7, 0.3]));
-  sections.push({ id: "documents", title: T(l, "Documents and general points", "Belgeler ve genel noktalar", "文件与一般事项"), blocks: docBlocks });
+  sections.push({ id: "documents", title: reportSectionTitle("documents", l), blocks: docBlocks });
 
   // 10. Sources register and the advice statement.
   const states = isCA ? [] : buildStateInfos(report, occupationRaw, l);
@@ -224,7 +225,7 @@ export function buildReportView(args: ReportViewArgs): ReportView {
   const links = resources.sections.flatMap((s) => s.links.map((k) => `${k.label} — ${k.url}`));
   if (links.length) srcBlocks.push({ kind: "heading", text: T(l, "Official resources", "Resmi kaynaklar", "官方资源") }, { kind: "lines", lines: links });
   srcBlocks.push({ kind: "text", text: agentStatement(l) });
-  sections.push({ id: "sources", title: T(l, "Sources and advice", "Kaynaklar ve danışmanlık", "来源与咨询"), blocks: srcBlocks });
+  sections.push({ id: "sources", title: reportSectionTitle("sources", l), blocks: srcBlocks });
 
   return {
     locale: l,

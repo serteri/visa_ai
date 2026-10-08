@@ -58,10 +58,10 @@ export function PremiumReportShowcase() {
         <div className="mx-auto max-w-2xl text-center">
           <span className="inline-flex items-center gap-2 rounded-full border border-[#53917E]/30 bg-[#53917E]/10 px-4 py-1 text-xs font-semibold uppercase tracking-wider text-[#53917E]">
             <span className="h-1.5 w-1.5 rounded-full bg-[#53917E]" />
-            {t("home.reportShowcase.eyebrow", "A$21.99 inc. GST Premium Report")}
+            {t("home.reportShowcase.eyebrow", "A$21.99 inc. GST · Visa Information Report")}
           </span>
           <h2 className="mt-6 text-4xl font-extrabold tracking-tight text-slate-900 sm:text-5xl">
-            {t("home.reportShowcase.title", "What's Inside the Premium Report?")}
+            {t("home.reportShowcase.title", "What's inside the Visa Information Report?")}
           </h2>
           <p className="mt-4 text-lg font-medium leading-relaxed text-slate-700">
             {t(

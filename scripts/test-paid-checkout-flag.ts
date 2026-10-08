@@ -1,17 +1,16 @@
 /**
- * The paid Readiness Report checkout is behind READINESS_REPORT_PAID_CHECKOUT_ENABLED (lib/readiness/paid-checkout.ts):
- * the report is a free beta, production stays OFF unless the variable is exactly "true".
+ * The paid Visa Information Report checkout is behind READINESS_REPORT_PAID_CHECKOUT_ENABLED (lib/readiness/paid-checkout.ts):
+ * ON by default; only the exact string "false" switches the sale off.
  *
- *   1. The flag: only the exact string "true" is ON (unset, "", "false", "1", "TRUE", " true" are OFF).
- *   2. The REAL /api/checkout route, flag OFF: the "premium" (Readiness Report) product is refused with 403
- *      paid_checkout_disabled BEFORE any report lookup or Stripe call; the ebooks are not affected.
- *   3. The same route, flag ON (test configuration): the request passes the gate and reaches the payment code. No
- *      Stripe key is configured here, so it stops at "Stripe keys are missing" -- nothing can be charged.
- *   4. The unlock decision a non-admin visitor gets: free beta when OFF, Stripe checkout only when ON.
- *   5. The "report is ready" email: in the free beta it never says a payment was confirmed (en / tr / zh-Hans); the paid
- *      wording is unchanged.
- *   6. The source: the unlock action asks /api/checkout for a session only on the "stripe_checkout" branch, and the unlock
- *      UI shows no price unless the flag was passed down as true.
+ *   1. The flag: ON for unset, "", "true", "TRUE", "0", "1"; OFF only for "false" (trimmed).
+ *   2. The REAL /api/checkout route, flag OFF: the "premium" product is refused with 403 paid_checkout_disabled BEFORE any report lookup
+ *      or Stripe call; the ebooks are not affected.
+ *   3. The same route with the variable UNSET (production default): the request passes the gate and reaches the payment code. No Stripe key is
+ *      configured here, so it stops at "Stripe keys are missing" -- nothing can be charged. The checkout line item is the
+ *      "Visa Information Report" at the unchanged price.
+ *   4. The unlock decision a non-admin visitor gets: Stripe checkout by default, free open only when switched off.
+ *   5. The "report is ready" email: paid wording unchanged in substance (payment confirmed); no "beta", "Readiness" or "Premium" wording anywhere.
+ *   6. The source: the unlock action asks /api/checkout for a session only on the "stripe_checkout" branch; the unlock UI defaults to payment.
  *
  * No network, no database, no Stripe.   npx tsx scripts/test-paid-checkout-flag.ts
  */
@@ -42,44 +41,46 @@ const post = (POST: (req: NextRequest) => Promise<Response>, body: unknown) =>
 async function main() {
   console.log("1. the flag");
   check(PAID_CHECKOUT_FLAG === "READINESS_REPORT_PAID_CHECKOUT_ENABLED", "the variable name");
-  for (const v of [undefined, "", "false", "0", "1", "TRUE", "True", " true", "true ", "yes"]) check(!isPaidReportCheckoutEnabled({ [PAID_CHECKOUT_FLAG]: v }), `OFF for ${JSON.stringify(v)}`);
-  check(isPaidReportCheckoutEnabled({ [PAID_CHECKOUT_FLAG]: "true" }), 'ON only for "true"');
-  check(!isPaidReportCheckoutEnabled({}), "OFF when the variable is not set at all (the production default)");
+  for (const v of [undefined, "", "true", "TRUE", "True", "0", "1", "yes", "off"]) check(isPaidReportCheckoutEnabled({ [PAID_CHECKOUT_FLAG]: v }), `ON for ${JSON.stringify(v)}`);
+  for (const v of ["false", " false ", "false "]) check(!isPaidReportCheckoutEnabled({ [PAID_CHECKOUT_FLAG]: v }), `OFF for ${JSON.stringify(v)}`);
+  check(isPaidReportCheckoutEnabled({}), "ON when the variable is not set at all (the production default)");
 
   const { POST } = await import("../app/api/checkout/route");
 
   console.log("\n2. /api/checkout, flag OFF");
-  delete process.env[PAID_CHECKOUT_FLAG];
+  process.env[PAID_CHECKOUT_FLAG] = "false";
   for (const locale of ["en", "tr", "zh-Hans"]) {
     const res = await post(POST, { productType: "premium", reportId: "rep-1", email: "a@example.test", locale });
     const json = (await res.json()) as { error?: string };
     check(res.status === 403 && json.error === "paid_checkout_disabled", `premium is refused (${locale}): ${res.status} ${json.error}`);
   }
-  process.env[PAID_CHECKOUT_FLAG] = "false";
-  const off = await post(POST, { productType: "premium", email: "a@example.test" });
-  check(off.status === 403, '"false" is refused too');
   const ebook = await post(POST, { productType: "pdf_book_global", email: "a@example.test" });
   const ebookJson = (await ebook.json()) as { error?: string };
   check(ebook.status !== 403 && ebookJson.error !== "paid_checkout_disabled", `the ebooks are not gated by this flag (status ${ebook.status}: ${ebookJson.error})`);
 
-  console.log("\n3. /api/checkout, flag ON (test configuration, no Stripe key)");
-  process.env[PAID_CHECKOUT_FLAG] = "true";
+  console.log("\n3. /api/checkout, variable UNSET (the default), no Stripe key");
+  delete process.env[PAID_CHECKOUT_FLAG];
   const on = await post(POST, { productType: "premium", email: "a@example.test" });
   const onJson = (await on.json()) as { error?: string };
-  check(on.status !== 403 && onJson.error !== "paid_checkout_disabled", "the gate is open");
+  check(on.status !== 403 && onJson.error !== "paid_checkout_disabled", "the gate is open by default");
   check(on.status === 500 && /Stripe keys are missing/.test(onJson.error ?? ""), `...and the request reaches the payment code, which stops without a key (${on.status}: ${onJson.error})`);
-  delete process.env[PAID_CHECKOUT_FLAG];
+  const { getCheckoutLineItem } = await import("../lib/stripe/line-items");
+  const { PREMIUM_PRICE_AUD_CENTS } = await import("../lib/pricing");
+  const item = getCheckoutLineItem("premium");
+  check(item.price_data.product_data.name === "Visa Information Report" && item.price_data.unit_amount === PREMIUM_PRICE_AUD_CENTS && PREMIUM_PRICE_AUD_CENTS === 2199 && item.price_data.currency === "aud", "the Stripe line item is the Visa Information Report at the unchanged price (A$21.99 GST-inclusive)");
 
   console.log("\n4. the unlock decision for a non-admin visitor");
-  check(nonAdminUnlockMode({}) === "free_beta" && nonAdminUnlockMode({ [PAID_CHECKOUT_FLAG]: "false" }) === "free_beta", "OFF -> free beta");
-  check(nonAdminUnlockMode({ [PAID_CHECKOUT_FLAG]: "true" }) === "stripe_checkout", 'ON -> Stripe checkout');
+  check(nonAdminUnlockMode({}) === "stripe_checkout" && nonAdminUnlockMode({ [PAID_CHECKOUT_FLAG]: "true" }) === "stripe_checkout", "default / true -> Stripe checkout");
+  check(nonAdminUnlockMode({ [PAID_CHECKOUT_FLAG]: "false" }) === "free_beta", 'switched off -> the report opens without payment');
 
   console.log("\n5. the report-ready email");
   for (const l of ["en", "tr", "zh-Hans"] as ReportEmailLocale[]) {
-    const beta = reportReadyEmailCopy(l, true);
+    const unpaid = reportReadyEmailCopy(l, true);
     const paid = reportReadyEmailCopy(l, false);
-    check(!/payment|premium|ödeme|premium|付款|高级/i.test(`${beta.subject} ${beta.intro}`) && /beta|测试版/i.test(`${beta.subject} ${beta.intro}`), `${l}: free beta wording, no payment or premium claim`, `${beta.subject} | ${beta.intro}`);
-    check(/payment|ödeme|付款/i.test(paid.intro) && beta.intro !== paid.intro, `${l}: the paid wording is unchanged`);
+    const all = `${unpaid.subject} ${unpaid.intro} ${paid.subject} ${paid.intro}`;
+    check(!/payment|ödeme|付款/i.test(`${unpaid.subject} ${unpaid.intro}`), `${l}: without a payment the email never says one was confirmed`, `${unpaid.subject} | ${unpaid.intro}`);
+    check(/payment|ödeme|付款/i.test(paid.intro) && /Visa Information Report|Vize Bilgi Raporu|签证信息报告/.test(paid.subject), `${l}: the paid email confirms the payment and names the Visa Information Report`);
+    check(!/beta|测试版|Readiness|Hazırlık|准备度|Premium|高级/i.test(all), `${l}: no beta / Readiness / Premium wording`);
   }
 
   console.log("\n6. source checks");
@@ -94,9 +95,9 @@ async function main() {
   const afterSession = freeBlock.slice(sbAt, freeBlock.indexOf("// ── Checkout gate"));
   const outsideSession = freeBlock.slice(0, sbAt) + afterSession.slice(afterSession.indexOf("if (!firstUnlock)"));
   check(sbAt > 0 && /accessToken/.test(afterSession) && !/accessToken|report:/.test(outsideSession), "the report and its access token are returned only inside the creating-browser (session) branch");
-  check(/generateAndSendReport\(reportId, record\.email, fullName \|\| undefined, \{ freeBeta: true \}\)/.test(actions), "the free-beta unlock sends the free-beta email wording");
+  check(/generateAndSendReport\(reportId, record\.email, fullName \|\| undefined, \{ freeBeta: true \}\)/.test(actions), "the unpaid unlock sends the no-payment email wording");
   const gate = read("components/premium-feature-gate.tsx");
-  check(/paidCheckoutEnabled = false/.test(gate), "the unlock UI defaults to free beta");
+  check(/paidCheckoutEnabled = true/.test(gate), "the unlock UI defaults to payment");
   const result = read("app/[locale]/(main)/full-check/result/page.tsx");
   const fcPage = read("app/[locale]/(main)/full-check/page.tsx");
   check(result.includes("isPaidReportCheckoutEnabled()") && fcPage.includes("isPaidReportCheckoutEnabled()"), "both report pages read the server-side flag");
