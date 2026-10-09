@@ -1,15 +1,12 @@
-import { AGENT_LEAD_NOTICE } from "@/lib/readiness/agent-lead-notice";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
 
-import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
-import { requireRole } from "@/lib/auth/rbac";
-import { getAgentLead, parseNotes, splitName } from "@/lib/crm/leads";
+import { clientReference, requireApprovedAgentPage } from "@/lib/crm/agent-access";
+import { getAgentLead, parseNotes } from "@/lib/crm/leads";
 import { getLeadNotes } from "@/lib/crm/notes";
-import { tierBadgeClass, tierEmoji } from "@/lib/crm/tiers";
 import { LeadNotes } from "@/components/crm/lead-notes";
 import { WorkflowForm } from "./workflow-form";
 
@@ -35,12 +32,11 @@ export default async function AgentLeadDetailPage({ params }: PageProps) {
   const { locale, id } = await params;
   const prefix = locale === "en" ? "" : `/${locale}`;
 
-  const user = await requireRole("AGENT", locale, `${prefix}/agent/lead/${id}`);
+  // Signed in, an AGENT, approved in the database right now; nothing is read for anyone else.
+  const user = await requireApprovedAgentPage(locale, `${prefix}/agent/lead/${id}`);
   const lead = await getAgentLead(user.id, id);
   if (!lead) notFound();
 
-  const { firstName, lastName } = splitName(lead.fullName);
-  const pdfUrl = `/api/agent/lead/${id}/pdf`;
   const notes = await getLeadNotes(id);
   const legacyNotes = parseNotes(lead.agentNotes);
 
@@ -48,35 +44,25 @@ export default async function AgentLeadDetailPage({ params }: PageProps) {
     <div className="space-y-6">
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div>
-          <Link
-            href={`${prefix}/agent/dashboard`}
-            className="text-sm font-medium text-indigo-600 hover:underline"
-          >
-            ← Back to my leads
+          <Link href={`${prefix}/agent/dashboard`} className="text-sm font-medium text-indigo-600 hover:underline">
+            ← Back to my referrals
           </Link>
-          <h1 className="mt-1 text-2xl font-bold">
-            {firstName || lastName ? `${firstName} ${lastName}`.trim() : lead.email}
-          </h1>
+          <h1 className="mt-1 text-2xl font-bold">{clientReference(lead.id)}</h1>
         </div>
-        <span
-          className={`inline-flex items-center gap-1 rounded-full border px-3 py-1 text-sm font-semibold ${tierBadgeClass(
-            lead.pointsTier
-          )}`}
-        >
-          {tierEmoji(lead.pointsTier)} {lead.pointsTier ?? "Unassigned"} tier
+        <span className="inline-flex items-center gap-1 rounded-full border border-slate-200 bg-white px-3 py-1 text-sm font-semibold text-slate-700">
+          {lead.isPaid ? "Purchased" : "Not purchased"}
         </span>
       </div>
 
       <Card>
         <CardHeader>
-          <CardTitle className="text-base">Contact details</CardTitle>
+          <CardTitle className="text-base">Client details</CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="grid gap-3 sm:grid-cols-2">
-            <DetailRow label="First name" value={firstName} />
-            <DetailRow label="Last name" value={lastName} />
-            <DetailRow label="Email" value={lead.email} />
-            <DetailRow label="Phone number" value={lead.phone ?? ""} />
+          <p className="text-sm text-slate-700" data-testid="agent-details-notice">
+            This client&apos;s name, contact details, entered details and report are not shown to agents until the client has agreed to share them.
+          </p>
+          <div className="mt-3 grid gap-3 sm:grid-cols-2">
             <DetailRow label="Source" value={lead.source} />
             <DetailRow label="Received" value={lead.createdAt.toLocaleString(locale)} />
           </div>
@@ -100,9 +86,7 @@ export default async function AgentLeadDetailPage({ params }: PageProps) {
           <LeadNotes leadId={id} locale={locale} initialNotes={notes} />
           {legacyNotes.length > 0 && (
             <div className="space-y-2 border-t border-slate-200 pt-4">
-              <Label className="text-xs font-semibold uppercase tracking-wide text-slate-600">
-                Earlier notes
-              </Label>
+              <Label className="text-xs font-semibold uppercase tracking-wide text-slate-600">Earlier notes</Label>
               <ul className="space-y-2">
                 {legacyNotes.map((entry, i) => (
                   <li key={i} className="rounded-lg border border-slate-200 bg-white px-3 py-2">
@@ -114,37 +98,6 @@ export default async function AgentLeadDetailPage({ params }: PageProps) {
                 ))}
               </ul>
             </div>
-          )}
-        </CardContent>
-      </Card>
-
-      <Card>
-        <CardHeader className="flex flex-row items-center justify-between gap-3">
-          <div>
-            <CardTitle className="text-base">Report</CardTitle>
-            <p className="mt-1 text-xs font-medium text-amber-800" data-testid="agent-lead-notice">
-              {AGENT_LEAD_NOTICE.en}
-            </p>
-          </div>
-          <Button asChild size="sm">
-            <a href={pdfUrl} target="_blank" rel="noopener noreferrer">
-              Download PDF
-            </a>
-          </Button>
-        </CardHeader>
-        <CardContent>
-          {lead.reportJson ? (
-            <div className="overflow-hidden rounded-lg border border-slate-200">
-              <iframe
-                src={pdfUrl}
-                title="Automated information summary"
-                className="h-[720px] w-full"
-              />
-            </div>
-          ) : (
-            <p className="text-sm text-slate-600">
-              No generated report is stored for this lead yet.
-            </p>
           )}
         </CardContent>
       </Card>

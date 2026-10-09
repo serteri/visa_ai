@@ -12,33 +12,24 @@ import {
 
 export interface AgentAssignedEmailProps {
   agentName?: string | null;
-  leadName: string;
-  status: string;
   leadUrl: string;
 }
 
-// Deliberately minimal: client name, status, and a direct link into the
+// Deliberately minimal: NO client details (no name, email, phone), only a link into the
 // assigned lead's detail page. Rendered server-side by
 // lib/email/agent-notifications.ts and passed to Resend's `react` field.
-export function AgentAssignedEmail({ agentName, leadName, status, leadUrl }: AgentAssignedEmailProps) {
+export function AgentAssignedEmail({ agentName, leadUrl }: AgentAssignedEmailProps) {
   const greetingName = agentName?.trim() || "there";
 
   return (
     <Html>
       <Head />
-      <Preview>New lead assigned: {leadName}</Preview>
+      <Preview>A lead has been assigned to you</Preview>
       <Body style={main}>
         <Container style={container}>
           <Heading style={heading}>📋 New Lead Assigned</Heading>
           <Text style={text}>Hi {greetingName},</Text>
-          <Text style={text}>A new lead has been assigned to you in the LogiVisa CRM.</Text>
-
-          <Section style={detailsBox}>
-            <Text style={detailLabel}>Client Name</Text>
-            <Text style={detailValue}>{leadName}</Text>
-            <Text style={detailLabel}>Status</Text>
-            <Text style={{ ...detailValue, marginBottom: 0 }}>{status}</Text>
-          </Section>
+          <Text style={text}>A lead has been assigned to you in the LogiVisa CRM. Client details are not shown to agents until the client has agreed to share them.</Text>
 
           <Button style={button} href={leadUrl}>
             View Lead

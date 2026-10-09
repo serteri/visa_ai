@@ -4,6 +4,8 @@ import Stripe from "stripe";
 import { prisma } from "@/lib/prisma";
 import { generateAndSendReport } from "@/lib/services/report-service";
 import { PDF_SLUGS, sendPdfDeliveryEmail } from "@/lib/email/pdf-delivery";
+import { getApprovedAgent } from "@/lib/crm/agent-access";
+import { sendAgentReferralPurchaseEmail } from "@/lib/email/agent-notifications";
 import { recordCommissionTransaction, recordCommissionTransactionForLead, hasRecordedTransaction } from "@/lib/stripe/commission";
 import { getStripeClient } from "@/lib/stripe";
 import { fullCheckAdminPayload, sendFullCheckAdminEmail } from "@/lib/email/full-check-admin";
@@ -36,8 +38,9 @@ type CheckoutSessionMeta = {
   /** Set by createCheckoutSession when the buyer arrived via a ?ref=<agentId>
    * link (components/ref-capture.tsx), resolved server-side against a real
    * AGENT account before being placed here -- never trust this as anything
-   * more than "an agent id that passed getAgentUser() at checkout-creation
-   * time", not currently-still-valid until re-checked. */
+   * more than "an approved agent id at checkout-creation time"; the commission
+   * code re-checks that the agent is approved at the moment of the sale. Report
+   * sales never read this: the agent comes from the report row. */
   agentId?: string;
   /** Set by app/api/stripe/checkout/route.ts for the AI-assistant credit
    * packages (app/[locale]/pricing) -- the anonymous ChatVisitor id to
@@ -209,7 +212,12 @@ async function handleReportUnlock(stripe: Stripe, session: Stripe.Checkout.Sessi
     // webhook or block PDF delivery below. No-ops if this session has no
     // leadId in metadata (recordCommissionTransaction checks internally).
     try {
-      await recordCommissionTransaction(session);
+      // The agent credited is the one on the report row (and only if approved), never one named in the session metadata.
+      const sale = await recordCommissionTransaction(session);
+      if (sale?.agentId && !shouldSkipInternalNotification({ email: [email, record.email] }, "agent_referral_purchase_email")) {
+        const agent = await getApprovedAgent(sale.agentId);
+        if (agent) await sendAgentReferralPurchaseEmail({ agentEmail: agent.email, agentName: agent.name, locale: record.locale });
+      }
     } catch (commissionErr) {
       console.error("Webhook: Commission transaction recording failed (non-blocking):", commissionErr);
     }

@@ -38,9 +38,15 @@ async function textOf(bytes: Uint8Array) {
 async function main() {
   console.log("1. portal");
   check(AGENT_LEAD_NOTICE.en === "Automated information summary based on user-entered details — not reviewed or assessed by a migration agent", "the English label is the approved wording");
-  for (const f of ["app/[locale]/(portal)/agent/lead/[id]/page.tsx", "app/[locale]/(portal)/admin/crm/lead/[id]/page.tsx"]) {
+  {
+    const f = "app/[locale]/(portal)/admin/crm/lead/[id]/page.tsx";
     const src = readFileSync(f, "utf8");
     check(/AGENT_LEAD_NOTICE\.en/.test(src) && !/>Assessment report</.test(src), `${f}: label shown above the report, card no longer titled "Assessment report"`);
+  }
+  {
+    // Until the client's consent exists the agent page shows no report at all (see scripts/test-agent-leaks.ts): no PDF link, no frame.
+    const src = readFileSync("app/[locale]/(portal)/agent/lead/[id]/page.tsx", "utf8");
+    check(!/iframe|\/pdf|reportJson|>Assessment report</.test(src), "the agent lead page shows no report or PDF while client details are not shared");
   }
   check(/audience:\s*"agent"/.test(readFileSync("app/api/agent/lead/[id]/pdf/route.ts", "utf8")), "the agent PDF route requests the agent label");
 

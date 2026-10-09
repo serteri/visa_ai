@@ -5,6 +5,7 @@ import { revalidatePath } from "next/cache";
 import { prisma } from "@/lib/prisma";
 import { getCurrentUser } from "@/lib/auth/rbac";
 import { createLeadNote, type LeadNoteWithAuthor } from "@/lib/crm/notes";
+import { getApprovedAgent } from "@/lib/crm/agent-access";
 
 export type AddLeadNoteResult = { error?: string; note?: LeadNoteWithAuthor };
 
@@ -23,6 +24,8 @@ export async function addLeadNoteAction(leadId: string, content: string): Promis
   if (!trimmed) return { error: "Note can't be empty." };
 
   if (user.role === "AGENT") {
+    // Approved in the database right now (a pending or rejected agent gets nothing), then the lead must be theirs.
+    if (!(await getApprovedAgent(user.id))) return { error: "Your account is not approved." };
     const lead = await prisma.userReport.findUnique({ where: { id: leadId }, select: { agentId: true } });
     if (!lead || lead.agentId !== user.id) {
       return { error: "This lead is not assigned to you." };

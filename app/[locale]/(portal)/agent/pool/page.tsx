@@ -2,7 +2,8 @@ import type { Metadata } from "next";
 
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { isApprovedAgent, requireRole } from "@/lib/auth/rbac";
+import { requireRole } from "@/lib/auth/rbac";
+import { getApprovedAgent } from "@/lib/crm/agent-access";
 import { getLeadPool } from "@/lib/crm/leads";
 import { claimLeadAction } from "./actions";
 import { AgentNav } from "../agent-nav";
@@ -30,7 +31,7 @@ export default async function AgentLeadPoolPage({ params }: PageProps) {
 
   const user = await requireRole("AGENT", locale, `${prefix}/agent/pool`);
 
-  if (!isApprovedAgent(user)) {
+  if (!(await getApprovedAgent(user.id))) {
     return (
       <div className="space-y-6">
         <div>

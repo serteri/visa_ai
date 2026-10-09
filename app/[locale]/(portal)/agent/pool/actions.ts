@@ -3,8 +3,9 @@
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 
-import { isApprovedAgent, requireRole } from "@/lib/auth/rbac";
-import { claimLead, getAgentLead } from "@/lib/crm/leads";
+import { requireRole } from "@/lib/auth/rbac";
+import { getApprovedAgent } from "@/lib/crm/agent-access";
+import { claimLead } from "@/lib/crm/leads";
 import { sendAgentAssignedEmail } from "@/lib/email/agent-notifications";
 
 export async function claimLeadAction(locale: string, leadId: string): Promise<void> {
@@ -14,7 +15,7 @@ export async function claimLeadAction(locale: string, leadId: string): Promise<v
   // Defense in depth: the pool page never renders a Claim button for a
   // pending agent, but this action must reject it directly too, not just
   // rely on the UI never offering it.
-  if (!isApprovedAgent(user)) return;
+  if (!(await getApprovedAgent(user.id))) return;
 
   // If another agent claimed it between page render and this submit, `claimed`
   // comes back false -- stay on the pool instead of opening a lead detail page
@@ -29,16 +30,8 @@ export async function claimLeadAction(locale: string, leadId: string): Promise<v
     // so a broken RESEND_API_KEY or a send failure must never block the
     // redirect into the lead the agent just claimed.
     try {
-      const lead = await getAgentLead(user.id, leadId);
-      if (lead && user.email) {
-        await sendAgentAssignedEmail({
-          agentEmail: user.email,
-          agentName: user.name,
-          leadName: lead.fullName || lead.email,
-          status: lead.docStatus ?? "New",
-          leadId,
-          locale,
-        });
+      if (user.email) {
+        await sendAgentAssignedEmail({ agentEmail: user.email, agentName: user.name, leadId, locale });
       }
     } catch (error) {
       console.error("[claimLeadAction] Notification email failed (non-blocking):", error);

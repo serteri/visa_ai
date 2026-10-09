@@ -14,6 +14,21 @@ Assumptions (no questions asked; correct any that are wrong):
 
 ---
 
+## 0. Status after the leak fixes (Part 2, 9 Oct)
+
+| Gap | Status |
+|---|---|
+| G2 checkout trusts a body `agentId` | Fixed: the agent is read from the report row, approved agents only; the field is no longer in the payload type. The webhook credits the report's agent, never `metadata.agentId` (campaign / ebook sales still carry a server-resolved, approved agent in metadata and the commission code re-checks approval). |
+| G3 agent sees the report before payment | Fixed more strictly: **no** agent can open a client's report or PDF at all until consent exists (the agent PDF route answers 403 to every agent). |
+| G4 pending / rejected agents attributable and able to open data | Fixed: attribution, assignment, commission, the lead page, the dashboard, earnings, notes, workflow and pool read approval from the database (a stale session does not count). |
+| G15 agent emailed the client's name at submit | Fixed: no email to an agent at submit; the assignment email carries no client details and is not sent for an unpaid report; an approved agent gets a post-payment notice with no client details. |
+| G6 commission base | Changed to the GST-exclusive amount (GST = one eleventh of the inclusive total, worked out locally). Rows written before this change keep their old basis. |
+| G10 "paid" counts free / admin unlocks | Fixed: a sale is `payment_status = paid` and `unlock_method = payment`. |
+| G11 USD labels | Fixed: AUD. |
+| Not changed | The guide-lead **pool** (agents claim unassigned guide-download leads and see name / email / phone) is a separate flow with no consent either; left as it was and flagged for its own decision. G1, G5 (partly), G7-G9, G12-G14, G16, G17 and the partner / Canada agent PDF are for the later Phase 1 work. |
+
+---
+
 ## 1. Summary
 
 | Question | Answer |

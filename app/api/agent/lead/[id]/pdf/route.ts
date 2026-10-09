@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 
 import { getCurrentUser } from "@/lib/auth/rbac";
-import { getAgentLead, getLeadById } from "@/lib/crm/leads";
+import { getLeadById } from "@/lib/crm/leads";
 import { generateReadinessPDF } from "@/lib/readiness/generate-pdf";
 import type { ReadinessInput } from "@/lib/readiness/types";
 import type { ReadinessReport } from "@/lib/readiness/types";
@@ -9,10 +9,10 @@ import { refreshStoredReport } from "@/lib/reports/refresh-report";
 
 /**
  * Regenerates the assessment PDF for a single lead, server-side, from the
- * stored report_json/input_json. AGENT callers are scoped strictly to their
- * own leads (getAgentLead only returns the row when agent_id === the
- * caller); ADMIN callers can pull any lead (getLeadById, unscoped) since
- * admins have full visibility over the CRM.
+ * stored report_json/input_json. ADMIN callers can pull any lead (getLeadById,
+ * unscoped) since admins have full visibility over the CRM. AGENT callers are
+ * refused: client details and the report are not shared with agents until the
+ * client's consent exists.
  */
 export async function GET(_req: Request, ctx: { params: Promise<{ id: string }> }) {
   const { id } = await ctx.params;
@@ -23,7 +23,13 @@ export async function GET(_req: Request, ctx: { params: Promise<{ id: string }> 
     return new NextResponse("Forbidden", { status: 403 });
   }
 
-  const lead = user.role === "ADMIN" ? await getLeadById(id) : await getAgentLead(user.id, id);
+  // An agent never receives a client's report or details until the client's consent to share exists (the next task): refused whatever the agent's
+  // approval, ownership or the report's payment state. Only an ADMIN can pull a report here.
+  if (user.role === "AGENT") {
+    return new NextResponse("Client details are not shared with agents.", { status: 403, headers: { "Cache-Control": "private, no-store" } });
+  }
+
+  const lead = await getLeadById(id);
   if (!lead || !lead.reportJson) {
     return new NextResponse("Not found", { status: 404 });
   }

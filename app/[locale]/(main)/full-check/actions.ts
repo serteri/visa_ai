@@ -41,8 +41,7 @@ import {
   type UnlockMethod,
   countFreeBetaUnlocksToday,
 } from "@/src/lib/user-reports";
-import { getAgentUser } from "@/lib/crm/leads";
-import { sendAgentAssignedEmail } from "@/lib/email/agent-notifications";
+import { getApprovedAgentUser } from "@/lib/crm/leads";
 import { shouldSkipInternalNotification, shouldSuppressReportEmails } from "@/lib/email/suppression";
 import { sendOpsAlert } from "@/lib/email/ops-alert";
 import { safeEqual } from "@/lib/admin-auth";
@@ -63,7 +62,8 @@ async function resolveReferralAgent(): Promise<{ id: string; email: string; name
     const refAgentId = cookieStore.get(REF_COOKIE)?.value;
     if (!refAgentId) return null;
 
-    const agent = await getAgentUser(refAgentId);
+    // Only an approved agent can be attributed a referral: a pending, rejected or unknown id from the cookie attributes nothing.
+    const agent = await getApprovedAgentUser(refAgentId);
     return agent ?? null;
   } catch (error) {
     console.error("[full-check] Failed to resolve referral agent cookie (non-blocking):", error);
@@ -234,7 +234,6 @@ async function createCheckoutSession(input: {
   reportId: string;
   email: string;
   locale: SupportedLocale;
-  agentId?: string | null;
 }): Promise<{ url: string }> {
   // Must be absolute -- this fetch runs server-side inside a Server Action,
   // where there is no browser location to resolve a relative "/api/checkout"
@@ -253,7 +252,6 @@ async function createCheckoutSession(input: {
         reportId: input.reportId,
         email: input.email,
         locale: input.locale,
-        agentId: input.agentId ?? undefined,
       }),
       cache: "no-store",
     });
@@ -895,23 +893,8 @@ export async function submitFullCheckWaitlist(
   // This browser may open its own report on screen (and download its PDF) -- lib/reports/report-session.ts.
   await rememberReportSession(reportRecord.id);
 
-  // Best-effort: the lead is already persisted and (if applicable) assigned
-  // above, so a broken RESEND_API_KEY or a send failure here must never fail
-  // the submission the visitor is waiting on.
-  if (referralAgent && !shouldSuppressReportEmails({ email }, "quick_check_agent_assigned_email")) {
-    try {
-      await sendAgentAssignedEmail({
-        agentEmail: referralAgent.email,
-        agentName: referralAgent.name,
-        leadName: fullName || email,
-        status: "New",
-        leadId: reportRecord.id,
-        locale: resolvedLocale,
-      });
-    } catch (error) {
-      console.error("[full-check] Referral assignment email failed (non-blocking):", error);
-    }
-  }
+  // No email goes to the agent here: nothing is sent to an agent before the client has paid, and none ever carries client details (consent to
+  // share does not exist yet). The agent learns of a purchase from the portal and the post-payment notice (Stripe webhook).
 
   try {
     await db.insert(leads).values({
@@ -1194,7 +1177,7 @@ async function unlockPremiumReportInternal(
     try {
       const locale = (record.locale === "tr" ? "tr" : record.locale === "zh-Hans" ? "zh-Hans" : "en") as SupportedLocale;
       console.log("Adım 3: /api/checkout fetch başlatılıyor", { reportId, locale });
-      const { url } = await createCheckoutSession({ reportId, email, locale, agentId: record.agentId });
+      const { url } = await createCheckoutSession({ reportId, email, locale });
       // Not calling next/navigation's redirect() here on purpose: this
       // branch runs inside unlockPremiumReportInternal, which the exported
       // unlockPremiumReport wraps in a blanket try/catch (see comment

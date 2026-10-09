@@ -7,7 +7,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { requireRole } from "@/lib/auth/rbac";
 import {
   DOC_STATUSES,
-  getAgentLeads,
+  getAgentLeadsForAdmin,
   getAgentMetrics,
   getAgentUser,
   splitName,
@@ -117,7 +117,7 @@ export default async function AdminAgentDetailPage({ params, searchParams }: Pag
 
   const [metrics, assignedLeads, transactions] = await Promise.all([
     getAgentMetrics(id),
-    getAgentLeads(id, { sortField: activeSortField, order: activeOrder, tier: activeTier, status: activeStatus }),
+    getAgentLeadsForAdmin(id, { sortField: activeSortField, order: activeOrder, tier: activeTier, status: activeStatus }),
     getAgentTransactionsForAdmin(id),
   ]);
   const totalCommission = transactions.reduce((sum, tx) => sum + (tx.commissionAmount ?? 0), 0);

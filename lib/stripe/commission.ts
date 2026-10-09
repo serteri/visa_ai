@@ -1,7 +1,13 @@
 import type Stripe from "stripe";
 
 import { prisma } from "@/lib/prisma";
+import { getApprovedAgent } from "@/lib/crm/agent-access";
+import { gstComponentCents } from "@/lib/pricing";
 
+// WHO earns a commission: only an APPROVED agent (checked in the database at the moment of the sale), and the agent is the one on the REPORT row
+// (user_reports.agent_id), never one named in a request body or in Stripe metadata. WHAT it is calculated on: the GST-exclusive amount. GST is
+// worked out here (one eleventh of the GST-inclusive total, lib/pricing.ts gstComponentCents), not taken from Stripe Tax.
+//
 // LogiVisa's own Stripe account collects every payment; agents are never
 // paid out through Stripe -- this is a commission *ledger* only.
 //
@@ -78,22 +84,29 @@ export async function recordCommissionTransactionForLead(params: {
   totalAmount: number;
   /** session.amount_total verbatim (cents) -- GST-inclusive pricing, not recomputed. */
   totalCents?: number | null;
-  /** session.total_details.amount_tax verbatim (cents) -- not recomputed. */
+  /** Ignored: GST is worked out locally (one eleventh of the inclusive total), not taken from Stripe Tax. Kept so callers need no change. */
   gstCents?: number | null;
   /** session.currency verbatim, e.g. "aud". */
   currency?: string | null;
-}): Promise<void> {
-  const { leadId, buyerEmail, agentId, stripeSessionId, totalAmount, totalCents, gstCents, currency } = params;
+}): Promise<{ agentId: string | null; commissionAmount: number | null }> {
+  const { leadId, buyerEmail, stripeSessionId, totalAmount, totalCents, currency } = params;
   if (!leadId && !buyerEmail) {
     throw new Error("recordCommissionTransactionForLead requires either leadId or buyerEmail.");
   }
 
+  const inclusiveCents = totalCents ?? Math.round(totalAmount * 100);
+  const gstCents = gstComponentCents(inclusiveCents);
+  const netCents = inclusiveCents - gstCents;
+
+  // Only an approved agent earns: a pending, rejected or unknown id records the sale with no agent and no commission.
+  const agent = await getApprovedAgent(params.agentId);
+  const agentId = agent?.id ?? null;
   let commissionRate: number | null = null;
   let commissionAmount: number | null = null;
-  if (agentId) {
-    const agent = await prisma.user.findUnique({ where: { id: agentId }, select: { commissionRate: true } });
-    commissionRate = resolveCommissionRateFraction(agent?.commissionRate);
-    commissionAmount = Math.round(totalAmount * commissionRate * 100) / 100;
+  if (agent) {
+    commissionRate = resolveCommissionRateFraction(agent.commissionRate);
+    // On the GST-exclusive amount, in whole cents.
+    commissionAmount = Math.round(netCents * commissionRate) / 100;
   }
 
   try {
@@ -106,8 +119,8 @@ export async function recordCommissionTransactionForLead(params: {
         totalAmount,
         commissionRate,
         commissionAmount,
-        totalCents: totalCents ?? null,
-        gstCents: gstCents ?? null,
+        totalCents: inclusiveCents,
+        gstCents,
         currency: currency ?? null,
       },
     });
@@ -117,10 +130,11 @@ export async function recordCommissionTransactionForLead(params: {
       // passed hasRecordedTransaction() before either finished writing) --
       // the other delivery's row is the record of truth, ours is a no-op.
       console.warn("[commission] Transaction already recorded for session (race)", stripeSessionId);
-      return;
+      return { agentId, commissionAmount };
     }
     throw error;
   }
+  return { agentId, commissionAmount };
 }
 
 /**
@@ -130,22 +144,22 @@ export async function recordCommissionTransactionForLead(params: {
  * app/api/checkout/route.ts). No-ops if the session has no leadId -- not
  * every checkout (e.g. a PDF-book purchase) is tied to a CRM lead.
  */
-export async function recordCommissionTransaction(session: Stripe.Checkout.Session): Promise<void> {
+export async function recordCommissionTransaction(session: Stripe.Checkout.Session): Promise<{ agentId: string | null; commissionAmount: number | null } | null> {
   const leadId = session.metadata?.leadId?.trim();
-  if (!leadId) return;
+  if (!leadId) return null;
 
-  const agentId = session.metadata?.agentId?.trim() || null;
+  // The agent comes from the report row, never from session.metadata.agentId (anything in the metadata is only as trustworthy as the request that
+  // created the session).
+  const report = await prisma.userReport.findUnique({ where: { id: leadId }, select: { agentId: true } });
   const totalAmount = (session.amount_total ?? 0) / 100;
 
-  await recordCommissionTransactionForLead({
+  return recordCommissionTransactionForLead({
     leadId,
-    agentId,
+    agentId: report?.agentId ?? null,
     stripeSessionId: session.id,
     totalAmount,
-    // Verbatim from Stripe -- never recomputed locally, so this always
-    // reflects exactly what automatic tax actually calculated.
+    // Verbatim from Stripe -- the inclusive total actually charged.
     totalCents: session.amount_total ?? null,
-    gstCents: session.total_details?.amount_tax ?? null,
     currency: session.currency ?? null,
   });
 }

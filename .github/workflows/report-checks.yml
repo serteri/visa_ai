@@ -115,6 +115,8 @@ jobs:
         run: npm run test:report-improvements
       - name: Report price A$39.99 incl. GST (one source, Stripe line item, copy in every locale, no 21.99 left for the report)
         run: npm run test:report-price
+      - name: Agent leak fixes (agent from the report row, approved agents only, no client details or PDF for agents, GST-exclusive commission, AUD)
+        run: npm run test:agent-leaks
       - name: No route can produce the verdict structure (PDF route, result page, agent PDF; en / tr / zh-Hans)
         run: npm run test:no-verdict-routes
 

@@ -1,6 +1,10 @@
 import { prisma } from "@/lib/prisma";
+import { clientReference } from "@/lib/crm/agent-access";
 
-/** An agent's own commission ledger, newest first -- for /agent/dashboard. */
+/**
+ * An agent's own commission ledger, newest first -- for /agent/dashboard. No client detail: a sale is shown by a reference derived from the report
+ * id (or "Guide purchase" for a sale with no report), never by the client's name or email (no consent to share exists yet).
+ */
 export async function getAgentTransactions(agentId: string) {
   const rows = await prisma.transaction.findMany({
     where: { agentId },
@@ -10,16 +14,12 @@ export async function getAgentTransactions(agentId: string) {
       totalAmount: true,
       commissionAmount: true,
       createdAt: true,
-      buyerEmail: true,
-      lead: { select: { fullName: true, email: true } },
+      leadId: true,
     },
   });
   return rows.map((row) => ({
     id: row.id,
-    // No lead for direct sales with no CRM report behind them (e.g. a
-    // lead-magnet campaign PDF purchase) -- buyerEmail identifies the buyer
-    // instead (see Transaction.leadId's doc comment in schema.prisma).
-    leadName: row.lead ? row.lead.fullName || row.lead.email : row.buyerEmail ?? "—",
+    leadName: row.leadId ? clientReference(row.leadId) : "Guide purchase",
     totalAmount: Number(row.totalAmount),
     commissionAmount: row.commissionAmount ? Number(row.commissionAmount) : 0,
     createdAt: row.createdAt,
@@ -38,9 +38,7 @@ export async function getAgentCommissionTotal(agentId: string): Promise<number> 
 export type AgentEarningsSummary = {
   /** Every lead ever routed to this agent (assigned, claimed, or referral-auto-assigned). */
   totalReferred: number;
-  /** Of those, how many have actually paid -- UserReport.isUnlocked is the
-   *  canonical "this report was paid for" flag (see app/api/checkout/route.ts
-   *  and the webhook's handleReportUnlock), not a separate payment concept. */
+  /** Of those, how many were paid through Stripe (payment_status "paid" and unlock_method "payment" -- a free-beta or admin unlock is not a sale). */
   totalPaid: number;
   /** Sum of commissionAmount across this agent's Transaction ledger -- an
    *  internal bookkeeping figure, not a cash payout (agents aren't paid out
@@ -52,7 +50,7 @@ export type AgentEarningsSummary = {
 export async function getAgentEarnings(agentId: string): Promise<AgentEarningsSummary> {
   const [totalReferred, totalPaid, commissionResult] = await Promise.all([
     prisma.userReport.count({ where: { agentId } }),
-    prisma.userReport.count({ where: { agentId, isUnlocked: true } }),
+    prisma.userReport.count({ where: { agentId, paymentStatus: "paid", unlockMethod: "payment" } }),
     prisma.transaction.aggregate({ where: { agentId }, _sum: { commissionAmount: true } }),
   ]);
 

@@ -80,7 +80,7 @@ const cases: Case[] = [
         { from: "LogiVisa <no-reply@logivisa.com>", to: ["serter@logivisa.com"], subject: "Lead", text: "x" },
       ),
   },
-  { name: "agent assignment", to: "agent@example.org", onReject: "swallows", run: () => sendAgentAssignedEmail({ agentEmail: "agent@example.org", agentName: "A", leadName: "Jane", status: "New", leadId: "1", locale: "en" }) },
+  { name: "agent assignment", to: "agent@example.org", onReject: "swallows", run: () => sendAgentAssignedEmail({ agentEmail: "agent@example.org", agentName: "A", leadId: "1", locale: "en" }) },
   { name: "magic link", to: RECIPIENT, onReject: "throws", run: () => sendVerificationRequest({ identifier: RECIPIENT, url: "https://logivisa.com/api/auth/callback/email?token=x" }) },
   { name: "chat restore link", to: RECIPIENT, onReject: "throws", run: () => sendRestoreEmail({ to: RECIPIENT, link: "https://logivisa.com/restore?t=x", locale: "en" }) },
   { name: "points alert", to: RECIPIENT, onReject: "throws", run: () => sendPointsAlertEmail(RECIPIENT, "Alert", "body") },

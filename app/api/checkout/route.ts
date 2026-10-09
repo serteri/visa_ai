@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 
 import { getStripeClient, getStripeBaseUrl, type StripeProductType } from "@/lib/stripe";
 import { getUserReportById } from "@/src/lib/user-reports";
+import { getApprovedAgent } from "@/lib/crm/agent-access";
 import { getCheckoutLineItem } from "@/lib/stripe/line-items";
 import { isPaidReportCheckoutEnabled } from "@/lib/readiness/paid-checkout";
 
@@ -13,7 +14,6 @@ type CheckoutPayload = {
   email?: string;
   userId?: string;
   reportId?: string;
-  agentId?: string;
 };
 
 const SUPPORTED_PRODUCTS = new Set<StripeProductType>([
@@ -65,11 +65,15 @@ export async function POST(request: NextRequest) {
     // the report's own stored email closes that off -- the "credential"
     // for an anonymous report is its UUID *and* the email it was created
     // under, not the UUID alone.
+    // The agent credited with a sale is read from the report row in the database, never from the request: a caller-supplied agent id is ignored
+    // (it is not even part of the payload type), and an agent who is not approved earns nothing.
+    let referralAgentId = "";
     if (productType === "premium" && body.reportId) {
       const record = await getUserReportById(body.reportId);
       if (!record) {
         return NextResponse.json({ error: "Report not found." }, { status: 404 });
       }
+      referralAgentId = (await getApprovedAgent(record.agentId))?.id ?? "";
       const submittedEmail = (body.email ?? "").trim().toLowerCase();
       const ownerEmail = record.email.trim().toLowerCase();
       if (!submittedEmail || submittedEmail !== ownerEmail) {
@@ -146,7 +150,8 @@ export async function POST(request: NextRequest) {
         // stripe/commission.ts) reads leadId specifically, kept distinct
         // from reportId since not every checkout here is report-related.
         leadId: body.reportId || "",
-        agentId: body.agentId || "",
+        // Informational only: the webhook credits the agent from the report row, not from this value.
+        referralAgentId,
       },
     });
 

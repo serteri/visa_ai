@@ -6,7 +6,7 @@ import { cookies } from "next/headers";
 import { db } from "@/db";
 import { campaigns } from "@/db/schema";
 import { getStripeClient, getStripeBaseUrl } from "@/lib/stripe";
-import { getAgentUser } from "@/lib/crm/leads";
+import { getApprovedAgentUser } from "@/lib/crm/leads";
 
 export type CreateCheckoutSessionResult =
   | { success: true; url: string }
@@ -25,7 +25,7 @@ async function resolveReferralAgentId(): Promise<string | undefined> {
     const refAgentId = cookieStore.get(REF_COOKIE)?.value;
     if (!refAgentId) return undefined;
 
-    const agent = await getAgentUser(refAgentId);
+    const agent = await getApprovedAgentUser(refAgentId);
     return agent?.id;
   } catch (error) {
     console.error("[createCheckoutSession] Failed to resolve referral agent cookie (non-blocking):", error);

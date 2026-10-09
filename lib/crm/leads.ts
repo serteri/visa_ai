@@ -11,12 +11,12 @@ export type LeadSort = "newest" | "oldest";
 export type LeadSortField = "name" | "tier" | "status" | "createdAt";
 export type SortOrder = "asc" | "desc";
 
-/** Leads assigned to one agent, optionally filtered by tier/status and sorted
+/** ADMIN ONLY: carries client names, emails and phones. Agent-facing views use getAgentReferrals (no client details). Leads assigned to one agent, optionally filtered by tier/status and sorted
  *  by a chosen column. Always scoped by agentId so an agent can only ever see
  *  their own pool. `sortField`/`order` (used by the admin agent-detail table)
  *  take precedence over the older `sort` shorthand (used by the agent's own
  *  dashboard) when both are present. */
-export async function getAgentLeads(
+export async function getAgentLeadsForAdmin(
   agentId: string,
   opts: { tier?: string; status?: string; sort?: LeadSort; sortField?: LeadSortField; order?: SortOrder } = {}
 ) {
@@ -86,31 +86,56 @@ export async function getLeadById(leadId: string) {
   });
 }
 
-/** A single lead, scoped to the owning agent (returns null if not theirs). */
-export async function getAgentLead(agentId: string, leadId: string) {
+/**
+ * What an agent may see of a referred report while client details are not shared (no consent yet): a reference, dates, the purchase state, the
+ * workflow status and the agent's own notes. Never a name, email, phone, tier, entered details or the report. Scoped to the agent's own rows.
+ */
+export type AgentReferral = {
+  id: string;
+  createdAt: Date;
+  source: string;
+  docStatus: string | null;
+  isUnlocked: boolean;
+  /** Paid through Stripe (a free-beta or admin unlock is not a purchase). */
+  isPaid: boolean;
+};
+
+const AGENT_REFERRAL_SELECT = { id: true, createdAt: true, source: true, docStatus: true, isUnlocked: true, paymentStatus: true, unlockMethod: true } as const;
+
+type ReferralRow = { id: string; createdAt: Date; source: string; docStatus: string | null; isUnlocked: boolean; paymentStatus: string; unlockMethod: string | null };
+
+const toReferral = (r: ReferralRow): AgentReferral => ({
+  id: r.id,
+  createdAt: r.createdAt,
+  source: r.source,
+  docStatus: r.docStatus,
+  isUnlocked: r.isUnlocked,
+  isPaid: r.paymentStatus === "paid" && r.unlockMethod === "payment",
+});
+
+/** The agent's referred reports, newest first (or oldest), without any client detail. */
+export async function getAgentReferrals(agentId: string, opts: { sort?: LeadSort } = {}): Promise<AgentReferral[]> {
   try {
-    return await prisma.userReport.findFirst({
-      where: { id: leadId, agentId },
-      select: {
-        id: true,
-        fullName: true,
-        email: true,
-        phone: true,
-        pointsTier: true,
-        leadTier: true,
-        source: true,
-        preferredPath: true,
-        locale: true,
-        isUnlocked: true,
-        paymentStatus: true,
-        createdAt: true,
-        reportJson: true,
-        inputJson: true,
-        docStatus: true,
-        agentNotes: true,
-        market: true,
-      },
+    const rows = await prisma.userReport.findMany({
+      where: { agentId },
+      orderBy: { createdAt: opts.sort === "oldest" ? "asc" : "desc" },
+      select: AGENT_REFERRAL_SELECT,
     });
+    return (rows as unknown as ReferralRow[]).map(toReferral);
+  } catch (error) {
+    if (isMissingColumnError(error, "agent_id")) return [];
+    throw error;
+  }
+}
+
+/** One referred report, scoped to the owning agent (null if not theirs), without any client detail. */
+export async function getAgentLead(agentId: string, leadId: string): Promise<(AgentReferral & { agentNotes: string | null }) | null> {
+  try {
+    const row = await prisma.userReport.findFirst({
+      where: { id: leadId, agentId },
+      select: { ...AGENT_REFERRAL_SELECT, agentNotes: true },
+    });
+    return row ? { ...toReferral(row as unknown as ReferralRow), agentNotes: (row as unknown as { agentNotes: string | null }).agentNotes } : null;
   } catch (error) {
     if (isMissingColumnError(error, "agent_id")) return null;
     throw error;
@@ -177,6 +202,12 @@ export async function getAgents() {
 }
 
 /** One agent user (null if the id isn't an AGENT). */
+/** The AGENT account for a referral id only when an admin has approved it: pending and rejected agents are never attributed a referral. */
+export async function getApprovedAgentUser(id: string) {
+  const agent = await getAgentUser(id);
+  return agent && agent.approvalStatus === "APPROVED" ? agent : null;
+}
+
 export async function getAgentUser(id: string) {
   return prisma.user.findFirst({
     where: { id, role: "AGENT" },

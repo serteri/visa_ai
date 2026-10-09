@@ -3,6 +3,7 @@
 import bcrypt from "bcryptjs";
 import { z } from "zod";
 import { prisma } from "@/lib/prisma";
+import { getApprovedAgent } from "@/lib/crm/agent-access";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { sendAgentAssignedEmail } from "@/lib/email/agent-notifications";
@@ -26,30 +27,23 @@ export async function assignLeadToAgent(leadId: string, agentId: string, locale:
     throw new Error("Missing leadId or agentId");
   }
 
-  const [lead, agent] = await Promise.all([
-    prisma.userReport.update({
-      where: { id: leadId },
-      data: { agentId },
-      select: { fullName: true, email: true, docStatus: true },
-    }),
-    prisma.user.findUnique({ where: { id: agentId }, select: { email: true, name: true } }),
-  ]);
+  // Only an approved agent can be assigned a lead (checked against the database): a pending or rejected agent receives nothing.
+  const agent = await getApprovedAgent(agentId);
+  if (!agent) throw new Error("Agent not found or not approved");
+
+  const lead = await prisma.userReport.update({
+    where: { id: leadId },
+    data: { agentId },
+    select: { isUnlocked: true, paymentStatus: true, source: true },
+  });
 
   revalidatePath("/", "layout");
 
-  // Notification is best-effort -- the assignment itself already succeeded
-  // above, so a broken RESEND_API_KEY or a send failure must never surface
-  // as an error for this action.
-  if (agent) {
+  // Notification is best-effort, never carries client details, and is not sent for a full-check report that has not been paid for.
+  const unpaidReport = lead.source === "full_check" && !(lead.isUnlocked && lead.paymentStatus === "paid");
+  if (!unpaidReport) {
     try {
-      await sendAgentAssignedEmail({
-        agentEmail: agent.email,
-        agentName: agent.name,
-        leadName: lead.fullName || lead.email,
-        status: lead.docStatus ?? "New",
-        leadId,
-        locale,
-      });
+      await sendAgentAssignedEmail({ agentEmail: agent.email, agentName: agent.name, leadId, locale });
     } catch (error) {
       console.error("[assignLeadToAgent] Notification email failed (non-blocking):", error);
     }

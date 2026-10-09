@@ -1,7 +1,9 @@
 import type { Metadata } from "next";
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { isApprovedAgent, requireRole } from "@/lib/auth/rbac";
+import { requireRole } from "@/lib/auth/rbac";
+import { getApprovedAgent } from "@/lib/crm/agent-access";
+import { formatAud } from "@/lib/crm/format-money";
 import { getAgentEarnings, getAgentTransactions } from "@/lib/crm/transactions";
 import { AgentNav } from "../agent-nav";
 import { PendingApprovalNotice } from "../pending-approval-notice";
@@ -11,9 +13,6 @@ export const metadata: Metadata = {
   robots: { index: false, follow: false },
 };
 
-function formatUsd(amount: number): string {
-  return new Intl.NumberFormat("en-US", { style: "currency", currency: "USD" }).format(amount);
-}
 
 function StatCard({ label, value }: { label: string; value: string }) {
   return (
@@ -32,7 +31,7 @@ export default async function AgentEarningsPage({ params }: PageProps) {
 
   const user = await requireRole("AGENT", locale, `${prefix}/agent/earnings`);
 
-  if (!isApprovedAgent(user)) {
+  if (!(await getApprovedAgent(user.id))) {
     return (
       <div className="space-y-6">
         <div>
@@ -63,7 +62,7 @@ export default async function AgentEarningsPage({ params }: PageProps) {
       <div className="grid gap-3 sm:grid-cols-3">
         <StatCard label="Total referred" value={String(summary.totalReferred)} />
         <StatCard label="Paying customers" value={String(summary.totalPaid)} />
-        <StatCard label="Total commission" value={formatUsd(summary.totalCommission)} />
+        <StatCard label="Total commission (AUD, excl. GST)" value={formatAud(summary.totalCommission)} />
       </div>
 
       <Card>
@@ -78,8 +77,8 @@ export default async function AgentEarningsPage({ params }: PageProps) {
               <table className="w-full min-w-[560px] text-sm">
                 <thead>
                   <tr className="border-b border-slate-200 text-left text-slate-600">
-                    <th className="py-2 pr-4 font-semibold">Customer</th>
-                    <th className="px-4 py-2 font-semibold">Total paid</th>
+                    <th className="py-2 pr-4 font-semibold">Client</th>
+                    <th className="px-4 py-2 font-semibold">Total paid (incl. GST)</th>
                     <th className="px-4 py-2 font-semibold">Your commission</th>
                     <th className="px-4 py-2 font-semibold">Date</th>
                   </tr>
@@ -88,9 +87,9 @@ export default async function AgentEarningsPage({ params }: PageProps) {
                   {transactions.map((tx) => (
                     <tr key={tx.id} className="border-b border-slate-200 hover:bg-[#53917E]/10">
                       <td className="py-2 pr-4 font-medium text-slate-900">{tx.leadName}</td>
-                      <td className="px-4 py-2 text-slate-600">{formatUsd(tx.totalAmount)}</td>
+                      <td className="px-4 py-2 text-slate-600">{formatAud(tx.totalAmount)}</td>
                       <td className="px-4 py-2 font-semibold text-emerald-700">
-                        {formatUsd(tx.commissionAmount)}
+                        {formatAud(tx.commissionAmount)}
                       </td>
                       <td className="px-4 py-2 text-slate-600">{tx.createdAt.toLocaleDateString(locale)}</td>
                     </tr>
