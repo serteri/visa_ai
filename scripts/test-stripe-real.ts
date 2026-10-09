@@ -288,7 +288,7 @@ async function main() {
     mode: "payment" as const,
     line_items: [
       {
-        price_data: { currency: "aud", product_data: { name: "Full Visa Readiness Report (Premium)", tax_code: "txcd_10000000" }, unit_amount: 2199, tax_behavior: "inclusive" as const },
+        price_data: { currency: "aud", product_data: { name: "Full Visa Readiness Report (Premium)", tax_code: "txcd_10000000" }, unit_amount: 3999, tax_behavior: "inclusive" as const },
         quantity: 1,
       },
     ],

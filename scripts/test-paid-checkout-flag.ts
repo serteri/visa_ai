@@ -67,7 +67,7 @@ async function main() {
   const { getCheckoutLineItem } = await import("../lib/stripe/line-items");
   const { PREMIUM_PRICE_AUD_CENTS } = await import("../lib/pricing");
   const item = getCheckoutLineItem("premium");
-  check(item.price_data.product_data.name === "Visa Information Report" && item.price_data.unit_amount === PREMIUM_PRICE_AUD_CENTS && PREMIUM_PRICE_AUD_CENTS === 2199 && item.price_data.currency === "aud", "the Stripe line item is the Visa Information Report at the unchanged price (A$21.99 GST-inclusive)");
+  check(item.price_data.product_data.name === "Visa Information Report" && item.price_data.unit_amount === PREMIUM_PRICE_AUD_CENTS && PREMIUM_PRICE_AUD_CENTS === 3999 && item.price_data.currency === "aud", "the Stripe line item is the Visa Information Report at the unchanged price (A$39.99 GST-inclusive)");
 
   console.log("\n4. the unlock decision for a non-admin visitor");
   check(nonAdminUnlockMode({}) === "stripe_checkout" && nonAdminUnlockMode({ [PAID_CHECKOUT_FLAG]: "true" }) === "stripe_checkout", "default / true -> Stripe checkout");

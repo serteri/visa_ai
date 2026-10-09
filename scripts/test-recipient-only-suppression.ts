@@ -77,7 +77,7 @@ async function main() {
     logs.length = 0;
     reportEmail = email;
     const id = `cs_test_${++n}`;
-    const amount = opts.amount ?? 2199;
+    const amount = opts.amount ?? 3999;
     const session = {
       id,
       object: "checkout.session",

@@ -158,9 +158,9 @@ async function main() {
       object: "checkout.session",
       customer_email: spec.email,
       customer_details: { email: spec.email, name: "Test Person" },
-      amount_total: spec.amountTotal ?? 2199,
+      amount_total: spec.amountTotal ?? 3999,
       // A completed session as Stripe sends it: paid, or nothing to pay after a 100% promotion code.
-      payment_status: (spec.amountTotal ?? 2199) === 0 ? "no_payment_required" : "paid",
+      payment_status: (spec.amountTotal ?? 3999) === 0 ? "no_payment_required" : "paid",
       currency: "aud",
       total_details: { amount_tax: 0 },
       metadata: {
@@ -247,7 +247,7 @@ async function main() {
   console.log("\n=== webhook: admin allow-list address, PAID session ===");
   for (const email of ["admin@example.test", "  ADMIN@Example.Test ", "second.admin@example.test", "known-test@example.test"]) {
     const before = failures;
-    const res = await runWebhook({ id: `cs_admin_${email.trim().toLowerCase().replace(/\W/g, "")}`, email, amountTotal: 2199 });
+    const res = await runWebhook({ id: `cs_admin_${email.trim().toLowerCase().replace(/\W/g, "")}`, email, amountTotal: 3999 });
     check(res.status === 200, `"${email}": webhook status ${res.status}`);
     check(sent.length === 0, `"${email}": expected zero emails, got ${sent.length}: ${JSON.stringify(sent)}`);
     check(suppressionLines().some((l) => l.includes("reason=admin_email")), `"${email}": expected an admin_email suppression log line`);
@@ -261,7 +261,7 @@ async function main() {
     ["other promo code SAVE10", [{ promotion_code: { code: "SAVE10" } }], 1979],
     ["other coupon", [{ coupon: { id: "WELCOME", name: "Welcome" }, promotion_code: null }], 1500],
     ["ADMINFREE-lookalike ADMINFREE2", [{ promotion_code: { code: "ADMINFREE2" } }], 0],
-    ["normal paid order, no discount", [], 2199],
+    ["normal paid order, no discount", [], 3999],
   ] as const) {
     const before = failures;
     const res = await runWebhook({ id: `cs_normal_${label.replace(/\W/g, "")}`, email: CUSTOMER, amountTotal: amount, discounts: [...discounts] });
@@ -280,7 +280,7 @@ async function main() {
     const before = failures;
     reset();
     sessionFixtures.set("cs_lookup_fail", {});
-    const payload = JSON.stringify({ id: "evt_lf", object: "event", type: "checkout.session.completed", data: { object: { id: "cs_lookup_fail", object: "checkout.session", customer_email: CUSTOMER, customer_details: { email: CUSTOMER }, amount_total: 2199, payment_status: "paid", currency: "aud", total_details: { amount_tax: 0 }, metadata: { productType: "premium", email: CUSTOMER, assessmentId: "rep-1", leadId: "rep-1" } } } });
+    const payload = JSON.stringify({ id: "evt_lf", object: "event", type: "checkout.session.completed", data: { object: { id: "cs_lookup_fail", object: "checkout.session", customer_email: CUSTOMER, customer_details: { email: CUSTOMER }, amount_total: 3999, payment_status: "paid", currency: "aud", total_details: { amount_tax: 0 }, metadata: { productType: "premium", email: CUSTOMER, assessmentId: "rep-1", leadId: "rep-1" } } } });
     failStripeLookup = true;
     const header = probe.webhooks.generateTestHeaderString({ payload, secret: process.env.STRIPE_WEBHOOK_SECRET! });
     const { NextRequest } = await import("next/server");

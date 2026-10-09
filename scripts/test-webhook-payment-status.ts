@@ -112,11 +112,11 @@ async function main() {
       status: "complete",
       payment_status: paymentStatus,
       amount_total: amountTotal,
-      amount_subtotal: kind === "credits" ? 1099 : 2199,
+      amount_subtotal: kind === "credits" ? 1099 : 3999,
       currency: "aud",
       customer_email: CUSTOMER,
       customer_details: { email: CUSTOMER, name: "Test Person" },
-      total_details: { amount_tax: 0, amount_discount: (kind === "credits" ? 1099 : 2199) - amountTotal, breakdown: { discounts: [], taxes: [] } },
+      total_details: { amount_tax: 0, amount_discount: (kind === "credits" ? 1099 : 3999) - amountTotal, breakdown: { discounts: [], taxes: [] } },
       discounts: [],
       metadata:
         kind === "credits"
@@ -146,7 +146,7 @@ async function main() {
 
     // 1. paid
     {
-      const s = sessionFor(kind, `cs_${kind}_paid`, "paid", kind === "credits" ? 1099 : 2199);
+      const s = sessionFor(kind, `cs_${kind}_paid`, "paid", kind === "credits" ? 1099 : 3999);
       let status = 0;
       const n = await measure(kind, async () => {
         status = (await deliver("checkout.session.completed", s)).status;
@@ -171,13 +171,13 @@ async function main() {
     // 3. unpaid, then the async payment succeeds
     {
       const id = `cs_${kind}_async_ok`;
-      const unpaid = sessionFor(kind, id, "unpaid", kind === "credits" ? 1099 : 2199);
+      const unpaid = sessionFor(kind, id, "unpaid", kind === "credits" ? 1099 : 3999);
       let s1 = 0;
       const atCompleted = await measure(kind, async () => {
         s1 = (await deliver("checkout.session.completed", unpaid)).status;
       });
       check(s1 === 200 && atCompleted === 0, `unpaid: completed grants nothing (HTTP ${s1}, got ${what(kind, atCompleted)})`);
-      const paid = sessionFor(kind, id, "paid", kind === "credits" ? 1099 : 2199);
+      const paid = sessionFor(kind, id, "paid", kind === "credits" ? 1099 : 3999);
       let s2 = 0;
       const atSucceeded = await measure(kind, async () => {
         s2 = (await deliver("checkout.session.async_payment_succeeded", paid)).status;
@@ -192,7 +192,7 @@ async function main() {
     // 4. unpaid, then the async payment fails
     {
       const id = `cs_${kind}_async_fail`;
-      const unpaid = sessionFor(kind, id, "unpaid", kind === "credits" ? 1099 : 2199);
+      const unpaid = sessionFor(kind, id, "unpaid", kind === "credits" ? 1099 : 3999);
       let s1 = 0;
       let s2 = 0;
       const total = await measure(kind, async () => {
