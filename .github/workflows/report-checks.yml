@@ -96,6 +96,8 @@ jobs:
         run: npm run test:agent-lead-notice
       - name: SEO occupation pages (canonical, hreflang, sitemap, noindex, wording; en / tr / zh-Hans)
         run: npm run test:seo-occupation
+      - name: Visa comparison table (sourced charges, no unsourced estimates, official links; en / tr / zh-Hans)
+        run: npm run test:visa-comparison
       - name: Canada report generation switched off (flag, neutral message; en / tr / zh-Hans)
         run: npm run test:canada-flag
       - name: Target visa field, DISABLED mode, engine carries the target (en / tr / zh-Hans)

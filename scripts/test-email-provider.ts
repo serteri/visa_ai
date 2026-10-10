@@ -59,7 +59,7 @@ async function main() {
   const allowed = new Set(["lib/email/provider.ts", "lib/email/pdf-delivery.ts", "lib/email/chat-restore.ts", "lib/email/magic-link.ts"]);
   const offenders: string[] = [];
   for (const f of [...walk(path.join(root, "app")), ...walk(path.join(root, "lib")), ...walk(path.join(root, "src"))]) {
-    const rel = path.relative(root, f);
+    const rel = path.relative(root, f).split(path.sep).join("/"); // forward slashes on every OS (the allow-lists use them)
     if (!/\.emails\.send\(/.test(readFileSync(f, "utf8"))) continue;
     if (!allowed.has(rel)) offenders.push(rel);
   }

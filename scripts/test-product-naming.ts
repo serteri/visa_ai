@@ -48,7 +48,7 @@ console.log("1. source scan");
 const offenders: string[] = [];
 for (const top of ["app", "components", "lib", "emails", "public/locales"]) {
   for (const f of walk(path.join(root, top))) {
-    const rel = path.relative(root, f);
+    const rel = path.relative(root, f).split(path.sep).join("/"); // forward slashes on every OS (the allow-lists use them)
     if (SKIP_FILES.has(rel) || /assistant|\/chat\//.test(rel)) continue;
     const lines = readFileSync(f, "utf8").split("\n");
     lines.forEach((line, i) => {

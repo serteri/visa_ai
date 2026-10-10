@@ -15,6 +15,7 @@ import { BANNED_INFORMATION_PAGE_PHRASES } from "../../lib/seo/banned-phrases";
 export const DESTINATION_CODE_FILES = [
   "app/[locale]/(main)/tools/visa-comparison/page.tsx",
   "app/[locale]/(main)/tools/visa-comparison/VisaComparisonClient.tsx",
+  "lib/visas/comparison-content.ts",
   "app/[locale]/(main)/tools/points-calculator/page.tsx",
   "app/[locale]/(main)/tools/points-calculator/australia/page.tsx",
   "app/[locale]/(main)/tools/points-calculator/[slug]/page.tsx",
