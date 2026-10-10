@@ -183,7 +183,7 @@ Verified against a real `next dev` server: `/occupations/261313-software-enginee
 ### Assumptions
 
 1. **thin = 0 or 1 signals out of 5.** Chosen from the measured distribution (15.6% of pages). The threshold is one constant (`tierOf`).
-2. **The existing hard-coded Search Console token stays as the fallback** when `SEARCH_CONSOLE_VERIFICATION` is unset. You asked for the tag to be omitted when the variable is unset; removing the token that verifies the live property could un-verify it, so I kept it. To omit it when unset, delete the fallback string in `app/layout.tsx` once the variable is set everywhere.
+2. **No Search Console fallback token.** The meta tag is rendered only when `SEARCH_CONSOLE_VERIFICATION` is set and non-empty after trimming (`lib/seo/search-console.ts`). Ownership of the property is verified by the static file `public/google036d36ffea7887ed.html`, which does not depend on the variable; `scripts/test-seo-occupation.ts` section 6 fails if a fallback or the retired token returns.
 3. **One sitemap file** (`/sitemap.xml`, 1,779 URLs) rather than one per locale: it stays under the 50,000-URL limit, keeps the URL already submitted to Search Console, and hreflang annotations carry the locale grouping. Splitting by locale would change the submitted URL.
 4. **Removing the AI teaser and the state radar from the occupation page** is part of "information only"; the `state-sponsorship.json` file and the components are unchanged and still in the repository.
 5. `lastmod` uses the most recent source date behind a page, not the date the page was built. Static and visa pages have no date in the repository and therefore no `lastmod`.

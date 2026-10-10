@@ -7,6 +7,7 @@
  */
 import "./lib/stub-request-context";
 
+import { execSync } from "node:child_process";
 import { readFileSync } from "node:fs";
 
 process.env.DATABASE_URL = "postgresql://u:p@localhost:5432/d?sslmode=disable"; // never connects
@@ -18,6 +19,7 @@ import { activeLocales, type Locale } from "../lib/i18n/config";
 import { occupationPageContent, occupationPageText } from "../lib/occupations/page-content";
 import { buildOccupationSlug, getUniqueOccupations } from "../lib/occupations/seo";
 import { findBannedPhrases } from "../lib/seo/banned-phrases";
+import { searchConsoleVerification } from "../lib/seo/search-console";
 import { scanDestinationPages } from "./lib/destination-compliance";
 import { languageAlternates, publicPath, publicUrl, SITE_ORIGIN } from "../lib/seo/urls";
 
@@ -128,9 +130,32 @@ async function main() {
   check(/trackEvent\("calculator_start"/.test(readFileSync("app/[locale]/(main)/tools/points-calculator/points-calculator-client.tsx", "utf8")) && /trackEvent\("calculator_complete"/.test(readFileSync("app/[locale]/(main)/tools/points-calculator/points-calculator-client.tsx", "utf8")), "calculator start / complete events wired");
   check(/comparison_page_view/.test(readFileSync("app/[locale]/(main)/tools/visa-comparison/page.tsx", "utf8")) && /occupation_page_view/.test(readFileSync("components/analytics/occupation-view-tracker.tsx", "utf8")), "comparison and occupation page-view events wired");
 
-  console.log("\n6. Search Console verification");
-  const root = readFileSync("app/layout.tsx", "utf8");
-  check(/process\.env\.SEARCH_CONSOLE_VERIFICATION/.test(root), "the verification tag reads SEARCH_CONSOLE_VERIFICATION");
+  console.log("\n6. Search Console verification (env-only meta tag; static HTML file untouched)");
+  check(searchConsoleVerification(undefined) === undefined, "variable unset -> no verification meta tag");
+  check(searchConsoleVerification("") === undefined, "variable empty -> no verification meta tag");
+  check(searchConsoleVerification("   \t ") === undefined, "variable whitespace-only -> no verification meta tag");
+  check(JSON.stringify(searchConsoleVerification("  abc123  ")) === JSON.stringify({ google: "abc123" }), "\"  abc123  \" -> rendered value is \"abc123\"");
+  const root = readFileSync("app/layout.tsx", "utf8").replace(/^\s*\/\/.*$/gm, "");
+  check(/verification:\s*searchConsoleVerification\(process\.env\.SEARCH_CONSOLE_VERIFICATION\)/.test(root), "app/layout.tsx builds the tag only through searchConsoleVerification(process.env.SEARCH_CONSOLE_VERIFICATION)");
+  check(!/verification:[^\n]*\|\|/.test(root) && !/google:\s*["'`]/.test(root), "app/layout.tsx has no fallback expression and no literal verification value");
+  check(!/["'`][A-Za-z0-9_-]{40,}["'`]/.test(root), "app/layout.tsx holds no token-shaped string literal");
+  // The retired token is split here so this file never contains it whole. No tracked source file may contain it.
+  const retired = ["foOddNGs8xqNCNQ7", "4vzcc0AheCIMssYqDONHUOkWgCk"].join("");
+  const tracked = execSync("git ls-files", { encoding: "utf8", maxBuffer: 64 * 1024 * 1024 })
+    .split("\n")
+    .filter((f) => f && !/\.(png|jpe?g|webp|ico|pdf|woff2?|ttf|otf|xlsx|zip)$/i.test(f));
+  const holding = tracked.filter((f) => {
+    try {
+      return readFileSync(f, "utf8").includes(retired);
+    } catch {
+      return false;
+    }
+  });
+  check(holding.length === 0, "the retired token appears in no tracked file", holding.join(", "));
+  const htmlFile = "public/google036d36ffea7887ed.html";
+  check(readFileSync(htmlFile, "utf8").trim() === "google-site-verification: google036d36ffea7887ed.html", "the static Search Console verification file is present with its original content");
+  check(tracked.includes(htmlFile), "the static verification file is tracked in Git");
+  check(execSync(`git diff HEAD --name-only -- ${htmlFile}`, { encoding: "utf8" }).trim() === "", "the static verification file is unchanged against HEAD");
 
   console.log("\n7. acquisition destination pages (tools, visa pages, homepage hero / stats, full-check, locale strings)");
   const destinationHits = scanDestinationPages();

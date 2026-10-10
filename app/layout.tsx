@@ -3,6 +3,7 @@ import { Fraunces, IBM_Plex_Mono, Inter, Manrope, Noto_Sans } from "next/font/go
 import Script from "next/script";
 import { SessionProviderWrapper } from "@/components/SessionProviderWrapper";
 import { ThemeProviderWrapper } from "@/components/ThemeProviderWrapper";
+import { searchConsoleVerification } from "@/lib/seo/search-console";
 import "./globals.css";
 
 const manrope = Manrope({
@@ -99,10 +100,10 @@ export const metadata: Metadata = {
       "max-snippet": -1,
     },
   },
-  // Search Console: SEARCH_CONSOLE_VERIFICATION (the content value of the google-site-verification meta tag) wins. The
-  // token that was hard-coded here before the variable existed stays as the fallback so the live property does not lose
-  // verification; delete the fallback once the variable is set in every environment.
-  verification: { google: process.env.SEARCH_CONSOLE_VERIFICATION?.trim() || "foOddNGs8xqNCNQ74vzcc0AheCIMssYqDONHUOkWgCk" },
+  // Search Console: the google-site-verification tag is rendered only when SEARCH_CONSOLE_VERIFICATION is set and
+  // non-empty after trimming; there is no fallback token (lib/seo/search-console.ts). Ownership is also verified by the static
+  // file public/google036d36ffea7887ed.html, which does not depend on this variable.
+  verification: searchConsoleVerification(process.env.SEARCH_CONSOLE_VERIFICATION),
 };
 
 export const viewport: Viewport = {
