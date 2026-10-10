@@ -32,6 +32,15 @@ jobs:
       - name: Typecheck
         run: npm run typecheck
 
+      # The production build (what Vercel runs). Tests and tsc do not catch a client component importing a server module, a misplaced directive, or a
+      # route that needs the database at import time -- each of those has failed a Vercel deployment. No database URL and no secrets are provided on
+      # purpose: a build that needs either is a build that fails here.
+      - name: Production build (next build, no database URL, no secrets)
+        env:
+          DATABASE_URL: ""
+          NEXT_TELEMETRY_DISABLED: "1"
+        run: npx next build
+
       # Whole-repo `npm run lint` is intentionally NOT gated here: this
       # repo currently has ~120 pre-existing eslint errors unrelated to the
       # report/fee-consistency work this workflow guards (old scripts,
