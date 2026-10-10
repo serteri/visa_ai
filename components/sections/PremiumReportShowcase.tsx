@@ -2,32 +2,22 @@
 
 import { useState } from "react";
 import Image from "next/image";
-import {
-  ClipboardCheck,
-  DollarSign,
-  ListChecks,
-  MapPinned,
-  ShieldCheck,
-  type LucideIcon,
-} from "lucide-react";
+import { ClipboardCheck, DollarSign, FileText, ListChecks, type LucideIcon } from "lucide-react";
 
-import { useTranslation } from "@/contexts/language-context";
+import { useLanguage, useTranslation } from "@/contexts/language-context";
 
-type FeatureKey = "viabilityRanking" | "pointsBreakdown" | "pointsBooster" | "financialRoadmap" | "historicalTrends";
+type FeatureKey = "cover" | "glance" | "requirements" | "costs";
 
-// Real product screenshots (replaced the old generic mockups). The task's
-// requested filenames had a "_2" suffix that doesn't exist on disk -- these
-// are the actual files in public/images/report-previews/, matched by their
-// shared timestamps. Renamed to remove spaces (kebab-case, lowercase) --
-// spaces in web asset filenames get percent-encoded to %20 and are prone to
-// breaking on some CDN/server configs.
-const FEATURES: Array<{ key: FeatureKey; icon: LucideIcon; image: string }> = [
-  { key: "viabilityRanking", icon: ShieldCheck, image: "/images/report-previews/screenshot-2026-08-26-204059.png" },
-  { key: "pointsBreakdown", icon: ListChecks, image: "/images/report-previews/screenshot-2026-08-26-204437.png" },
-  { key: "pointsBooster", icon: MapPinned, image: "/images/report-previews/screenshot-2026-08-26-204504.png" },
-  { key: "financialRoadmap", icon: DollarSign, image: "/images/report-previews/screenshot-2026-08-26-204514.png" },
-  { key: "historicalTrends", icon: ClipboardCheck, image: "/images/report-previews/screenshot-2026-08-26-204527.png" },
+// Pages of the CURRENT information report, rendered from a synthetic profile with a placeholder name by scripts/render-showcase-images.ts
+// (public/images/report-previews/<locale>/<key>.png). The old screenshots of the previous report layout are gone: scripts/test-showcase-images.ts
+// fails if any removed asset is referenced again.
+const FEATURES: Array<{ key: FeatureKey; icon: LucideIcon }> = [
+  { key: "cover", icon: FileText },
+  { key: "glance", icon: ListChecks },
+  { key: "requirements", icon: ClipboardCheck },
+  { key: "costs", icon: DollarSign },
 ];
+const IMAGE_LOCALES = ["en", "tr", "zh-Hans"] as const;
 
 /**
  * Homepage section explaining what the A$39.99 inc. GST premium report actually
@@ -38,6 +28,8 @@ const FEATURES: Array<{ key: FeatureKey; icon: LucideIcon; image: string }> = [
  */
 export function PremiumReportShowcase() {
   const { t } = useTranslation();
+  const { language } = useLanguage();
+  const imageLocale = (IMAGE_LOCALES as readonly string[]).includes(language) ? language : "en";
   const [activeKey, setActiveKey] = useState<FeatureKey>(FEATURES[0].key);
   const active = FEATURES.find((f) => f.key === activeKey) ?? FEATURES[0];
 
@@ -131,13 +123,16 @@ export function PremiumReportShowcase() {
                 }}
               />
               <Image
-                src={active.image}
+                src={`/images/report-previews/${imageLocale}/${active.key}.png`}
                 alt={t(`home.reportShowcase.features.${active.key}.title`, active.key)}
                 fill
-                className="relative object-contain"
+                className="relative object-contain object-top"
                 sizes="(min-width: 1024px) 50vw, 100vw"
               />
             </div>
+            <p className="mt-3 text-center text-xs text-slate-600" data-showcase-note>
+              {t("home.reportShowcase.sampleNote", "Pages from a sample report with a placeholder name. Information only, not migration advice.")}
+            </p>
           </div>
         </div>
       </div>

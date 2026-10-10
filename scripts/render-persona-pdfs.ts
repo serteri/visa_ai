@@ -215,7 +215,9 @@ export async function renderPersonaPdfTexts(
   /** user_reports.created_at for every rendered row (drives the "Generated <date>" stamp); omitted = none stored. */
   createdAt?: string,
   /** Receives each rendered PDF's bytes (to write the file for a visual check). */
-  onPdf?: (id: string, locale: (typeof LOCALES)[number], bytes: Uint8Array) => void
+  onPdf?: (id: string, locale: (typeof LOCALES)[number], bytes: Uint8Array) => void,
+  /** The name on the report (default "Test Persona"). */
+  fullName = "Test Persona"
 ): Promise<RenderedPersona[]> {
   const rows = new Map<string, Record<string, unknown>>();
   installStubPrisma(rows, live);
@@ -230,7 +232,7 @@ export async function renderPersonaPdfTexts(
       const input: ReadinessInput = { ...base, locale };
       const report = runReadinessEngine({ ...input, stateIntelligence, stateNominationConfig });
       const reportId = `${id}-${locale}`;
-      rows.set(reportId, { id: reportId, email: "qa@example.com", locale, report_json: JSON.parse(JSON.stringify(report)), input_json: JSON.parse(JSON.stringify(input)), agent_id: null, is_unlocked: true, full_name: "Test Persona", preview_data: null, ...(createdAt ? { created_at: createdAt } : {}) });
+      rows.set(reportId, { id: reportId, email: "qa@example.com", locale, report_json: JSON.parse(JSON.stringify(report)), input_json: JSON.parse(JSON.stringify(input)), agent_id: null, is_unlocked: true, full_name: fullName, preview_data: null, ...(createdAt ? { created_at: createdAt } : {}) });
       out.push({ id, locale, text: await renderRow(rows.get(reportId)!, onPdf ? (bytes) => onPdf(id, locale, bytes) : undefined), report });
     }
   }

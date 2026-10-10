@@ -132,6 +132,8 @@ jobs:
         run: npm run test:guide-pool-off
       - name: Referral consent (checkbox names the agent from the DB, append-only log, canAgentSeeClient on every agent read, withdrawal, buying without consent; en / tr / zh-Hans)
         run: npm run test:referral-consent
+      - name: Homepage report previews are the current information report (no removed screenshots on the homepage or pricing page; captions in en / tr / zh-Hans)
+        run: npm run test:showcase-images
       - name: No route can produce the verdict structure (PDF route, result page, agent PDF; en / tr / zh-Hans)
         run: npm run test:no-verdict-routes
 
