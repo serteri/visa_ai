@@ -3,7 +3,7 @@ import type { Metadata } from "next";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { requireRole } from "@/lib/auth/rbac";
-import { getApprovedAgent } from "@/lib/crm/agent-access";
+import { AGENT_GUIDE_POOL_ENABLED, getApprovedAgent } from "@/lib/crm/agent-access";
 import { getLeadPool } from "@/lib/crm/leads";
 import { claimLeadAction } from "./actions";
 import { AgentNav } from "../agent-nav";
@@ -39,6 +39,25 @@ export default async function AgentLeadPoolPage({ params }: PageProps) {
           <h1 className="text-2xl font-bold">Lead pool</h1>
         </div>
         <PendingApprovalNotice />
+      </div>
+    );
+  }
+
+  if (!AGENT_GUIDE_POOL_ENABLED) {
+    return (
+      <div className="space-y-6">
+        <div className="flex flex-wrap items-center justify-between gap-3">
+          <div>
+            <p className="text-sm font-semibold uppercase tracking-wide text-indigo-600">Agent</p>
+            <h1 className="text-2xl font-bold">Lead pool</h1>
+          </div>
+          <AgentNav locale={locale} active="pool" />
+        </div>
+        <div className="rounded-xl border border-slate-200 bg-white px-5 py-4 text-sm text-slate-700" data-testid="pool-disabled-notice">
+          The lead pool is switched off. Guide-download leads are not shared with agents until the person has agreed to be contacted by an agent.
+          Clients referred through your own link still appear on your dashboard.
+        </div>
+        <ReferralLinkCard agentId={user.id} />
       </div>
     );
   }

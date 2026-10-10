@@ -3,7 +3,8 @@
 import bcrypt from "bcryptjs";
 import { z } from "zod";
 import { prisma } from "@/lib/prisma";
-import { getApprovedAgent } from "@/lib/crm/agent-access";
+import { AGENT_GUIDE_POOL_ENABLED, getApprovedAgent } from "@/lib/crm/agent-access";
+import { PDF_LEAD_SOURCES } from "@/lib/crm/pdf-lead-sources";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { sendAgentAssignedEmail } from "@/lib/email/agent-notifications";
@@ -41,7 +42,9 @@ export async function assignLeadToAgent(leadId: string, agentId: string, locale:
 
   // Notification is best-effort, never carries client details, and is not sent for a full-check report that has not been paid for.
   const unpaidReport = lead.source === "full_check" && !(lead.isUnlocked && lead.paymentStatus === "paid");
-  if (!unpaidReport) {
+  // No agent email for guide-download / lead-magnet leads while they are off for agents (AGENT_GUIDE_POOL_ENABLED).
+  const guideLead = !AGENT_GUIDE_POOL_ENABLED && PDF_LEAD_SOURCES.includes(lead.source);
+  if (!unpaidReport && !guideLead) {
     try {
       await sendAgentAssignedEmail({ agentEmail: agent.email, agentName: agent.name, leadId, locale });
     } catch (error) {

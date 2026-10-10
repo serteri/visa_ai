@@ -1,4 +1,5 @@
 import { prisma } from "@/lib/prisma";
+import { AGENT_GUIDE_POOL_ENABLED } from "@/lib/crm/agent-access";
 import { PDF_LEAD_SOURCES } from "@/lib/crm/pdf-lead-sources";
 import { isMissingColumnError } from "@/lib/db/missing-relation";
 
@@ -113,11 +114,14 @@ const toReferral = (r: ReferralRow): AgentReferral => ({
   isPaid: r.paymentStatus === "paid" && r.unlockMethod === "payment",
 });
 
+// Agent-facing reads/writes never include guide-download / lead-magnet leads while AGENT_GUIDE_POOL_ENABLED is false.
+const agentScope = (): { source?: { notIn: string[] } } => (AGENT_GUIDE_POOL_ENABLED ? {} : { source: { notIn: PDF_LEAD_SOURCES } });
+
 /** The agent's referred reports, newest first (or oldest), without any client detail. */
 export async function getAgentReferrals(agentId: string, opts: { sort?: LeadSort } = {}): Promise<AgentReferral[]> {
   try {
     const rows = await prisma.userReport.findMany({
-      where: { agentId },
+      where: { agentId, ...agentScope() },
       orderBy: { createdAt: opts.sort === "oldest" ? "asc" : "desc" },
       select: AGENT_REFERRAL_SELECT,
     });
@@ -132,7 +136,7 @@ export async function getAgentReferrals(agentId: string, opts: { sort?: LeadSort
 export async function getAgentLead(agentId: string, leadId: string): Promise<(AgentReferral & { agentNotes: string | null }) | null> {
   try {
     const row = await prisma.userReport.findFirst({
-      where: { id: leadId, agentId },
+      where: { id: leadId, agentId, ...agentScope() },
       select: { ...AGENT_REFERRAL_SELECT, agentNotes: true },
     });
     return row ? { ...toReferral(row as unknown as ReferralRow), agentNotes: (row as unknown as { agentNotes: string | null }).agentNotes } : null;
@@ -250,6 +254,7 @@ export function splitName(fullName?: string | null): { firstName: string; lastNa
 // here unless the requesting agent's `market` is "TR", so a global agent
 // never even sees them in the pool query, not just in the UI.
 export async function getLeadPool(agentMarket: string | null | undefined) {
+  if (!AGENT_GUIDE_POOL_ENABLED) return [];
   try {
     return await prisma.userReport.findMany({
       where: {
@@ -277,6 +282,7 @@ export async function getLeadPool(agentMarket: string | null | undefined) {
 
 /** Claims a pool lead for the given agent -- no-ops (returns false) if it was already claimed. */
 export async function claimLead(agentId: string, leadId: string): Promise<boolean> {
+  if (!AGENT_GUIDE_POOL_ENABLED) return false;
   const result = await prisma.userReport.updateMany({
     where: { id: leadId, agentId: null },
     data: { agentId },
@@ -291,7 +297,7 @@ export async function updateLeadStatus(
   docStatus: string
 ): Promise<boolean> {
   const result = await prisma.userReport.updateMany({
-    where: { id: leadId, agentId },
+    where: { id: leadId, agentId, ...agentScope() },
     data: { docStatus },
   });
   return result.count > 0;

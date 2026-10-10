@@ -119,6 +119,8 @@ jobs:
         run: npm run test:agent-leaks
       - name: Stripe Tax disabled on every checkout session; GST/net kept locally in metadata
         run: npm run test:no-stripe-tax
+      - name: Guide-lead pool off for agents (pool, claim, emails, claimed guide leads by direct id); admin unchanged
+        run: npm run test:guide-pool-off
       - name: No route can produce the verdict structure (PDF route, result page, agent PDF; en / tr / zh-Hans)
         run: npm run test:no-verdict-routes
 

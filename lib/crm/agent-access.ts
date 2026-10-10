@@ -15,6 +15,13 @@ import { getCurrentUser, requireRole, type SessionUser } from "@/lib/auth/rbac";
 /** False until consent exists. Read by the agent-facing code; the PDF route and the portal views refuse client details while it is false. */
 export const AGENT_SEES_CLIENT_DETAILS = false as boolean;
 
+/**
+ * Guide-download / lead-magnet leads (name, email, phone) are OFF for agents until the consent system covers them: no pool view, no claim, no
+ * agent email about them, and an already-claimed one is invisible to its agent (list, page, status update) even by direct URL. Admin is unchanged.
+ * Server-side only; the UI never decides.
+ */
+export const AGENT_GUIDE_POOL_ENABLED = false as boolean;
+
 /** The agent row only when it is an AGENT account that an admin has approved (null for pending, rejected, other roles, unknown ids). */
 export async function getApprovedAgent(id: string | null | undefined): Promise<{ id: string; email: string; name: string | null; commissionRate: number | null } | null> {
   if (!id) return null;
