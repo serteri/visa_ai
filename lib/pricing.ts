@@ -25,6 +25,15 @@ export const PREMIUM_PRICE_AUD = PREMIUM_PRICE_AUD_CENTS / 100;
  */
 export const gstComponentCents = (inclusiveCents: number) => Math.round(inclusiveCents / 11);
 
+/**
+ * The local GST figures every checkout session carries in its metadata (strings, as Stripe requires): the GST-inclusive price actually charged, the GST
+ * component and the net. Stripe Tax is NOT used (automatic_tax is disabled on every session): these figures, not Stripe's, are what our records use.
+ */
+export function localTaxMetadata(inclusiveCents: number): Record<string, string> {
+  const gst = gstComponentCents(inclusiveCents);
+  return { priceInclGstCents: String(inclusiveCents), gstCents: String(gst), netCents: String(inclusiveCents - gst), gstSource: "local" };
+}
+
 /** GST portion of the report price, in cents (A$3.64). */
 export const PREMIUM_PRICE_GST_AUD_CENTS = gstComponentCents(PREMIUM_PRICE_AUD_CENTS);
 

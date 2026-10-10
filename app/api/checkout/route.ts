@@ -4,6 +4,7 @@ import { getStripeClient, getStripeBaseUrl, type StripeProductType } from "@/lib
 import { getUserReportById } from "@/src/lib/user-reports";
 import { getApprovedAgent } from "@/lib/crm/agent-access";
 import { getCheckoutLineItem } from "@/lib/stripe/line-items";
+import { localTaxMetadata } from "@/lib/pricing";
 import { isPaidReportCheckoutEnabled } from "@/lib/readiness/paid-checkout";
 
 export const dynamic = "force-dynamic";
@@ -127,10 +128,9 @@ export async function POST(request: NextRequest) {
       allow_promotion_codes: true,
       customer_email: body.email || undefined,
       client_reference_id: body.userId || body.email || undefined,
-      // Stripe Tax needs a customer location to calculate GST; this is the
-      // billing address Checkout collects to satisfy that requirement.
+      // GST is calculated by us (lib/pricing.ts), not by Stripe Tax: the prices are GST-inclusive, so the amount charged is the advertised total.
       billing_address_collection: "required",
-      automatic_tax: { enabled: true },
+      automatic_tax: { enabled: false },
       success_url: successUrl,
       cancel_url: cancelUrl,
       metadata: {
@@ -152,6 +152,7 @@ export async function POST(request: NextRequest) {
         leadId: body.reportId || "",
         // Informational only: the webhook credits the agent from the report row, not from this value.
         referralAgentId,
+        ...localTaxMetadata(lineItem.price_data.unit_amount),
       },
     });
 

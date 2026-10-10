@@ -117,6 +117,8 @@ jobs:
         run: npm run test:report-price
       - name: Agent leak fixes (agent from the report row, approved agents only, no client details or PDF for agents, GST-exclusive commission, AUD)
         run: npm run test:agent-leaks
+      - name: Stripe Tax disabled on every checkout session; GST/net kept locally in metadata
+        run: npm run test:no-stripe-tax
       - name: No route can produce the verdict structure (PDF route, result page, agent PDF; en / tr / zh-Hans)
         run: npm run test:no-verdict-routes
 

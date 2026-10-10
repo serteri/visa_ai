@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 
 import { auth } from "@/auth";
+import { localTaxMetadata } from "@/lib/pricing";
 import { getStripeClient, getStripeBaseUrl } from "@/lib/stripe";
 import { CREDIT_PACKAGES, getCreditPackageLineItem, isCreditPackageId } from "@/lib/stripe/credit-packages";
 import { getVisitorContext } from "@/lib/visitor-tracking";
@@ -62,10 +63,9 @@ export async function POST(req: NextRequest) {
       // metadata.credits, never from the amount paid, so a 100% code (total A$0) still credits the right package.
       allow_promotion_codes: true,
       customer_email: session?.user?.email || prefillEmail,
-      // Stripe Tax needs a customer location to calculate GST; this is the
-      // billing address Checkout collects to satisfy that requirement.
+      // GST is calculated by us (lib/pricing.ts), not by Stripe Tax: the prices are GST-inclusive.
       billing_address_collection: "required",
-      automatic_tax: { enabled: true },
+      automatic_tax: { enabled: false },
       success_url: `${baseUrl}/ai-assistant?success=true`,
       cancel_url: `${baseUrl}/pricing?canceled=true`,
       metadata: {
@@ -76,6 +76,7 @@ export async function POST(req: NextRequest) {
         // Stripe metadata values are strings only; the webhook parses this
         // back to a number before incrementing premiumCredits.
         credits: String(credits),
+        ...localTaxMetadata(getCreditPackageLineItem(plan).price_data.unit_amount),
       },
     });
 

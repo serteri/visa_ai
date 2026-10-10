@@ -6,6 +6,7 @@ import { cookies } from "next/headers";
 import { db } from "@/db";
 import { campaigns } from "@/db/schema";
 import { getStripeClient, getStripeBaseUrl } from "@/lib/stripe";
+import { localTaxMetadata } from "@/lib/pricing";
 import { getApprovedAgentUser } from "@/lib/crm/leads";
 
 export type CreateCheckoutSessionResult =
@@ -89,10 +90,9 @@ export async function createCheckoutSession(
           quantity: 1,
         },
       ],
-      // Stripe Tax needs a customer location to calculate GST; this is the
-      // billing address Checkout collects to satisfy that requirement.
+      // GST is calculated by us (lib/pricing.ts), not by Stripe Tax: campaign.price is the GST-inclusive total.
       billing_address_collection: "required",
-      automatic_tax: { enabled: true },
+      automatic_tax: { enabled: false },
       success_url: successUrl,
       cancel_url: cancelUrl,
       // Key names "campaign"/"agentId" are a fixed contract with
@@ -103,7 +103,7 @@ export async function createCheckoutSession(
       // record and commission Transaction once it has the real email from
       // Stripe (see resolveCampaignPdfSlug's caller in the webhook -- this
       // action has no email to attach a lead to yet).
-      metadata: { campaign: campaign.name, ...(agentId ? { agentId } : {}) },
+      metadata: { campaign: campaign.name, ...localTaxMetadata(campaign.price), ...(agentId ? { agentId } : {}) },
     });
 
     if (!session.url) {
