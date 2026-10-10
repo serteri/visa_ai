@@ -135,19 +135,19 @@ async function main() {
     // another browser: right email, no cookie -> only the emailed link, nothing returned
     sent.length = 0;
     const other = await unlockPremiumReport({ status: "idle" }, form(id, owner));
-    check(other.status === "success" && !other.report && !other.accessToken && !other.redirectUrl, `${locale}: no cookie -> success message only, no report, no token`, JSON.stringify({ s: other.status, r: !!other.report, t: !!other.accessToken }));
+    check(other.status === "success" && !other.unlocked && !other.accessToken && !other.redirectUrl, `${locale}: no cookie -> success message only, no report, no token`, JSON.stringify({ s: other.status, r: !!other.unlocked, t: !!other.accessToken }));
     check(rows.get(id)!.is_unlocked === true && rows.get(id)!.unlock_method === "beta_free", `${locale}: the report is unlocked as beta_free`);
     const customerMail = sent.find((m) => m.to.includes(owner));
     check(!!customerMail && !/payment|premium|ödeme|付款|高级/i.test(customerMail.subject) && /Information Report|Bilgi Raporu|信息报告/.test(customerMail.subject), `${locale}: the customer email is Visa Information Report wording, no payment claim`, customerMail?.subject);
     check(!/free beta|ücretsiz beta|免费测试版/i.test(other.message ?? "") && locale === "en" ? /emailed/.test(other.message ?? "") : locale === "tr" ? /gönderildi/.test(other.message ?? "") : /已发送/.test(other.message ?? ""), `${locale}: the message is localised, no beta label`, other.message);
     check(!(await pdf(id)).ok, `${locale}: the other browser cannot download the PDF (404)`);
     const wrong = await unlockPremiumReport({ status: "idle" }, form(id, "someone-else@example.com"));
-    check(wrong.status === "error" && !wrong.report, `${locale}: wrong email without a cookie -> error, nothing returned`);
+    check(wrong.status === "error" && !wrong.unlocked, `${locale}: wrong email without a cookie -> error, nothing returned`);
 
     // the creating browser
     cookieJar.set(session.REPORT_SESSION_COOKIE, browserOf(id));
     const mine = await unlockPremiumReport({ status: "idle" }, form(id, "anything@example.com"));
-    check(mine.status === "success" && !!mine.report && !!mine.accessToken && mine.userInput?.email === owner, `${locale}: the creating browser gets the report and its token (typed email ignored, report keeps its own)`);
+    check(mine.status === "success" && mine.unlocked === true && !("report" in mine) && !!mine.accessToken && mine.userInput?.email === owner, `${locale}: the creating browser gets the report and its token (typed email ignored, report keeps its own)`);
     check((await pdf(id)).status === 200, `${locale}: the creating browser can download the PDF with the cookie alone`);
     const page = (await ResultPage({ params: Promise.resolve({ locale }), searchParams: Promise.resolve({ reportId: id }) })) as { type: unknown };
     check(page.type !== ReportAccessRequired, `${locale}: the result page opens in the creating browser with no token in the URL`);
@@ -159,7 +159,7 @@ async function main() {
     seed(ids.d, "owner-d@example.com", "en");
     cookieJar.set(session.REPORT_SESSION_COOKIE, browserOf(ids.a, ids.b));
     const foreign = await unlockPremiumReport({ status: "idle" }, form(ids.d, "typo@example.com"));
-    check(foreign.status === "error" && !foreign.report, "a cookie for other reports grants nothing (and the wrong typed email is refused)");
+    check(foreign.status === "error" && !foreign.unlocked, "a cookie for other reports grants nothing (and the wrong typed email is refused)");
     check(rows.get(ids.d)!.is_unlocked === false, "...and nothing was unlocked");
     signOutAll();
   }
@@ -184,7 +184,7 @@ async function main() {
     const before = updates.length;
     cookieJar.set(session.REPORT_SESSION_COOKIE, browserOf(ids.e));
     const paid = await unlockPremiumReport({ status: "idle" }, form(ids.e, "paid-customer@example.com"));
-    check(paid.status === "success" && !!paid.report && updates.length === before && rows.get(ids.e)!.unlock_method === "payment" && rows.get(ids.e)!.payment_status === "paid", "an already paid report is shown, not re-marked (payment record kept, no UPDATE)");
+    check(paid.status === "success" && paid.unlocked === true && updates.length === before && rows.get(ids.e)!.unlock_method === "payment" && rows.get(ids.e)!.payment_status === "paid", "an already paid report is shown, not re-marked (payment record kept, no UPDATE)");
     signOutAll();
 
     // suppression for admin / test addresses

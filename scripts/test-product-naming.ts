@@ -16,7 +16,7 @@ import path from "node:path";
 import { getCheckoutLineItem } from "../lib/stripe/line-items";
 import { reportDisclaimer } from "../lib/reports/report-disclaimer";
 import { reportReadyEmailCopy } from "../lib/services/report-email-copy";
-import { previewTitle } from "../lib/reports/report-preview";
+import { buildReportHeader } from "../lib/reports/report-header";
 
 let failures = 0;
 const t = (label: string, cond: boolean, detail = "") => {
@@ -63,17 +63,17 @@ t("no old product name and no beta label in customer-facing code, copy or locale
 console.log("\n2. where the name shows");
 t("the Stripe line item", getCheckoutLineItem("premium").price_data.product_data.name === NAME.en);
 for (const L of ["en", "tr", "zh-Hans"] as const) {
-  t(`[${L}] the preview title, both report-ready emails`, previewTitle(L).includes(NAME[L]) && reportReadyEmailCopy(L, false).subject.includes(NAME[L]) && reportReadyEmailCopy(L, true).subject.includes(NAME[L]));
+  t(`[${L}] the page header title, both report-ready emails`, buildReportHeader({ report: {}, locale: L }).title.includes(NAME[L]) && reportReadyEmailCopy(L, false).subject.includes(NAME[L]) && reportReadyEmailCopy(L, true).subject.includes(NAME[L]));
   t(`[${L}] the one disclaimer exists and says LogiVisa is not a registered migration agent`, /not a registered migration agent|kayıtlı bir göçmenlik danışmanı.*değildir|不是注册移民代理/.test(reportDisclaimer(L)));
 }
 const view = readFileSync(path.join(root, "lib/reports/report-view.ts"), "utf8");
 t("the PDF cover title (report view) is the Visa Information Report in all three languages", /"LogiVisa Visa Information Report", "LogiVisa Vize Bilgi Raporu", "LogiVisa 签证信息报告"/.test(view));
-const resultView = readFileSync(path.join(root, "app/[locale]/(main)/full-check/result/result-view.tsx"), "utf8");
-t("the result page title", /Your Visa Information Report/.test(resultView) && /Vize Bilgi Raporunuz/.test(resultView) && /您的签证信息报告/.test(resultView));
+const resultView = readFileSync(path.join(root, "lib/reports/report-header.ts"), "utf8");
+t("the result page title and ready line", /Your Visa Information Report is ready/.test(resultView) && /Vize Bilgi Raporunuz hazır/.test(resultView) && /您的签证信息报告已生成/.test(resultView));
 const gate = readFileSync(path.join(root, "components/premium-feature-gate.tsx"), "utf8");
 t("the unlock gate", /const productName = isTr \? "Vize Bilgi Raporu" : isZh \? "签证信息报告" : "Visa Information Report"/.test(gate));
 const quick = readFileSync(path.join(root, "lib/email/quick-check-emails.ts"), "utf8");
-t("the quick-check email subject, in all three languages", /Vize Bilgi Raporunuzun ön izlemesi hazır/.test(quick) && /您的签证信息报告预览已生成/.test(quick) && /Your Visa Information Report preview is ready/.test(quick));
+t("the quick-check email subject, in all three languages", /Vize Bilgi Raporunuz hazır/.test(quick) && /您的签证信息报告已生成/.test(quick) && /Your Visa Information Report is ready/.test(quick));
 
 console.log(`\n${failures === 0 ? "✅ ALL CHECKS PASSED" : `❌ ${failures} CHECK(S) FAILED`}`);
 process.exitCode = failures === 0 ? 0 : 1;

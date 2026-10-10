@@ -215,7 +215,7 @@ export function FullCheckWaitlistForm({
   const [analysisProgressId, setAnalysisProgressId] = useState(() => typeof crypto !== "undefined" && "randomUUID" in crypto ? crypto.randomUUID() : `progress-${Date.now()}`);
   const wasPendingRef = useRef(false);
   const trackedReportIdRef = useRef<string | null>(null);
-  const [unlockedReportState, setUnlockedReportState] = useState<{ reportId?: string; report: ReadinessReport; name?: string; email?: string; isUnlocked?: boolean; accessToken?: string } | null>(null);
+  const [unlockedReportState, setUnlockedReportState] = useState<{ reportId?: string; name?: string; email?: string; isUnlocked?: boolean; accessToken?: string } | null>(null);
   const reportSectionRef = useRef<HTMLDivElement | null>(null);
   const [pdfError, setPdfError] = useState<string | null>(null);
   const pdfErrorMessage = txt(
@@ -352,7 +352,7 @@ export function FullCheckWaitlistForm({
 
   // ── Auto-scroll to Full Report + Auto PDF download when unlocked ──
   useEffect(() => {
-    if (unlockedReportState?.isUnlocked && unlockedReportState?.report) {
+    if (unlockedReportState?.isUnlocked) {
       // Scroll to full report section
       setTimeout(() => {
         document.getElementById("full-report-section")?.scrollIntoView({ behavior: "smooth", block: "start" });
@@ -368,9 +368,8 @@ export function FullCheckWaitlistForm({
       }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [unlockedReportState?.isUnlocked, unlockedReportState?.report]);
+  }, [unlockedReportState?.isUnlocked]);
 
-  const [report, setReport] = useState<ReadinessReport | null>(null);
   const [assistantReportData, setAssistantReportData] = useState<AssistantReportData | null>(null);
 
   const handleIntakeSubmit = (e: React.FormEvent<HTMLFormElement>) => {
@@ -384,7 +383,7 @@ export function FullCheckWaitlistForm({
   };
 
   const handleDownloadPDF = async () => {
-    if (!unlockedReportState?.report) return;
+    if (!unlockedReportState?.isUnlocked) return;
     trackGaEvent("pdf_download", { reportId: unlockedReportState.reportId });
     setPdfError(null);
     try {
@@ -396,32 +395,28 @@ export function FullCheckWaitlistForm({
   };
 
   // ── Report display section ──
-  const reportSection = state.status === "success" && state.preview && state.reportId && !report && (
+  const reportSection = state.status === "success" && state.header && state.reportId && !unlockedReportState?.isUnlocked && (
     <div id="quick-result-section" ref={reportSectionRef}>
       <PremiumFeatureGate
         paidCheckoutEnabled={paidCheckoutEnabled}
         locale={locale}
         reportId={state.reportId}
-        preview={state.preview}
+        header={state.header}
         defaultEmail={state.userInput?.email}
         defaultName={state.userInput?.name}
-        onUnlocked={({ report: unlocked, email, name, accessToken }) => {
-          setUnlockedReportState({ reportId: state.reportId, report: unlocked, name, email, isUnlocked: !!unlocked, accessToken });
-          setReport(unlocked);
-          if (unlocked) {
-            setAssistantReportData({
-              country: selectedCountry,
-              user: { name: name, email: email, occupation: submittedOccupationValue },
-              targetVisa: unlocked.pathwayComparison?.[0]?.subclass,
-            } as any);
-          }
+        onUnlocked={({ email, name, accessToken }) => {
+          setUnlockedReportState({ reportId: state.reportId, name, email, isUnlocked: true, accessToken });
+          setAssistantReportData({
+            country: selectedCountry,
+            user: { name: name, email: email, occupation: submittedOccupationValue },
+          } as any);
         }}
       />
     </div>
   );
 
   // ── Full Report section (unlocked) ──
-  const fullReportSection = unlockedReportState?.report && (
+  const fullReportSection = unlockedReportState?.isUnlocked && (
     <div id="full-report-section" style={{ marginTop: "2rem" }}>
       <div className="rounded-xl border border-slate-200 bg-white shadow-sm p-6">
         <div className="flex items-center justify-between mb-4">
@@ -481,7 +476,7 @@ export function FullCheckWaitlistForm({
         </div>
       )}
 
-      {!unlockedReportState?.report && (
+      {!unlockedReportState?.isUnlocked && (
         <form action={formAction} onSubmit={handleIntakeSubmit} className="space-y-4 overflow-visible" autoComplete="off" noValidate>
         <RequiredLegend locale={locale} />
           <input type="hidden" name="routeLocale" value={locale} />

@@ -57,7 +57,7 @@ async function main() {
     const before = writes.length;
     const res = await submitFullCheckWaitlist({ status: "idle" }, fd);
     check(res.status === "error" && res.error === CANADA_REPORT_UNAVAILABLE[locale], `${locale}: a Canada request is refused with the neutral message`, JSON.stringify(res).slice(0, 160));
-    check(!/eligib|recommend|best|strateg/i.test(res.error ?? "") && !res.reportId && !res.preview, `${locale}: no report, no preview, no advice wording`);
+    check(!/eligib|recommend|best|strateg/i.test(res.error ?? "") && !res.reportId && !res.header, `${locale}: no report, no preview, no advice wording`);
     check(writes.length === before && fetches === 0, `${locale}: nothing written, no network call`);
   }
   // Wording that implies a country is unsupported (keyword route) is covered too: no targetCountry field, Canadian signals.

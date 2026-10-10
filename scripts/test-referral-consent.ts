@@ -185,12 +185,12 @@ async function main() {
   check(granted.consent_text_version === lib.CONSENT_TEXT_VERSION && granted.consent_text === lib.consentText("en", "Ada <b>Approved</b>") && granted.locale === "en" && granted.created_at > 0, "the row holds the exact wording shown, its version, the locale and a timestamp");
   const h = lib.hashIp("203.0.113.9");
   check(!!h && h.length === 32 && !h.includes("203") && lib.hashIp("unknown") === null && lib.hashIp(undefined) === null && !/\d+\.\d+\.\d+\.\d+/.test(String(granted.ip_hash)), "the network address is stored hashed (never raw; none when unknown)");
-  const readyMail = sent.find((m) => m.subject.includes("preview") || m.subject.includes("ön izleme") || m.subject.includes("预览"));
+  const readyMail = sent.find((m) => /is ready|hazır|已生成/.test(m.subject));
   check(!!readyMail && /Withdraw that agreement/.test(readyMail.html ?? "") && (readyMail.html ?? "").includes("/api/referral-consent/withdraw?r=") && !/<b>Approved<\/b>/.test(readyMail.html ?? "") && /&#60;b&#62;Approved/.test(readyMail.html ?? ""), "the client's email carries the withdrawal link and the agent's name, HTML-escaped", readyMail?.html?.slice(-900));
   const n1 = consents.length;
   made = await submit("agent-ok", false);
   check(made.status === "success" && consents.length === n1, "NOT ticked: the report is still created, no consent row is written");
-  const mailNoConsent = sent.find((m) => /preview|ön izleme|预览/.test(m.subject));
+  const mailNoConsent = sent.find((m) => /is ready|hazır|已生成/.test(m.subject));
   check(!!mailNoConsent && !/api\/referral-consent/.test(mailNoConsent.html ?? ""), "...and that email has no withdrawal link (nothing was shared)");
   made = await submit("agent-pending", true);
   check(made.status === "success" && consents.length === n1, "a ticked box with a pending agent in the cookie: nothing stored");

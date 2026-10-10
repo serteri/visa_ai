@@ -8,7 +8,7 @@ import { Resend } from "resend";
 
 import { sendChecked } from "@/lib/email/provider";
 import { reportDisclaimer } from "@/lib/reports/report-disclaimer";
-import type { FullCheckQuickPreview } from "@/app/[locale]/(main)/full-check/actions";
+import type { ReportHeader } from "@/lib/reports/report-header";
 
 type SupportedLocale = "en" | "tr" | "zh-Hans";
 
@@ -81,7 +81,8 @@ export async function sendReportReadyEmail(payload: {
   fullName: string;
   reportLink: string;
   locale: SupportedLocale;
-  preview: FullCheckQuickPreview;
+  /** Title, name, date and target visa only: report content is in the PDF alone. */
+  header: ReportHeader;
   /** Present only when the client agreed to share their details with a referring agent: the email says so and links to the withdrawal page. */
   sharing?: { agentName: string; withdrawalUrl: string };
 }) {
@@ -105,26 +106,25 @@ export async function sendReportReadyEmail(payload: {
     : isTr ? "Merhaba," : isZh ? "您好，" : "Hi,";
 
   const subject = isTr
-    ? "Vize Bilgi Raporunuzun ön izlemesi hazır 🇦🇺"
+    ? "Vize Bilgi Raporunuz hazır 🇦🇺"
     : isZh
-      ? "您的签证信息报告预览已生成 🇦🇺"
-      : "Your Visa Information Report preview is ready 🇦🇺";
+      ? "您的签证信息报告已生成 🇦🇺"
+      : "Your Visa Information Report is ready 🇦🇺";
 
   const headline = isTr
-    ? "Vize Bilgi Raporunuzun<br>ön izlemesi hazır 🇦🇺"
+    ? "Vize Bilgi Raporunuz<br>hazır 🇦🇺"
     : isZh
-      ? "您的签证信息报告<br>预览已生成 🇦🇺"
-      : "Your Visa Information Report<br>preview is ready 🇦🇺";
+      ? "您的签证信息报告<br>已生成 🇦🇺"
+      : "Your Visa Information Report<br>is ready 🇦🇺";
 
   const intro = isTr
-    ? "Raporunuz, girdiğiniz bilgilerden ve yayımlanmış kaynaklardan oluşturuldu. Bu ön izleme bilgilerinizi, girdilerinizden hesaplanan puan toplamını ve tam raporun bölümlerini gösterir."
+    ? "Raporunuz, girdiğiniz bilgilerden ve yayımlanmış kaynaklardan oluşturuldu. Rapor içeriği PDF'tedir; aşağıdaki bağlantı rapor sayfanızı açar."
     : isZh
-      ? "您的报告根据您填写的信息和公开来源生成。此预览显示您的信息、根据您的填写计算出的积分总分，以及完整报告包含的部分。"
-      : "Your report was built from the details you entered and published sources. This preview shows your details, the points total calculated from your entries and the sections of the full report.";
+      ? "您的报告根据您填写的信息和公开来源生成。报告内容仅在 PDF 中；下方链接将打开您的报告页面。"
+      : "Your report was built from the details you entered and published sources. The report content is in the PDF; the link below opens your report page.";
 
-  // The same preview object the locked result page shows (lib/reports/report-preview.ts): this email and that page never disagree.
-  const includesLabel = isTr ? "Ön izleme" : isZh ? "预览" : "Your preview";
-  const items = [...(payload.preview.pointsLine ? [payload.preview.pointsLine] : []), ...payload.preview.sectionTitles];
+  const includesLabel = payload.header.title;
+  const items = [payload.header.name, payload.header.dateText, payload.header.targetLine].filter((v) => v).map((v) => v.replace(/[&<>"']/g, (c) => `&#${c.charCodeAt(0)};`));
 
   const ctaLabel = isTr ? "Raporumu Aç →" : isZh ? "打开我的报告 →" : "Open My Report →";
   const orCopy = isTr ? "Veya bu bağlantıyı kopyalayın:" : isZh ? "或复制此链接：" : "Or copy this link:";

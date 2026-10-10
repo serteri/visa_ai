@@ -150,9 +150,9 @@ async function main() {
     checkoutCalls = 0;
     const paid = await unlockPremiumReport({ status: "idle" }, unlockForm(id, customer));
     check(paid.status === "redirect" && paid.redirectUrl === "https://checkout.stripe.test/c/pay_cs_test_123" && checkoutCalls === 1, "unlock -> Stripe Checkout (the /api/checkout session URL)", JSON.stringify(paid).slice(0, 160));
-    check(rows.get(id)!.is_unlocked === false && !paid.report && !paid.accessToken, "the report stays locked and nothing is returned");
+    check(rows.get(id)!.is_unlocked === false && !paid.unlocked && !paid.accessToken, "the report stays locked and nothing is returned");
     const typedAdmin = await unlockPremiumReport({ status: "idle" }, unlockForm(id, "owner-admin@example.com"));
-    check(typedAdmin.status !== "success" || !typedAdmin.report, "a typed admin address is not a credential: still no report", typedAdmin.status);
+    check(typedAdmin.status !== "success" || !typedAdmin.unlocked, "a typed admin address is not a credential: still no report", typedAdmin.status);
     checkoutCalls = 0;
 
     console.log("\n2a. admin session (NextAuth ADMIN)");
@@ -169,7 +169,7 @@ async function main() {
     stripeCalls = 0;
     const unlocked = await unlockPremiumReport({ status: "idle" }, unlockForm(aid, customer));
     await flush();
-    check(unlocked.status === "success" && !!unlocked.report && !!unlocked.accessToken, "the unlock returns the report and its access token in the same browser", JSON.stringify({ s: unlocked.status, m: unlocked.message }));
+    check(unlocked.status === "success" && unlocked.unlocked === true && !("report" in unlocked) && !!unlocked.accessToken, "the unlock returns an open flag and the access token (never the report) in the same browser", JSON.stringify({ s: unlocked.status, m: unlocked.message }));
     check(checkoutCalls === 0 && stripeCalls === 0 && !unlocked.redirectUrl, "no /api/checkout request, no Stripe session, no redirect, no promotion code");
     check(rows.get(aid)!.is_unlocked === true && rows.get(aid)!.unlock_method === "admin_free" && rows.get(aid)!.payment_status === "admin_free", "the report is unlocked and recorded as admin_free");
     check(sent.some((m) => m.to.includes(customer) && /Information Report|Bilgi Raporu|信息报告/.test(m.subject)), "the unlock emails the report link to the non-listed customer (an admin session suppresses nothing)", JSON.stringify(sent));
@@ -187,7 +187,7 @@ async function main() {
     checkoutCalls = 0;
     const cookieUnlocked = await unlockPremiumReport({ status: "idle" }, unlockForm(cid, customer));
     await flush();
-    check(cookieMade.status === "success" && cookieUnlocked.status === "success" && !!cookieUnlocked.report && checkoutCalls === 0 && sent.some((m) => m.to.includes(customer)) && rows.get(cid)!.unlock_method === "admin_free", "the admin cookie: new report, unlock without Stripe, customer still emailed");
+    check(cookieMade.status === "success" && cookieUnlocked.status === "success" && cookieUnlocked.unlocked === true && checkoutCalls === 0 && sent.some((m) => m.to.includes(customer)) && rows.get(cid)!.unlock_method === "admin_free", "the admin cookie: new report, unlock without Stripe, customer still emailed");
 
     console.log("\n2c. admin session + a LISTED recipient address: suppressed by the address");
     const listed = "owner-admin@example.com";

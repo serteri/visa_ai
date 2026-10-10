@@ -5,8 +5,7 @@ import { canAccessReport, reportAccessToken, reportPdfPath } from "@/lib/reports
 import { getReportRequester } from "@/lib/reports/report-access-server";
 import { refreshStoredReport } from "@/lib/reports/refresh-report";
 import { reportDateStamp } from "@/lib/reports/report-date-stamp";
-import { buildReportView, reportViewProfile } from "@/lib/reports/report-view";
-import { buildBasicPreview, buildReportPreview } from "@/lib/reports/report-preview";
+import { buildReportHeader } from "@/lib/reports/report-header";
 import { isPaidReportCheckoutEnabled } from "@/lib/readiness/paid-checkout";
 import { ReportAccessRequired } from "./report-access-required";
 import { ResultView } from "./result-view";
@@ -48,52 +47,20 @@ export default async function FullCheckResultPage({
   }
 
   const accessToken = token || reportAccessToken(record.id);
-  // The same current-engine refresh and fallback as the PDF (lib/reports/refresh-report.ts), so the page and the
-  // downloaded PDF always show the same content and the same "Last updated" / "Generated" stamp.
-  const refreshed = await refreshStoredReport(record.report, record.input, { generatedAt: record.createdAt });
   const viewLocale = locale === "tr" ? "tr" : locale === "zh-Hans" ? "zh-Hans" : "en";
-  const dateText = reportDateStamp(viewLocale, refreshed.stamp)?.text ?? "";
-  const hasRestructuredView = refreshed.report.country !== "CA" && !refreshed.report.partnerSponsorshipAssessment;
-  const fullView = hasRestructuredView
-    ? buildReportView({ report: refreshed.report, locale: viewLocale, profile: reportViewProfile(record.input, record.fullName, viewLocale), dateText })
-    : null;
-
-  // A LOCKED report (not unlocked, and the requester is not an admin) gets the preview only: the visitor's details, the points total from their
-  // entries and the section titles. The report and the full view are NOT passed to the client component, so none of their content is in the
-  // page source (the RSC payload) -- this is a server-side gate, not CSS.
-  const showFull = record.isUnlocked || requester.isAdmin;
-  if (!showFull) {
-    const estimated = refreshed.report.pointsBoosterSimulator?.currentEstimate ?? refreshed.report.pointsEstimate?.estimatedPoints ?? null;
-    const preview = fullView ? buildReportPreview(fullView, typeof estimated === "number" ? estimated : null) : buildBasicPreview(refreshed.report, viewLocale);
-    return (
-      <ResultView
-        locale={locale}
-        reportId={record.id}
-        isUnlocked={false}
-        isAdminBypass={false}
-        downloadHref={null}
-        report={null}
-        dateStamp={null}
-        view={null}
-        preview={preview}
-        fullName={record.fullName ?? undefined}
-        email={record.email}
-        paidCheckoutEnabled={isPaidReportCheckoutEnabled()}
-      />
-    );
-  }
-  const view = fullView;
+  // The website shows no report content, for anyone (owner, admin, free-beta): only this header. The report itself is never read into the page; the PDF
+  // (lib/reports/report-header.ts, scripts/test-result-page-minimal.ts) is the only place it appears.
+  // The same refresh as the PDF, only to get the same date stamp as the PDF cover; the refreshed report itself is not used again.
+  const refreshed = await refreshStoredReport(record.report, record.input, { generatedAt: record.createdAt });
+  const header = buildReportHeader({ report: refreshed.report, locale: viewLocale, fullName: record.fullName, createdAt: record.createdAt, dateText: reportDateStamp(viewLocale, refreshed.stamp)?.text });
   return (
     <ResultView
       locale={locale}
       reportId={record.id}
       isUnlocked={record.isUnlocked}
       isAdminBypass={requester.isAdmin && !record.isUnlocked}
-      downloadHref={record.isUnlocked ? reportPdfPath(record.id, accessToken) : null}
-      report={refreshed.report}
-      dateStamp={reportDateStamp(locale, refreshed.stamp)?.text ?? null}
-      view={view}
-      preview={null}
+      downloadHref={record.isUnlocked || requester.isAdmin ? reportPdfPath(record.id, accessToken) : null}
+      header={header}
       fullName={record.fullName ?? undefined}
       email={record.email}
       paidCheckoutEnabled={isPaidReportCheckoutEnabled()}

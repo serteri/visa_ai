@@ -30,8 +30,7 @@ async function run() {
 
   console.log("Preview created:", {
     reportId: submitState.reportId,
-    estimatedPoints: submitState.preview?.estimatedPoints,
-    sectionTitles: submitState.preview?.sectionTitles,
+    header: submitState.header,
   });
 
   const unlockForm = new FormData();
@@ -46,21 +45,7 @@ async function run() {
   console.log("Unlock result:", {
     status: unlockState.status,
     message: unlockState.message,
-    unlockedReportAvailable: Boolean(unlockState.report),
-    spouseDocsPresent:
-      unlockState.report?.documentChecklist
-        ?.flatMap((c) => c.items)
-        ?.filter((i) => {
-          const n = (typeof i === "string" ? i : i.text).toLowerCase();
-          return (
-            n.includes("spouse") ||
-            n.includes("marriage") ||
-            n.includes("esin") ||
-            n.includes("evlilik") ||
-            n.includes("配偶") ||
-            n.includes("结婚")
-          );
-        }) ?? [],
+    unlocked: unlockState.unlocked,
   });
 }
 

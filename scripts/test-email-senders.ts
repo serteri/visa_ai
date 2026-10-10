@@ -61,11 +61,11 @@ type Case = {
 };
 
 const RECIPIENT = "customer@example.org";
-const preview = { title: "Visa Information Report: preview", detailsTitle: "Your details", details: ["Occupation: Software Engineer"], pointsTitle: "Points", pointsLine: "Total from your entries: 70 points", sectionsTitle: "The full report contains these sections", sectionTitles: ["Your details", "Points", "Visa information"], estimatedPoints: 70 };
+const header = { title: "LogiVisa Visa Information Report", name: "Jane", dateText: "Generated 1 October 2026", targetLine: "Target visa: Skilled Work Regional (491)", readyLine: "Your Visa Information Report is ready" };
 const cases: Case[] = [
   { name: "lead magnet delivery", to: RECIPIENT, onReject: "sent_false", run: () => sendPdfDeliveryEmail({ fullName: "Jane", email: RECIPIENT, slug: "australia-skilled-occupation-list-2026", locale: "en" }) },
   { name: "lead magnet admin notice", to: "serter@logivisa.com", onReject: "throws", run: () => sendPdfLeadAdminEmail({ fullName: "Jane", email: RECIPIENT, phone: "", slug: "australia-guide-2026", category: "Global Guide", delivered: true }) },
-  { name: "quick-check report ready", to: RECIPIENT, onReject: "throws", run: () => sendReportReadyEmail({ email: RECIPIENT, fullName: "Jane", reportLink: "https://logivisa.com/en/full-check/result?reportId=x", locale: "en", preview }) },
+  { name: "quick-check report ready", to: RECIPIENT, onReject: "throws", run: () => sendReportReadyEmail({ email: RECIPIENT, fullName: "Jane", reportLink: "https://logivisa.com/en/full-check/result?reportId=x", locale: "en", header }) },
   { name: "quick-check internal lead notice", to: "hello@logivisa.com", onReject: "throws", run: () => sendInternalLeadTierEmail({ tier: "Hot", fullName: "Jane", email: RECIPIENT, occupationDisplay: "Software Engineer", country: "AU", preferredPathway: "189", englishLevel: "superior", reportLink: "https://logivisa.com/x" }) },
   { name: "premium report ready (unlock link)", to: RECIPIENT, onReject: "throws", run: () => sendPremiumReportReadyEmail({ email: RECIPIENT, fullName: "Jane", locale: "en", reportLink: "https://logivisa.com/en/full-check/result?reportId=x&t=y", freeBeta: false }) },
   { name: "full-check admin notification (paid / free beta)", to: "serter@logivisa.com", onReject: "throws", run: () => sendFullCheckAdminEmail({ ...fullCheckAdminPayload({ fullName: "Jane", locale: "en", source: "full_check", inputJson: {} }, RECIPIENT), variant: "free_beta", freeUnlocksToday: 1 }) },

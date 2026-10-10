@@ -5,14 +5,9 @@ import { createPortal } from "react-dom";
 import { CheckCircle2, Lock, Mail, Phone, ShieldCheck, Sparkles, Zap } from "lucide-react";
 import { sendGAEvent } from "@next/third-parties/google";
 
-import {
-  type FullCheckQuickPreview,
-  type PremiumUnlockState,
-  unlockPremiumReport,
-} from "@/app/[locale]/(main)/full-check/actions";
-import type { ReadinessReport } from "@/lib/readiness/types";
+import { type PremiumUnlockState, unlockPremiumReport } from "@/app/[locale]/(main)/full-check/actions";
+import type { ReportHeader } from "@/lib/reports/report-header";
 import { PREMIUM_PRICE_DISPLAY } from "@/lib/pricing";
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -33,7 +28,7 @@ function trackGaEvent(name: string, params?: Record<string, string | number | bo
 export function PremiumFeatureGate({
   locale,
   reportId,
-  preview,
+  header,
   defaultEmail,
   defaultName,
   onUnlocked,
@@ -41,10 +36,11 @@ export function PremiumFeatureGate({
 }: {
   locale: string;
   reportId: string;
-  preview: FullCheckQuickPreview;
+  /** The only report-derived data shown before payment: title, name, date, target visa (lib/reports/report-header.ts). */
+  header: ReportHeader;
   defaultEmail?: string;
   defaultName?: string;
-  onUnlocked: (payload: { report: ReadinessReport; email?: string; name?: string; isUnlocked?: boolean; accessToken?: string }) => void;
+  onUnlocked: (payload: { email?: string; name?: string; isUnlocked?: boolean; accessToken?: string }) => void;
   /**
    * The server-side READINESS_REPORT_PAID_CHECKOUT_ENABLED flag (lib/readiness/paid-checkout.ts), passed down by the
    * page. On by default (lib/readiness/paid-checkout.ts); false means no payment is taken: no price, no checkout events.
@@ -89,7 +85,7 @@ export function PremiumFeatureGate({
   );
 
   useEffect(() => {
-    if (unlockState.status === "success" && unlockState.report) {
+    if (unlockState.status === "success" && unlockState.unlocked) {
       if (trackedUnlockReportIdRef.current !== reportId) {
         trackGaEvent("report_unlocked", {
           report_id: reportId,
@@ -101,7 +97,6 @@ export function PremiumFeatureGate({
 
       setShowModal(false);
       onUnlocked({
-        report: unlockState.report,
         email: unlockState.userInput?.email,
         name: unlockState.userInput?.name,
         isUnlocked: true,
@@ -169,48 +164,18 @@ export function PremiumFeatureGate({
 
   return (
     <section className="space-y-5" data-report-preview>
-      {/* Pre-payment preview: the visitor's own details, the points total from their entries and the section titles. Nothing else is in the page. */}
-      <Card className="border-emerald-200 bg-white shadow-sm">
-        <CardHeader>
-          <div className="flex flex-wrap items-center gap-2">
-            <CardTitle className="text-base">{preview.title}</CardTitle>
-            <Badge variant="secondary">{isTr ? "Ön izleme" : isZh ? "预览" : "Preview"}</Badge>
-          </div>
+      {/* Before payment the page shows the header only: title, name, date, target visa. No points, sections or requirements. */}
+      <Card className="border-emerald-200 bg-white shadow-sm" data-report-header>
+        <CardHeader className="space-y-1">
+          <CardTitle className="text-base">{header.title}</CardTitle>
+          {header.name ? <p className="text-sm font-medium text-foreground">{header.name}</p> : null}
+          <p className="text-xs text-muted-foreground">{header.dateText}</p>
+          <p className="text-sm font-semibold text-foreground">{header.targetLine}</p>
         </CardHeader>
-        <CardContent className="space-y-4">
-          <div className="space-y-2" data-preview-details>
-            <p className="text-sm font-medium text-foreground">{preview.detailsTitle}</p>
-            <ul className="list-disc space-y-1 pl-5 text-xs text-slate-700">
-              {preview.details.map((line) => (
-                <li key={line}>{line}</li>
-              ))}
-            </ul>
-          </div>
-          {preview.pointsLine ? (
-            <div className="rounded-md border border-emerald-300 bg-emerald-50 px-4 py-3" data-preview-points>
-              <p className="text-xs font-semibold uppercase tracking-wide text-emerald-900">{preview.pointsTitle}</p>
-              <p className="mt-1 text-xl font-bold text-emerald-950">{preview.pointsLine}</p>
-            </div>
-          ) : null}
-        </CardContent>
       </Card>
 
       <Card className="border-dashed border-primary/40 bg-background">
-        <CardHeader>
-          <CardTitle className="text-base">{preview.sectionsTitle}</CardTitle>
-        </CardHeader>
         <CardContent className="space-y-4">
-          {preview.sectionTitles.length > 0 && (
-            <ul className="grid gap-2" data-preview-sections>
-              {preview.sectionTitles.map((title) => (
-                <li key={title} className="flex items-center gap-2 rounded-md border px-3 py-2 text-sm text-slate-800">
-                  <Lock className="size-3.5 shrink-0 text-slate-600" aria-hidden="true" />
-                  {title}
-                </li>
-              ))}
-            </ul>
-          )}
-
           <div className="rounded-2xl border border-primary/20 bg-card p-5 shadow-sm">
             <h3 className="text-xl font-bold tracking-tight">
               {paidCheckoutEnabled
@@ -347,7 +312,7 @@ export function PremiumFeatureGate({
                   </div>
                 </div>
 
-                {unlockState.status === "success" && !unlockState.report && unlockState.message && (
+                {unlockState.status === "success" && !unlockState.unlocked && unlockState.message && (
                   <p className="rounded-md border border-emerald-200 bg-emerald-50 px-3 py-2 text-sm text-emerald-800">
                     {unlockState.message}
                   </p>
@@ -374,7 +339,7 @@ export function PremiumFeatureGate({
                   <Button type="button" variant="outline" className="h-12 flex-1 rounded-xl" onClick={() => setShowModal(false)}>
                     {isTr ? "İptal" : isZh ? "取消" : "Cancel"}
                   </Button>
-                  <Button type="submit" className="h-12 flex-1 rounded-xl" disabled={unlockPending || (unlockState.status === "success" && !unlockState.report)}>
+                  <Button type="submit" className="h-12 flex-1 rounded-xl" disabled={unlockPending || (unlockState.status === "success" && !unlockState.unlocked)}>
                     {unlockPending
                       ? isTr ? "İşleniyor..." : isZh ? "处理中..." : "Processing..."
                       : paidCheckoutEnabled ? (isTr ? "Ödemeye geç" : isZh ? "前往付款" : "Continue to payment") : (isTr ? "Raporu aç" : isZh ? "打开报告" : "Open report")}

@@ -42,14 +42,13 @@ import {
   countFreeBetaUnlocksToday,
 } from "@/src/lib/user-reports";
 import { getApprovedAgentUser } from "@/lib/crm/leads";
+import { buildReportHeader, type ReportHeader } from "@/lib/reports/report-header";
 import { consentTableReady, hashIp, recordConsentGranted, withdrawalUrl } from "@/lib/consent/referral-consent";
 import { shouldSkipInternalNotification, shouldSuppressReportEmails } from "@/lib/email/suppression";
 import { sendOpsAlert } from "@/lib/email/ops-alert";
 import { safeEqual } from "@/lib/admin-auth";
 
 import { sendInternalLeadTierEmail, sendReportReadyEmail } from "@/lib/email/quick-check-emails";
-import { buildBasicPreview, buildReportPreview, type ReportPreview } from "@/lib/reports/report-preview";
-import { buildReportView, reportViewProfile } from "@/lib/reports/report-view";
 const REF_COOKIE = "logivisa_ref";
 
 /**
@@ -74,14 +73,13 @@ async function resolveReferralAgent(): Promise<{ id: string; email: string; name
 
 type SupportedLocale = "en" | "tr" | "zh-Hans";
 
-export type FullCheckQuickPreview = ReportPreview;
-
 export type FullCheckWaitlistState = {
   status: "idle" | "success" | "error";
   error?: string;
   message?: string;
   errors?: Record<string, string>;
-  preview?: FullCheckQuickPreview;
+  /** The only report-derived data returned: title, name, date, target visa (lib/reports/report-header.ts). */
+  header?: ReportHeader;
   reportId?: string;
   userInput?: {
     name?: string;
@@ -106,20 +104,11 @@ export type PremiumUnlockState = {
   redirectUrl?: string;
   /** The report's access token (admin unlock only; never returned by the free-beta unlock) -- lets the in-page PDF download pass the route's authorization. */
   accessToken?: string;
-  report?: ReadinessReport;
+  /** True when the report is open for this browser. The report itself is never returned: the PDF is the only place its content appears. */
+  unlocked?: boolean;
   userInput?: {
     name?: string;
     email?: string;
-    mainGoal?: string;
-    currentCountry?: string;
-    passportCountry?: string;
-    age?: string;
-    qualificationLevel?: string;
-    annualSalaryAud?: string;
-    occupation?: string;
-    englishLevel?: string;
-    sponsorOrFamily?: string;
-    biggestConcern?: string;
   };
 };
 
@@ -289,17 +278,6 @@ async function createCheckoutSession(input: {
 }
 
 // ─── Shared ───────────────────────────────────────────────────────────────────
-
-/**
- * The pre-payment preview (lib/reports/report-preview.ts): the visitor's details, the points total from their entries and the report's section
- * titles. No visa, state, fee or scenario content leaves the server before the report is unlocked.
- */
-function buildQuickPreview(report: ReadinessReport, locale: SupportedLocale, input: Partial<ReadinessInput>, fullName?: string): FullCheckQuickPreview {
-  const estimated = report.pointsBoosterSimulator?.currentEstimate ?? report.pointsEstimate?.estimatedPoints ?? null;
-  if (report.country === "CA" || report.partnerSponsorshipAssessment) return buildBasicPreview(report, locale);
-  const view = buildReportView({ report, locale, profile: reportViewProfile(input, fullName ?? null, locale), dateText: "" });
-  return buildReportPreview(view, typeof estimated === "number" ? estimated : null);
-}
 
 function normalizeSubmittedLocale(value: string): SupportedLocale {
   if (value === "tr") return "tr";
@@ -888,7 +866,6 @@ export async function submitFullCheckWaitlist(
     // when a valid agent ?ref= cookie is present.
     agentId: referralAgent?.id,
     assignedViaRef: Boolean(referralAgent),
-    previewData: buildQuickPreview(generatedReport, resolvedLocale, readinessInputForReport, fullName),
   });
 
   // Consent to share with the referring agent: only when the client ticked the box AND a referring agent resolved on the server (approved, named in the
@@ -970,7 +947,7 @@ export async function submitFullCheckWaitlist(
       fullName,
       reportLink,
       locale: resolvedLocale,
-      preview: buildQuickPreview(generatedReport, resolvedLocale, readinessInputForReport, fullName),
+      header: buildReportHeader({ report: generatedReport, locale: resolvedLocale, fullName, createdAt: new Date() }),
       sharing: consentGranted && referralAgent?.name ? { agentName: referralAgent.name, withdrawalUrl: withdrawalUrl(reportRecord.id, resolvedLocale) } : undefined,
     }).catch((err) => console.error("Customer report email failed (non-blocking):", err)),
     internalLeadTier === "Cold" || skipInternalEmail
@@ -1002,7 +979,7 @@ export async function submitFullCheckWaitlist(
       : isZh
         ? "快速结果已生成。解锁后可查看完整报告。"
         : "Quick results are ready. Unlock to access the full report.",
-    preview: buildQuickPreview(generatedReport, resolvedLocale, readinessInputForReport, fullName),
+    header: buildReportHeader({ report: generatedReport, locale: resolvedLocale, fullName, createdAt: new Date() }),
     reportId: reportRecord.id,
     userInput: {
       name: fullName || undefined,
@@ -1144,20 +1121,10 @@ async function unlockPremiumReportInternal(
               ? "报告已打开。安全链接也已发送到创建报告时使用的邮箱。"
               : "Your report is open. The secure link was also emailed to the address the report was created with.",
         accessToken: reportAccessToken(reportId) ?? undefined,
-        report: shown,
+        unlocked: true,
         userInput: {
           name: fullName || undefined,
           email: record.email,
-          mainGoal: record.input.mainGoal,
-          currentCountry: record.input.currentCountry,
-          passportCountry: record.input.passportCountry,
-          age: record.input.age,
-          qualificationLevel: record.input.qualificationLevel,
-          annualSalaryAud: typeof record.input.annualSalaryAud === "number" ? String(record.input.annualSalaryAud) : undefined,
-          occupation: record.input.occupation,
-          englishLevel: record.input.englishLevel,
-          sponsorOrFamily: record.input.sponsorOrFamily,
-          biggestConcern: record.input.biggestConcern,
         },
       };
     }
@@ -1264,23 +1231,10 @@ async function unlockPremiumReportInternal(
     status: "success",
     message: "Full report unlocked. PDF sent to your email.",
     accessToken: reportAccessToken(reportId) ?? undefined,
-    report: record.report,
+    unlocked: true,
     userInput: {
       name: fullName || undefined,
       email,
-      mainGoal: record.input.mainGoal,
-      currentCountry: record.input.currentCountry,
-      passportCountry: record.input.passportCountry,
-      age: record.input.age,
-      qualificationLevel: record.input.qualificationLevel,
-      annualSalaryAud:
-        typeof record.input.annualSalaryAud === "number"
-          ? String(record.input.annualSalaryAud)
-          : undefined,
-      occupation: record.input.occupation,
-      englishLevel: record.input.englishLevel,
-      sponsorOrFamily: record.input.sponsorOrFamily,
-      biggestConcern: record.input.biggestConcern,
     },
   };
 }

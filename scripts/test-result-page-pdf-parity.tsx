@@ -1,7 +1,7 @@
 /**
- * The on-screen result page (app/[locale]/(main)/full-check/result) and the PDF (app/api/reports/[reportId]/pdf) run
- * the same refresh (lib/reports/refresh-report.ts) and are drawn from the same view (lib/reports/report-view.ts): the
- * same eight parts, verdict, visa statuses, states, ways to add points, plan, cost rows and date stamp.
+ * The PDF (app/api/reports/[reportId]/pdf) is the source of truth; the result page (app/[locale]/(main)/full-check/result) shows only its header.
+ * They run the same refresh (lib/reports/refresh-report.ts), so what the page does say matches the PDF cover: the applicant's name, the target
+ * visa line and the date stamp (stable across viewing days). The page has no sections, tables or visa/state/fee rows.
  *
  *   1. Always (CI too): a stored report built from report b0d20f74's non-personal answers, made stale (an old
  *      491-in-189 booster row), rendered by the page and the PDF route in en / tr / zh-Hans.
@@ -139,48 +139,21 @@ async function compare(label: string, reportId: string, locale: string) {
   const flatPdf = squash(pdf);
   const stamp = decode(html.match(/data-report-date-stamp[^>]*>([^<]*)</)?.[1] ?? "");
 
-  // The parts, in the same order on the page and in the PDF: cover, details, glance, points, visas, states, invitations, costs, process,
-  // documents, sources.
+  // The page has no report parts: no sections, tables or rows (the PDF has them).
   const sections = [...html.matchAll(/data-section="([a-z]+)"/g)].map((m) => m[1]);
-  const canonical = ["cover", "details", "glance", "points", "visas", "states", "invitations", "costs", "process", "documents", "sources"];
-  const inOrder = sections.every((x, i) => canonical.includes(x) && (i === 0 || canonical.indexOf(x) > canonical.indexOf(sections[i - 1])));
-  if (inOrder && canonical.filter((c) => c !== "points").every((c) => sections.includes(c))) ok(`${label} [${locale}]: the page parts are in order (${sections.join(" > ")})`);
+  const pdfTables = pdf.split("\n").length;
+  if (sections.length === 1 && sections[0] === "cover" && !/<table|<tbody|data-visa-heading|data-state-code/.test(html) && pdfTables > 200) ok(`${label} [${locale}]: the page is the header only (${html.length} bytes); the PDF carries the content (${pdfTables} lines)`);
   else fail(`${label} [${locale}]: page parts ${JSON.stringify(sections)}`);
 
-  // Every section title of the page is on the PDF, in the same order.
-  const titles = [...html.matchAll(/data-section="(?!cover)[a-z]+"[^>]*>[\s\S]*?<h\d[^>]*>([^<]*)</g)].map((m) => decode(m[1]));
-  const pdfLines = pdf.split("\n").map((x) => x.trim());
-  const titleAt = titles.map((tt) => pdfLines.findIndex((x) => x === tt));
-  if (titles.length >= 8 && titleAt.every((i) => i >= 0) && titleAt.every((i, k) => k === 0 || i > titleAt[k - 1])) ok(`${label} [${locale}]: ${titles.length} section titles, same order on the page and the PDF`);
-  else fail(`${label} [${locale}]: section titles differ -- ${JSON.stringify(titles)} at ${titleAt.join(",")}`);
-
-  // Cover: the target line is on the PDF.
+  // Cover: the target line, the applicant's name and the date stamp on the page are on the PDF cover.
   const targetLine = decode(html.match(/data-target-line[^>]*>([^<]*)</)?.[1] ?? "");
   if (targetLine && flatPdf.includes(squash(targetLine))) ok(`${label} [${locale}]: target line identical`);
   else fail(`${label} [${locale}]: target line "${targetLine}" is not on the PDF`);
-
-  // Visas: nine blocks, each heading on the PDF; the selected visa carries its marker.
-  const visaHtml = html.match(/data-section="visas"[\s\S]*?(?=data-section="states")/)?.[0] ?? "";
-  const visaHeads = [...visaHtml.matchAll(/data-visa-heading="([^"]*)"/g)].map((m) => decode(m[1]));
-  const visaBad = visaHeads.filter((hd) => !flatPdf.includes(squash(hd.slice(0, 24))));
-  if (visaHeads.length === 9 && visaBad.length === 0) ok(`${label} [${locale}]: 9 visa headings identical`);
-  else fail(`${label} [${locale}]: visa headings differ -- ${visaHeads.length}, missing ${JSON.stringify(visaBad.slice(0, 2))}`);
-
-  // States: all eight named on the page and in the PDF.
-  const codes = ["ACT", "NSW", "NT", "QLD", "SA", "TAS", "VIC", "WA"];
-  const stateHtml = html.match(/data-section="states"[\s\S]*?(?=data-section="invitations")/)?.[0] ?? "";
-  if (codes.every((c) => stateHtml.includes(`(${c})`) && flatPdf.includes(squash(`(${c})`)))) ok(`${label} [${locale}]: 8 state blocks identical`);
-  else fail(`${label} [${locale}]: state blocks differ`);
-
-  // Every table row's first cell is on the PDF (the PDF wraps cells, so only the first characters are compared).
-  const bodies = [...html.matchAll(/<tbody>([\s\S]*?)<\/tbody>/g)].flatMap((m) => [...m[1].matchAll(/<tr[^>]*>(.*?)<\/tr>/g)].map((r) => [...r[1].matchAll(/<td[^>]*>(.*?)<\/td>/g)].map((c) => decode(c[1].replace(/<[^>]*>/g, "")))));
-  const rowBad = bodies.filter((r) => r[0] && !flatPdf.includes(squash(r[0]).slice(0, 10)));
-  if (bodies.length > 100 && rowBad.length === 0) ok(`${label} [${locale}]: ${bodies.length} table rows identical`);
-  else fail(`${label} [${locale}]: table rows differ -- ${bodies.length} rows, missing ${JSON.stringify(rowBad.slice(0, 3))}`);
-
-  // Stamp: the page's stamp is on the PDF cover.
   if (stamp && flatPdf.includes(squash(stamp))) ok(`${label} [${locale}]: stamp "${stamp}" on the page and the PDF`);
   else fail(`${label} [${locale}]: stamp "${stamp}" not found on the PDF`);
+  const name = decode(html.match(/<p class="text-base font-medium">([^<]*)</)?.[1] ?? "");
+  if (name && flatPdf.includes(squash(name))) ok(`${label} [${locale}]: the applicant's name is on both`);
+  else fail(`${label} [${locale}]: name "${name}" is not on the PDF`);
   return stamp;
 }
 

@@ -48,7 +48,7 @@ export type ReportViewProfile = {
 };
 
 /** Title-cases a proper-noun field ("steve" -> "Steve", "USA" stays), as the PDF does for the name on the cover. */
-function toDisplayCase(value: string): string {
+export function toDisplayCase(value: string): string {
   return value
     .trim()
     .split(/(\s+|[-/])/)

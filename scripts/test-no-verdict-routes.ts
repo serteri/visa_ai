@@ -39,6 +39,8 @@ const OLD_STRUCTURE: Record<L, RegExp> = {
   "zh-Hans": /您的结论|您的下一步（三项）|立即提交 EOI|您可以使用的州|行动计划|逐个签证分析|最快方式/,
 };
 const NEW_TITLE: Record<L, string> = { en: "Your details", tr: "Bilgileriniz", "zh-Hans": "您的信息" };
+// The result page carries no report content any more (scripts/test-preview-gate.ts): its header and "ready" line.
+const READY_LINE: Record<L, string> = { en: "Your Visa Information Report is ready", tr: "Vize Bilgi Raporunuz hazır", "zh-Hans": "您的签证信息报告已生成" };
 const squash = (s: string) => s.replace(/\s+/g, "");
 const decode = (s: string) => s.replace(/&amp;/g, "&").replace(/&quot;/g, '"').replace(/&#x27;/g, "'").replace(/&#39;/g, "'").replace(/&lt;/g, "<").replace(/&gt;/g, ">");
 
@@ -84,7 +86,7 @@ async function main() {
       const reportId = `${id}-${locale}`;
       const el = await Page({ params: Promise.resolve({ locale }), searchParams: Promise.resolve({ reportId, t: reportAccessToken(reportId) ?? undefined }) });
       const html = decode(renderToStaticMarkup(el).replace(/<[^>]*>/g, " ").replace(/\s+/g, " "));
-      check(!OLD_STRUCTURE[locale].test(html) && html.includes(NEW_TITLE[locale]), `${reportId}: the page shows the information-first report`, (OLD_STRUCTURE[locale].exec(html) ?? [""])[0]);
+      check(!OLD_STRUCTURE[locale].test(html) && html.includes(READY_LINE[locale]), `${reportId}: the page shows the header and the ready line, none of the old structure`, (OLD_STRUCTURE[locale].exec(html) ?? [""])[0]);
     }
   }
 

@@ -1,13 +1,12 @@
 /**
- * The pre-payment preview gate, server side (en / tr / zh-Hans).
+ * The result page shows NO report content, for any user (updated parity test: the PDF is the source of truth). en / tr / zh-Hans.
  *
- *   1. a LOCKED report's result page carries only the preview -- the visitor's details, the points total from their entries and the section
- *      titles. The report and the full view are not passed to the client component: no visa, state, fee, requirement or scenario text is in
- *      the props (the page source / RSC payload) or in the rendered HTML;
- *   2. once unlocked (paid, or a free-beta report) the owner sees the full report on screen with the PDF link, with the same sections as the PDF;
- *   3. a locked report is still full for an admin session; a locked report with the wrong token shows nothing;
- *   4. the preview in the quick-check answer and in the quick-check email has the same limits (no pathways, no content);
- *   5. the paid gate: price and "Unlock" wording with the flag on; no "Free beta" anywhere; the PDF route stays closed while locked.
+ *   1. locked (visitor, owner, admin): the header (title, name, date, target visa) and the purchase button only;
+ *   2. unlocked (paid, free beta, admin): the header, "Your Visa Information Report is ready", "Download PDF" and "We also emailed you a link" only;
+ *   3. the report, the full view and any preview are never passed to the client component (page source / RSC payload / server-action responses);
+ *   4. none of "Western Australia", "AUD 6,135", "ACS", "Published requirement" (and no other report string) is in the page, though they ARE in
+ *      the report (the PDF carries them: the PDF route answers for an unlocked report);
+ *   5. the email carries the header only; the paid gate keeps its price and wording; the PDF route stays closed while locked.
  *
  *   npx tsx scripts/test-preview-gate.ts
  */
@@ -57,6 +56,8 @@ function installStub() {
 
 const base = REVIEW_PERSONAS["ref-xyz-qld"];
 const decode = (s: string) => s.replace(/&amp;/g, "&").replace(/&quot;/g, '"').replace(/&#x27;/g, "'").replace(/&#39;/g, "'").replace(/&lt;/g, "<").replace(/&gt;/g, ">");
+const FORBIDDEN = ["Western Australia", "AUD 6,135", "ACS", "Published requirement"];
+const LOCAL_REQUIREMENT_HEADER = { en: "Published requirement", tr: "Yayımlanmış gereklilik", "zh-Hans": "已公布的要求" } as const;
 
 async function page(reportId: string, locale: string, token?: string | null) {
   const { default: Page } = await import("../app/[locale]/(main)/full-check/result/page");
@@ -66,76 +67,86 @@ async function page(reportId: string, locale: string, token?: string | null) {
 async function main() {
   installStub();
   const { reportAccessToken } = await import("../lib/reports/report-access");
+  const { buildReportHeader, downloadLabel, emailedLine } = await import("../lib/reports/report-header");
 
   for (const L of LOCALES) {
     console.log(`\n==================== [${L}] ====================`);
     const input = { ...base, locale: L, targetVisa: "491", preferredPathway: "491" } as ReadinessInput;
     const report = JSON.parse(JSON.stringify(runReadinessEngine(input)));
     const view = buildReportView({ report, locale: L, profile: { name: "Test Persona", occupation: input.occupation, occupationRaw: input.occupation, englishLevel: input.englishLevel }, dateText: "" });
-    // Strings that exist only in the full report (every section except the details and the points table, and their titles are excluded).
-    // What the preview may legitimately say: the details lines (the visitor's own entries, the target visa), the points total line and the titles.
-    const detailBlocks = view.sections.find((x) => x.id === "details")!.blocks.flatMap((b) => (b.kind === "lines" ? b.lines : b.kind === "text" ? [b.text] : []));
-    const pointsLine = (view.sections.find((x) => x.id === "points")!.blocks.find((b) => b.kind === "text") as { text: string }).text;
-    const allowed = [...detailBlocks, pointsLine, ...view.sections.map((x) => x.title)].join("\n");
-    const notAllowed = (x: string) => x.length >= 28 && !allowed.includes(x);
-    const reportOnly = [...new Set(view.sections.filter((s) => !["details", "points"].includes(s.id)).flatMap(sectionStrings).filter(notAllowed))];
-    const pointsOnly = [...new Set(view.sections.filter((s) => s.id === "points").flatMap(sectionStrings).filter(notAllowed))];
+    const header = buildReportHeader({ report, locale: L, fullName: "test persona", createdAt: "2026-10-01T00:00:00Z" });
+    const headerText = [header.title, header.name, header.dateText, header.targetLine, header.readyLine].join("\n");
+    const everything = [...new Set(view.sections.flatMap(sectionStrings).filter((x) => x.length >= 28 && !headerText.includes(x)))];
+    const viewText = JSON.stringify(view.sections);
+    const present = FORBIDDEN.filter((f) => viewText.includes(f));
+    t("the report itself (the PDF's source) does contain the forbidden strings (all four in English; the requirement header in its own language)", (L === "en" ? present.length === 4 : present.length >= 2) && viewText.includes(LOCAL_REQUIREMENT_HEADER[L]), present.join(", "));
 
     const lockedId = `locked-${L}`;
     const unlockedId = `unlocked-${L}`;
-    const base_row = { email: "owner@example.com", locale: L, report_json: report, input_json: input, agent_id: null, full_name: "Test Persona", preview_data: { estimatedPoints: 1, pathways: [{ subclass: "189", visaName: "STALE OLD PREVIEW SHAPE", confidenceLevel: "high", reason: "STALE OLD REASON" }] }, created_at: "2026-10-01T00:00:00Z" };
-    rows.set(lockedId, { id: lockedId, is_unlocked: false, ...base_row });
-    rows.set(unlockedId, { id: unlockedId, is_unlocked: true, ...base_row });
+    const row = { email: "owner@example.com", locale: L, report_json: report, input_json: input, agent_id: null, full_name: "Test Persona", preview_data: { estimatedPoints: 1, pathways: [{ subclass: "189", visaName: "STALE OLD PREVIEW SHAPE", reason: "STALE OLD REASON" }] }, created_at: "2026-10-01T00:00:00Z" };
+    rows.set(lockedId, { id: lockedId, is_unlocked: false, ...row });
+    rows.set(unlockedId, { id: unlockedId, is_unlocked: true, ...row });
 
-    // 1. locked, with the report's token
+    const noContent = (label: string, el: { props: Record<string, unknown> }, html: string) => {
+      const propsJson = JSON.stringify(el.props);
+      t(`${label}: no report, view or preview is passed to the client`, !("report" in el.props) && !("view" in el.props) && !("preview" in el.props) && !/"sections"|pathwayComparison|visaGates|"blocks"/.test(propsJson));
+      const banned = [...FORBIDDEN, LOCAL_REQUIREMENT_HEADER[L]];
+      t(`${label}: none of ${banned.map((f) => `"${f}"`).join(", ")} is in the props or the page`, banned.every((f) => !propsJson.includes(f) && !html.includes(f)), banned.filter((f) => propsJson.includes(f) || html.includes(f)).join(", "));
+      const leaked = everything.filter((x) => propsJson.includes(JSON.stringify(x).slice(1, -1)) || html.includes(x));
+      t(`${label}: none of ${everything.length} report strings is in the props or the page`, leaked.length === 0, leaked.slice(0, 2).join(" | "));
+      t(`${label}: no section titles, no points total, no stale stored preview`, view.sections.every((sec) => !html.includes(sec.title) || headerText.includes(sec.title) || sec.title.length < 12) && !html.includes("STALE OLD") && !/data-preview-(sections|points|details)/.test(html));
+    };
+
+    // 1. locked, visitor with the report's token
     signOutAll();
     const lockedToken = reportAccessToken(lockedId);
     const el = await page(lockedId, L, lockedToken);
-    const propsJson = JSON.stringify(el.props);
     const html = decode(renderToStaticMarkup(el as never));
-    const preview = el.props.preview as { details: string[]; pointsLine: string | null; sectionTitles: string[]; estimatedPoints: number | null };
-    t("locked: the report and the full view are not passed to the client", el.props.report === null && el.props.view === null && el.props.downloadHref === null && el.props.isUnlocked === false);
-    t("locked: the props carry only the preview (details, points total, section titles)", !!preview && preview.details.length > 5 && !!preview.pointsLine && preview.sectionTitles.length === view.sections.length && preview.sectionTitles.every((x, i) => x === view.sections[i].title));
-    const leaked = reportOnly.filter((x) => propsJson.includes(JSON.stringify(x).slice(1, -1)) || html.includes(x));
-    t(`locked: none of ${reportOnly.length} report-only strings (visas, states, fees, requirements, scenarios, sources) is in the props or the rendered page`, leaked.length === 0, leaked.slice(0, 2).join(" | "));
-    const pointsLeak = pointsOnly.filter((x) => propsJson.includes(JSON.stringify(x).slice(1, -1)));
-    t("locked: the points table rows and scenarios are not in the props (only the total)", pointsLeak.length === 0, pointsLeak.slice(0, 2).join(" | "));
-    t("locked: the old stored preview shape (pathways, reasons) is not shown", !propsJson.includes("STALE OLD") && !html.includes("STALE OLD"));
-    t("locked: the rendered page shows the details, the points total and every section title", preview.details.every((d) => html.includes(d)) && !!preview.pointsLine && html.includes(preview.pointsLine) && preview.sectionTitles.every((x) => html.includes(x)));
-    t("locked: no 'Free beta', no pathway / confidence / friction / action-plan wording in the page", !/Free beta|Ücretsiz beta|免费测试版|Likely visa pathways|Pathway Friction|Immediate Action Plan|Strategic Gantt/i.test(html));
+    t("locked: not unlocked, no PDF link", el.props.isUnlocked === false && el.props.downloadHref === null);
+    t("locked: the header (title, name, date, target visa) is shown", [header.title, header.name, header.dateText, header.targetLine].every((x) => html.includes(x)), header.name);
+    noContent("locked", el, html);
+    t("locked: no 'Free beta' wording", !/Free beta|Ücretsiz beta|免费测试版/i.test(html));
 
-    // 5. gate wording
     process.env.READINESS_REPORT_PAID_CHECKOUT_ENABLED = "true";
     const paidHtml = decode(renderToStaticMarkup((await page(lockedId, L, lockedToken)) as never));
-    t("flag on: the page offers 'Unlock ... Visa Information Report' and shows the price", /Visa Information Report|Vize Bilgi Raporu|签证信息报告/.test(paidHtml) && /data-report-price/.test(paidHtml) && /Unlock|aç|解锁/.test(paidHtml));
+    t("flag on: the purchase button and the price are shown", /data-report-price/.test(paidHtml) && /Unlock|aç|解锁/.test(paidHtml));
     delete process.env.READINESS_REPORT_PAID_CHECKOUT_ENABLED;
 
-    // 2. unlocked: the owner sees the full report
+    // 2. unlocked (paid or free beta)
     const full = await page(unlockedId, L, reportAccessToken(unlockedId));
     const fullHtml = decode(renderToStaticMarkup(full as never));
-    const v = full.props.view as { sections: Array<{ id: string; title: string }> } | null;
-    t("unlocked: the full view reaches the page, with the same sections as the PDF, and the PDF link", !!v && v.sections.length === view.sections.length && typeof full.props.downloadHref === "string" && String(full.props.downloadHref).includes(`/api/reports/${unlockedId}/pdf`));
-    t("unlocked: the report text is on the page", reportOnly.slice(0, 5).every((x) => fullHtml.includes(x)) && fullHtml.includes(reportDisclaimer(L)));
+    t("unlocked: the PDF link (with the access token) is the only route to the content", full.props.isUnlocked === true && String(full.props.downloadHref).includes(`/api/reports/${unlockedId}/pdf`));
+    t("unlocked: header, 'ready' line, Download PDF, 'We also emailed you a link'", [header.title, header.name, header.dateText, header.targetLine, header.readyLine, downloadLabel(L), emailedLine(L)].every((x) => fullHtml.includes(x)) && /data-testid="download-pdf"/.test(fullHtml));
+    noContent("unlocked", full, fullHtml);
+    t("unlocked: the page is small (header only)", fullHtml.length < 6000, String(fullHtml.length));
 
-    // 2b. a free-beta report stays viewable by its owner: by the access token, and by the signed-in owner
+    // 2b. the signed-in owner, no token
     setNextAuthSession({ user: { id: "o1", email: "OWNER@example.com", role: "USER" } });
     const asOwner = await page(unlockedId, L, null);
-    t("a free-beta (already unlocked) report is viewable by its signed-in owner without the token", !!asOwner.props.view && asOwner.props.report !== null);
+    noContent("owner (signed in)", asOwner, decode(renderToStaticMarkup(asOwner as never)));
     signOutAll();
 
-    // 3. admin sees a locked report in full; a wrong token shows nothing
+    // 3. admin: a locked report is NOT shown in full any more
     setNextAuthSession({ user: { id: "a1", email: "admin@example.com", role: "ADMIN" } });
     const adminEl = await page(lockedId, L, null);
-    t("admin session: a locked report is shown in full (inspection)", adminEl.props.isAdminBypass === true && !!adminEl.props.view);
+    const adminHtml = decode(renderToStaticMarkup(adminEl as never));
+    t("admin session, locked report: header + purchase gate + an admin PDF link, no content", adminEl.props.isAdminBypass === true && adminHtml.includes(header.title) && /data-testid="admin-pdf-link"/.test(adminHtml));
+    noContent("admin (locked)", adminEl, adminHtml);
+    const adminUnlocked = await page(unlockedId, L, null);
+    noContent("admin (unlocked)", adminUnlocked, decode(renderToStaticMarkup(adminUnlocked as never)));
     signOutAll();
+
+    // wrong token
     const wrong = await page(lockedId, L, "not-the-token");
     const wrongJson = JSON.stringify(wrong.props);
-    t("wrong token: no report content at all", !wrongJson.includes(reportOnly[0].slice(0, 20)) && !("view" in wrong.props) && !("preview" in wrong.props));
+    t("wrong token: nothing about the report", !wrongJson.includes(header.name) && !("header" in wrong.props));
   }
 
-  console.log("\n4. the quick-check answer and the quick-check email");
+  console.log("\n4. responses and the email");
   const actions = readFileSync(path.join(process.cwd(), "app/[locale]/(main)/full-check/actions.ts"), "utf8");
-  t("the quick-check answer's preview is the limited preview (no pathways, no confidence)", /export type FullCheckQuickPreview = ReportPreview/.test(actions) && !/pathways: report\.pathwayComparison/.test(actions) && /buildReportPreview\(view/.test(actions));
+  t("the form's answer carries the header, not a preview; the unlock answer carries a flag, not the report", /header\?: ReportHeader/.test(actions) && !/FullCheckQuickPreview|buildReportPreview|buildBasicPreview|buildQuickPreview/.test(actions) && /unlocked\?: boolean/.test(actions) && !/\breport\??: ReadinessReport/.test(actions.slice(actions.indexOf("export type PremiumUnlockState"), actions.indexOf("export type AdminResetState"))));
+  const resultSrc = readFileSync(path.join(process.cwd(), "app/[locale]/(main)/full-check/result/page.tsx"), "utf8") + readFileSync(path.join(process.cwd(), "app/[locale]/(main)/full-check/result/result-view.tsx"), "utf8");
+  t("the result page neither builds the report view nor reads the report into the page", !/buildReportView|report-view-model|visa-gate-text|pathwayComparison|boosterRows|stateRows/.test(resultSrc));
   {
     const realFetch = globalThis.fetch;
     let sent = "";
@@ -147,13 +158,12 @@ async function main() {
     const input = { ...base, locale: "en", targetVisa: "491" } as ReadinessInput;
     const rep = runReadinessEngine(input);
     const view = buildReportView({ report: rep, locale: "en", profile: { occupation: input.occupation, occupationRaw: input.occupation }, dateText: "" });
-    const { buildReportPreview } = await import("../lib/reports/report-preview");
-    await sendReportReadyEmail({ email: "c@example.org", fullName: "Jane", reportLink: "https://logivisa.com/x", locale: "en", preview: buildReportPreview(view, 70) });
+    await sendReportReadyEmail({ email: "c@example.org", fullName: "Jane", reportLink: "https://logivisa.com/x", locale: "en", header: buildReportHeader({ report: rep, locale: "en", fullName: "Jane" }) });
     globalThis.fetch = realFetch;
     const body = JSON.parse(sent) as { html?: string; subject?: string };
-    const allowedMail = [...(view.sections.find((x) => x.id === "details")!.blocks.flatMap((b) => (b.kind === "lines" ? b.lines : b.kind === "text" ? [b.text] : []))), ...view.sections.map((x) => x.title)].join("\n");
-    const reportOnly = view.sections.filter((s) => !["details", "points"].includes(s.id)).flatMap(sectionStrings).filter((x) => x.length >= 28 && !allowedMail.includes(x));
-    t("the email carries the preview (points total, section titles) and no report content", (body.html ?? "").includes(view.sections[2].title) && !reportOnly.some((x) => (body.html ?? "").includes(x)));
+    const emailHeader = buildReportHeader({ report: rep, locale: "en", fullName: "Jane" });
+    const reportOnly = view.sections.flatMap(sectionStrings).filter((x) => x.length >= 28 && ![emailHeader.title, emailHeader.targetLine, emailHeader.dateText].join("\n").includes(x));
+    t("the email carries the header and no report content (no points, no section titles)", !reportOnly.some((x) => (body.html ?? "").includes(x)) && FORBIDDEN.every((f) => !(body.html ?? "").includes(f)) && !view.sections.slice(2).some((sec) => (body.html ?? "").includes(sec.title)));
     t("the email names the Visa Information Report, no 'AI Readiness', no 'AI-Powered', one disclaimer", /Visa Information Report/.test(body.subject ?? "") && !/AI Readiness|AI-Powered|Migration Intelligence|MARA/i.test(body.html ?? "") && (body.html ?? "").includes(reportDisclaimer("en")));
   }
 
