@@ -4,7 +4,7 @@ import { useState, useTransition } from "react";
 
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { DOC_STATUSES } from "@/lib/crm/leads";
+import { DOC_STATUSES } from "@/lib/crm/doc-statuses";
 import { updateLeadStatusAction } from "./actions";
 
 function StatusSelect({

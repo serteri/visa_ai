@@ -3,8 +3,10 @@ import { AGENT_GUIDE_POOL_ENABLED, canAgentSeeClient } from "@/lib/crm/agent-acc
 import { PDF_LEAD_SOURCES } from "@/lib/crm/pdf-lead-sources";
 import { isMissingColumnError } from "@/lib/db/missing-relation";
 
-export const DOC_STATUSES = ["New", "Contacted", "Documents Pending", "Approved", "Rejected"] as const;
-export type DocStatus = (typeof DOC_STATUSES)[number];
+import { DOC_STATUSES, type DocStatus } from "@/lib/crm/doc-statuses";
+
+export { DOC_STATUSES };
+export type { DocStatus };
 
 // ── Lead lists / details (agent-scoped) ─────────────────────────────────────
 

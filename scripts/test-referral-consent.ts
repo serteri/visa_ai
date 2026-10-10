@@ -355,6 +355,10 @@ async function main() {
   check(/name="referralConsent"/.test(box) && /defaultChecked=\{false\}/.test(box), "the checkbox is unticked by default");
   check(!/referralConsent/.test(readFileSync("components/premium-feature-gate.tsx", "utf8")) && !/required/.test(box.replace(/Required/g, "")), "consent is not a condition of buying (not required, not in the unlock modal)");
 
+  // A client component must never import a module that reaches the server (this broke the Vercel build once: workflow-form -> leads -> agent-access -> auth).
+  const wf = readFileSync("app/[locale]/(portal)/agent/lead/[id]/workflow-form.tsx", "utf8");
+  check(/^"use client"/.test(wf) && !/lib\/crm\/(leads|agent-access)|lib\/consent|@\/lib\/prisma/.test(wf), "the client workflow form imports no server module (production build)");
+
   if (failures) {
     console.error(`\n❌ ${failures} check(s) failed`);
     process.exit(1);
