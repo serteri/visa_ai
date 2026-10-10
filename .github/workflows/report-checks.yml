@@ -121,6 +121,8 @@ jobs:
         run: npm run test:no-stripe-tax
       - name: Guide-lead pool off for agents (pool, claim, emails, claimed guide leads by direct id); admin unchanged
         run: npm run test:guide-pool-off
+      - name: Referral consent (checkbox names the agent from the DB, append-only log, canAgentSeeClient on every agent read, withdrawal, buying without consent; en / tr / zh-Hans)
+        run: npm run test:referral-consent
       - name: No route can produce the verdict structure (PDF route, result page, agent PDF; en / tr / zh-Hans)
         run: npm run test:no-verdict-routes
 

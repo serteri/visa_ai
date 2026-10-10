@@ -44,9 +44,9 @@ async function main() {
     check(/AGENT_LEAD_NOTICE\.en/.test(src) && !/>Assessment report</.test(src), `${f}: label shown above the report, card no longer titled "Assessment report"`);
   }
   {
-    // Until the client's consent exists the agent page shows no report at all (see scripts/test-agent-leaks.ts): no PDF link, no frame.
+    // The agent page shows no report inline; the PDF link exists only for a client who consented and has paid (lead.sharing && lead.isPaid).
     const src = readFileSync("app/[locale]/(portal)/agent/lead/[id]/page.tsx", "utf8");
-    check(!/iframe|\/pdf|reportJson|>Assessment report</.test(src), "the agent lead page shows no report or PDF while client details are not shared");
+    check(!/iframe|reportJson|>Assessment report</.test(src) && !/\/pdf/.test(src.replace(/\{lead\.sharing && lead\.isPaid && \([\s\S]*?\)\}/, "")), "the agent lead page shows no report inline, and a PDF link only for a consenting, paid client");
   }
   check(/audience:\s*"agent"/.test(readFileSync("app/api/agent/lead/[id]/pdf/route.ts", "utf8")), "the agent PDF route requests the agent label");
 

@@ -42,6 +42,7 @@ import {
   countFreeBetaUnlocksToday,
 } from "@/src/lib/user-reports";
 import { getApprovedAgentUser } from "@/lib/crm/leads";
+import { consentTableReady, hashIp, recordConsentGranted, withdrawalUrl } from "@/lib/consent/referral-consent";
 import { shouldSkipInternalNotification, shouldSuppressReportEmails } from "@/lib/email/suppression";
 import { sendOpsAlert } from "@/lib/email/ops-alert";
 import { safeEqual } from "@/lib/admin-auth";
@@ -890,6 +891,14 @@ export async function submitFullCheckWaitlist(
     previewData: buildQuickPreview(generatedReport, resolvedLocale, readinessInputForReport, fullName),
   });
 
+  // Consent to share with the referring agent: only when the client ticked the box AND a referring agent resolved on the server (approved, named in the
+  // database) -- the text stored is built here from that name, never taken from the form. Buying never depends on it; a failed write means "not shared".
+  let consentGranted = false;
+  if (referralAgent?.name && formData.get("referralConsent") === "on" && (await consentTableReady())) {
+    const userAgent = (await headers()).get("user-agent");
+    consentGranted = await recordConsentGranted({ reportId: reportRecord.id, agentId: referralAgent.id, agentName: referralAgent.name, locale: resolvedLocale, ipHash: hashIp(clientIp), userAgent });
+  }
+
   // This browser may open its own report on screen (and download its PDF) -- lib/reports/report-session.ts.
   await rememberReportSession(reportRecord.id);
 
@@ -962,6 +971,7 @@ export async function submitFullCheckWaitlist(
       reportLink,
       locale: resolvedLocale,
       preview: buildQuickPreview(generatedReport, resolvedLocale, readinessInputForReport, fullName),
+      sharing: consentGranted && referralAgent?.name ? { agentName: referralAgent.name, withdrawalUrl: withdrawalUrl(reportRecord.id, resolvedLocale) } : undefined,
     }).catch((err) => console.error("Customer report email failed (non-blocking):", err)),
     internalLeadTier === "Cold" || skipInternalEmail
       ? Promise.resolve()

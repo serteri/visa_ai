@@ -5,7 +5,7 @@ import { revalidatePath } from "next/cache";
 import { prisma } from "@/lib/prisma";
 import { getCurrentUser } from "@/lib/auth/rbac";
 import { createLeadNote, type LeadNoteWithAuthor } from "@/lib/crm/notes";
-import { getApprovedAgent } from "@/lib/crm/agent-access";
+import { canAgentSeeClient, getApprovedAgent } from "@/lib/crm/agent-access";
 
 export type AddLeadNoteResult = { error?: string; note?: LeadNoteWithAuthor };
 
@@ -30,6 +30,8 @@ export async function addLeadNoteAction(leadId: string, content: string): Promis
     if (!lead || lead.agentId !== user.id) {
       return { error: "This lead is not assigned to you." };
     }
+    // Notes about a client are only for a client who has agreed to share with this agent.
+    if (!(await canAgentSeeClient(user.id, leadId))) return { error: "This client has not agreed to share their details with you." };
   } else if (user.role !== "ADMIN") {
     return { error: "Forbidden" };
   }

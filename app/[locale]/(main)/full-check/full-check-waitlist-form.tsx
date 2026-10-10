@@ -14,6 +14,7 @@ import { type FullCheckWaitlistState, submitFullCheckWaitlist } from "./actions"
 import { activeCountries, countryLabels, countryVisaPathways, defaultCountry, isSupportedCountry, isPartnerFamilySponsorship, migrationGoalOptions, getVisaSubclassesForGoals, type SupportedCountry, type VisaPathwayOption, type MigrationGoalId } from "@/lib/countries";
 import { PremiumFeatureGate } from "@/components/premium-feature-gate";
 import { TermsGate, TermsGateLink } from "@/components/terms-gate";
+import { ReferralConsentBox } from "./referral-consent-box";
 import { LogiAIAssistant } from "@/components/LogiAIAssistant";
 import { useTranslation } from "@/contexts/language-context";
 import { downloadReportPdf } from "@/lib/client/download-report-pdf";
@@ -545,6 +546,7 @@ export function FullCheckWaitlistForm({
           )}
           {currentStep === 3 && (
             <>
+              <ReferralConsentBox locale={locale} />
               <TermsGate isTermsAccepted={isTermsAccepted} termsError={termsError} onToggle={(c) => { setIsTermsAccepted(c); if (c) setTermsError(false); }} label={termsLabel} errorText={termsErrorText} />
               <Button type="submit" className="h-11 w-full rounded-lg text-sm font-semibold" disabled={isPending}>
                 {isPending ? txt("Oluşturuluyor...", "Generating...", "生成中...") : txt("Vize Bilgi Raporunuzu oluşturun", "Generate your Visa Information Report", "生成您的签证信息报告")}

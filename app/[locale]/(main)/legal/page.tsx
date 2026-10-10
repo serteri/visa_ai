@@ -45,6 +45,17 @@ export default function LegalPage() {
             <p>{t("legal.whatDoesNotText3")}</p>
           </CardContent>
         </Card>
+
+        <Card data-testid="privacy-referral">
+          <CardHeader>
+            <CardTitle>{t("legal.privacyReferralTitle")}</CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-3 text-sm text-muted-foreground">
+            <p>{t("legal.privacyReferralText1")}</p>
+            <p>{t("legal.privacyReferralText2")}</p>
+            <p>{t("legal.privacyReferralText3")}</p>
+          </CardContent>
+        </Card>
       </section>
     </main>
   );

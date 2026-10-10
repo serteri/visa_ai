@@ -3,7 +3,7 @@
 import { revalidatePath } from "next/cache";
 
 import { requireRole } from "@/lib/auth/rbac";
-import { getApprovedAgent } from "@/lib/crm/agent-access";
+import { canAgentSeeClient, getApprovedAgent } from "@/lib/crm/agent-access";
 import { DOC_STATUSES, updateLeadStatus } from "@/lib/crm/leads";
 
 export type ActionState = { error?: string; success?: boolean };
@@ -21,6 +21,8 @@ export async function updateLeadStatusAction(
   if (!DOC_STATUSES.includes(docStatus as (typeof DOC_STATUSES)[number])) {
     return { error: "Invalid status." };
   }
+
+  if (!(await canAgentSeeClient(user.id, leadId))) return { error: "This client has not agreed to share their details with you." };
 
   const updated = await updateLeadStatus(user.id, leadId, docStatus);
   if (!updated) {

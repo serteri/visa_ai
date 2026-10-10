@@ -77,8 +77,9 @@ export default async function AgentDashboardPage({ params, searchParams }: PageP
       </div>
 
       <div className="rounded-xl border border-slate-200 bg-white px-5 py-4 text-sm text-slate-700" data-testid="agent-details-notice">
-        A client&apos;s name, contact details, entered details and report are not shown to agents until the client has agreed to share them. Each
-        referred client appears here by reference, with the purchase status.
+        A client&apos;s name and contact details are shown only after that client has agreed to share them with you, and the report only once it is
+        paid for. Until then each referred client appears by reference, with the purchase status. A client who withdraws their agreement disappears
+        from this detail again.
       </div>
 
       <div className="rounded-xl border border-emerald-500/30 bg-emerald-500/10 px-5 py-4">
@@ -142,6 +143,7 @@ export default async function AgentDashboardPage({ params, searchParams }: PageP
                 <thead>
                   <tr className="border-b border-slate-200 text-left text-slate-600">
                     <th className="py-3 pr-4 font-semibold">Client</th>
+                    <th className="px-4 py-3 font-semibold">Details shared</th>
                     <th className="px-4 py-3 font-semibold">Purchase</th>
                     <th className="px-4 py-3 font-semibold">Doc status</th>
                     <th className="px-4 py-3 font-semibold">Received</th>
@@ -151,7 +153,20 @@ export default async function AgentDashboardPage({ params, searchParams }: PageP
                 <tbody>
                   {referrals.map((r) => (
                     <tr key={r.id} className="border-b border-slate-200 hover:bg-[#53917E]/10">
-                      <td className="py-3 pr-4 font-medium text-slate-900">{clientReference(r.id)}</td>
+                      <td className="py-3 pr-4 font-medium text-slate-900">
+                        {r.sharing && r.client ? (
+                          <>
+                            {r.client.name || clientReference(r.id)}
+                            <span className="block text-xs font-normal text-slate-600">
+                              {r.client.email}
+                              {r.client.phone ? ` · ${r.client.phone}` : ""}
+                            </span>
+                          </>
+                        ) : (
+                          clientReference(r.id)
+                        )}
+                      </td>
+                      <td className="px-4 py-3 text-slate-600">{r.sharing ? "Yes" : "Not shared"}</td>
                       <td className="px-4 py-3 text-slate-600">{r.isPaid ? "Purchased" : "Not purchased"}</td>
                       <td className="px-4 py-3 text-slate-600">{r.docStatus ?? "New"}</td>
                       <td className="px-4 py-3 text-slate-600">{r.createdAt.toLocaleDateString(locale)}</td>

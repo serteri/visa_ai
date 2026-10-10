@@ -330,8 +330,8 @@ async function main() {
   reports.set("r-paid2", mkReport("r-paid2", null, true));
   await assignLeadToAgent("r-paid2", "agent-ok", "en");
   await flush();
-  const assigned = sent.find((m) => m.to.includes("ok@agents.example"));
-  check(!!assigned && !/Client Name|client-r-/.test(`${assigned.subject} ${assigned.html} ${assigned.text}`), "a paid one: a generic assignment email with no client details", JSON.stringify(assigned?.subject));
+  // The client has not consented to share with this agent (scripts/test-referral-consent.ts covers the consent case): no email either.
+  check(reports.get("r-paid2")!.agentId === "agent-ok" && !sent.some((m) => m.to.includes("ok@agents.example")), "a paid one without the client's consent: assigned, and no email to the agent", JSON.stringify(sent.map((m) => m.subject)));
   signOutAll();
 
   // ── 6. labels ───────────────────────────────────────────────────────────────

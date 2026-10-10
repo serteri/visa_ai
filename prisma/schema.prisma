@@ -1015,3 +1015,22 @@ model source_snapshots {
 
   @@ignore
 }
+
+// Client consent to share their details with the referring agent. APPEND-ONLY (a DB trigger rejects UPDATE / DELETE; see
+// prisma/manual-migrations/2026-10-10-create-referral-consents.sql). A withdrawal is a new row; the newest row for a (report, agent) decides.
+// Read and written with raw SQL in lib/consent/referral-consent.ts; declared here so `prisma db push` knows the table and never proposes dropping it.
+model ReferralConsent {
+  id                 String   @id @default(dbgenerated("(gen_random_uuid())::text"))
+  reportId           String   @map("report_id")
+  agentId            String   @map("agent_id")
+  event              String
+  consentTextVersion String   @map("consent_text_version")
+  consentText        String   @map("consent_text")
+  locale             String
+  ipHash             String?  @map("ip_hash")
+  userAgent          String?  @map("user_agent")
+  createdAt          DateTime @default(dbgenerated("clock_timestamp()")) @map("created_at") @db.Timestamptz(6)
+
+  @@index([reportId, agentId, createdAt(sort: Desc)], map: "referral_consents_report_agent_idx")
+  @@map("referral_consents")
+}

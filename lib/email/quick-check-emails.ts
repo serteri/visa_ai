@@ -82,6 +82,8 @@ export async function sendReportReadyEmail(payload: {
   reportLink: string;
   locale: SupportedLocale;
   preview: FullCheckQuickPreview;
+  /** Present only when the client agreed to share their details with a referring agent: the email says so and links to the withdrawal page. */
+  sharing?: { agentName: string; withdrawalUrl: string };
 }) {
   const apiKey = process.env.RESEND_API_KEY;
   if (!apiKey) {
@@ -127,6 +129,15 @@ export async function sendReportReadyEmail(payload: {
   const ctaLabel = isTr ? "Raporumu Aç →" : isZh ? "打开我的报告 →" : "Open My Report →";
   const orCopy = isTr ? "Veya bu bağlantıyı kopyalayın:" : isZh ? "或复制此链接：" : "Or copy this link:";
   const footerText = reportDisclaimer(payload.locale);
+  // The agent's name is self-entered at registration: escape it before it goes into HTML.
+  const agentLabel = payload.sharing ? payload.sharing.agentName.replace(/[&<>"']/g, (c) => `&#${c.charCodeAt(0)};`) : "";
+  const sharingNote = payload.sharing
+    ? isTr
+      ? `Ayrıntılarınızı sizi yönlendiren göç danışmanı ${agentLabel} ile paylaşmayı kabul ettiniz. <a href="${payload.sharing.withdrawalUrl}" style="color:#06b6d4;">Bu onayı geri çekmek için tıklayın.</a>`
+      : isZh
+        ? `您已同意将您的信息提供给推荐您的移民代理 ${agentLabel}。<a href="${payload.sharing.withdrawalUrl}" style="color:#06b6d4;">点击此处撤回该同意。</a>`
+        : `You agreed to share your details with ${agentLabel}, the migration agent who referred you. <a href="${payload.sharing.withdrawalUrl}" style="color:#06b6d4;">Withdraw that agreement.</a>`
+    : "";
 
   const html = `<!DOCTYPE html>
 <html lang="${payload.locale}">
@@ -187,6 +198,7 @@ export async function sendReportReadyEmail(payload: {
           <tr>
             <td style="padding:24px 40px;background-color:#020617;border-top:1px solid #1e293b;">
               <p style="margin:0;font-size:11px;color:#475569;line-height:1.7;text-align:center;">${footerText}</p>
+              ${sharingNote ? `<p style="margin:12px 0 0;font-size:11px;color:#94a3b8;line-height:1.7;text-align:center;">${sharingNote}</p>` : ""}
               <p style="margin:12px 0 0;font-size:11px;color:#334155;text-align:center;">© 2026 LogiVisa &nbsp;·&nbsp; <a href="https://logivisa.com" style="color:#475569;text-decoration:none;">logivisa.com</a></p>
             </td>
           </tr>

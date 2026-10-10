@@ -1,5 +1,5 @@
 import { prisma } from "@/lib/prisma";
-import { AGENT_GUIDE_POOL_ENABLED } from "@/lib/crm/agent-access";
+import { AGENT_GUIDE_POOL_ENABLED, canAgentSeeClient } from "@/lib/crm/agent-access";
 import { PDF_LEAD_SOURCES } from "@/lib/crm/pdf-lead-sources";
 import { isMissingColumnError } from "@/lib/db/missing-relation";
 
@@ -88,8 +88,9 @@ export async function getLeadById(leadId: string) {
 }
 
 /**
- * What an agent may see of a referred report while client details are not shared (no consent yet): a reference, dates, the purchase state, the
- * workflow status and the agent's own notes. Never a name, email, phone, tier, entered details or the report. Scoped to the agent's own rows.
+ * What an agent may see of a referred report: a reference, dates, the purchase state, the workflow status and the agent's own notes. The client's
+ * name, email and phone are present ONLY in `client`, which is filled only when canAgentSeeClient() says the client has consented (and not withdrawn).
+ * Never a tier, entered details or the report here. Scoped to the agent's own rows.
  */
 export type AgentReferral = {
   id: string;
@@ -99,6 +100,10 @@ export type AgentReferral = {
   isUnlocked: boolean;
   /** Paid through Stripe (a free-beta or admin unlock is not a purchase). */
   isPaid: boolean;
+  /** True when the client has consented to share with this agent (canAgentSeeClient). */
+  sharing: boolean;
+  /** Present only when `sharing`. */
+  client?: { name: string | null; email: string; phone: string | null };
 };
 
 const AGENT_REFERRAL_SELECT = { id: true, createdAt: true, source: true, docStatus: true, isUnlocked: true, paymentStatus: true, unlockMethod: true } as const;
@@ -112,7 +117,16 @@ const toReferral = (r: ReferralRow): AgentReferral => ({
   docStatus: r.docStatus,
   isUnlocked: r.isUnlocked,
   isPaid: r.paymentStatus === "paid" && r.unlockMethod === "payment",
+  sharing: false,
 });
+
+/** Fills `client` only through the consent gate; every other row stays a reference. */
+async function withSharedClient<T extends AgentReferral>(agentId: string, row: T): Promise<T> {
+  if (!(await canAgentSeeClient(agentId, row.id))) return row;
+  const c = await prisma.userReport.findFirst({ where: { id: row.id, agentId }, select: { fullName: true, email: true, phone: true } });
+  if (!c) return row;
+  return { ...row, sharing: true, client: { name: c.fullName ?? null, email: c.email, phone: c.phone ?? null } };
+}
 
 // Agent-facing reads/writes never include guide-download / lead-magnet leads while AGENT_GUIDE_POOL_ENABLED is false.
 const agentScope = (): { source?: { notIn: string[] } } => (AGENT_GUIDE_POOL_ENABLED ? {} : { source: { notIn: PDF_LEAD_SOURCES } });
@@ -125,7 +139,7 @@ export async function getAgentReferrals(agentId: string, opts: { sort?: LeadSort
       orderBy: { createdAt: opts.sort === "oldest" ? "asc" : "desc" },
       select: AGENT_REFERRAL_SELECT,
     });
-    return (rows as unknown as ReferralRow[]).map(toReferral);
+    return await Promise.all((rows as unknown as ReferralRow[]).map((r) => withSharedClient(agentId, toReferral(r))));
   } catch (error) {
     if (isMissingColumnError(error, "agent_id")) return [];
     throw error;
@@ -139,7 +153,7 @@ export async function getAgentLead(agentId: string, leadId: string): Promise<(Ag
       where: { id: leadId, agentId, ...agentScope() },
       select: { ...AGENT_REFERRAL_SELECT, agentNotes: true },
     });
-    return row ? { ...toReferral(row as unknown as ReferralRow), agentNotes: (row as unknown as { agentNotes: string | null }).agentNotes } : null;
+    return row ? await withSharedClient(agentId, { ...toReferral(row as unknown as ReferralRow), agentNotes: (row as unknown as { agentNotes: string | null }).agentNotes }) : null;
   } catch (error) {
     if (isMissingColumnError(error, "agent_id")) return null;
     throw error;

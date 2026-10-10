@@ -3,7 +3,7 @@
 import bcrypt from "bcryptjs";
 import { z } from "zod";
 import { prisma } from "@/lib/prisma";
-import { AGENT_GUIDE_POOL_ENABLED, getApprovedAgent } from "@/lib/crm/agent-access";
+import { AGENT_GUIDE_POOL_ENABLED, canAgentSeeClient, getApprovedAgent } from "@/lib/crm/agent-access";
 import { PDF_LEAD_SOURCES } from "@/lib/crm/pdf-lead-sources";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
@@ -44,7 +44,8 @@ export async function assignLeadToAgent(leadId: string, agentId: string, locale:
   const unpaidReport = lead.source === "full_check" && !(lead.isUnlocked && lead.paymentStatus === "paid");
   // No agent email for guide-download / lead-magnet leads while they are off for agents (AGENT_GUIDE_POOL_ENABLED).
   const guideLead = !AGENT_GUIDE_POOL_ENABLED && PDF_LEAD_SOURCES.includes(lead.source);
-  if (!unpaidReport && !guideLead) {
+  // ...and none until the client has consented to share with this agent (the link would lead to a reference-only page).
+  if (!unpaidReport && !guideLead && (await canAgentSeeClient(agentId, leadId))) {
     try {
       await sendAgentAssignedEmail({ agentEmail: agent.email, agentName: agent.name, leadId, locale });
     } catch (error) {

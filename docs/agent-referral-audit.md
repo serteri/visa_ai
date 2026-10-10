@@ -19,13 +19,15 @@ Assumptions (no questions asked; correct any that are wrong):
 | Gap | Status |
 |---|---|
 | G2 checkout trusts a body `agentId` | Fixed: the agent is read from the report row, approved agents only; the field is no longer in the payload type. The webhook credits the report's agent, never `metadata.agentId` (campaign / ebook sales still carry a server-resolved, approved agent in metadata and the commission code re-checks approval). |
-| G3 agent sees the report before payment | Fixed more strictly: **no** agent can open a client's report or PDF at all until consent exists (the agent PDF route answers 403 to every agent). |
+| G3 agent sees the report before payment | Fixed: an agent gets a client's PDF only when the client has consented (`canAgentSeeClient`), the report is unlocked and paid by the client, and it is not a partner or Canada report (those agent PDFs stay excluded until redone). Everything else is 403. |
 | G4 pending / rejected agents attributable and able to open data | Fixed: attribution, assignment, commission, the lead page, the dashboard, earnings, notes, workflow and pool read approval from the database (a stale session does not count). |
 | G15 agent emailed the client's name at submit | Fixed: no email to an agent at submit; the assignment email carries no client details and is not sent for an unpaid report; an approved agent gets a post-payment notice with no client details. |
 | G6 commission base | Changed to the GST-exclusive amount (GST = one eleventh of the inclusive total, worked out locally). Rows written before this change keep their old basis. |
 | G10 "paid" counts free / admin unlocks | Fixed: a sale is `payment_status = paid` and `unlock_method = payment`. |
 | G11 USD labels | Fixed: AUD. |
-| Not changed | The guide-lead **pool** (agents claim unassigned guide-download leads and see name / email / phone) is a separate flow with no consent either; left as it was and flagged for its own decision. G1, G5 (partly), G7-G9, G12-G14, G16, G17 and the partner / Canada agent PDF are for the later Phase 1 work. |
+| Guide-lead pool (10 Oct) | **Off for agents**, server-side (`AGENT_GUIDE_POOL_ENABLED=false`): no pool rows, no claim, no claim or assignment email, and an already-claimed guide lead is invisible to its agent (list, page, status) even by direct id. Admin unchanged. It returns only with its own consent design. |
+| G1 consent (10 Oct, Phase 1) | Done: checkbox for referred clients naming the agent from the database (en / tr / zh-Hans, commission disclosed, optional); append-only `referral_consents` (DB trigger rejects UPDATE / DELETE; a withdrawal is a new row; stores exact text, version, locale, timestamp, hashed IP, user agent); one gate `canAgentSeeClient` used by the dashboard, lead page, PDF route, notes, status workflow and the admin-assignment email; withdrawal link in the client's report email (confirm step, signed); privacy section on the Legal page and Terms section 12. Existing leads have no consent row, so agents see them by reference only. **Needs the SQL in `prisma/manual-migrations/2026-10-10-create-referral-consents.sql` run once**; until then nothing is shared and the checkbox is not shown. |
+| Not changed | G5 (partly), G7-G9, G12-G14, G16, G17 are for the later Phase 1 work (first-click-wins, self-referral block, refund voiding, ledger alerts, agent-pays flow). The post-payment notice to the agent ("a referred client purchased") carries no client detail and is still sent without consent. Wording needs counsel review. |
 
 ---
 

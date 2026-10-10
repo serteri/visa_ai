@@ -3,17 +3,16 @@
  * agent was pending, or before a rejection, must not decide access).
  *
  *  - Only an APPROVED agent can be attributed a referral, be assigned a lead, receive a commission or open any agent view / API.
- *  - Until the client's consent to share is implemented (the next task), NO agent sees a referred client's details: not the name, email, phone,
- *    tier, entered details or the report / PDF. `AGENT_SEES_CLIENT_DETAILS` is the single switch the consent work will replace with a per-client
- *    check; every agent-facing read goes through the safe shapes in lib/crm/leads.ts and lib/crm/transactions.ts.
+ *  - A referred client's name, email, phone and report are visible to an agent ONLY through `canAgentSeeClient` (below): the report is the agent's,
+ *    the agent is approved, and the client's newest consent row is a grant of an accepted wording. Everything else is the safe reference shape in
+ *    lib/crm/leads.ts / lib/crm/transactions.ts (reference + purchase status). Tier and entered details are never shown to agents.
  */
 import { redirect } from "next/navigation";
 
+import { consentState } from "@/lib/consent/referral-consent";
+import { PDF_LEAD_SOURCES } from "@/lib/crm/pdf-lead-sources";
 import { prisma } from "@/lib/prisma";
 import { getCurrentUser, requireRole, type SessionUser } from "@/lib/auth/rbac";
-
-/** False until consent exists. Read by the agent-facing code; the PDF route and the portal views refuse client details while it is false. */
-export const AGENT_SEES_CLIENT_DETAILS = false as boolean;
 
 /**
  * Guide-download / lead-magnet leads (name, email, phone) are OFF for agents until the consent system covers them: no pool view, no claim, no
@@ -53,3 +52,23 @@ export async function getApprovedAgentFromSession(): Promise<SessionUser | null>
 
 /** What an agent sees in place of a client's name: a short reference derived from the report id. */
 export const clientReference = (reportId: string) => `Referred client ${reportId.replace(/-/g, "").slice(0, 8).toUpperCase()}`;
+
+/**
+ * THE gate for client details. True only when ALL hold, read from the database now:
+ *  the agent is APPROVED; the report exists and its agent_id is this agent; it is not a guide-download / lead-magnet lead (those are off for agents);
+ *  and the client's newest consent row for this (report, agent) is a grant of an accepted wording (not withdrawn, table present).
+ * Used by every agent-facing read: dashboard, lead page, PDF route, notes, assignment email. Admin views are role-based and do not use it.
+ */
+export async function canAgentSeeClient(agentId: string | null | undefined, reportId: string | null | undefined): Promise<boolean> {
+  if (!agentId || !reportId) return false;
+  try {
+    if (!(await getApprovedAgent(agentId))) return false;
+    const report = await prisma.userReport.findFirst({ where: { id: reportId, agentId }, select: { id: true, source: true } });
+    if (!report) return false;
+    if (!AGENT_GUIDE_POOL_ENABLED && PDF_LEAD_SOURCES.includes(report.source)) return false;
+    return (await consentState(reportId, agentId)) === "granted";
+  } catch (error) {
+    console.error("[canAgentSeeClient] check failed (treated as no access):", error);
+    return false;
+  }
+}

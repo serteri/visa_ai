@@ -8,7 +8,7 @@ export function TermsEn() {
   return (
     <>
       <h1>Terms of Service &amp; Refund Policy</h1>
-      <p className="text-sm text-slate-600">Last updated: 3 July 2026</p>
+      <p className="text-sm text-slate-600">Last updated: 10 October 2026</p>
 
       <h2>1. Introduction and Acceptance of Terms</h2>
       <p>
@@ -199,6 +199,11 @@ export function TermsEn() {
         a concern about a Digital Product, please contact us at{" "}
         <a href="mailto:info@logivisa.com">info@logivisa.com</a>.
       </p>
+
+      <h2>12. Referral Agents and Sharing Your Details</h2>
+      <p>
+        If you reach LogiVisa through a migration agent's link, the agent may receive a commission if you buy a report. We share your name, email address, phone number and report with that agent only if you tick the consent box naming the agent, and you can buy and use your report without ticking it. You can withdraw your consent at any time using the link in your report email. LogiVisa and its reports are not migration advice, and an agent who receives your details acts independently of LogiVisa under their own professional obligations. See the Privacy section on the Legal page.
+      </p>
     </>
   );
 }
@@ -207,7 +212,7 @@ export function TermsTr() {
   return (
     <>
       <h1>Kullanım Koşulları &amp; İade Politikası</h1>
-      <p className="text-sm text-slate-600">Son güncelleme: 3 Temmuz 2026</p>
+      <p className="text-sm text-slate-600">Son güncelleme: 10 Ekim 2026</p>
 
       <h2>1. Giriş ve Koşulların Kabulü</h2>
       <p>
@@ -403,6 +408,11 @@ export function TermsTr() {
         Dijital Ürünle ilgili bir endişenizi iletmek istiyorsanız, lütfen
         info@logivisa.com adresinden bizimle iletişime geçin.
       </p>
+
+      <h2>12. Yönlendiren Danışmanlar ve Bilgilerinizin Paylaşılması</h2>
+      <p>
+        LogiVisa'ya bir göç danışmanının bağlantısıyla gelirseniz, bir rapor satın aldığınızda danışman komisyon alabilir. Adınızı, e-posta adresinizi, telefon numaranızı ve raporunuzu bu danışmanla yalnızca danışmanı adıyla belirten onay kutusunu işaretlerseniz paylaşırız; kutuyu işaretlemeden de raporunuzu satın alıp kullanabilirsiniz. Onayınızı rapor e-postanızdaki bağlantıyla istediğiniz zaman geri çekebilirsiniz. LogiVisa ve raporları göç tavsiyesi değildir; bilgilerinizi alan danışman, kendi mesleki yükümlülükleri çerçevesinde LogiVisa'dan bağımsız hareket eder. Yasal Uyarı sayfasındaki Gizlilik bölümüne bakın.
+      </p>
     </>
   );
 }
@@ -411,7 +421,7 @@ export function TermsZh() {
   return (
     <>
       <h1>服务条款与退款政策</h1>
-      <p className="text-sm text-slate-600">最后更新日期：2026年7月3日</p>
+      <p className="text-sm text-slate-600">最后更新日期：2026年10月10日</p>
 
       <h2>1. 引言与条款接受</h2>
       <p>
@@ -538,6 +548,11 @@ export function TermsZh() {
       <p>
         如果您对本条款、退款政策有任何疑问，或希望就数字产品提出关注事项，请通过{" "}
         <a href="mailto:info@logivisa.com">info@logivisa.com</a> 与我们联系。
+      </p>
+
+      <h2>12. 推荐代理与信息共享</h2>
+      <p>
+        如果您通过移民代理的链接访问 LogiVisa，您购买报告时该代理可能获得佣金。只有当您勾选注明该代理姓名的同意框时，我们才会向该代理提供您的姓名、电子邮箱、电话号码和报告；不勾选也可以购买并使用您的报告。您可随时通过报告邮件中的链接撤回同意。LogiVisa 及其报告不构成移民建议；收到您信息的代理依其自身的职业义务独立行事，与 LogiVisa 无关。请参阅法律声明页面的隐私部分。
       </p>
     </>
   );

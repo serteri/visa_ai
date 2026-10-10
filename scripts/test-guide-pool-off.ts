@@ -53,6 +53,7 @@ const matches = (r: Row, w: Record<string, unknown>) =>
     },
     update: async ({ where, data }: { where: { id: string }; data: Record<string, unknown> }) => Object.assign(rows.get(where.id)!, data),
   },
+  $queryRawUnsafe: async () => [],
   $disconnect: async () => undefined,
 };
 
