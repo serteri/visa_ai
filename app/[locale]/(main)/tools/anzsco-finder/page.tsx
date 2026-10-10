@@ -19,7 +19,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
     metadataBase: siteUrl,
     title: "ANZSCO Code & Duty Finder | LogiVisa",
     description:
-      "Search popular Australian occupations by title or code and review typical ANZSCO duties before checking PR eligibility.",
+      "Search Australian occupations by title or code and review typical ANZSCO duties, skill level and published occupation information.",
     alternates: {
       canonical: `/${locale}/tools/anzsco-finder`,
       languages: {

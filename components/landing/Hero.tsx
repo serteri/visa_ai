@@ -229,7 +229,7 @@ export function Hero({ locale, onScrollToPdfSection }: HeroProps) {
     `home.hero.subheadline.${targetCountry}`,
     targetCountry === "ca"
       ? "Search your occupation and instantly learn your NOC eligibility and Express Entry pathway."
-      : "Search your occupation and instantly learn your visa eligibility and dedicated assessing authority."
+      : "Search an occupation to see its ANZSCO code and assessing authority, with sources and dates."
   );
 
   const placeholder = t(

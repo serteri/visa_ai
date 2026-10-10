@@ -18,7 +18,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   }
 
   const title = `${occupation.title} (${occupation.anzsco}) Australia Visa Points Calculator 2026 | LogiVisa`;
-  const description = `Calculate your 189, 190, and 491 visa points specifically for ${occupation.title}. Check your eligibility and hidden risks instantly.`;
+  const description = `Calculate a points total for subclasses 189, 190 and 491 under the published points test, for ${occupation.title} (ANZSCO ${occupation.anzsco}). Information only.`;
   const siteUrl = new URL(BASE_URL);
 
   return {
@@ -64,7 +64,7 @@ export default async function OccupationPointsCalculatorPage({ params }: PagePro
           </span>
         </h1>
         <p className="mx-auto mt-3 max-w-xl text-base text-slate-600">
-          Check your PR readiness as a <strong>{occupation.title} ({occupation.anzsco})</strong> using the latest 2026 DHA rules.
+          Calculate a points total for subclasses 189, 190 and 491 under the Department of Home Affairs points test. Occupation: <strong>{occupation.title} (ANZSCO {occupation.anzsco})</strong>.
         </p>
       </div>
       

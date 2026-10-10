@@ -20,7 +20,7 @@ const content: Record<string, PageContent> = {
       },
       {
         heading: "Why Your ANZSCO Code Matters for Visa Applications",
-        body: "Your ANZSCO code determines which assessing body evaluates your qualifications and experience, whether your occupation appears on the relevant skilled occupation list (MLTSSL, STSOL or ROL), which visa subclasses you are eligible for, and in some cases the state nomination criteria that apply. The Department of Home Affairs uses your ANZSCO code as the foundation for your Expression of Interest (EOI) and eventual visa application. An incorrect code can lead to an invalid skills assessment, a rejected EOI, or a visa refusal.",
+        body: "Your ANZSCO code determines which assessing body evaluates your qualifications and experience, whether your occupation appears on the relevant skilled occupation list (MLTSSL, STSOL or ROL), which visa subclasses that list placement maps to, and in some cases the state nomination criteria that apply. The Department of Home Affairs uses your ANZSCO code as the foundation for your Expression of Interest (EOI) and eventual visa application. An incorrect code can lead to an invalid skills assessment, a rejected EOI, or a visa refusal.",
       },
       {
         heading: "How to Find the Right ANZSCO Code",
@@ -124,7 +124,7 @@ const content: Record<string, PageContent> = {
       },
       {
         heading: "为什么ANZSCO代码对签证申请很重要",
-        body: "您的ANZSCO代码决定哪个评估机构评估您的资格和经验、您的职业是否出现在相关技术职业列表（MLTSSL、STSOL或ROL）上、您有资格申请哪些签证子类，以及在某些情况下适用的州提名标准。",
+        body: "您的ANZSCO代码决定哪个评估机构评估您的资格和经验、您的职业是否出现在相关技术职业列表（MLTSSL、STSOL或ROL）上、该列表归属对应哪些签证子类，以及在某些情况下适用的州提名标准。",
       },
       {
         heading: "如何找到正确的ANZSCO代码",

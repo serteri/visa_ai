@@ -7,6 +7,7 @@ import { execSync } from "node:child_process";
 import { readFileSync } from "node:fs";
 
 import { BANNED_INFORMATION_PAGE_PHRASES } from "../lib/seo/banned-phrases";
+import { scanDestinationPages } from "./lib/destination-compliance";
 
 const refIdx = process.argv.indexOf("--git-ref");
 const ref = refIdx > 0 ? process.argv[refIdx + 1] : undefined;
@@ -48,4 +49,12 @@ for (const s of sources) {
   });
   console.log(`\n### ${s.name} -- ${hits.length} hit(s)`);
   for (const h of hits.slice(0, 40)) console.log(h);
+}
+
+// Acquisition destination pages: the gate (scripts/test-seo-occupation.ts section 7). The allow-list, each entry with its
+// reason, is in scripts/lib/destination-compliance.ts. Working tree only (not --git-ref).
+if (!ref) {
+  const gate = scanDestinationPages();
+  console.log(`\n## Acquisition destination pages (gate, with the reviewed allow-list) -- ${gate.length} hit(s)`);
+  for (const h of gate) console.log(`  ${h.source} [${h.id}] ${h.excerpt}`);
 }

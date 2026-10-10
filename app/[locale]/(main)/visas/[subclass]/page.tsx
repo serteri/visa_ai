@@ -322,8 +322,8 @@ export default async function VisaSubclassPage({ params }: PageProps) {
   const requirementsLabel = t(translations, "visas.requirements", "Requirements");
   const applicationStepsLabel = t(translations, "visas.applicationSteps", "Application Steps");
   const officialInfoLabel = t(translations, "visas.officialInfo", "Official Information");
-  const checkEligibilityLabel = t(translations, "visas.checkEligibility", "Check your eligibility");
-  const checkEligibilityDesc = t(translations, "visas.checkEligibilityDesc", "Get your free PR readiness report");
+  const checkEligibilityLabel = t(translations, "visas.checkEligibility", "View the Visa Information Report");
+  const checkEligibilityDesc = t(translations, "visas.checkEligibilityDesc", "Published facts for every visa and state, with sources and dates");
   const visitOfficialWebsiteLabel = t(translations, "visas.visitOfficialWebsite", "Visit official website");
   const visitIRCCLabel = t(translations, "visas.visitIRCC", locale === "tr" ? "IRCC Sitesini Ziyaret Et" : locale === "zh-Hans" ? "访问 IRCC 官网" : "Visit IRCC website");
   const backToVisasLabel = t(translations, "visas.backToVisas", "Back to visas");

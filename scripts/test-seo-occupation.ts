@@ -18,6 +18,7 @@ import { activeLocales, type Locale } from "../lib/i18n/config";
 import { occupationPageContent, occupationPageText } from "../lib/occupations/page-content";
 import { buildOccupationSlug, getUniqueOccupations } from "../lib/occupations/seo";
 import { findBannedPhrases } from "../lib/seo/banned-phrases";
+import { scanDestinationPages } from "./lib/destination-compliance";
 import { languageAlternates, publicPath, publicUrl, SITE_ORIGIN } from "../lib/seo/urls";
 
 let failures = 0;
@@ -130,6 +131,14 @@ async function main() {
   console.log("\n6. Search Console verification");
   const root = readFileSync("app/layout.tsx", "utf8");
   check(/process\.env\.SEARCH_CONSOLE_VERIFICATION/.test(root), "the verification tag reads SEARCH_CONSOLE_VERIFICATION");
+
+  console.log("\n7. acquisition destination pages (tools, visa pages, homepage hero / stats, full-check, locale strings)");
+  const destinationHits = scanDestinationPages();
+  check(
+    destinationHits.length === 0,
+    "no eligibility / recommendation / strategy / readiness / chances wording on the destination pages",
+    destinationHits.slice(0, 5).map((h) => `${h.source} [${h.id}] ${h.excerpt}`).join(" || ")
+  );
 
   if (failures) { console.error(`\n❌ ${failures} check(s) failed`); process.exit(1); }
   console.log("\n✅ ALL CHECKS PASSED");
