@@ -2,7 +2,7 @@
  * The AI assistant (lib/ai/retrieve-state-context.ts) and the report (lib/readiness/state-nomination.ts) resolve a
  * state's status with the same precedence (lib/state-nomination/state-status.ts): the admin status unless the
  * hand-verified rule was verified on a later day, then the scraper's status, then the rule. Checked with the live
- * admin rows' dates (TAS saved 2026-08-31 < rule 2026-09-22 -> rule; ACT saved 2026-09-22 -> admin), a newer admin
+ * admin rows' dates (every live row was saved before the 2026-10-11 verification, so the rule wins for all eight), a newer admin
  * closure, and a scraper status -- every state the assistant returns must match the report's tracker.
  *
  *   npx tsx scripts/test-state-status-precedence.ts
@@ -51,7 +51,7 @@ async function main() {
 
   const cases: Array<{ name: string; admin: AdminRow[]; intel: IntelRow[]; expect: Record<string, string> }> = [
     {
-      name: "live admin rows (2026-09-28)",
+      name: "live admin rows saved before the 11 October 2026 verification (the rule was verified later, so the rule wins; re-saving in the admin panel makes the admin row win again)",
       admin: [
         admin("WA", "Open (Onshore & Offshore)", "2026-08-31T12:10:08.348Z"),
         admin("SA", "Open (Onshore & Offshore)", "2026-08-31T12:11:46.621Z"),
@@ -63,18 +63,18 @@ async function main() {
         admin("ACT", "Open (Onshore & Offshore)", "2026-09-22T12:58:14.178Z"),
       ],
       intel: [],
-      expect: { TAS: "Open (Onshore Only)", ACT: "Open (Onshore & Offshore)", NT: "Suspended / Closed" },
+      expect: { TAS: "Open (Onshore Only)", ACT: "High Demand", NT: "Closed" },
     },
     {
       name: "an admin closure saved after the rule was verified wins",
-      admin: [admin("WA", "Suspended / Closed", "2026-09-27T09:00:00.000Z")],
+      admin: [admin("WA", "Suspended / Closed", "2026-10-12T09:00:00.000Z")],
       intel: [],
       expect: { WA: "Suspended / Closed" },
     },
     {
       name: "scraper status used when no current admin status applies",
       admin: [admin("SA", "Suspended / Closed", "2026-08-01T00:00:00.000Z")],
-      intel: [{ stateCode: "SA", status: "High Demand", officialNote: null, sourceUrl: null, lastVerifiedAt: new Date("2026-09-25T00:00:00.000Z") }],
+      intel: [{ stateCode: "SA", status: "High Demand", officialNote: null, sourceUrl: null, lastVerifiedAt: new Date("2026-10-12T00:00:00.000Z") }],
       expect: { SA: "High Demand" },
     },
   ];

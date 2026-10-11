@@ -7,6 +7,31 @@ import { STATE_NOTE_TRANSLATIONS } from "./state-note-translations";
  * English wording is shown unchanged. Numbers, dates, fees and subclass numbers are carried over exactly as published.
  */
 const KEY_FACTS: Record<string, { tr: string; zh: string }> = {
+  // Verification statements (11 October 2026 check).
+  "These are the latest published settings (2025-26). As of 11 October 2026 New South Wales had not published 2026-27 settings.": {
+    tr: "Bunlar yayımlanmış en güncel ayarlardır (2025-26). 11 Ekim 2026 itibarıyla Yeni Güney Galler 2026-27 ayarlarını yayımlamamıştı.",
+    zh: "这些是已公布的最新设置（2025-26）。截至 2026 年 10 月 11 日，新南威尔士州尚未公布 2026-27 年度设置。",
+  },
+  "These are the latest published settings (2025-26). As of 11 October 2026 Victoria had not published 2026-27 settings.": {
+    tr: "Bunlar yayımlanmış en güncel ayarlardır (2025-26). 11 Ekim 2026 itibarıyla Victoria 2026-27 ayarlarını yayımlamamıştı.",
+    zh: "这些是已公布的最新设置（2025-26）。截至 2026 年 10 月 11 日，维多利亚州尚未公布 2026-27 年度设置。",
+  },
+  "These are the latest published settings (2025-26). As of 11 October 2026 Queensland had not published 2026-27 settings.": {
+    tr: "Bunlar yayımlanmış en güncel ayarlardır (2025-26). 11 Ekim 2026 itibarıyla Queensland 2026-27 ayarlarını yayımlamamıştı.",
+    zh: "这些是已公布的最新设置（2025-26）。截至 2026 年 10 月 11 日，昆士兰州尚未公布 2026-27 年度设置。",
+  },
+  "These are the latest published settings (2025-26). As of 11 October 2026 the Northern Territory had not published 2026-27 settings.": {
+    tr: "Bunlar yayımlanmış en güncel ayarlardır (2025-26). 11 Ekim 2026 itibarıyla Northern Territory 2026-27 ayarlarını yayımlamamıştı.",
+    zh: "这些是已公布的最新设置（2025-26）。截至 2026 年 10 月 11 日，北领地尚未公布 2026-27 年度设置。",
+  },
+  "These are the latest published settings (2025-26), checked on 11 October 2026.": {
+    tr: "Bunlar yayımlanmış en güncel ayarlardır (2025-26); 11 Ekim 2026'da kontrol edildi.",
+    zh: "这些是已公布的最新设置（2025-26），于 2026 年 10 月 11 日核对。",
+  },
+  "Checked on 11 October 2026: no change since the previous check.": {
+    tr: "11 Ekim 2026'da kontrol edildi: önceki kontrolden bu yana değişiklik yok.",
+    zh: "于 2026 年 10 月 11 日核对：与上次核对相比没有变化。",
+  },
   "Two nomination pathways: Skilled Work Regional (subclass 491, provisional) and Skilled Nominated (subclass 190, permanent).": {
     tr: "İki adaylık yolu: Skilled Work Regional (subclass 491, geçici) ve Skilled Nominated (subclass 190, kalıcı).",
     zh: "两条提名途径：技术工作区域（491 子类，临时）和技术提名（190 子类，永久）。",

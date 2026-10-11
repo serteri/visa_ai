@@ -172,7 +172,7 @@ async function main() {
   console.log("\n6. unit checks (language independent)");
   t("stateDataIsStale: exactly 30 days is not stale, 31 is", !stateDataIsStale("2026-09-22", new Date("2026-10-22T00:00:00Z")) && stateDataIsStale("2026-09-22", new Date("2026-10-23T00:00:00Z")));
   const nswRule = getStateRule("NSW")!;
-  t("repeatsSummary: a sentence that restates the summary is a repeat", repeatsSummary(nswRule.keyFacts[0], nswRule.note));
+  t("repeatsSummary: a sentence that restates the summary is a repeat", repeatsSummary(nswRule.keyFacts[1], nswRule.note));
   t("repeatsSummary: a sentence with its own figures is kept", !repeatsSummary("Subclass 190 residency basis: working 20+ hrs/week in NSW in the nominated occupation, OR 6+ months continuous NSW residence.", nswRule.note));
   t("repeatsSummary: a negated sentence is not a repeat of an affirmative summary", !repeatsSummary("No nomination fee figure is published by the state.", "Nomination fee figure is published by the state."));
   t("docs/state-recheck-2026-27.md lists all eight states and their source files", existsSync("docs/state-recheck-2026-27.md") && ["ACT", "NSW", "NT", "QLD", "SA", "TAS", "VIC", "WA"].every((c) => readFileSync("docs/state-recheck-2026-27.md", "utf8").includes(`## ${c}`)));

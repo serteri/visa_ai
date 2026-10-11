@@ -3,6 +3,7 @@
     {
       "code": "NSW",
       "name": "New South Wales",
+      "lastVerified": "2026-10-11",
       "status": "High Demand",
       "offshoreAvailability": "open",
       "onshoreAvailability": "open",
@@ -20,6 +21,7 @@
     {
       "code": "VIC",
       "name": "Victoria",
+      "lastVerified": "2026-10-11",
       "status": "Onshore Only",
       "offshoreAvailability": "closed",
       "onshoreAvailability": "open",
@@ -37,6 +39,7 @@
     {
       "code": "WA",
       "name": "Western Australia",
+      "lastVerified": "2026-10-11",
       "status": "Open for Offshore",
       "offshoreAvailability": "open",
       "onshoreAvailability": "open",
@@ -54,6 +57,7 @@
     {
       "code": "SA",
       "name": "South Australia",
+      "lastVerified": "2026-10-11",
       "status": "High Demand",
       "offshoreAvailability": "open",
       "onshoreAvailability": "open",
@@ -71,6 +75,7 @@
     {
       "code": "QLD",
       "name": "Queensland",
+      "lastVerified": "2026-10-11",
       "status": "Closed",
       "offshoreAvailability": "closed",
       "onshoreAvailability": "closed",
@@ -88,6 +93,7 @@
     {
       "code": "NT",
       "name": "Northern Territory",
+      "lastVerified": "2026-10-11",
       "status": "Closed",
       "offshoreAvailability": "closed",
       "onshoreAvailability": "closed",
@@ -105,6 +111,7 @@
     {
       "code": "TAS",
       "name": "Tasmania",
+      "lastVerified": "2026-10-11",
       "status": "Onshore Only",
       "offshoreAvailability": "closed",
       "onshoreAvailability": "open",
@@ -122,6 +129,7 @@
     {
       "code": "ACT",
       "name": "Australian Capital Territory",
+      "lastVerified": "2026-10-11",
       "status": "High Demand",
       "offshoreAvailability": "limited",
       "onshoreAvailability": "open",

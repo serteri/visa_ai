@@ -245,18 +245,18 @@ console.log("\n==================== state ranking follows the occupation lists =
   }
 
   // Admin panel vs hand-verified rule: the admin status wins unless the rule was verified on a later day. Live dates:
-  // TAS admin "Open (Onshore & Offshore)" saved 2026-08-31, TAS rule (offshore 491 paused) verified 2026-09-22 -> rule;
-  // ACT admin saved 2026-09-22 12:58 UTC, ACT rule verified 2026-09-22 -> admin.
+  // TAS admin "Open (Onshore & Offshore)" saved 2026-08-31, TAS rule (offshore 491 paused) verified 2026-10-11 -> rule;
+  // an admin row saved on the rule's verification day (2026-10-11) still wins (ACT here).
   {
     const cfg = {
       TAS: { status: "Open (Onshore & Offshore)", updatedAt: "2026-08-31T12:16:04.707Z" },
-      ACT: { status: "Open (Onshore & Offshore)", updatedAt: "2026-09-22T12:58:14.178Z" },
+      ACT: { status: "Open (Onshore & Offshore)", updatedAt: "2026-10-11T12:58:14.178Z" },
     };
     const st = runReadinessEngine({ ...baseProfile, occupation: "Software Engineer 261313", currentCountry: "AU", stateNominationConfig: cfg }).stateNominationTracker?.states ?? [];
     const tas = st.find((x) => x.code === "TAS");
     const act = st.find((x) => x.code === "ACT");
-    if (tas?.status === "Open (Onshore Only)" && act?.status === "Open (Onshore & Offshore)" && adminStatusStillCurrent(undefined, "2026-09-22")) {
-      ok("older admin status (TAS, 2026-08-31) gives way to the rule verified 2026-09-22; a same-day admin edit (ACT) still wins");
+    if (tas?.status === "Open (Onshore Only)" && act?.status === "Open (Onshore & Offshore)" && adminStatusStillCurrent(undefined, "2026-10-11")) {
+      ok("older admin status (TAS, 2026-08-31) gives way to the rule verified 2026-10-11; a same-day admin edit (ACT) still wins");
     } else fail(`admin precedence: TAS ${tas?.status}, ACT ${act?.status}`);
   }
 

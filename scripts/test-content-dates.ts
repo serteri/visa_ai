@@ -63,15 +63,16 @@ else fail("unchanged content should not produce a data-as-of date");
   const wa = stored.stateNominationTracker!.states.find((s) => s.code === "WA")!;
   wa.score = wa.score - 10;
   const r = contentDataAsOf(stored, fresh, { generatedAt: "2026-09-27T21:30:42Z" });
-  if (r?.date === "2026-09-28" && r.sources.some((s) => /WA occupation list/.test(s.source))) ok(`WA row changed after the new WA list -> "data as of 2026-09-28" (${r.sources.map((s) => s.source).join(", ")})`);
+  // The WA rules were re-verified on 2026-10-11 (after the occupation list of 2026-09-28): the latest dated source decides, and the list is among the sources.
+  if (r?.date === "2026-10-11" && r.sources.some((s) => /WA occupation list/.test(s.source)) && r.sources.some((s) => /WA state rules/.test(s.source))) ok(`WA row changed after the new WA list and the 2026-10-11 re-verification -> "data as of 2026-10-11" (${r.sources.map((s) => s.source).join(", ")})`);
   else fail(`WA-only change: ${JSON.stringify(r)}`);
   // The same change on a report generated AFTER every WA source -> it came from code: the deploy date.
-  const r2 = contentDataAsOf(stored, fresh, { generatedAt: "2026-09-28T23:00:00Z" });
-  if (r2?.date === REPORT_CONTENT_DEPLOY_DATE) ok(`same change on a report newer than the WA sources -> deploy date ${REPORT_CONTENT_DEPLOY_DATE}`);
+  const r2 = contentDataAsOf(stored, fresh, { generatedAt: "2026-10-10T23:00:00Z" });
+  if (r2?.date === REPORT_CONTENT_DEPLOY_DATE && !r2.sources.some((s) => /WA occupation list/.test(s.source))) ok(`same change on a report newer than the WA sources -> deploy date ${REPORT_CONTENT_DEPLOY_DATE}`);
   else fail(`WA change after sources: ${JSON.stringify(r2)}`);
   // Admin settings saved after the report -> that date counts.
-  const r3 = contentDataAsOf(stored, fresh, { generatedAt: "2026-09-28T23:00:00Z", stateNominationConfig: { WA: { updatedAt: "2026-09-29T01:00:00Z" } } });
-  if (r3?.date === "2026-09-29" && r3.sources.some((s) => /WA admin settings/.test(s.source))) ok("WA admin settings saved after the report -> their date");
+  const r3 = contentDataAsOf(stored, fresh, { generatedAt: "2026-10-10T23:00:00Z", stateNominationConfig: { WA: { updatedAt: "2026-10-12T01:00:00Z" } } });
+  if (r3?.date === "2026-10-12" && r3.sources.some((s) => /WA admin settings/.test(s.source))) ok("WA admin settings saved after the report -> their date");
   else fail(`admin date: ${JSON.stringify(r3)}`);
 }
 

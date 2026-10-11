@@ -68,6 +68,7 @@ export const STATE_RULES: Record<string, StateRuleConfig> = {
     aiSummary:
       "The ACT Government nominates for subclass 491 (provisional) and subclass 190 (permanent) via a merit-based points system called the Canberra Matrix, not a first-come-first-served or simple-threshold process. The 2025-26 allocation is 800 places for subclass 190 and 800 for subclass 491; the ACT has not yet received its 2026-27 allocation. Applicants must first lodge a SkillSelect EOI, then submit a Canberra Matrix; only the highest-ranked Matrix submissions in each occupation are invited, and invitations are not guaranteed even if eligibility criteria are met. Relevant work experience requirements vary by pathway: at least 1 year full-time post-graduate experience in the nominated occupation within the last 5 years for some pathways, at least 3 years for others. The National Innovation Visa (subclass 858) nomination process is not currently open.",
     keyFacts: [
+      "These are the latest published settings (2025-26), checked on 11 October 2026.",
       "Two nomination pathways: Skilled Work Regional (subclass 491, provisional) and Skilled Nominated (subclass 190, permanent).",
       "2025-26 allocation: 800 places for subclass 190 and 800 places for subclass 491.",
       "General pathway requires the nominated occupation to be on the ACT Nominated Migration Program Occupation List; Doctorate Streamlined and Small Business Owner pathways are exempt from that list requirement.",
@@ -78,7 +79,7 @@ export const STATE_RULES: Record<string, StateRuleConfig> = {
       "Application fees (incl. GST): Canberra Matrix submission AUD 27.50; subclass 190 nomination AUD 357.50; subclass 491 nomination AUD 357.50.",
       "Once invited, applicants have 60 days to apply for the visa before the ACT nomination offer lapses.",
     ],
-    lastVerified: "2026-09-22",
+    lastVerified: "2026-10-11",
     sourceDocument: "data/knowledge/State Immigrations/ACT/ACT Migration.pdf",
   },
   NT: {
@@ -90,6 +91,7 @@ export const STATE_RULES: Record<string, StateRuleConfig> = {
     aiSummary:
       "The Northern Territory Government's 2025-26 General Skilled Migration (subclass 491 and subclass 190) nomination allocation has been fully exhausted. New applications that meet nomination requirements are queued and will only be considered for nomination once the 2026-27 allocation is confirmed by the Australian Government -- there is no guaranteed timeline for that reopening. When the program is open, offshore applicants are generally only considered for subclass 491 (not 190), and must have a full skills assessment in an occupation on the Northern Territory Offshore Migration Occupations List (NTOMOL) under the NT Priority Occupation stream, or qualify under the NT Job Offer or NT Family streams instead. All nominees commit to living and working in the NT for at least 3 years from visa grant, and the NT Government does not issue release letters to transfer elsewhere.",
     keyFacts: [
+      "These are the latest published settings (2025-26). As of 11 October 2026 the Northern Territory had not published 2026-27 settings.",
       "2025-26 GSM nomination allocation is fully exhausted; further nominations paused until the 2026-27 allocation is confirmed.",
       "Minimum points test score required: 65 (Department of Home Affairs points test).",
       "Age cap: under 45 years at time of nomination.",
@@ -100,7 +102,7 @@ export const STATE_RULES: Record<string, StateRuleConfig> = {
       "Nomination application fee: AU$300 (plus GST where applicable), non-refundable, per application.",
       "Once nominated, applicants have 60 days to apply for the relevant visa before the nomination lapses.",
     ],
-    lastVerified: "2026-09-22",
+    lastVerified: "2026-10-11",
     sourceDocument: "data/knowledge/State Immigrations/NT/NT Government visa nomination.pdf",
   },
   TAS: {
@@ -114,6 +116,7 @@ export const STATE_RULES: Record<string, StateRuleConfig> = {
     aiSummary:
       "Migration Tasmania nominates for subclass 190 (+5 DHA points) and subclass 491 (+15 DHA points), on top of the Department of Home Affairs baseline requirements: under 45, an occupation on the relevant skilled occupation list, a valid positive skills assessment, at least Competent English, and at least 65 points on the DHA points test. Beyond that DHA baseline, Tasmania has its own nomination pathways, each with its own minimum requirements: Tasmanian Skilled Employment (TSE, for people already working in Tasmania in a role matching their skills assessment), Tasmanian Skilled Graduate (TSG, for Tasmanian tertiary graduates), Tasmanian Established Resident (TER, for long-term Tasmanian residents including remote workers and business owners), Tasmanian Business Operator (TBO, 491 only, for people who have run a profitable Tasmanian business for 12+ months), and a narrow Overseas Applicant pathway for people offshore with a genuine health/education-sector Tasmanian job offer. A general offshore-only 491 pathway (no Tasmanian job offer or ties) exists but Migration Tasmania is NOT issuing invitations under it for the 2026-27 program year. Meeting a pathway's minimum requirements only allows you to register interest -- it does not guarantee nomination, since Registrations of Interest (ROI) are ranked competitively into five tiers (Gold, Green, Orange-Plus, Orange, Red) based on priority attributes like wage level, length of Tasmanian employment/residence, and English level, and only the most competitive ROIs in each program year are invited to apply.",
     keyFacts: [
+      "Checked on 11 October 2026: no change since the previous check.",
       "DHA baseline for state nomination: under 45, skills-assessed occupation on the relevant list, valid positive skills assessment, at least Competent English, at least 65 DHA points.",
       "Priority income level (needed for Gold/Green/Orange-Plus tiers): $57,000/year or $28.85/hour base rate, excluding overtime, penalties, bonuses or casual loading.",
       "Higher wage tiers used in priority scoring: $71,480/yr ($36.17/hr), $79,423/yr ($40.19/hr) -- the Temporary Skilled Migration Income Threshold -- and $106,600/yr ($53.95/hr).",
@@ -128,7 +131,7 @@ export const STATE_RULES: Record<string, StateRuleConfig> = {
       "2-year commitment to live and work in Tasmania after nomination approval is mandatory across all pathways; subclass 491 nominees can never later be renominated for subclass 190.",
       "Mandatory documents across all pathways include: passport bio page, SkillSelect EOI, skills assessment (<=3 years old), English test (<=3 years old), 10-year CV, travel/arrival evidence, Tasmanian residence evidence, and bank statements showing Tasmanian living expenses.",
     ],
-    lastVerified: "2026-09-22",
+    lastVerified: "2026-10-11",
     sourceDocument: "data/knowledge/State Immigrations/TAS/Migration Tasmania-Skilled Migration.pdf",
   },
   NSW: {
@@ -140,6 +143,7 @@ export const STATE_RULES: Record<string, StateRuleConfig> = {
     aiSummary:
       "Investment NSW's Skilled Nominated (subclass 190) and Skilled Work Regional (subclass 491) programs are both closed for the 2025-26 program year -- an 'Important Notice: Closure' banner on both program pages states all available nomination places have been fully allocated. Applications already submitted continue to be assessed and finalised once new nomination places are allocated; updated eligibility settings for the next program year had not been published as of 16 August 2026. NSW nomination is invitation-only (candidates cannot apply directly) via a selection-based process from SkillSelect EOIs whose occupation falls within an ANZSCO unit group on the NSW Skills List (190) or NSW Regional Skills List (491); NSW explicitly discourages relying solely on an NSW invitation given how competitive the program is even when open. Subclass 491 offers three pathways: currently-employed-with-a-regional-NSW-employer (6 months' qualifying employment paid at least the TSMIT/CSIT rate), invited-by-Investment-NSW, and recent-regional-NSW-graduate.",
     keyFacts: [
+      "These are the latest published settings (2025-26). As of 11 October 2026 New South Wales had not published 2026-27 settings.",
       "Both the Skilled Nominated (190) and Skilled Work Regional (491) programs are closed for the 2025-26 program year -- all available nomination places have been fully allocated.",
       "Applications already submitted continue to be assessed; updated eligibility settings for the next program year are not yet published.",
       "Invitation-only: candidates cannot apply directly for NSW nomination.",
@@ -149,7 +153,7 @@ export const STATE_RULES: Record<string, StateRuleConfig> = {
       "Invitations, once issued, must be responded to within 14 days; nomination assessment typically takes about six weeks after payment.",
       "No nomination fee figure is published by the state.",
     ],
-    lastVerified: "2026-09-22",
+    lastVerified: "2026-10-11",
     sourceDocument:
       "data/knowledge/State Immigrations/NSW/Skilled Nominated visa (Subclass 190)/Skilled Nominated visa (Subclass 190).pdf; data/knowledge/State Immigrations/NSW/Skilled Work Regional visa (subclass 491)/Skilled Work Regional visa (subclass 491) NSW.pdf",
   },
@@ -170,6 +174,7 @@ export const STATE_RULES: Record<string, StateRuleConfig> = {
     aiSummary:
       "Victoria's 2025-26 skilled visa nomination program is closed: the official Live in Melbourne site (liveinmelbourne.vic.gov.au) states that all places have been filled and that information about the 2026-27 program will be published when available. No new Registrations of Interest can be selected for Victorian nomination until 2026-27 settings are announced. When the program is open, Victoria nominates for subclass 190 (permanent) and subclass 491 (provisional, regional) through a free Registration of Interest (ROI) on the Live in Melbourne portal, with only the Department of Home Affairs visa fee payable later. Both onshore and offshore applicants have been eligible: offshore applicants for 491 were not required to claim earnings in their ROI, and subclass 190 applicants living overseas had to commit to living in Victoria; subclass 190 had no minimum work experience or hours-of-work requirement. Basic DHA-aligned eligibility applies (under 45, Competent English, valid skills assessment on the Australian Government's own eligible skilled occupation list -- Victoria does not maintain its own separate list, unlike NSW/SA/WA) and at least 65 points. These when-open settings come from 2025-26 program documents and may change for 2026-27.",
     keyFacts: [
+      "These are the latest published settings (2025-26). As of 11 October 2026 Victoria had not published 2026-27 settings.",
       "The 2025-26 Victorian skilled visa nomination program (subclasses 190 and 491) is closed -- all places have been filled (confirmed on liveinmelbourne.vic.gov.au).",
       "Information about the 2026-27 program has not yet been published.",
       "When open: Registration of Interest (ROI) and nomination are free of charge -- only the Department of Home Affairs visa fee applies.",
@@ -178,8 +183,8 @@ export const STATE_RULES: Record<string, StateRuleConfig> = {
       "Occupation must be on the Australian Government's own eligible skilled occupation list -- Victoria does not maintain a separate state list (unlike NSW/SA/WA).",
       "DHA baseline applies: under 45, at least Competent English, valid skills assessment, at least 65 points.",
     ],
-    lastVerified: "2026-09-23",
-    sourceDocument: "Confirmed directly against liveinmelbourne.vic.gov.au (2026-09-23)",
+    lastVerified: "2026-10-11",
+    sourceDocument: "Confirmed directly against liveinmelbourne.vic.gov.au (2026-10-11)",
   },
   QLD: {
     code: "QLD",
@@ -190,6 +195,7 @@ export const STATE_RULES: Record<string, StateRuleConfig> = {
     aiSummary:
       "Migration Queensland's State Nominated Migration Program (SNMP) covers subclass 190 (permanent) and subclass 491 (provisional, regional) nomination, plus a small-business-owner 491 pathway and the National Innovation Visa (subclass 858). Every one of these pathways carries the same repeated notice: 'Queensland's Registrations of Interest (ROIs) for the 2025-26 State Nominated Migration Program (SNMP) are now closed,' with updated settings and an opening date for 2026-27 not yet published. Residency/employment eligibility (when open) is not experience-in-years based but a recent local-residency test: 6 months living and working in regional Queensland at 20+ hrs/week in the nominated (or a closely ANZSCO-related) occupation for subclass 491, or 9 months in Queensland generally for subclass 190, in each case completed after finishing the relevant qualification. No nomination-fee figure is published in this document.",
     keyFacts: [
+      "These are the latest published settings (2025-26). As of 11 October 2026 Queensland had not published 2026-27 settings.",
       "Registrations of Interest for the 2025-26 State Nominated Migration Program (SNMP) are closed across all pathways: general offshore, building & construction, university graduates, small business owners, and the National Innovation Visa (subclass 858).",
       "2026-27 program settings, eligibility criteria and an opening date have not yet been published.",
       "Covers subclass 190 (permanent) and subclass 491 (provisional, regional); a dedicated pathway nominates small business owners in regional Queensland for subclass 491 only.",
@@ -197,7 +203,7 @@ export const STATE_RULES: Record<string, StateRuleConfig> = {
       "Small Business Owner pathway: ROIs closed for 2025-26; businesses purchased after 19 September 2025 are not eligible under Pathway 2 at all.",
       "No nomination fee figure is published by the state.",
     ],
-    lastVerified: "2026-09-22",
+    lastVerified: "2026-10-11",
     sourceDocument: "data/knowledge/State Immigrations/Queensland/Skilled visa options (Queensland)/Skilled visa options (Queensland).pdf",
   },
   SA: {
@@ -209,6 +215,7 @@ export const STATE_RULES: Record<string, StateRuleConfig> = {
     aiSummary:
       "South Australia's Skilled & Business Migration nominates for subclass 190 (5 extra DHA points) and subclass 491 (15 extra DHA points) via Registration of Interest (onshore) or SkillSelect EOI alone (offshore). Invitations 'will be sent on an ongoing basis throughout 2025-26'; the nomination process is described as 'highly competitive' since the Australian Government caps SA's nomination places each year, and only the most competitive ROIs/EOIs are invited (assessed on English proficiency, years of skilled experience, qualification level, salary, and employer). For 2025-26, SA prioritises the Building & Construction, Defence, Education, Engineering, Health and Manufacturing sectors for subclass 190 eligibility; other sectors are generally directed to subclass 491, or may still be considered if high-ranking. A separate Skilled Employment in South Australia stream (onshore only) requires 12+ months' SA residence and 12+ months' current full-time (30+ hrs/week) employment in an occupation sharing the nominated occupation's ANZSCO Sub Major Group. SA's published nomination, subclass 190 and subclass 491 information shows no closure, suspension, or allocation-exhausted notice. No nomination-fee figure is published, only that 'application fees paid are not refundable.'",
     keyFacts: [
+      "These are the latest published settings (2025-26), checked on 11 October 2026.",
       "Covers subclass 190 (5 extra DHA points) and subclass 491 (15 extra DHA points); invitations sent on an ongoing basis throughout 2025-26.",
       "2025-26 priority sectors for subclass 190 eligibility: Building & Construction, Defence, Education, Engineering, Health, Manufacturing -- other sectors are generally directed to subclass 491 (or considered if high-ranking).",
       "Nomination is described as 'highly competitive'; ranking factors include English proficiency, years of skilled experience, qualification level, salary and employer assessment.",
@@ -217,7 +224,7 @@ export const STATE_RULES: Record<string, StateRuleConfig> = {
       "SA's published information shows no allocation-exhausted, closure, or suspension notice for nomination, subclass 190, or subclass 491.",
       "No nomination fee figure is published -- only that 'application fees paid are not refundable'.",
     ],
-    lastVerified: "2026-09-22",
+    lastVerified: "2026-10-11",
     sourceDocument:
       "data/knowledge/State Immigrations/SA/State nomination South Australia/State nomination South Australia.pdf; data/knowledge/State Immigrations/SA/Skilled Nominated Visa (subclass 190)SA/Skilled Nominated Visa (subclass 190)SA.pdf; data/knowledge/State Immigrations/SA/Skilled Work Regional (Provisional) Visa (subclass 491) SA/Skilled Work Regional (Provisional) Visa (subclass 491) SA.pdf",
   },
@@ -230,6 +237,7 @@ export const STATE_RULES: Record<string, StateRuleConfig> = {
     aiSummary:
       "Western Australia's State Nominated Migration Program (SNMP) covers a General stream (WASMOL Schedule 1 and 2 occupation lists) and a Graduate stream (Graduate Occupation List, GOL) for subclass 190 and subclass 491. Both onshore (WA-resident) and offshore (interstate or overseas) candidates are eligible, though EOIs are ranked with WA residents first, then priority-industry occupations (building & construction, healthcare & social assistance, hospitality & tourism, education & training), then all other sectors, then highest EOI points, then oldest submission date -- so offshore candidates in non-priority occupations face the most competition. Minimum work experience: at least 1 year of Australian or overseas work experience in the nominated (or closely related) occupation within the last 10 years, at the time of invitation. The nomination application fee is a non-refundable AUD $200. Invitations are anticipated monthly; WA's published invitation data (as of 22 August 2026) records actual invitation activity through at least 16 May 2026 for General stream trades (e.g. Electrician (General), 65 points, invited 16/05/2026) and cumulative 2025-26 invitations of 8,162 across General and Graduate streams as of the most recent data point in the 'Invitations issued' chart (through March 2026, with a small number trickling into April/May).",
     keyFacts: [
+      "These are the latest published settings (2025-26), checked on 11 October 2026.",
       "Covers subclass 190 and subclass 491 via a General stream (WASMOL Schedule 1/2 occupation lists) and a Graduate stream (Graduate Occupation List, GOL).",
       "Both onshore (WA-resident) and offshore (interstate/overseas) candidates are eligible; ranking prioritises WA residents, then priority-industry occupations (building & construction, healthcare & social assistance, hospitality & tourism, education & training), then all other sectors, then EOI points, then submission date.",
       "Minimum work experience: at least 1 year of Australian OR overseas work experience in the nominated (or closely related) occupation within the last 10 years.",
@@ -238,7 +246,7 @@ export const STATE_RULES: Record<string, StateRuleConfig> = {
       "2025-26 program-to-date total: 8,162 invitations issued across General and Graduate streams, General/Graduate x 190/491 (per the 'Invitations issued' chart, latest full month March 2026).",
       "If an EOI seeks nomination for both subclass 190 and 491, WA generally invites for subclass 491 first (typically a higher EOI points score).",
     ],
-    lastVerified: "2026-09-22",
+    lastVerified: "2026-10-11",
     sourceDocument:
       "data/knowledge/State Immigrations/Western Australia/State Nominated Migration Program/State Nominated Migration Program Western Australia.pdf; data/knowledge/State Immigrations/Western Australia/Last invited expression of interest - Priority trade occupations - May 2026.pdf; data/knowledge/State Immigrations/Western Australia/2025—26 program year — Invitations issued.png",
   },
