@@ -189,13 +189,15 @@ function numericFigure(gateId: string, facts: Map<string, string | null>, l: Loc
     const sp = asNumber(facts.get("yearsInSponsoredPosition"));
     const label = scope === "sponsored" ? T(l, "Years under an approved sponsor", "Onaylı sponsor altında yıl", "在经批准的担保方名下的年数") : T(l, "Years of work experience", "İş deneyimi yılı", "工作经验年数");
     if (scope === "sponsored") {
-      const mine = sp ?? on;
-      return { label, yours: mine === null ? notEntered(l) : yearsText(mine, l), published: yearsText(need, l), entered: mine !== null };
+      // Only the sponsor-years answer: another field (Australian work experience) is never substituted for it, and a missing answer is never 0.
+      return { label, yours: sp === null ? notEntered(l) : yearsText(sp, l), published: yearsText(need, l), entered: sp !== null };
     }
     if (off === null && on === null) return { label, yours: notEntered(l), published: yearsText(need, l), entered: false };
-    const total = (off ?? 0) + (on ?? 0);
-    const parts = [off !== null ? `${T(l, "outside Australia", "Avustralya dışında", "澳大利亚境外")} ${yearsText(off, l)}` : "", on !== null ? `${T(l, "in Australia", "Avustralya'da", "澳大利亚境内")} ${yearsText(on, l)}` : ""].filter(Boolean).join(", ");
-    return { label, yours: `${yearsText(total, l)} (${parts})`, published: yearsText(need, l), entered: true };
+    const outside = `${T(l, "outside Australia", "Avustralya dışında", "澳大利亚境外")} ${off !== null ? yearsText(off, l) : notEntered(l)}`;
+    const inside = `${T(l, "in Australia", "Avustralya'da", "澳大利亚境内")} ${on !== null ? yearsText(on, l) : notEntered(l)}`;
+    // A total only when both parts were entered: a part that was not entered is shown as such, never counted as 0 years.
+    if (off === null || on === null) return { label, yours: `${outside}, ${inside}`, published: yearsText(need, l), entered: true };
+    return { label, yours: `${yearsText(off + on, l)} (${outside}, ${inside})`, published: yearsText(need, l), entered: true };
   };
   switch (gateId) {
     case "189.age":

@@ -136,6 +136,8 @@ jobs:
         run: npm run test:referral-consent
       - name: Homepage report previews are the current information report (no removed screenshots on the homepage or pricing page; captions in en / tr / zh-Hans)
         run: npm run test:showcase-images
+      - name: Passport country by destination (AU / CA lists, destination switch, server rejection, NZ note) and not-entered fields never shown as 0
+        run: npm run test:passport-destination
       - name: No route can produce the verdict structure (PDF route, result page, agent PDF; en / tr / zh-Hans)
         run: npm run test:no-verdict-routes
 

@@ -16,6 +16,7 @@
  *
  * Nothing here scores, gates, prices, ranks or recommends anything.
  */
+import { isNewZealandPassport, newZealandAustraliaNote } from "@/lib/intake/passport";
 import { targetVisaName, targetVisaOf, type TargetVisa } from "@/lib/readiness/target-visa";
 import { resolveOccupationDisplayName } from "@/lib/readiness/occupation-eligibility";
 import type { Locale, ReadinessInput, ReadinessReport } from "@/lib/readiness/types";
@@ -111,7 +112,7 @@ export function buildReportView(args: ReportViewArgs): ReportView {
     { field: "currentCountry", value: profile.currentCountry ?? null },
   ];
   const facts = new Map(factList.map((f) => [f.field, f.value]));
-  const notProvided = T(l, "Not provided", "Girilmedi", "未提供");
+  const notProvided = T(l, "Not entered", "Girilmedi", "未填写");
 
   const sections: ReportSection[] = [];
 
@@ -120,13 +121,16 @@ export function buildReportView(args: ReportViewArgs): ReportView {
   const extras: string[] = [];
   if (profile.mainGoal) extras.push(`${T(l, "Main goal", "Ana hedef", "主要目标")}: ${profile.mainGoal}  [${tags.supplied}]`);
   if (profile.migrationGoals?.length) extras.push(`${T(l, "Migration goals", "Göç hedefleri", "移民目标")}: ${profile.migrationGoals.join(", ")}  [${tags.supplied}]`);
+  // A New Zealand passport on the Australian report: one fixed note (lib/intake/passport.ts); nothing else is added or assumed.
+  const nzNote = !isCA && isNewZealandPassport(facts.get("passportCountry")) ? [{ kind: "text" as const, text: newZealandAustraliaNote(l) }] : [];
   sections.push({
     id: "details",
     title: reportSectionTitle("details", l),
     blocks: [
       { kind: "text", text: `${T(l, "Target visa", "Hedef vize", "目标签证")}: ${targetVisaName(target, l)}  [${tags.supplied}]` },
       { kind: "lines", lines: [...detailLines, ...extras] },
-      { kind: "text", text: T(l, "Each line says whether the value was supplied by you or not provided. A value that was not provided is not assumed.", "Her satır, değerin sizin tarafınızdan girildiğini veya girilmediğini belirtir. Girilmeyen değer varsayılmaz.", "每一行都标明该值是您提供的还是未提供。未提供的值不作假设。") },
+      ...nzNote,
+      { kind: "text", text: T(l, "Each line says whether the value was supplied by you or not entered. A value that was not entered is not assumed.", "Her satır, değerin sizin tarafınızdan girildiğini veya girilmediğini belirtir. Girilmeyen değer varsayılmaz.", "每一行都标明该值是您提供的还是未填写。未填写的值不作假设。") },
     ],
   });
 

@@ -15,6 +15,7 @@ import { activeCountries, countryLabels, countryVisaPathways, defaultCountry, is
 import { PremiumFeatureGate } from "@/components/premium-feature-gate";
 import { TermsGate, TermsGateLink } from "@/components/terms-gate";
 import { ReferralConsentBox } from "./referral-consent-box";
+import { applyDestination, destinationFromParam, isDestination, passportIsDestination, toPassportLocale, type Destination } from "@/lib/intake/passport";
 import { LogiAIAssistant } from "@/components/LogiAIAssistant";
 import { useTranslation } from "@/contexts/language-context";
 import { downloadReportPdf } from "@/lib/client/download-report-pdf";
@@ -160,6 +161,7 @@ export function FullCheckWaitlistForm({
       const fields: [string, string][] = [
         ["waitlist-full-name", txt("Ad soyad gerekli", "Full name is required", "姓名为必填项")],
         ["waitlist-e", txt("E-posta gerekli", "Email is required", "邮箱为必填项")],
+        ["waitlist-target-country", txt("Hedef ülke gerekli", "Destination country is required", "目的国为必填项")],
         ["waitlist-current-country", txt("Bulunduğunuz ülke gerekli", "Current country is required", "当前国家为必填项")],
         ["waitlist-passport-country", txt("Pasaport ülkesi gerekli", "Passport country is required", "护照国家为必填项")],
         ["waitlist-age", txt("Yaş gerekli", "Age is required", "年龄为必填项")],
@@ -206,7 +208,19 @@ export function FullCheckWaitlistForm({
     isSupportedCountry(initialValues.targetCountry) && (initialValues.targetCountry !== "CA" || canadaReportEnabled) ? (initialValues.targetCountry as SupportedCountry) : defaultCountry
   );
   const [currentCountry, setCurrentCountry] = useState(initialValues.currentCountry ?? "");
-  const [passportCountry, setPassportCountry] = useState(initialValues.passportCountry ?? "");
+  // The chosen destination ("" until one is chosen, or named by ?country=). The passport list never offers it, and choosing it clears a passport country.
+  const [destination, setDestination] = useState<Destination | "">(destinationFromParam(initialValues.destination));
+  const [passportCountry, setPassportCountry] = useState(passportIsDestination(initialValues.passportCountry, destinationFromParam(initialValues.destination)) ? "" : (initialValues.passportCountry ?? ""));
+  const [passportNote, setPassportNote] = useState<string | null>(null);
+  const changeDestination = (c: string) => {
+    if (!isDestination(c)) return;
+    setSelectedCountry(c);
+    setDestination(c);
+    const next = applyDestination(passportCountry, c, toPassportLocale(locale));
+    setPassportCountry(next.passport);
+    setPassportNote(next.note);
+    onCountryChange?.(c);
+  };
   const initialAnzscoEntry = resolveAnzscoEntry(initialValues.occupation);
   const [isTermsAccepted, setIsTermsAccepted] = useState(false);
   const [termsError, setTermsError] = useState(false);
@@ -519,7 +533,7 @@ export function FullCheckWaitlistForm({
 
           {/* Step content — CSS hidden keeps all mounted in DOM */}
           <div className={currentStep === 1 ? "" : "hidden"}>
-            <Step1Personal locale={locale} canadaReportEnabled={canadaReportEnabled} selectedCountry={selectedCountry} onCountryChange={(c) => { setSelectedCountry(c); onCountryChange?.(c); }} initialValues={initialValues} currentCountry={currentCountry} setCurrentCountry={setCurrentCountry} passportCountry={passportCountry} setPassportCountry={setPassportCountry} migrationGoals={migrationGoals} toggleMigrationGoal={toggleMigrationGoal} visaInterest={visaInterest} setVisaInterest={setVisaInterest} nominationStream={nominationStream} setNominationStream={setNominationStream} yearsInSponsoredPosition={yearsInSponsoredPosition} setYearsInSponsoredPosition={setYearsInSponsoredPosition} courseName={courseName} setCourseName={setCourseName} courseCricosCode={courseCricosCode} setCourseCricosCode={setCourseCricosCode} courseCompletionStatus={courseCompletionStatus} setCourseCompletionStatus={setCourseCompletionStatus} courseCompletionDate={courseCompletionDate} setCourseCompletionDate={setCourseCompletionDate} preferredState={preferredState} setPreferredState={setPreferredState} state={state} fieldClassName={fieldClassName} selectClassName={selectClassName} noAutofill={noAutofill} showsCourseFields={showsCourseFields} fieldErrors={stepErrors} />
+            <Step1Personal locale={locale} canadaReportEnabled={canadaReportEnabled} selectedCountry={selectedCountry} onCountryChange={changeDestination} destination={destination} passportNote={passportNote} initialValues={initialValues} currentCountry={currentCountry} setCurrentCountry={setCurrentCountry} passportCountry={passportCountry} setPassportCountry={setPassportCountry} migrationGoals={migrationGoals} toggleMigrationGoal={toggleMigrationGoal} visaInterest={visaInterest} setVisaInterest={setVisaInterest} nominationStream={nominationStream} setNominationStream={setNominationStream} yearsInSponsoredPosition={yearsInSponsoredPosition} setYearsInSponsoredPosition={setYearsInSponsoredPosition} courseName={courseName} setCourseName={setCourseName} courseCricosCode={courseCricosCode} setCourseCricosCode={setCourseCricosCode} courseCompletionStatus={courseCompletionStatus} setCourseCompletionStatus={setCourseCompletionStatus} courseCompletionDate={courseCompletionDate} setCourseCompletionDate={setCourseCompletionDate} preferredState={preferredState} setPreferredState={setPreferredState} state={state} fieldClassName={fieldClassName} selectClassName={selectClassName} noAutofill={noAutofill} showsCourseFields={showsCourseFields} fieldErrors={stepErrors} />
           </div>
           <div className={currentStep === 2 ? "" : "hidden"}>
             <Step2Career skillsAssessment={skillsAssessment} setSkillsAssessment={setSkillsAssessment} locale={locale} selectedCountry={selectedCountry} isPartner={isPartner} nocSearch={nocSearch} setNocSearch={setNocSearch} nocCode={nocCode} setNocCode={setNocCode} nocTeer={nocTeer} setNocTeer={setNocTeer} nocResults={nocResults} setNocResults={setNocResults} nocOpen={nocOpen} setNocOpen={setNocOpen} searchNoc={searchNoc} anzscoSearch={anzscoSearch} setAnzscoSearch={setAnzscoSearch} anzscoCode={anzscoCode} setAnzscoCode={setAnzscoCode} resolvedAnzscoEntry={resolvedAnzscoEntry} anzscoResults={anzscoResults} setAnzscoResults={setAnzscoResults} anzscoOpen={anzscoOpen} setAnzscoOpen={setAnzscoOpen} searchAnzsco={searchAnzsco} getLocalizedAnzscoTitle={getLocalizedAnzscoTitle} submittedOccupationValue={submittedOccupationValue} setOccupationModalOpen={setOccupationModalOpen} relationshipType={relationshipType} setRelationshipType={setRelationshipType} cohabitationDuration={cohabitationDuration} setCohabitationDuration={setCohabitationDuration} sponsorStatus={sponsorStatus} setSponsorStatus={setSponsorStatus} previousSponsorship={previousSponsorship} setPreviousSponsorship={setPreviousSponsorship} applicationLocationPreference={applicationLocationPreference} setApplicationLocationPreference={setApplicationLocationPreference} relationshipEvidence={relationshipEvidence} setRelationshipEvidence={setRelationshipEvidence} state={state} fieldClassName={fieldClassName} selectClassName={selectClassName} noAutofill={noAutofill} />

@@ -38,6 +38,7 @@ export function FullCheckInteractiveSection({
   initialValues: {
     visaInterest?: string;
     targetCountry?: string;
+    destination?: string;
     currentCountry?: string;
     occupation?: string;
     mainGoal?: string;

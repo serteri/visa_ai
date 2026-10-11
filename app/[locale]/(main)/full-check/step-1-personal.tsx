@@ -20,6 +20,7 @@ import { TARGET_VISAS, targetVisaOption } from "@/lib/readiness/target-visa";
 import { renderVisaPathwayOptions } from "./full-check-waitlist-form";
 import { SituationFields } from "./situation-fields";
 import { INTAKE_COUNTRIES } from "@/lib/intake/fields";
+import { isNewZealandPassport, newZealandAustraliaNote, passportCountryOptions, toPassportLocale } from "@/lib/intake/passport";
 
 // Shared with the in-chat quick profile card (lib/intake/fields.ts).
 const COUNTRIES = INTAKE_COUNTRIES;
@@ -30,6 +31,10 @@ interface Step1Props {
   canadaReportEnabled?: boolean;
   selectedCountry: SupportedCountry;
   onCountryChange: (c: SupportedCountry) => void;
+  /** The chosen destination ("" until one is chosen): the passport list leaves it out. */
+  destination: string;
+  /** Shown under the passport field after a destination change cleared the passport country. */
+  passportNote: string | null;
   initialValues: Record<string, string>;
   currentCountry: string;
   setCurrentCountry: (v: string) => void;
@@ -62,7 +67,7 @@ interface Step1Props {
 }
 
 export function Step1Personal({
-  locale, selectedCountry, onCountryChange, initialValues,
+  locale, selectedCountry, onCountryChange, destination, passportNote, initialValues,
   currentCountry, setCurrentCountry, passportCountry, setPassportCountry,
   migrationGoals, toggleMigrationGoal, visaInterest, setVisaInterest,
   nominationStream, setNominationStream, yearsInSponsoredPosition, setYearsInSponsoredPosition,
@@ -115,12 +120,13 @@ export function Step1Personal({
         <Combobox
           placeholder={txt("Ülke seçin", "Select country", "请选择国家")}
           items={activeCountries.filter((code) => code !== "CA" || canadaReportEnabled).map(code => ({ value: code, label: countryLabels[code][isTr ? "tr" : isZh ? "zh-Hans" : "en"] }))}
-          value={selectedCountry}
+          value={destination}
           onChange={(val) => onCountryChange(val as SupportedCountry)}
           disabled={lockedCountry !== null}
           className={selectClassName}
         />
-        <input type="hidden" name="targetCountry" value={selectedCountry} />
+        <input id="waitlist-target-country" type="hidden" name="targetCountry" value={destination} />
+        {fieldErrors?.["waitlist-target-country"] && <p className="text-xs text-red-600">{fieldErrors["waitlist-target-country"]}</p>}
         {!canadaReportEnabled && (
           <p className="text-xs text-slate-500" data-testid="canada-unavailable">
             {txt("Kanada raporları beta döneminde kullanılamıyor.", "Canada reports are not available during the beta.", "测试期间暂不提供加拿大报告。")}
@@ -245,13 +251,17 @@ export function Step1Personal({
           <Label htmlFor="waitlist-passport-country">{txt("Pasaport ülke", "Passport country", "护照国家")}<RequiredMark /></Label>
           <Combobox
             placeholder={txt("Seçiniz", "Select", "请选择")}
-            items={COUNTRIES.map(c => ({ value: c.code, label: c.label[locale as "en" | "tr" | "zh-Hans"] ?? c.label.en }))}
+            items={passportCountryOptions(destination).map(c => ({ value: c.code, label: c.label[locale as "en" | "tr" | "zh-Hans"] ?? c.label.en }))}
             value={passportCountry}
             onChange={(val) => { setPassportCountry(val as SupportedCountry); }}
             className={`${selectClassName} ${errCls("waitlist-passport-country")}`}
           />
           <input id="waitlist-passport-country" type="hidden" name="passportCountry" value={passportCountry} />
           {fieldErrors?.["waitlist-passport-country"] && <p className="text-xs text-red-600">{fieldErrors["waitlist-passport-country"]}</p>}
+          {passportNote && <p className="text-xs text-amber-700" data-testid="passport-cleared-note">{passportNote}</p>}
+          {isNewZealandPassport(passportCountry) && (destination === "AU" || (destination === "" && selectedCountry === "AU")) && (
+            <p className="text-xs text-slate-700" data-testid="nz-passport-note">{newZealandAustraliaNote(toPassportLocale(locale))}</p>
+          )}
         </div>
         <div className="space-y-2" data-field-error={fieldErrors?.["waitlist-age"] || undefined}>
           <Label htmlFor="waitlist-age">{txt("Yaş", "Age", "年龄")}<RequiredMark /></Label>

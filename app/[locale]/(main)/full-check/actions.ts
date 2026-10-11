@@ -42,6 +42,7 @@ import {
   countFreeBetaUnlocksToday,
 } from "@/src/lib/user-reports";
 import { getApprovedAgentUser } from "@/lib/crm/leads";
+import { passportIsDestination, passportSameAsDestinationMessage, toPassportLocale } from "@/lib/intake/passport";
 import { buildReportHeader, type ReportHeader } from "@/lib/reports/report-header";
 import { consentTableReady, hashIp, recordConsentGranted, withdrawalUrl } from "@/lib/consent/referral-consent";
 import { shouldSkipInternalNotification, shouldSuppressReportEmails } from "@/lib/email/suppression";
@@ -492,6 +493,12 @@ export async function submitFullCheckWaitlist(
   // stored or emailed for a Canada request; the Canada code stays in place.
   if (targetCountry === "CA" && !isCanadaReportEnabled()) {
     return { status: "error", error: CANADA_REPORT_UNAVAILABLE[resolvedLocale === "tr" ? "tr" : resolvedLocale === "zh-Hans" ? "zh-Hans" : "en"] };
+  }
+  // A passport country equal to the destination (AU -> AU, CA -> CA) is refused before anything is created, stored, emailed or sent to checkout:
+  // citizens of a country do not need a visa for it. The form never offers the pair; this is the server's own check.
+  if (passportIsDestination(passportCountry, targetCountry)) {
+    const message = passportSameAsDestinationMessage(targetCountry, toPassportLocale(resolvedLocale));
+    return { status: "error", error: message, errors: { passportCountry: message } };
   }
   const isPartner = isPartnerFamilySponsorship(visaInterest);
 

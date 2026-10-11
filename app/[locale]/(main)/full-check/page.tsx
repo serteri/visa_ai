@@ -8,6 +8,7 @@ import { FullCheckInteractiveSection } from "./full-check-interactive-section";
 import { ShareLogivisaCard } from "@/components/share-logivisa-card";
 import { getFreePromoStatus } from "@/lib/services/free-promo";
 import { isSupportedCountry } from "@/lib/countries";
+import { destinationFromParam } from "@/lib/intake/passport";
 import { PREMIUM_PRICE_DISPLAY } from "@/lib/pricing";
 import { isPaidReportCheckoutEnabled } from "@/lib/readiness/paid-checkout";
 
@@ -88,6 +89,8 @@ export default async function FullCheckPage({ params, searchParams }: FullCheckP
     visaInterest: query.visaInterest ?? query.preferredPathway ?? "",
     currentCountry: query.currentCountry ?? "",
     targetCountry: isSupportedCountry(query.country?.toUpperCase()) && (query.country!.toUpperCase() !== "CA" || isCanadaReportEnabled()) ? query.country!.toUpperCase() : "",
+    // The destination named by ?country= (any letter case), whether or not Canada reports are on: the passport list never offers it.
+    destination: destinationFromParam(query.country),
     occupation: query.occupation ?? "",
     source: query.source ?? "full_check",
     mainGoal: buildPrefilledGoal({

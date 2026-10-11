@@ -324,6 +324,10 @@ EVAL["186TRT.sponsored_employment"] = (i, f) => {
   }
   const y = i.yearsInSponsoredPosition ?? current ?? (f.onshore !== undefined && f.onshore < 2 ? f.onshore : undefined);
   if (y === undefined) return unknown("Years in a sponsored position were not provided.", "Sponsorlu pozisyondaki yıl girilmedi.", "未提供担保职位的年限。");
+  // The sponsor-years answer was not entered but the Australian work experience (fewer than 2 years) rules the 2 years out: say what was entered, not that years under a sponsor were "declared".
+  if (i.yearsInSponsoredPosition === undefined && current === undefined) {
+    return notMet(`Years under an approved sponsor were not entered; Australian work experience entered: ${y} years, fewer than the 2 years of sponsored employment required.`, `Onaylı sponsor altında yıl girilmedi; girilen Avustralya iş deneyimi: ${y} yıl, gereken 2 yıllık sponsorlu istihdamdan az.`, `未填写在担保方名下的年数；已填写的澳大利亚工作经验为 ${y} 年，少于所需的 2 年担保雇佣。`);
+  }
   return y >= 2
     ? met(`${y} years declared (2 needed).`, `${y} yıl beyan edildi (2 gerekir).`, `已申报 ${y} 年（需要 2 年）。`)
     : notMet(`${y} years declared; 2 years of eligible sponsored employment are required.`, `${y} yıl beyan edildi; 2 yıl uygun sponsorlu istihdam gerekir.`, `已申报 ${y} 年；需要 2 年合资格担保雇佣。`);
