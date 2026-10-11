@@ -52,6 +52,7 @@ import { logReportInvariantViolations } from "./report-invariants";
 import { getEligibilityBadgeState } from "./eligibility-badge";
 import { POINTS_THRESHOLD } from "./assessment-state";
 import { parsePartnerIntakeFromText } from "./partner-sponsorship";
+import { loadStateMonitorSnapshot, type StateMonitorSnapshot } from "@/lib/state-monitor/status";
 
 // "Dala" print-friendly palette: inverted from the web's dark-void theme --
 // pure white page / pure black text, with the two Dala brand colors
@@ -119,6 +120,8 @@ interface PDFGeneratorInput {
   saveToFile?: boolean;
   /** "agent": the agent-portal copy of a lead's report -- carries the "not reviewed or assessed by a migration agent" label. */
   audience?: "agent";
+  /** The state-page monitor status for the "data may have changed since" notes; loaded from the database when omitted (null = unavailable). */
+  stateMonitor?: StateMonitorSnapshot | null;
   userInputSummary: {
     name?: string;
     email?: string;
@@ -918,6 +921,8 @@ function formatGoalText(value: string): string {
 
 export async function generateReadinessPDF(input: PDFGeneratorInput): Promise<Uint8Array> {
   const { report, locale, userInputSummary: rawUserInputSummary } = input;
+  // The state-page monitor's status (null when unavailable: the note then rests on the date the data was verified by hand).
+  const stateMonitor = report.country === "CA" ? null : input.stateMonitor !== undefined ? input.stateMonitor : await loadStateMonitorSnapshot();
   // Defense-in-depth: runReadinessEngine already checks invariants when the
   // report is built, but the PDF can also be regenerated from a
   // previously-stored report_json, which bypasses that path.
@@ -1821,6 +1826,7 @@ export async function generateReadinessPDF(input: PDFGeneratorInput): Promise<Ui
         locale: effectiveLocale,
         profile: { ...userInputSummary, occupationRaw: rawUserInputSummary.occupation },
         dateText: coverDateText(),
+        stateMonitor,
       });
     }
     return cachedReportView;

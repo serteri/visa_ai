@@ -6,6 +6,7 @@ import { prisma } from "@/lib/prisma";
 import { isAdminAuthenticated } from "@/lib/admin-auth";
 import { isMissingRelationError } from "@/lib/db/missing-relation";
 import stateNominationData from "@/src/data/state-nomination-status.json";
+import { MonitorPanel } from "./monitor-panel";
 import { StatesConfigClient, type StateRow, type StateStatus } from "./StatesConfigClient";
 
 export async function generateMetadata(): Promise<Metadata> {
@@ -14,6 +15,8 @@ export async function generateMetadata(): Promise<Metadata> {
     description: "Manage per-state nomination status, supported visas, fees, and AI notes.",
   };
 }
+
+export const maxDuration = 300; // the manual monitor run fetches every page
 
 type PageProps = { params: Promise<{ locale: string }> };
 
@@ -82,6 +85,8 @@ export default async function StatesConfigPage({ params }: PageProps) {
             </p>
           </div>
         )}
+
+        <MonitorPanel />
 
         <StatesConfigClient initialRows={rows} disabled={tableMissing} />
       </section>

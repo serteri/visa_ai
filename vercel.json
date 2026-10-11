@@ -7,6 +7,10 @@
     {
       "path": "/api/cron/scrape-ca-eoi",
       "schedule": "0 */6 * * *"
+    },
+    {
+      "path": "/api/cron/state-monitor",
+      "schedule": "0 20 * * 0"
     }
   ]
 }

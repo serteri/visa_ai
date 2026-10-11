@@ -1034,3 +1034,46 @@ model ReferralConsent {
   @@index([reportId, agentId, createdAt(sort: Desc)], map: "referral_consents_report_agent_idx")
   @@map("referral_consents")
 }
+
+// State-page change monitor (lib/state-monitor): one row per monitored official page (normalised hash, short snippet, last text for the diff, failure
+// counters) and one row per run. Written and read with raw SQL; declared here so `prisma db push` knows the tables and never proposes dropping them.
+// SQL: prisma/manual-migrations/2026-10-11-create-state-page-monitor.sql. The monitor never changes report data.
+model StatePageMonitor {
+  id                  String    @id @default(dbgenerated("(gen_random_uuid())::text"))
+  stateCode           String    @map("state_code")
+  url                 String
+  contentHash         String?   @map("content_hash")
+  snippet             String?
+  normalizedText      String?   @map("normalized_text")
+  contentLength       Int?      @map("content_length")
+  firstSeenAt         DateTime  @default(now()) @map("first_seen_at") @db.Timestamptz(6)
+  lastCheckedAt       DateTime? @map("last_checked_at") @db.Timestamptz(6)
+  lastSuccessAt       DateTime? @map("last_success_at") @db.Timestamptz(6)
+  changeDetectedAt    DateTime? @map("change_detected_at") @db.Timestamptz(6)
+  changeSummary       String?   @map("change_summary")
+  changeAlertedAt     DateTime? @map("change_alerted_at") @db.Timestamptz(6)
+  changeAppliedAt     DateTime? @map("change_applied_at") @db.Timestamptz(6)
+  consecutiveFailures Int       @default(0) @map("consecutive_failures")
+  lastError           String?   @map("last_error")
+  failureAlertedAt    DateTime? @map("failure_alerted_at") @db.Timestamptz(6)
+
+  @@unique([stateCode, url])
+  @@map("state_page_monitor")
+}
+
+model StateMonitorRun {
+  id           String    @id @default(dbgenerated("(gen_random_uuid())::text"))
+  startedAt    DateTime  @default(now()) @map("started_at") @db.Timestamptz(6)
+  finishedAt   DateTime? @map("finished_at") @db.Timestamptz(6)
+  trigger      String
+  pagesChecked Int       @default(0) @map("pages_checked")
+  pagesChanged Int       @default(0) @map("pages_changed")
+  pagesFailed  Int       @default(0) @map("pages_failed")
+  alertsSent   Int       @default(0) @map("alerts_sent")
+  detail       String?
+  error        String?
+
+  @@index([startedAt(sort: Desc)], map: "state_monitor_runs_started_idx")
+  @@map("state_monitor_runs")
+}
+

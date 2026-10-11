@@ -6,11 +6,12 @@
 import { matchOccupationToState } from "@/lib/state-nomination/occupation-match";
 import { localizeStateFact } from "@/lib/state-nomination/state-keyfact-translations";
 import { getStateRule } from "@/lib/state-nomination/state-rules-config";
+import type { StateMonitorSnapshot } from "@/lib/state-monitor/status";
 import type { Locale, ReadinessReport } from "@/lib/readiness/types";
 import { T } from "./report-text";
 
-/** A state's data is flagged when it was last checked more than this many days before the report is viewed. */
-export const STATE_DATA_STALE_DAYS = 30;
+/** Without a successful monitor check (or hand verification) for more than this many days, a state's data is flagged "may have changed since". */
+export const STATE_MONITOR_MAX_DAYS = 14;
 
 const STOPWORDS = new Set(["the", "and", "for", "are", "was", "has", "have", "been", "its", "with", "that", "this", "from", "will", "may", "any"]);
 
@@ -33,9 +34,22 @@ export function repeatsSummary(sentence: string, summary: string): boolean {
   return shared / s.size >= 0.7 && numbers.every((n) => base.has(n));
 }
 
-export function stateDataIsStale(checked: string, now: Date): boolean {
-  if (!/^\d{4}-\d{2}-\d{2}$/.test(checked)) return false;
-  return (now.getTime() - Date.parse(`${checked}T00:00:00Z`)) / 86_400_000 > STATE_DATA_STALE_DAYS;
+const dayOf = (iso: string) => iso.slice(0, 10);
+const daysBetween = (fromDay: string, now: Date) => (now.getTime() - Date.parse(`${fromDay}T00:00:00Z`)) / 86_400_000;
+
+/**
+ * Whether (and why) a state's data carries the "data may have changed since" note. Driven by the page monitor (lib/state-monitor), not by the age of the
+ * data alone: the note shows when (1) the monitor saw a change on the state's page that has not been applied yet (it is newer than the date the data was
+ * last verified, and not marked applied), or (2) there has been no successful check for more than 14 days -- the monitor's last success or the date the
+ * state's data was verified by hand, whichever is later.
+ */
+export function stateDataFlag(args: { verified: string; monitor?: { pendingChangeAt: string | null; lastSuccessAt: string | null } | null; now: Date }): { reason: "change" | "monitor"; since: string; detail: string } | null {
+  const { verified, monitor, now } = args;
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(verified)) return null;
+  if (monitor?.pendingChangeAt && dayOf(monitor.pendingChangeAt) > verified) return { reason: "change", since: verified, detail: dayOf(monitor.pendingChangeAt) };
+  const lastOk = [verified, monitor?.lastSuccessAt ? dayOf(monitor.lastSuccessAt) : ""].sort().at(-1)!;
+  if (daysBetween(lastOk, now) > STATE_MONITOR_MAX_DAYS) return { reason: "monitor", since: lastOk, detail: lastOk };
+  return null;
 }
 
 export type StateInfo = {
@@ -46,7 +60,7 @@ export type StateInfo = {
   conditions: string[];
   sources: string;
   checked: string;
-  /** Set when the data was checked more than 30 days ago: "data may have changed since". */
+  /** Set by the page monitor (an unapplied change, or no successful check for 14 days): "data may have changed since". */
   staleNote: string;
 };
 
@@ -57,7 +71,7 @@ const docTitle = (doc: string) => {
   return t.replace(/\.(pdf|png)$/i, "");
 };
 
-export function buildStateInfos(report: ReadinessReport, occupationRaw: string | undefined, l: Locale, now: Date = new Date()): StateInfo[] {
+export function buildStateInfos(report: ReadinessReport, occupationRaw: string | undefined, l: Locale, now: Date = new Date(), stateMonitor?: StateMonitorSnapshot | null): StateInfo[] {
   const tracker = report.stateNominationTracker;
   const anzsco = (occupationRaw ?? "").match(/\d{6}/)?.[0];
   return STATE_CODES.map((code): StateInfo => {
@@ -89,7 +103,15 @@ export function buildStateInfos(report: ReadinessReport, occupationRaw: string |
       conditions: [...new Set(conditions)],
       sources: (rule?.sourceDocument ?? "").split(";").map((d) => docTitle(d.trim())).filter(Boolean).join("; ") || "—",
       checked,
-      staleNote: stateDataIsStale(checked, now) ? T(l, `Data checked ${checked}: data may have changed since.`, `Veri ${checked} tarihinde kontrol edildi: veriler o tarihten sonra değişmiş olabilir.`, `数据核对于 ${checked}：此后数据可能已变化。`) : "",
+      staleNote: staleNoteText(stateDataFlag({ verified: checked, monitor: stateMonitor?.[code] ?? null, now }), l),
     };
   });
+}
+
+function staleNoteText(flag: ReturnType<typeof stateDataFlag>, l: Locale): string {
+  if (!flag) return "";
+  if (flag.reason === "change") {
+    return T(l, `Data may have changed since ${flag.since}: a change to this state's official page was detected on ${flag.detail} and has not been applied to this report's data yet.`, `Veriler ${flag.since} tarihinden sonra değişmiş olabilir: bu eyaletin resmi sayfasında ${flag.detail} tarihinde bir değişiklik algılandı ve henüz bu raporun verilerine uygulanmadı.`, `自 ${flag.since} 起数据可能已变化：已于 ${flag.detail} 检测到该州官方页面发生变化，尚未应用到本报告的数据中。`);
+  }
+  return T(l, `Data may have changed since ${flag.since}: the page monitor has not completed a successful check of this state's pages in the last ${STATE_MONITOR_MAX_DAYS} days.`, `Veriler ${flag.since} tarihinden sonra değişmiş olabilir: sayfa izleyicisi bu eyaletin sayfalarını son ${STATE_MONITOR_MAX_DAYS} günde başarıyla kontrol edemedi.`, `自 ${flag.since} 起数据可能已变化：页面监测程序在过去 ${STATE_MONITOR_MAX_DAYS} 天内未能成功检查该州页面。`);
 }

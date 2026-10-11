@@ -138,6 +138,8 @@ jobs:
         run: npm run test:showcase-images
       - name: Passport country by destination (AU / CA lists, destination switch, server rejection, NZ note) and not-entered fields never shown as 0
         run: npm run test:passport-destination
+      - name: State page change monitor (unchanged page no alert, changed page one alert, fetch failures one alert) and the monitor-driven "data may have changed since" note
+        run: npm run test:state-monitor
       - name: No route can produce the verdict structure (PDF route, result page, agent PDF; en / tr / zh-Hans)
         run: npm run test:no-verdict-routes
 
