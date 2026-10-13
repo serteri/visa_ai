@@ -6,7 +6,9 @@
  * It never re-indexes a document that is already in the index (that would duplicate its chunks): which documents are
  * indexed is read first, through PROD_DATABASE_URL in a READ ONLY transaction (scripts/lib/prod-db.ts), and a file whose
  * name is in the index is skipped. Archive copies, older dated versions, unsupported file types and copies of an indexed
- * document are skipped too (lib/chat/index-audit.ts findUnindexed). Chunking, embedding model and metadata are the ones
+ * document are skipped too (lib/chat/index-audit.ts findUnindexed). Files excluded by policy are never indexed: the explicit
+ * ignore list INDEX_IGNORE_PATHS (e.g. the Engineers Australia accredited-programs list) and any file named README* live in
+ * lib/chat/index-audit.ts, shared with scripts/clean-knowledge-index.ts (which removes their chunks if they were ever indexed). Chunking, embedding model and metadata are the ones
  * of every existing chunk (lib/document-processor.ts).
  *
  *   npx dotenv-cli -e .env.local -- tsx scripts/seed-knowledge.ts --missing-only
@@ -86,6 +88,11 @@ async function main() {
 
   console.log(`data/knowledge: ${files.length} supported files; index: ${indexed.length} documents.`);
   for (const n of notes) console.log(`  ${n}`);
+  const excluded = rows.filter((r) => r.reason.startsWith("excluded by policy"));
+  if (excluded.length > 0) {
+    console.log(`  excluded by policy (never indexed): ${excluded.length}`);
+    for (const r of excluded) console.log(`    ${r.path ?? r.name} -- ${r.reason.replace("excluded by policy: ", "")}`);
+  }
 
   // Exact chunks (extract + chunk only); embeddings are made only on --execute.
   const built: { file: KnowledgeFile; chunks: DocumentChunkInput[] }[] = [];

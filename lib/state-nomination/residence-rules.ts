@@ -29,12 +29,14 @@ export type StateResidenceRule = {
 const RULE_FACTS: Record<string, { requirement: Exclude<ResidenceRequirement, "not_confirmed">; factPrefix: string; subclasses?: Array<"190" | "491"> }> = {
   // Tasmanian residence evidence is a mandatory document on every pathway.
   TAS: { requirement: "required", factPrefix: "Mandatory documents across all pathways include:" },
-  SA: { requirement: "required", factPrefix: "Skilled Employment in South Australia stream (onshore only): 12+ months SA residence" },
-  QLD: { requirement: "required", factPrefix: "Residency/employment test when open: 6 months living and working in regional Queensland" },
+  SA: { requirement: "required", factPrefix: "Residence and work (2025-26 settings): Graduates 6 months' SA residence" },
+  QLD: { requirement: "required", factPrefix: "Residency/employment test shown on the onshore page: 6 months living and working in regional Queensland" },
   NSW: { requirement: "required", factPrefix: "Subclass 190 residency basis: working 20+ hrs/week in NSW", subclasses: ["190"] },
   VIC: { requirement: "required", factPrefix: "When open: subclass 491 offshore applicants are not required to claim earnings in their ROI; onshore applicants must be living and working in regional Victoria.", subclasses: ["491"] },
-  WA: { requirement: "not_required", factPrefix: "Both onshore (WA-resident) and offshore (interstate/overseas) candidates are eligible" },
-  // ACT and NT: the sourced facts state only a commitment to live there AFTER the visa grant, not an onshore residence
+  WA: { requirement: "not_required", factPrefix: "2025-26 rules: both onshore (WA-resident) and offshore (interstate/overseas) candidates are eligible" },
+  // ACT: Canberra residents need 6 months' (190) / 3 months' (491) Canberra residence and employment before the Matrix.
+  ACT: { requirement: "required", factPrefix: "Canberra residents: 190 needs 6 months' Canberra residence" },
+  // NT: the sourced facts state only a commitment to live there AFTER the visa grant, not an onshore residence
   // requirement before nomination -> not confirmed.
 };
 

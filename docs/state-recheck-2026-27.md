@@ -18,61 +18,77 @@ The URLs below are the ones the project already cites; they could not be reached
 ## ACT
 
 - State: Australian Capital Territory
-- Status in our rules: High Demand (last verified 2026-10-11)
+- Status in our rules: High Demand (last verified 2026-10-13)
 - Monitored pages:
-  - https://www.act.gov.au/migration/skilled-migrants
   - https://www.act.gov.au/migration/home
+  - https://www.act.gov.au/migration/resources/canberra-matrix-invitation-round
+  - https://www.act.gov.au/migration/resources/act-migration-application-fees
+  - https://www.act.gov.au/migration/skilled-migrants/190-nomination-criteria
+  - https://www.act.gov.au/migration/skilled-migrants/491-nomination-criteria
 - Source file(s) to replace after a change:
-  - `data/knowledge/State Immigrations/ACT/ACT Migration.pdf`
+  - `data/knowledge/State Immigrations/ACT/2026-27/ACT Home - updates (fetched 2026-10-13).md`
+  - `data/knowledge/State Immigrations/ACT/2026-27/ACT Canberra Matrix invitation rounds (fetched 2026-10-13).md`
+  - `data/knowledge/State Immigrations/ACT/2026-27/ACT Migration application fees (fetched 2026-10-13).md`
+  - `data/knowledge/State Immigrations/ACT/2026-27/ACT 190 Canberra resident eligibility (fetched 2026-10-13).md`
+  - `data/knowledge/State Immigrations/ACT/2026-27/ACT 491 Canberra resident eligibility (fetched 2026-10-13).md`
 
 ## NSW
 
 - State: New South Wales
-- Status in our rules: Suspended / Closed (last verified 2026-10-11)
+- Status in our rules: Suspended / Closed (last verified 2026-10-13)
 - Monitored pages:
   - https://www.nsw.gov.au/visas-and-migration/skilled-visas/skilled-nominated-visa-subclass-190
+  - https://www.nsw.gov.au/visas-and-migration/skilled-visas/skilled-work-regional-visa-subclass-491
   - https://www.nsw.gov.au/visas-and-migration/skilled-visas/nsw-skills-lists
 - Source file(s) to replace after a change:
-  - `data/knowledge/State Immigrations/NSW/Skilled Nominated visa (Subclass 190)/Skilled Nominated visa (Subclass 190).pdf`
-  - `data/knowledge/State Immigrations/NSW/Skilled Work Regional visa (subclass 491)/Skilled Work Regional visa (subclass 491) NSW.pdf`
+  - `data/knowledge/State Immigrations/NSW/2026-27/NSW Skilled Nominated visa (subclass 190) (fetched 2026-10-13).md`
+  - `data/knowledge/State Immigrations/NSW/2026-27/NSW Skilled Work Regional visa (subclass 491) (fetched 2026-10-13).md`
+  - `data/knowledge/State Immigrations/NSW/2026-27/NSW Skills Lists (fetched 2026-10-13).md`
 
 ## NT
 
 - State: Northern Territory
-- Status in our rules: Check official page (last verified 2026-10-11)
+- Status in our rules: Suspended / Closed (last verified 2026-10-13)
 - Monitored pages:
   - https://australiasnorthernterritory.com.au/move/migrate-to-work/nt-government-visa-nomination
 - Source file(s) to replace after a change:
+  - `data/knowledge/State Immigrations/NT/2026-27/NT user-confirmed status (checked 2026-10-13).md`
   - `data/knowledge/State Immigrations/NT/NT Government visa nomination.pdf`
 
 ## QLD
 
 - State: Queensland
-- Status in our rules: Suspended / Closed (last verified 2026-10-11)
+- Status in our rules: Suspended / Closed (last verified 2026-10-13)
 - Monitored pages:
-  - https://migration.qld.gov.au/program-updates/skilled-program
-  - https://migration.qld.gov.au/visa-options/skilled-visas
+  - https://www.migration.qld.gov.au/visa-options/skilled-visas/skilled-workers-living-in-queensland
+  - https://www.migration.qld.gov.au/nomination-process/application-process/application-fees
 - Source file(s) to replace after a change:
-  - `data/knowledge/State Immigrations/Queensland/Skilled visa options (Queensland)/Skilled visa options (Queensland).pdf`
+  - `data/knowledge/State Immigrations/Queensland/2026-27/QLD Skilled workers living in Queensland (onshore) (fetched 2026-10-13).md`
+  - `data/knowledge/State Immigrations/Queensland/2026-27/QLD Application fees (fetched 2026-10-13).md`
 
 ## SA
 
 - State: South Australia
-- Status in our rules: Open (Onshore & Offshore) (last verified 2026-10-11)
+- Status in our rules: Suspended / Closed (last verified 2026-10-13)
 - Monitored pages:
-  - https://migration.sa.gov.au/skilled-migrants
+  - https://migration.sa.gov.au/before-applying/visa-options-and-pathways/skilled-migrants
+  - https://migration.sa.gov.au/news
 - Source file(s) to replace after a change:
-  - `data/knowledge/State Immigrations/SA/State nomination South Australia/State nomination South Australia.pdf`
-  - `data/knowledge/State Immigrations/SA/Skilled Nominated Visa (subclass 190)SA/Skilled Nominated Visa (subclass 190)SA.pdf`
-  - `data/knowledge/State Immigrations/SA/Skilled Work Regional (Provisional) Visa (subclass 491) SA/Skilled Work Regional (Provisional) Visa (subclass 491) SA.pdf`
+  - `data/knowledge/State Immigrations/SA/2026-27/SA News - ROIs closing 2 June 2026 (fetched 2026-10-13).md`
+  - `data/knowledge/State Immigrations/SA/2026-27/SA Skilled Migration (nomination streams and fees) (fetched 2026-10-13).md`
+  - `data/knowledge/State Immigrations/SA/2026-27/SA Skilled Employment in South Australia stream (fetched 2026-10-13).md`
+  - `data/knowledge/State Immigrations/SA/2026-27/SA South Australian Graduates stream (fetched 2026-10-13).md`
+  - `data/knowledge/State Immigrations/SA/2026-27/SA Outer Regional Skilled Employment stream (fetched 2026-10-13).md`
+  - `data/knowledge/State Immigrations/SA/2026-27/SA Offshore stream (fetched 2026-10-13).md`
 
 ## TAS
 
 - State: Tasmania
-- Status in our rules: Open (Onshore Only) (last verified 2026-10-11)
+- Status in our rules: Open (Onshore Only) (last verified 2026-10-13)
 - Monitored pages:
   - https://www.migration.tas.gov.au/skilled_migration
 - Source file(s) to replace after a change:
+  - `data/knowledge/State Immigrations/TAS/2026-27/TAS user-confirmed program settings (checked 2026-10-13).md`
   - `data/knowledge/State Immigrations/TAS/Migration Tasmania-Skilled Migration.pdf`
 
 ## VIC
@@ -87,11 +103,13 @@ The URLs below are the ones the project already cites; they could not be reached
 ## WA
 
 - State: Western Australia
-- Status in our rules: Open (Onshore & Offshore) (last verified 2026-10-11)
+- Status in our rules: Check official page (last verified 2026-10-13)
 - Monitored pages:
   - https://migration.wa.gov.au/our-services-support/state-nominated-migration-program
+  - https://migration.wa.gov.au/news
 - Source file(s) to replace after a change:
-  - `data/knowledge/State Immigrations/Western Australia/State Nominated Migration Program/State Nominated Migration Program Western Australia.pdf`
+  - `data/knowledge/State Immigrations/Western Australia/2026-27/WA State Nominated Migration Program (fetched 2026-10-13).md`
+  - `data/knowledge/State Immigrations/Western Australia/2026-27/WA News list (fetched 2026-10-13).md`
   - `data/knowledge/State Immigrations/Western Australia/Last invited expression of interest - Priority trade occupations - May 2026.pdf`
   - `data/knowledge/State Immigrations/Western Australia/2025—26 program year — Invitations issued.png`
 

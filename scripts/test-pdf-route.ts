@@ -969,8 +969,10 @@ function expectedFriction(gapBase: number | null): FrictionName {
 }
 
 const FRICTION_PROFILES: Array<{ name: string; input: ReadinessInput; expected?: Record<string, FrictionName> }> = [
-  // Score 70; benchmarks 95/85/75 -> 189 gap 25; 190 85 - (70+5) = 10; 491 75 - (70+15) = -10
-  { name: "f-se-261313-gaps-25-10-minus10", input: { ...base }, expected: { "189": "HIGH", "190": "MEDIUM", "491": "LOW" } },
+  // Score 70; benchmarks 95/85/75 -> 189 gap 25; 190 85 - (70+5) = 10; 491 75 - (70+15) = -10 -> points LOW, but after
+  // the 2026-10-13 state refresh (NSW, QLD, VIC, NT, SA closed; WA unconfirmed) at most two states are open for 491 ->
+  // raised to MEDIUM by the nomination-availability floor (above)
+  { name: "f-se-261313-gaps-25-10-minus10", input: { ...base }, expected: { "189": "HIGH", "190": "MEDIUM", "491": "MEDIUM" } },
   // Civil 233211 with Superior English, offshore: score 70; 491 70 - 85 -> points LOW, but only two states (WA, ACT)
   // are open for the occupation offshore -> MEDIUM; 190 80 - 75 = 5; 189 gap 20
   {

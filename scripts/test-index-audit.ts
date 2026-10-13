@@ -61,6 +61,30 @@ const ind = classifyIndex(all, disk);
 t("indexed + unindexed account for every file on disk", ind.length + findUnindexed(all, disk).length === disk.length);
 t("the ingester supports exactly the audit's indexable types", [".pdf", ".xlsx", ".md", ".json"].every((e) => INDEXABLE_EXTENSIONS.has(e)) && INDEXABLE_EXTENSIONS.size === 4);
 
+console.log("exclusion by policy and nested archive folders");
+const EA = "Skill Assessments/The Institution of Engineers Australia/engineers-australia-accredited-programs-V73-sep26.pdf";
+const policyDisk: DiskFile[] = [
+  { name: "engineers-australia-accredited-programs-V73-sep26.pdf", category: "The Institution of Engineers Australia", path: EA },
+  { name: "README - pages needed.md", category: "2026-27", path: "State Immigrations/Victoria/2026-27/README - pages needed.md" },
+  { name: "readme.md", category: "general", path: "readme.md" },
+  { name: "ACT Migration.pdf", category: "_archive", path: "State Immigrations/ACT/_archive/ACT Migration.pdf" },
+  { name: "Skilled Nominated visa (Subclass 190).pdf", category: "Skilled Nominated visa (Subclass 190)", path: "State Immigrations/NSW/_archive/Skilled Nominated visa (Subclass 190)/Skilled Nominated visa (Subclass 190).pdf" },
+  { name: "NSW Skilled Nominated visa (subclass 190) (fetched 2026-10-13).md", category: "2026-27", path: "State Immigrations/NSW/2026-27/NSW Skilled Nominated visa (subclass 190) (fetched 2026-10-13).md" },
+];
+const policyRows = findUnindexed([], policyDisk);
+const statusOf = (n: string) => policyRows.find((r) => r.name === n);
+t("the Engineers Australia accredited-programs list is never indexed", statusOf("engineers-australia-accredited-programs-V73-sep26.pdf")?.status === "skipped" && /excluded by policy/.test(statusOf("engineers-australia-accredited-programs-V73-sep26.pdf")!.reason));
+t("README* files are never indexed", statusOf("README - pages needed.md")?.status === "skipped" && statusOf("readme.md")?.status === "skipped");
+t("a file in a NESTED archive folder is skipped, not indexed", statusOf("Skilled Nominated visa (Subclass 190).pdf")?.status === "skipped" && /archive/.test(statusOf("Skilled Nominated visa (Subclass 190).pdf")!.reason));
+t("the new 2026-27 snapshot is the one to index", statusOf("NSW Skilled Nominated visa (subclass 190) (fetched 2026-10-13).md")?.status === "not_indexed");
+const cleaned = classifyIndex(
+  [ix("engineers-australia-accredited-programs-V73-sep26.pdf", "The Institution of Engineers Australia"), ix("README - pages needed.md", "2026-27"), ix("ACT Migration.pdf", "ACT"), ix("Skilled Nominated visa (Subclass 190).pdf", "Skilled Nominated visa (Subclass 190)"), ix("NSW Skilled Nominated visa (subclass 190) (fetched 2026-10-13).md", "2026-27")],
+  policyDisk,
+);
+t("already-indexed policy-excluded files are orphaned, so the cleaner removes them", cleaned[0].status === "orphaned" && cleaned[1].status === "orphaned");
+t("already-indexed archived files (nested or not) are superseded, so the cleaner removes them", cleaned[2].status === "superseded" && cleaned[3].status === "superseded");
+t("the current snapshot stays", cleaned[4].status === "current");
+
 if (failures > 0) {
   console.error(`\n${failures} check(s) failed`);
   process.exit(1);

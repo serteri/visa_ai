@@ -76,7 +76,7 @@ const B0D_BASELINE: Record<string, { status: string; notMet: string[]; unknown: 
   "820": { status: "conditional", notMet: [], unknown: ["820.relationship", "820.sponsor"] },
 };
 // 190 without WA: report b0d20f74 records no WA job offer, and WA's 190 General stream needs a six-month WA employment contract.
-const B0D_AVAILABILITY = { "190": ["TAS", "ACT"], "491": ["WA", "TAS", "ACT"] };
+const B0D_AVAILABILITY = { "190": ["TAS", "ACT"], "491": ["TAS", "ACT"] };
 
 const gateSnapshot = (r: ReadinessReport) =>
   Object.fromEntries(Object.entries(r.visaGates ?? {}).map(([v, g]) => [v, { status: g.status, notMet: g.notMet.map((x) => x.id), unknown: g.unknown.map((x) => x.id) }]));
@@ -169,16 +169,16 @@ async function main() {
       const rule = stateResidenceRule(code);
       console.log(`  ${code}: ${rule.requirement}${rule.subclasses ? ` (subclass ${rule.subclasses.join("/")} only)` : ""}${rule.fact ? ` -- "${rule.fact.slice(0, 90)}..."` : ""}${rule.source ? ` [${rule.source.split(";")[0]}]` : ""}`);
     }
-    t("every classified rule rests on a sourced fact; ACT and NT are not confirmed", ["NSW", "VIC", "QLD", "SA", "WA", "TAS"].every((c) => Boolean(stateResidenceRule(c).fact)) && stateResidenceRule("ACT").requirement === "not_confirmed" && stateResidenceRule("NT").requirement === "not_confirmed");
+    t("every classified rule rests on a sourced fact; NT is not confirmed", ["NSW", "VIC", "QLD", "SA", "WA", "TAS", "ACT"].every((c) => Boolean(stateResidenceRule(c).fact)) && stateResidenceRule("ACT").requirement === "required" && stateResidenceRule("NT").requirement === "not_confirmed");
     const run = (rs: ReadinessInput["residenceState"], locale: ReadinessInput["locale"] = "en") => runReadinessEngine({ ...ONSHORE_SE, locale, residenceState: rs }).stateNominationTracker!;
     const qld = run("QLD");
     const tas = run("TAS");
     const tasRow = qld.states.find((s) => s.code === "TAS")!;
     t("QLD resident: Tasmania is not available, with the reason", !qld.nominationAvailability!["190"].includes("TAS") && tasRow.isOpen === false && tasRow.residenceBlock === "required" && tasRow.requirements.includes("Tasmania's onshore pathways require you to live in Tasmania; you live in Queensland."), JSON.stringify(tasRow.requirements.slice(0, 2)));
     t("TAS resident: Tasmania is available", tas.nominationAvailability!["190"].includes("TAS") && tas.nominationAvailability!["491"].includes("TAS"), JSON.stringify(tas.nominationAvailability));
-    t("QLD resident: WA (sourced: interstate candidates eligible) is not residence-blocked and stays available for 491; for 190 its General stream needs a WA job (no WA job recorded), a separate condition", !qld.states.find((s) => s.code === "WA")!.residenceBlock && qld.nominationAvailability!["491"].includes("WA") && !qld.nominationAvailability!["190"].includes("WA"));
+    t("QLD resident: WA (sourced: interstate candidates eligible) is not residence-blocked, but is not counted as available because its 2026-27 intake is not confirmed (Check official page)", !qld.states.find((s) => s.code === "WA")!.residenceBlock && !qld.nominationAvailability!["491"].includes("WA") && !qld.nominationAvailability!["190"].includes("WA"));
     const act = qld.states.find((s) => s.code === "ACT")!;
-    t("QLD resident: ACT is 'residence requirement not confirmed' and not counted as available", act.residenceBlock === "not_confirmed" && !qld.nominationAvailability!["190"].includes("ACT") && act.requirements.some((x) => x.includes("residence requirement not confirmed")), JSON.stringify(act.requirements.slice(0, 2)));
+    t("QLD resident: ACT (sourced: Canberra residents need 6 / 3 months' Canberra residence) is residence-blocked and not counted as available", act.residenceBlock === "required" && !qld.nominationAvailability!["190"].includes("ACT") && !qld.nominationAvailability!["491"].includes("ACT"), JSON.stringify(act.requirements.slice(0, 2)));
     t("no top-recommended state is blocked by residence", !qld.topRecommendedStates.some((s) => s.residenceBlock));
     for (const [loc, needle] of [["tr", "Tazmanya Avustralya içi yolları Tazmanya eyaletinde yaşamanızı gerektirir; siz Queensland eyaletinde yaşıyorsunuz."], ["zh-Hans", "塔斯马尼亚州境内途径要求您在塔斯马尼亚州居住；您居住在昆士兰州。"]] as const) {
       const row = run("QLD", loc).states.find((s) => s.code === "TAS")!;

@@ -1,4 +1,5 @@
 import type { Locale } from "@/lib/readiness/types";
+import { STATE_RULES } from "@/lib/state-nomination/state-rules-config";
 
 /**
  * Turkish and Simplified Chinese versions of the state nomination notes shown in the report's State Nomination Tracker:
@@ -8,50 +9,41 @@ import type { Locale } from "@/lib/readiness/types";
  * names (Canberra Matrix, State Nominated Migration Program (SNMP), WASMOL, Live in Melbourne, ...) are unchanged.
  */
 export const STATE_NOTE_TRANSLATIONS: Record<string, { tr: string; zh: string }> = {
-  "The current status of Northern Territory nomination is not confirmed here -- check the official Northern Territory page. When the program is open, nominees commit to living and working in the NT for at least 3 years from visa grant.": {
-    tr: "Northern Territory adaylığının güncel durumu burada doğrulanmamıştır -- resmi Northern Territory sayfasını kontrol edin. Program açıkken adaylar, vize veriliş tarihinden itibaren en az 3 yıl NT'de yaşamayı ve çalışmayı taahhüt eder.",
-    zh: "北领地提名的当前状态在此未经确认——请查看北领地官方页面。计划开放时，被提名人须承诺自签证获批之日起在北领地居住并工作至少 3 年。",
+  // ── state-rules-config.ts notes (keyed by the rule's own text so they cannot drift) ───────────────────────────
+  [STATE_RULES.ACT.note]: {
+    tr: "ACT adaylığı basit bir puan barajıyla değil, liyakate göre sıralama yapan Canberra Matrix üzerinden yürür -- ACT'nin 2026-27 kontenjanı henüz Avustralya Hükümeti tarafından onaylanmamıştır (2025-26'da subclass 190 için 800 ve subclass 491 için 800 yer vardı ve hepsi kullanıldı), 2026-27'nin ilk davet turu 12 Ekim 2026 haftası için planlanmıştır (yalnızca subclass 190) ve talep sürekli olarak kontenjanı aşmaktadır.",
+    zh: "ACT 提名通过按择优排名的 Canberra Matrix 进行，而非简单的分数线——ACT 2026-27 年度名额尚未获澳大利亚联邦政府确认（2025-26 年度为 subclass 190 800 个、subclass 491 800 个，且已全部用完），2026-27 年度首轮邀请定于 2026 年 10 月 12 日当周（仅 subclass 190），且申请需求一直超过名额。",
   },
-  // ── state-rules-config.ts notes ───────────────────────────────────────────────────────────────────────────────
-  "ACT nomination runs through the merit-ranked Canberra Matrix, not a simple points cutoff -- the 2025-26 allocation is 800 places for subclass 190 and 800 for subclass 491, and demand for the program consistently exceeds this allocation.": {
-    tr: "ACT adaylığı basit bir puan barajıyla değil, liyakate göre sıralama yapan Canberra Matrix üzerinden yürür -- 2025-26 kontenjanı subclass 190 için 800 ve subclass 491 için 800 yerdir ve programa talep bu kontenjanı sürekli olarak aşmaktadır.",
-    zh: "ACT 提名通过按择优排名的 Canberra Matrix 进行，而非简单的分数线——2025-26 年度名额为 subclass 190 800 个、subclass 491 800 个，且申请需求一直超过该名额。",
+  [STATE_RULES.NT.note]: {
+    tr: "Yeni başvurulara kapalı (2026-27), dar kapsamlı bir Avustralya içi 491 istisnasıyla. NT'nin 2026-27 programı, subclass 190 ve tüm yurt dışı akışları için yeni başvurulara kapalıdır (\"sufficient applications received\"). İstisna, NT Graduate veya NT Resident ölçütlerini karşılayan ve vize son tarihi 30 Eylül 2027'den önce olan Avustralya içindeki başvuru sahipleri için subclass 491'dir: 30 Eylül 2027 veya öncesinde sona eren ve subclass 485 için uygun olmayan bir esas vize; 30 Eylül 2027 veya öncesinde 45 yaşına girmek; ya da 30 Eylül 2027 veya öncesindeki bir doğum günü nedeniyle 491 puanının 65'in altına düşmesi.",
+    zh: "不接受新申请（2026-27），仅对境内 491 设有狭窄例外。NT 2026-27 年度项目对 subclass 190 及所有境外类别均不接受新申请（\"sufficient applications received\"）。例外仅限于满足 NT Graduate 或 NT Resident 条件、且签证期限在 2027 年 9 月 30 日之前的境内 subclass 491 申请人：主签证于 2027 年 9 月 30 日或之前到期且不符合 subclass 485 资格；在 2027 年 9 月 30 日或之前年满 45 岁；或因在 2027 年 9 月 30 日或之前的生日而使 491 分数低于 65 分。",
   },
-  "The Northern Territory's 2025-26 General Skilled Migration nomination allocation has been fully exhausted. Applications already in the queue are still assessed, and will be considered for nomination once the 2026-27 allocation is received, but new applicants should treat NT nomination as closed for the remainder of the current program year.": {
-    tr: "Northern Territory'nin 2025-26 General Skilled Migration adaylık kontenjanı tamamen dolmuştur. Sırada bekleyen başvurular değerlendirilmeye devam eder ve 2026-27 kontenjanı alındığında adaylık için ele alınır; ancak yeni başvuru sahipleri NT adaylığını mevcut program yılının geri kalanı için kapalı kabul etmelidir.",
-    zh: "Northern Territory 2025-26 年度 General Skilled Migration 提名名额已全部用完。已在排队的申请仍会评估，并将在收到 2026-27 年度名额后考虑提名；但新申请人应将 NT 提名视为在本计划年度剩余时间内关闭。",
+  [STATE_RULES.TAS.note]: {
+    tr: "Migration Tasmania'nın 2026-27 programı 17 Ağustos 2026'da yeni Registrations of Interest (ROI) başvurularına açıldı; 2,050 kontenjan (subclass 190 için 1,250, subclass 491 için 800) ve 20 Ağustos 2026'dan itibaren haftalık davetler söz konusu. ROI'ler dört Avustralya içi yolda (Skilled Employment, Skilled Graduate, Established Resident, Business Operator) Gold/Green/Orange-Plus/Orange/Red geçiş sistemine göre sıralanır; yurt dışından yalnızca Overseas Applicant (sağlık veya eğitim sektörü iş teklifi) yolu subclass 190 için devam eder ve 2026-27'de subclass 491 Overseas Skilled Occupation Profiles yolu için davet planlanmamaktadır.",
+    zh: "Migration Tasmania 的 2026-27 年度项目已于 2026 年 8 月 17 日开始接受新的 Registrations of Interest (ROI)，名额共 2,050 个（subclass 190 为 1,250 个，subclass 491 为 800 个），自 2026 年 8 月 20 日起每周发出邀请。ROI 在四个境内途径（Skilled Employment、Skilled Graduate、Established Resident、Business Operator）中按 Gold/Green/Orange-Plus/Orange/Red 通行等级排序；境外方面仅保留 subclass 190 的 Overseas Applicant（医疗或教育行业工作邀约）途径，且 2026-27 年度不计划向 subclass 491 的 Overseas Skilled Occupation Profiles 途径发出邀请。",
   },
-  "Migration Tasmania ranks Registrations of Interest (ROI) into a Gold/Green/Orange-Plus/Orange/Red pass system across four onshore pathways (Skilled Employment, Skilled Graduate, Established Resident, Business Operator) plus a narrow Overseas Applicant (health/education job-offer) pathway -- the general offshore-only 491 pathway is currently paused for the 2026-27 program year.": {
-    tr: "Migration Tasmania, Registrations of Interest (ROI) başvurularını dört Avustralya içi yolda (Skilled Employment, Skilled Graduate, Established Resident, Business Operator) ve dar kapsamlı bir Overseas Applicant (sağlık/eğitim iş teklifi) yolunda Gold/Green/Orange-Plus/Orange/Red geçiş sistemine göre sıralar -- genel, yalnızca yurt dışından başvurulan 491 yolu 2026-27 program yılı için şu anda askıdadır.",
-    zh: "Migration Tasmania 将 Registrations of Interest (ROI) 按 Gold/Green/Orange-Plus/Orange/Red 通行等级排序，涵盖四个境内途径（Skilled Employment、Skilled Graduate、Established Resident、Business Operator）以及范围有限的 Overseas Applicant（医疗/教育工作邀约）途径——一般性的仅限境外 491 途径在 2026-27 计划年度暂停。",
+  [STATE_RULES.NSW.note]: {
+    tr: "New South Wales'in Skilled Nominated (190) ve Skilled Work Regional (491) sayfalarının ikisinde de, tüm adaylık yerleri tamamen dağıtıldığı için başvuruların mevcut program yılı için kapalı olduğunu belirten bir duyuru vardır (duyuru program yılını belirtmez). Önceden gönderilmiş başvurular değerlendirilmeye devam eder; NSW bir sonraki program yılı için program ayarlarını ve uygunluk ölçütlerini gözden geçirmektedir ve 13 Ekim 2026 itibarıyla yeni ayarlar yayımlamamıştır.",
+    zh: "New South Wales 的 Skilled Nominated (190) 和 Skilled Work Regional (491) 页面均发布公告称，由于所有可用提名名额已全部分配，本计划年度的申请已关闭（公告未注明具体计划年度）。已提交的申请继续评估；NSW 正在审查下一计划年度的项目设置和资格标准，截至 2026 年 10 月 13 日尚未公布新设置。",
   },
-  "New South Wales' Skilled Nominated (190) and Skilled Work Regional (491) programs are both closed for the current program year -- an 'Important Notice: Closure' banner on both program documents states all 2025-26 nomination places have been fully allocated. Already-submitted applications continue to be assessed; updated 2026-27 settings are not yet published.": {
-    tr: "New South Wales'in Skilled Nominated (190) ve Skilled Work Regional (491) programlarının ikisi de mevcut program yılı için kapalıdır -- her iki programın yayımlanan bilgilerindeki 'Important Notice: Closure' duyurusu, 2025-26 adaylık yerlerinin tamamen dağıtıldığını belirtir. Önceden gönderilmiş başvurular değerlendirilmeye devam eder; güncellenmiş 2026-27 ayarları henüz yayımlanmamıştır.",
-    zh: "New South Wales 的 Skilled Nominated (190) 和 Skilled Work Regional (491) 项目在本计划年度均已关闭——两个项目公布信息中的 'Important Notice: Closure' 公告称 2025-26 年度提名名额已全部分配。已提交的申请继续评估；2026-27 年度的更新设置尚未公布。",
+  [STATE_RULES.QLD.note]: {
+    tr: "Queensland'in 2025-26 State Nominated Migration Program (SNMP) için Registrations of Interest (ROI) başvuruları kapalıdır. 2026-27 uygunluk koşulları ve açılış tarihi 13 Ekim 2026 itibarıyla Migration Queensland web sitesinde yayımlanmamıştır; subclass 190 ve 491 için 2026-27 başvuru ücretleri 'to be advised' (daha sonra bildirilecek) olarak listelenmiştir.",
+    zh: "Queensland 2025-26 年度 State Nominated Migration Program (SNMP) 的 Registrations of Interest (ROI) 已关闭。截至 2026 年 10 月 13 日，Migration Queensland 网站尚未公布 2026-27 年度的资格要求和开放日期，subclass 190 和 491 的 2026-27 年度申请费用列为 'to be advised'（待通知）。",
+  },
+  [STATE_RULES.SA.note]: {
+    tr: "South Australia'nın Skilled & Business Migration birimi, 2025-26 program yılı için Registrations of Interest (ROI) başvurularını 2 Haziran 2026 saat 09:00'da kapattı ve 2026-27 programı başladığında tüm uygun adaylardan ROI kabul etmeye yeniden başlayacağını belirtiyor. 13 Ekim 2026 itibarıyla 2026-27 program bilgisi yayımlanmamıştır; akış sayfaları hâlâ 2025-26 ayarlarını anlatmaktadır.",
+    zh: "South Australia 的 Skilled & Business Migration 已于 2026 年 6 月 2 日上午 9 点关闭 2025-26 计划年度的 Registrations of Interest (ROI)，并表示 2026-27 项目开始后将恢复接受所有符合条件的候选人的 ROI。截至 2026 年 10 月 13 日尚未公布 2026-27 项目信息；各类别页面仍在描述 2025-26 年度的设置。",
+  },
+  [STATE_RULES.WA.note]: {
+    tr: "Western Australia'nın State Nominated Migration Program sayfası hâlâ yalnızca 2025-26 programını göstermektedir; 2026-27 ayarları veya alımı yayımlanmamıştır ve programa ilişkin en son haber 8 Aralık 2025 tarihlidir. Gösterilen son davetler 20 Mayıs 2026'da öncelikli zanaat meslekleri için gönderilmiştir: 167 General stream (WASMOL Schedule 2) ve 42 Graduate stream; hepsi subclass 190 içindir, subclass 491 için hiç yoktur. WA'nın 2026-27'de davet gönderip göndermediği burada doğrulanmamıştır -- resmi sayfayı kontrol edin.",
+    zh: "Western Australia 的 State Nominated Migration Program 页面仍然只显示 2025-26 年度项目，尚未公布 2026-27 年度的设置或开放安排，该项目最新的新闻发布于 2025 年 12 月 8 日。页面显示的最近一次邀请于 2026 年 5 月 20 日针对优先技术行业职业发出：General stream（WASMOL Schedule 2）167 份、Graduate stream 42 份，均为 subclass 190，subclass 491 没有。WA 在 2026-27 年度是否在发出邀请，此处无法确认——请查看官方页面。",
   },
   "Victoria's 2025-26 skilled visa nomination program (subclasses 190 and 491) is closed -- Live in Melbourne states all places have been filled. Information about the 2026-27 program has not yet been published.": {
     tr: "Victoria'nın 2025-26 nitelikli vize adaylık programı (subclass 190 ve 491) kapalıdır -- Live in Melbourne tüm yerlerin dolduğunu belirtmektedir. 2026-27 programı hakkında bilgi henüz yayımlanmamıştır.",
     zh: "Victoria 2025-26 年度技术签证提名项目（subclass 190 和 491）已关闭——Live in Melbourne 称所有名额均已用完。2026-27 年度项目信息尚未公布。",
   },
-  "Queensland's 2025-26 State Nominated Migration Program (SNMP) Registrations of Interest are closed across every pathway (offshore skilled workers, building/construction, university graduates, small business owners, and the National Innovation Visa) -- updated 2026-27 settings and an opening date have not yet been published.": {
-    tr: "Queensland'in 2025-26 State Nominated Migration Program (SNMP) Registrations of Interest başvuruları tüm yollarda kapalıdır (yurt dışındaki nitelikli çalışanlar, inşaat, üniversite mezunları, küçük işletme sahipleri ve National Innovation Visa) -- güncellenmiş 2026-27 ayarları ve açılış tarihi henüz yayımlanmamıştır.",
-    zh: "Queensland 2025-26 年度 State Nominated Migration Program (SNMP) 的 Registrations of Interest 在所有途径均已关闭（境外技术人员、建筑业、大学毕业生、小企业主以及 National Innovation Visa）——2026-27 年度的更新设置和开放日期尚未公布。",
-  },
-  "South Australia's Skilled & Business Migration invites Registrations of Interest / EOIs on an ongoing basis throughout 2025-26 for both subclass 190 and 491, prioritising Building & Construction, Defence, Education, Engineering, Health and Manufacturing; the state's published information (as of September 2026) shows no closure or allocation-exhausted notice.": {
-    tr: "South Australia'nın Skilled & Business Migration birimi, 2025-26 boyunca hem subclass 190 hem 491 için sürekli olarak Registrations of Interest / EOI davet eder ve Building & Construction, Defence, Education, Engineering, Health ve Manufacturing sektörlerine öncelik verir; eyaletin yayımladığı bilgiler (Eylül 2026 itibarıyla) herhangi bir kapanış veya kontenjan dolması duyurusu göstermemektedir.",
-    zh: "South Australia 的 Skilled & Business Migration 在 2025-26 年度持续邀请 subclass 190 和 491 的 Registrations of Interest / EOI，优先 Building & Construction、Defence、Education、Engineering、Health 和 Manufacturing 行业；该州公布的信息（截至 2026 年 9 月）未显示任何关闭或名额用尽的通知。",
-  },
-  "Western Australia is issuing invitations under its 2025-26 State Nominated Migration Program (SNMP). Based on the state's published information as of 22 August 2026, skilled-trade occupations were invited as recently as 16 May 2026, with 8,162 invitations issued across all streams in the 2025-26 program year. Occupation eligibility follows WA's 2025-26 occupation lists (WASMOL Schedule 1, Schedule 2 and the Graduate list).": {
-    tr: "Western Australia, 2025-26 State Nominated Migration Program (SNMP) kapsamında davet göndermektedir. Eyaletin 22 Ağustos 2026 itibarıyla yayımladığı bilgilere göre nitelikli zanaat meslekleri en son 16 Mayıs 2026'da davet edilmiş ve 2025-26 program yılında tüm akışlarda 8,162 davet gönderilmiştir. Meslek uygunluğu WA'nın 2025-26 meslek listelerine (WASMOL Schedule 1, Schedule 2 ve Graduate listesi) göre belirlenir.",
-    zh: "Western Australia 正在其 2025-26 年度 State Nominated Migration Program (SNMP) 下发出邀请。根据该州截至 2026 年 8 月 22 日公布的信息，技术行业职业最近一次获邀是在 2026 年 5 月 16 日，2025-26 计划年度各类别共发出 8,162 份邀请。职业资格以 WA 2025-26 年度职业清单（WASMOL Schedule 1、Schedule 2 和 Graduate 清单）为准。",
-  },
 
   // ── state-nomination-status.json special conditions ───────────────────────────────────────────────────────────
-  "Competitive invitation environment": { tr: "Rekabetçi davet ortamı", zh: "邀请竞争激烈" },
-  "Occupation ceilings can move during the program year": {
-    tr: "Meslek tavanları program yılı içinde değişebilir",
-    zh: "职业配额上限可能在计划年度内变动",
-  },
   "Strong preference for applicants already contributing in Victoria": {
     tr: "Victoria'da halihazırda katkı sağlayan başvuru sahipleri güçlü biçimde tercih edilir",
     zh: "明显优先已在 Victoria 作出贡献的申请人",
@@ -60,6 +52,38 @@ export const STATE_NOTE_TRANSLATIONS: Record<string, { tr: string; zh: string }>
     tr: "Bölgesel esneklik adaylık başvurusunu güçlendirir",
     zh: "愿意前往偏远地区可增强提名申请",
   },
+  "Closed for the current program year -- all nomination places fully allocated (the notice does not name the year)": {
+    tr: "Mevcut program yılı için kapalı -- tüm adaylık yerleri tamamen dağıtıldı (duyuru yılı belirtmiyor)",
+    zh: "本计划年度已关闭——提名名额已全部分配（公告未注明具体年度）",
+  },
+  "Invitation-only: no direct applications, and no announced invitation-round dates": {
+    tr: "Yalnızca davetle: doğrudan başvuru yok ve duyurulmuş davet turu tarihi yok",
+    zh: "仅限受邀：不接受直接申请，也没有公布邀请轮次日期",
+  },
+  "2026-27 intake not confirmed -- check the official page": {
+    tr: "2026-27 alımı doğrulanmadı -- resmi sayfayı kontrol edin",
+    zh: "2026-27 年度招收未确认——请查看官方页面",
+  },
+  "2026-27 program not yet published -- ROI intake resumes when it commences": {
+    tr: "2026-27 programı henüz yayımlanmadı -- ROI alımı program başladığında yeniden başlar",
+    zh: "2026-27 年度项目尚未公布——ROI 受理将在项目开始后恢复",
+  },
+  "Closed to new applications (2026-27), with a narrow onshore 491 exception": {
+    tr: "Yeni başvurulara kapalı (2026-27), dar kapsamlı bir Avustralya içi 491 istisnasıyla",
+    zh: "不接受新申请（2026-27），仅对境内 491 设有狭窄例外",
+  },
+  "Exception: onshore subclass 491 for NT Graduate or NT Resident applicants with a visa deadline before 30 September 2027 (substantive visa expiring on or before 30 Sep 2027 and not eligible for subclass 485; turning 45 on or before 30 Sep 2027; or 491 points below 65 because of a birthday on or before 30 Sep 2027)": {
+    tr: "İstisna: vize son tarihi 30 Eylül 2027'den önce olan NT Graduate veya NT Resident başvuru sahipleri için Avustralya içi subclass 491 (30 Eylül 2027 veya öncesinde sona eren ve subclass 485 için uygun olmayan esas vize; 30 Eylül 2027 veya öncesinde 45 yaşına girmek; ya da 30 Eylül 2027 veya öncesindeki bir doğum günü nedeniyle 491 puanının 65'in altına düşmesi)",
+    zh: "例外：签证期限在 2027 年 9 月 30 日之前的 NT Graduate 或 NT Resident 境内 subclass 491 申请人（主签证于 2027 年 9 月 30 日或之前到期且不符合 subclass 485 资格；在 2027 年 9 月 30 日或之前年满 45 岁；或因在 2027 年 9 月 30 日或之前的生日而使 491 分数低于 65 分）",
+  },
+  "Subclass 491 Overseas Skilled Occupation Profiles pathway: no invitations planned for 2026-27": {
+    tr: "Subclass 491 Overseas Skilled Occupation Profiles yolu: 2026-27 için davet planlanmıyor",
+    zh: "Subclass 491 Overseas Skilled Occupation Profiles 途径：2026-27 年度不计划发出邀请",
+  },
+  "Overseas Applicant (health or education sector job offer) pathway remains for subclass 190": {
+    tr: "Overseas Applicant (sağlık veya eğitim sektörü iş teklifi) yolu subclass 190 için devam ediyor",
+    zh: "Overseas Applicant（医疗或教育行业工作邀约）途径仍适用于 subclass 190",
+  },
   "Offshore pathways usually need stronger work experience evidence": {
     tr: "Yurt dışı yolları genellikle daha güçlü iş deneyimi kanıtı gerektirir",
     zh: "境外途径通常需要更充分的工作经验证明",
@@ -67,14 +91,6 @@ export const STATE_NOTE_TRANSLATIONS: Record<string, { tr: string; zh: string }>
   "Program settings can reopen, but current intake is treated as closed": {
     tr: "Program ayarları yeniden açılabilir, ancak mevcut alım kapalı kabul edilir",
     zh: "项目设置可能重新开放，但目前的招收按关闭处理",
-  },
-  "2025-26 nomination allocation exhausted -- no new places until 2026-27 allocation is confirmed": {
-    tr: "2025-26 adaylık kontenjanı doldu -- 2026-27 kontenjanı onaylanana kadar yeni yer yok",
-    zh: "2025-26 年度提名名额已用完——在 2026-27 年度名额确认前没有新名额",
-  },
-  "Offshore applicants generally only considered for subclass 491": {
-    tr: "Yurt dışındaki başvuru sahipleri genellikle yalnızca subclass 491 için değerlendirilir",
-    zh: "境外申请人一般只会被考虑 subclass 491",
   },
   "3-year commitment to live and work in the NT required from visa grant": {
     tr: "Vize verildikten sonra NT'de 3 yıl yaşama ve çalışma taahhüdü gerekir",

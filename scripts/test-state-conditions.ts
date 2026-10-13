@@ -46,7 +46,10 @@ const REASON: Record<Locale, string> = { en: "Requires a WA job offer", tr: "Bat
 
 const base = REVIEW_PERSONAS["ref-xyz-qld"] as ReadinessInput;
 const withWaJob = REVIEW_PERSONAS["ref-xyz-wa-job"] as ReadinessInput;
-const run = (input: ReadinessInput, locale: Locale) => runReadinessEngine({ ...input, locale }) as ReadinessReport;
+// These scenarios are about WA's stream conditions, which only matter when WA is open. WA's own status is "Check official page" since the
+// 2026-10-13 refresh (2026-27 intake not confirmed), so the scenarios set WA open through an admin row saved after the rule's verification date.
+const WA_OPEN = { WA: { status: "Open (Onshore & Offshore)", updatedAt: "2026-10-14T00:00:00.000Z" } };
+const run = (input: ReadinessInput, locale: Locale) => runReadinessEngine({ ...input, locale, stateNominationConfig: WA_OPEN }) as ReadinessReport;
 const reasonCited = (r: ReadinessReport) => r.stateNominationTracker!.states.find((s) => s.code === "WA")!;
 
 async function main() {

@@ -161,12 +161,12 @@ async function main() {
 
     console.log("6. state notes");
     const stateSection = blocks(nsView, "states").filter((b) => b.kind === "kv");
-    const nsw = stateSection.find((b) => b.kind === "kv" && b.rows.some(([, val]) => /Skilled Nominated visa \(Subclass 190\)/.test(val)));
+    const nsw = stateSection.find((b) => b.kind === "kv" && b.rows.some(([, val]) => /Skilled Nominated visa \(subclass 190\)/i.test(val)));
     const condText = nsw && nsw.kind === "kv" ? nsw.rows.filter(([k]) => /Published conditions|Yayımlanmış koşullar|已公布的条件| /.test(k)).map(([, val]) => val).join("\n") : "";
-    t("NSW: the sentences that only repeat the summary (closed for 2025-26, already submitted continue) appear once", L !== "en" || ((condText.match(/continue to be assessed/g) ?? []).length === 1 && !/Both the Skilled Nominated \(190\) and Skilled Work Regional \(491\) programs are closed/.test(condText)), condText.slice(0, 200));
+    t("NSW: the sentences that only repeat the summary (closed for the current program year, already submitted continue) appear once", L !== "en" || ((condText.match(/continue to be assessed/g) ?? []).length === 1 && !/Both the Skilled Nominated \(190\) and Skilled Work Regional \(491\) programs are closed/.test(condText)), condText.slice(0, 200));
     const flagged = (x: ReportView) => x.sections.find((s) => s.id === "states")!.blocks.filter((b) => b.kind === "kv" && b.rows.some(([, val]) => /may have changed|değişmiş olabilir|可能已变化/.test(val))).length;
-    t("viewed 14 days after the 2026-10-11 checks (no monitor data): no state is flagged", flagged(viewOf(withData, L, "not_sure", { asOf: new Date("2026-10-25T00:00:00Z") }).v) === 0);
-    t("viewed 15 days after them with no successful monitor check: all eight states say data may have changed since (the monitor rules are in scripts/test-state-monitor.ts)", flagged(viewOf(withData, L, "not_sure", { asOf: new Date("2026-10-26T00:00:00Z") }).v) === 8);
+    t("viewed 12-14 days after the 2026-10-13 / 2026-10-11 checks (no monitor data): no state is flagged", flagged(viewOf(withData, L, "not_sure", { asOf: new Date("2026-10-25T00:00:00Z") }).v) === 0);
+    t("viewed 15+ days after them with no successful monitor check: all eight states say data may have changed since (the monitor rules are in scripts/test-state-monitor.ts)", flagged(viewOf(withData, L, "not_sure", { asOf: new Date("2026-10-28T00:00:00Z") }).v) === 8);
   }
 
   console.log("\n6. unit checks (language independent)");

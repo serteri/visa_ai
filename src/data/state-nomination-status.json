@@ -3,10 +3,10 @@
     {
       "code": "NSW",
       "name": "New South Wales",
-      "lastVerified": "2026-10-11",
-      "status": "High Demand",
-      "offshoreAvailability": "open",
-      "onshoreAvailability": "open",
+      "lastVerified": "2026-10-13",
+      "status": "Closed",
+      "offshoreAvailability": "closed",
+      "onshoreAvailability": "closed",
       "minimumPoints": 85,
       "minimumEnglish": "proficient",
       "minimumExperienceYears": 3,
@@ -14,9 +14,9 @@
       "preferredVisaTypes": ["190"],
       "requiresStateResidence": false,
       "requiresRecentEmployment": false,
-      "offshoreQuotaPressure": "high",
-      "programWindow": "Invitational rounds with high competition",
-      "specialConditions": ["Competitive invitation environment", "Occupation ceilings can move during the program year"]
+      "offshoreQuotaPressure": "closed",
+      "programWindow": "Applications closed for the current program year (all nomination places allocated); settings for the next program year are under review and not yet published",
+      "specialConditions": ["Closed for the current program year -- all nomination places fully allocated (the notice does not name the year)", "Invitation-only: no direct applications, and no announced invitation-round dates"]
     },
     {
       "code": "VIC",
@@ -39,8 +39,8 @@
     {
       "code": "WA",
       "name": "Western Australia",
-      "lastVerified": "2026-10-11",
-      "status": "Open for Offshore",
+      "lastVerified": "2026-10-13",
+      "status": "Check official page",
       "offshoreAvailability": "open",
       "onshoreAvailability": "open",
       "minimumPoints": 70,
@@ -51,16 +51,16 @@
       "requiresStateResidence": false,
       "requiresRecentEmployment": false,
       "offshoreQuotaPressure": "medium",
-      "programWindow": "Program tends to reward broad occupation coverage",
-      "specialConditions": ["Regional flexibility strengthens the nomination case"]
+      "programWindow": "Page still shows only the 2025-26 program; no 2026-27 settings published; last invitations issued 20 May 2026 (priority trade occupations)",
+      "specialConditions": ["2026-27 intake not confirmed -- check the official page", "Regional flexibility strengthens the nomination case"]
     },
     {
       "code": "SA",
       "name": "South Australia",
-      "lastVerified": "2026-10-11",
-      "status": "High Demand",
-      "offshoreAvailability": "open",
-      "onshoreAvailability": "open",
+      "lastVerified": "2026-10-13",
+      "status": "Closed",
+      "offshoreAvailability": "closed",
+      "onshoreAvailability": "closed",
       "minimumPoints": 75,
       "minimumEnglish": "proficient",
       "minimumExperienceYears": 3,
@@ -68,14 +68,14 @@
       "preferredVisaTypes": ["190", "491"],
       "requiresStateResidence": false,
       "requiresRecentEmployment": false,
-      "offshoreQuotaPressure": "medium",
-      "programWindow": "Offshore streams usually favour stronger profiles",
-      "specialConditions": ["Offshore pathways usually need stronger work experience evidence"]
+      "offshoreQuotaPressure": "closed",
+      "programWindow": "2025-26 ROIs closed 2 June 2026; SA will resume accepting ROIs when the 2026-27 program commences; no 2026-27 settings published yet",
+      "specialConditions": ["2026-27 program not yet published -- ROI intake resumes when it commences", "Offshore pathways usually need stronger work experience evidence"]
     },
     {
       "code": "QLD",
       "name": "Queensland",
-      "lastVerified": "2026-10-11",
+      "lastVerified": "2026-10-13",
       "status": "Closed",
       "offshoreAvailability": "closed",
       "onshoreAvailability": "closed",
@@ -87,13 +87,13 @@
       "requiresStateResidence": false,
       "requiresRecentEmployment": false,
       "offshoreQuotaPressure": "closed",
-      "programWindow": "Current program treated as paused/closed",
+      "programWindow": "2025-26 ROIs closed; 2026-27 eligibility requirements and opening date not yet published",
       "specialConditions": ["Program settings can reopen, but current intake is treated as closed"]
     },
     {
       "code": "NT",
       "name": "Northern Territory",
-      "lastVerified": "2026-10-11",
+      "lastVerified": "2026-10-13",
       "status": "Closed",
       "offshoreAvailability": "closed",
       "onshoreAvailability": "closed",
@@ -105,13 +105,13 @@
       "requiresStateResidence": false,
       "requiresRecentEmployment": true,
       "offshoreQuotaPressure": "closed",
-      "programWindow": "2025-26 General Skilled Migration allocation fully exhausted; queued applications wait for the 2026-27 allocation",
-      "specialConditions": ["2025-26 nomination allocation exhausted -- no new places until 2026-27 allocation is confirmed", "Offshore applicants generally only considered for subclass 491", "3-year commitment to live and work in the NT required from visa grant"]
+      "programWindow": "2026-27 program closed to new applications (sufficient applications received) for subclass 190 and all offshore streams; narrow onshore subclass 491 exception",
+      "specialConditions": ["Closed to new applications (2026-27), with a narrow onshore 491 exception", "Exception: onshore subclass 491 for NT Graduate or NT Resident applicants with a visa deadline before 30 September 2027 (substantive visa expiring on or before 30 Sep 2027 and not eligible for subclass 485; turning 45 on or before 30 Sep 2027; or 491 points below 65 because of a birthday on or before 30 Sep 2027)", "3-year commitment to live and work in the NT required from visa grant"]
     },
     {
       "code": "TAS",
       "name": "Tasmania",
-      "lastVerified": "2026-10-11",
+      "lastVerified": "2026-10-13",
       "status": "Onshore Only",
       "offshoreAvailability": "closed",
       "onshoreAvailability": "open",
@@ -123,13 +123,13 @@
       "requiresStateResidence": true,
       "requiresRecentEmployment": false,
       "offshoreQuotaPressure": "low",
-      "programWindow": "Tasmanian study or work ties often matter",
-      "specialConditions": ["Tasmanian ties or local activity normally improve eligibility"]
+      "programWindow": "2026-27 program open since 17 August 2026: 2,050 allocations (1,250 subclass 190, 800 subclass 491), weekly invitations from 20 August 2026",
+      "specialConditions": ["Tasmanian ties or local activity normally improve eligibility", "Subclass 491 Overseas Skilled Occupation Profiles pathway: no invitations planned for 2026-27", "Overseas Applicant (health or education sector job offer) pathway remains for subclass 190"]
     },
     {
       "code": "ACT",
       "name": "Australian Capital Territory",
-      "lastVerified": "2026-10-11",
+      "lastVerified": "2026-10-13",
       "status": "High Demand",
       "offshoreAvailability": "limited",
       "onshoreAvailability": "open",
@@ -141,7 +141,7 @@
       "requiresStateResidence": false,
       "requiresRecentEmployment": true,
       "offshoreQuotaPressure": "high",
-      "programWindow": "2025-26 allocation: 800 places for subclass 190 and 800 for subclass 491, ranked via the merit-based Canberra Matrix; 2026-27 allocation not yet announced",
+      "programWindow": "2026-27 allocation not yet confirmed (2025-26: 800 places for subclass 190 and 800 for subclass 491); first 2026-27 invitation round week starting 12 October 2026 (subclass 190 only); ranked via the merit-based Canberra Matrix",
       "specialConditions": ["Ranked by the Canberra Matrix (merit-based, not first-come-first-served) -- invitation is never guaranteed even if eligibility criteria are met", "Two-year commitment to live and work in Canberra after visa grant"]
     }
   ]

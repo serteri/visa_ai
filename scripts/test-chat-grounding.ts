@@ -52,8 +52,8 @@ async function main() {
   {
     t("dated file names parse to one document key and an effective date", JSON.stringify(parseDocumentVersion(OLD_491)) === JSON.stringify({ key: "subclass 491 skilled work regional (provisional) visa - main applicant", date: "2026-04-26" }) && parseDocumentVersion("Skilled Independent visa (subclass 189) Points-tested stream_23_09_2026.pdf").date === "2026-09-23" && parseDocumentVersion("The Institution of Engineers Australia (1).pdf").key === "the institution of engineers australia", JSON.stringify(parseDocumentVersion(OLD_491)));
     const pairs = (KNOWLEDGE_VERSIONS as unknown as { pairs?: Array<{ superseded: string }> }).pairs ?? [];
-    const expected = ["Subclass 820 Partner visa (temporary)_01July2026.pdf", "Subclass 820 Partner visa (temporary)_26April2026.pdf", "Skills in Demand Visa (subclass 482) Core Skills stream_25April2026.pdf", "The Institution of Engineers Australia.pdf"];
-    t("the manifest lists every superseded file on disk (820 x2, 482 Core Skills, archived Engineers Australia)", expected.every((f) => KNOWLEDGE_VERSIONS.superseded.includes(f)) && pairs.length === expected.length, JSON.stringify(KNOWLEDGE_VERSIONS.superseded));
+    const expected = ["Subclass 820 Partner visa (temporary)_01July2026.pdf", "Subclass 820 Partner visa (temporary)_26April2026.pdf", "Skills in Demand Visa (subclass 482) Core Skills stream_25April2026.pdf", "The Institution of Engineers Australia.pdf", "ACT Migration.pdf"];
+    t("the manifest lists every superseded file on disk (820 x2, 482 Core Skills, archived Engineers Australia, archived ACT Migration 2025-26)", expected.every((f) => KNOWLEDGE_VERSIONS.superseded.includes(f)) && pairs.length === expected.length, JSON.stringify(KNOWLEDGE_VERSIONS.superseded));
     t("an April 2026 491 version still in the index is superseded by the 23 September 2026 document", isSupersededSource(OLD_491) && !isSupersededSource(NEW_491));
     const retrieved = [
       chunk(OLD_491, "The 491 fee is AUD 4,910. The 191 has a minimum income requirement.", { category: "Subclass 491 Skilled Work Regional (Provisional) visa - Main applicant", page: 1 }),

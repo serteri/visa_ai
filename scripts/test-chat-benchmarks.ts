@@ -165,7 +165,8 @@ async function main() {
     const facts = buildEngineFacts();
     t("engine facts: WA 190 needs a six-month full-time WA employment contract (p.5, 9), not 491; moving to WA does not meet it", facts.includes("subclass 190, General stream") && facts.includes("at least six months") && facts.includes("pp. 5, 9") && facts.includes("NOT required for subclass 491") && facts.includes("Moving to WA, or living there, does not meet it"));
     const ref = REVIEW_PERSONAS["ref-xyz-qld"] as ReadinessInput;
-    const refReport = runReadinessEngine({ ...ref, locale: "en" });
+    // WA's own status is "Check official page" since the 2026-10-13 refresh; this check is about its 190 stream condition, so WA is set open by an admin row.
+    const refReport = runReadinessEngine({ ...ref, locale: "en", stateNominationConfig: { WA: { status: "Open (Onshore & Offshore)", updatedAt: "2026-10-14T00:00:00.000Z" } } });
     const summary = buildProfileSummary(JSON.parse(JSON.stringify(refReport)), ref)!;
     t("the visitor's profile lists WA as 'Not available for 190 (Requires a WA job offer)' and still open for 491", summary.includes("Not available on the visitor's answers (state stream condition unmet): 190 -> WA (Requires a WA job offer)") && summary.includes("491 -> WA"), summary);
     const flagged: Record<Locale, string> = {

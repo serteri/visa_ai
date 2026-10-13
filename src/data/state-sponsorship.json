@@ -1,46 +1,46 @@
 {
-  "updatedAt": "2026-10-11",
+  "updatedAt": "2026-10-13",
   "occupations": [
     {
       "anzscoCode": "261313",
       "occupationName": "Software Engineer",
       "states": [
-        { "code": "NSW", "name": "New South Wales", "status": "High Demand" },
-        { "code": "VIC", "name": "Victoria", "status": "Onshore Only" },
+        { "code": "NSW", "name": "New South Wales", "status": "Closed" },
+        { "code": "VIC", "name": "Victoria", "status": "Closed" },
         { "code": "QLD", "name": "Queensland", "status": "Closed" },
         { "code": "WA", "name": "Western Australia", "status": "High Demand" },
-        { "code": "SA", "name": "South Australia", "status": "Regional Opportunity" },
+        { "code": "SA", "name": "South Australia", "status": "Closed" },
         { "code": "TAS", "name": "Tasmania", "status": "Open" },
         { "code": "ACT", "name": "Australian Capital Territory", "status": "Onshore Only" },
-        { "code": "NT", "name": "Northern Territory", "status": "Regional Opportunity" }
+        { "code": "NT", "name": "Northern Territory", "status": "Closed" }
       ]
     },
     {
       "anzscoCode": "321211",
       "occupationName": "Motor Mechanic",
       "states": [
-        { "code": "NSW", "name": "New South Wales", "status": "Onshore Only" },
-        { "code": "VIC", "name": "Victoria", "status": "Open" },
+        { "code": "NSW", "name": "New South Wales", "status": "Closed" },
+        { "code": "VIC", "name": "Victoria", "status": "Closed" },
         { "code": "QLD", "name": "Queensland", "status": "Closed" },
         { "code": "WA", "name": "Western Australia", "status": "High Demand" },
-        { "code": "SA", "name": "South Australia", "status": "Regional Opportunity" },
+        { "code": "SA", "name": "South Australia", "status": "Closed" },
         { "code": "TAS", "name": "Tasmania", "status": "Open" },
         { "code": "ACT", "name": "Australian Capital Territory", "status": "Closed" },
-        { "code": "NT", "name": "Northern Territory", "status": "High Demand" }
+        { "code": "NT", "name": "Northern Territory", "status": "Closed" }
       ]
     },
     {
       "anzscoCode": "254412",
       "occupationName": "Registered Nurse",
       "states": [
-        { "code": "NSW", "name": "New South Wales", "status": "High Demand" },
-        { "code": "VIC", "name": "Victoria", "status": "High Demand" },
+        { "code": "NSW", "name": "New South Wales", "status": "Closed" },
+        { "code": "VIC", "name": "Victoria", "status": "Closed" },
         { "code": "QLD", "name": "Queensland", "status": "Open" },
         { "code": "WA", "name": "Western Australia", "status": "High Demand" },
-        { "code": "SA", "name": "South Australia", "status": "Open" },
+        { "code": "SA", "name": "South Australia", "status": "Closed" },
         { "code": "TAS", "name": "Tasmania", "status": "Regional Opportunity" },
         { "code": "ACT", "name": "Australian Capital Territory", "status": "Onshore Only" },
-        { "code": "NT", "name": "Northern Territory", "status": "Regional Opportunity" }
+        { "code": "NT", "name": "Northern Territory", "status": "Closed" }
       ]
     }
   ]

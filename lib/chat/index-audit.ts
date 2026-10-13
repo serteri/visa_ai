@@ -23,6 +23,32 @@ export type AuditRow = IndexedDoc & { status: AuditStatus; reason: string };
 
 const ARCHIVE = new Set(["_archive", "archive", "old", "superseded"]);
 const isArchive = (c: string | null | undefined) => ARCHIVE.has((c ?? "").trim().toLowerCase());
+/** In an archive folder at ANY depth ("_archive/<doc>/<file>.pdf" has the document folder as its category, not "_archive"). */
+const isArchiveFile = (f: DiskFile) => isArchive(f.category) || (f.path ?? "").split("/").slice(0, -1).some((seg) => isArchive(seg));
+
+/**
+ * Files that are never indexed, by policy (durable: scripts/seed-knowledge.ts and scripts/clean-knowledge-index.ts both
+ * read this). A listed file that is already in the index is reported "orphaned", so the cleaner removes its chunks.
+ *   - explicit paths (relative to data/knowledge);
+ *   - any file whose name starts with README (placeholder / instruction files, not source documents).
+ */
+export const INDEX_IGNORE_PATHS: ReadonlyArray<{ path: string; reason: string }> = [
+  {
+    path: "Skill Assessments/The Institution of Engineers Australia/engineers-australia-accredited-programs-V73-sep26.pdf",
+    reason: "accredited-program lists dilute the Engineers Australia policy content",
+  },
+];
+const IGNORE_NAME = /^README/i;
+
+/** Why a file is excluded from the index by policy, or null. Without a path (manifest fallback) an explicit entry matches on the file name. */
+export function ignoreReason(f: DiskFile): string | null {
+  if (IGNORE_NAME.test(f.name)) return "excluded by policy: README / placeholder file";
+  for (const e of INDEX_IGNORE_PATHS) {
+    const match = f.path ? f.path === e.path : e.path.endsWith(`/${f.name}`);
+    if (match) return `excluded by policy: ${e.reason}`;
+  }
+  return null;
+}
 
 /** File types lib/document-processor.ts can extract text from (the only ones that can be indexed). */
 export const INDEXABLE_EXTENSIONS = new Set([".pdf", ".xlsx", ".md", ".json"]);
@@ -36,14 +62,20 @@ export const isIndexableName = (name: string) => INDEXABLE_EXTENSIONS.has(extOf(
 function latestByKey(disk: DiskFile[]): Map<string, string> {
   const latest = new Map<string, string>();
   for (const f of disk) {
-    if (isArchive(f.category)) continue;
+    if (isArchiveFile(f)) continue;
     const v = parseDocumentVersion(f.name);
     if (v.date && (!latest.has(v.key) || v.date > latest.get(v.key)!)) latest.set(v.key, v.date);
   }
   return latest;
 }
 
-export function classifyIndex(indexed: IndexedDoc[], disk: DiskFile[]): AuditRow[] {
+export function classifyIndex(indexed: IndexedDoc[], allDisk: DiskFile[]): AuditRow[] {
+  const ignored = new Map<string, string>();
+  const disk = allDisk.filter((f) => {
+    const why = ignoreReason(f);
+    if (why) ignored.set(f.name, why);
+    return !why;
+  });
   const byName = new Map<string, DiskFile[]>();
   for (const f of disk) byName.set(f.name, [...(byName.get(f.name) ?? []), f]);
 
@@ -53,10 +85,11 @@ export function classifyIndex(indexed: IndexedDoc[], disk: DiskFile[]): AuditRow
     const files = byName.get(d.source);
     const v = parseDocumentVersion(d.source);
     const newer = latest.get(v.key);
+    if (!files && ignored.has(d.source)) return { ...d, status: "orphaned", reason: ignored.get(d.source)! };
     if (!files) {
       return { ...d, status: "orphaned", reason: newer && (!v.date || v.date < newer) ? `no file on disk (a newer version, ${newer}, is)` : "no file on disk" };
     }
-    if (isArchive(d.category) || files.every((f) => isArchive(f.category))) {
+    if (isArchive(d.category) || files.every((f) => isArchiveFile(f))) {
       return { ...d, status: "superseded", reason: "the copy in an archive folder" };
     }
     if (newer && (!v.date || v.date < newer)) {
@@ -113,7 +146,9 @@ export function findUnindexed(indexed: IndexedDoc[], disk: DiskFile[]): Unindexe
     const newer = latest.get(v.key);
     const older = Boolean(newer && (!v.date || v.date < newer));
     const row = (status: UnindexedStatus, isLatest: boolean, reason: string): UnindexedRow => ({ ...f, status, latest: isLatest, reason });
-    if (isArchive(f.category)) rows.push(row("skipped", false, "in an archive folder"));
+    const excluded = ignoreReason(f);
+    if (excluded) rows.push(row("skipped", false, excluded));
+    else if (isArchiveFile(f)) rows.push(row("skipped", false, "in an archive folder"));
     else if (older) rows.push(row("skipped", false, `older version (${v.date ?? "undated"}); latest on disk is ${newer}`));
     else if (!isIndexableName(f.name)) rows.push(row("skipped", true, `unsupported file type (${extOf(f.name) || "none"}), the ingester cannot read it`));
     else {

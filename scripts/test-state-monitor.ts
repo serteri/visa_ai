@@ -207,7 +207,7 @@ async function main() {
   const { buildReportView } = await import("../lib/reports/report-view");
   const { REVIEW_PERSONAS } = await import("./render-persona-pdfs");
   const base = REVIEW_PERSONAS["reference-se-au"] as Record<string, unknown>;
-  const asOf = D("2026-10-14");
+  const asOf = D("2026-10-15");
   for (const L of ["en", "tr", "zh-Hans"] as const) {
     const report = JSON.parse(JSON.stringify(runReadinessEngine({ ...base, locale: L, targetVisa: "491", preferredPathway: "491" } as never)));
     const infos = (monitor: Parameters<typeof buildStateInfos>[4]) => buildStateInfos(report, String(base.occupation), L, asOf, monitor);
@@ -215,18 +215,18 @@ async function main() {
     const ok = { pendingChangeAt: null, lastSuccessAt: "2026-10-13T20:00:00Z" };
     const all = Object.fromEntries(["ACT", "NSW", "NT", "QLD", "SA", "TAS", "VIC", "WA"].map((c) => [c, ok]));
     t(`${L}: monitor healthy, nothing detected: no state carries the note`, flagged(all).length === 0);
-    const withChange = { ...all, NSW: { pendingChangeAt: "2026-10-13T20:00:00Z", lastSuccessAt: "2026-10-13T20:00:00Z" } };
+    const withChange = { ...all, NSW: { pendingChangeAt: "2026-10-14T20:00:00Z", lastSuccessAt: "2026-10-14T20:00:00Z" } };
     const f = flagged(withChange);
     const nsw = infos(withChange).find((s) => s.code === "NSW")!;
-    t(`${L}: an unapplied NSW change: only NSW carries the note, with "since 2026-10-11" and the detection date`, f.length === 1 && f[0] === "NSW" && nsw.staleNote.includes("2026-10-11") && nsw.staleNote.includes("2026-10-13"), nsw.staleNote);
-    t(`${L}: the note is in the report's own language`, L === "en" ? /Data may have changed since 2026-10-11/.test(nsw.staleNote) : L === "tr" ? /değişmiş olabilir/.test(nsw.staleNote) : /可能已变化/.test(nsw.staleNote));
+    t(`${L}: an unapplied NSW change: only NSW carries the note, with "since 2026-10-13" and the detection date`, f.length === 1 && f[0] === "NSW" && nsw.staleNote.includes("2026-10-13") && nsw.staleNote.includes("2026-10-14"), nsw.staleNote);
+    t(`${L}: the note is in the report's own language`, L === "en" ? /Data may have changed since 2026-10-13/.test(nsw.staleNote) : L === "tr" ? /değişmiş olabilir/.test(nsw.staleNote) : /可能已变化/.test(nsw.staleNote));
     const stale = infos({ ...all, WA: { pendingChangeAt: null, lastSuccessAt: "2026-09-20T00:00:00Z" } });
     t(`${L}: WA data verified 2026-10-11 stays unflagged while the monitor's last success (2026-09-20) is older than the verification date`, stale.find((s) => s.code === "WA")!.staleNote === "");
     const farFuture = buildStateInfos(report, String(base.occupation), L, D("2026-10-30"), all);
     t(`${L}: 17 days later with the last success 2026-10-13 and verification 2026-10-11: all eight carry the "monitor has not run" note`, farFuture.every((s) => !!s.staleNote) && /monitor|izleyici|监测/.test(farFuture[0].staleNote), farFuture[0].staleNote);
     const view = buildReportView({ report, locale: L, profile: { name: "T", occupation: String(base.occupation), occupationRaw: String(base.occupation) }, dateText: "", asOf, stateMonitor: withChange });
     const sec = view.sections.find((s) => s.id === "states")!;
-    const noted = sec.blocks.filter((b) => b.kind === "kv" && b.rows.some(([, v]) => /2026-10-13/.test(v))).length;
+    const noted = sec.blocks.filter((b) => b.kind === "kv" && b.rows.some(([, v]) => /2026-10-14/.test(v))).length;
     t(`${L}: in the rendered report exactly one state block shows the note`, noted === 1, String(noted));
   }
 
@@ -322,12 +322,16 @@ main().catch((e) => {
   process.exitCode = 1;
 });
 
-// NT must not state a current status or a 2026-27 publication claim until confirmed from the official page.
+// NT states the status confirmed on the official page on 2026-10-13 (closed to new applications, narrow onshore 491 exception).
 {
   const { STATE_RULES } = require("../lib/state-nomination/state-rules-config");
   const nt = STATE_RULES.NT;
   const text = [nt.note, nt.aiSummary, ...nt.keyFacts].join(" ");
-  const ok = nt.status === "Check official page" && !/not published|exhausted|had not|closed for/i.test(text);
-  console.log(ok ? "  ✅ NT states no current status and no 2026-27 publication claim" : "  ❌ NT wording claims a status");
+  const ok =
+    nt.status === "Suspended / Closed" &&
+    nt.note.startsWith("Closed to new applications (2026-27), with a narrow onshore 491 exception") &&
+    /30 September 2027/.test(nt.note) &&
+    !/exhausted/i.test(text);
+  console.log(ok ? "  ✅ NT states the user-confirmed 2026-27 status (closed, narrow onshore 491 exception) exactly" : "  ❌ NT wording does not match the confirmed status");
   if (!ok) process.exitCode = 1;
 }
