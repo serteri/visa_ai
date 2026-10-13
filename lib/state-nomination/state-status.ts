@@ -19,6 +19,7 @@ export const KNOWN_STATE_STATUSES: readonly StateRuleStatus[] = [
   "Open (Onshore Only)",
   "Open (Offshore Only)",
   "Suspended / Closed",
+  "Check official page",
 ];
 
 export function asKnownStateStatus(value: string | undefined | null): StateRuleStatus | undefined {

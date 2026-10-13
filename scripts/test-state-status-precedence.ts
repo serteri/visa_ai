@@ -63,7 +63,7 @@ async function main() {
         admin("ACT", "Open (Onshore & Offshore)", "2026-09-22T12:58:14.178Z"),
       ],
       intel: [],
-      expect: { TAS: "Open (Onshore Only)", ACT: "High Demand", NT: "Closed" },
+      expect: { TAS: "Open (Onshore Only)", ACT: "High Demand", NT: "Check official page" },
     },
     {
       name: "an admin closure saved after the rule was verified wins",

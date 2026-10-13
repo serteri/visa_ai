@@ -8,6 +8,10 @@ import type { Locale } from "@/lib/readiness/types";
  * names (Canberra Matrix, State Nominated Migration Program (SNMP), WASMOL, Live in Melbourne, ...) are unchanged.
  */
 export const STATE_NOTE_TRANSLATIONS: Record<string, { tr: string; zh: string }> = {
+  "The current status of Northern Territory nomination is not confirmed here -- check the official Northern Territory page. When the program is open, nominees commit to living and working in the NT for at least 3 years from visa grant.": {
+    tr: "Northern Territory adaylığının güncel durumu burada doğrulanmamıştır -- resmi Northern Territory sayfasını kontrol edin. Program açıkken adaylar, vize veriliş tarihinden itibaren en az 3 yıl NT'de yaşamayı ve çalışmayı taahhüt eder.",
+    zh: "北领地提名的当前状态在此未经确认——请查看北领地官方页面。计划开放时，被提名人须承诺自签证获批之日起在北领地居住并工作至少 3 年。",
+  },
   // ── state-rules-config.ts notes ───────────────────────────────────────────────────────────────────────────────
   "ACT nomination runs through the merit-ranked Canberra Matrix, not a simple points cutoff -- the 2025-26 allocation is 800 places for subclass 190 and 800 for subclass 491, and demand for the program consistently exceeds this allocation.": {
     tr: "ACT adaylığı basit bir puan barajıyla değil, liyakate göre sıralama yapan Canberra Matrix üzerinden yürür -- 2025-26 kontenjanı subclass 190 için 800 ve subclass 491 için 800 yerdir ve programa talep bu kontenjanı sürekli olarak aşmaktadır.",

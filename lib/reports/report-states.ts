@@ -37,6 +37,17 @@ export function repeatsSummary(sentence: string, summary: string): boolean {
 const dayOf = (iso: string) => iso.slice(0, 10);
 const daysBetween = (fromDay: string, now: Date) => (now.getTime() - Date.parse(`${fromDay}T00:00:00Z`)) / 86_400_000;
 
+const CHECK_PAGE_STATUS: Record<Locale, string> = {
+  en: "Check the official page",
+  tr: "Resmi sayfayı kontrol edin",
+  "zh-Hans": "请查看官方页面",
+};
+
+/** A status the report states as is, except "Check official page" (current status not confirmed), which is shown in the reader's language. */
+function displayStatus(status: string, l: Locale): string {
+  return status === "Check official page" ? (CHECK_PAGE_STATUS[l] ?? CHECK_PAGE_STATUS.en) : status;
+}
+
 /**
  * Whether (and why) a state's data carries the "data may have changed since" note. Driven by the page monitor (lib/state-monitor), not by the age of the
  * data alone: the note shows when (1) the monitor saw a change on the state's page that has not been applied yet (it is newer than the date the data was
@@ -98,7 +109,7 @@ export function buildStateInfos(report: ReadinessReport, occupationRaw: string |
     return {
       code,
       name: rule?.name ?? s?.name ?? code,
-      status: s?.status ?? rule?.status ?? "—",
+      status: displayStatus(s?.status ?? rule?.status ?? "—", l),
       occupationList,
       conditions: [...new Set(conditions)],
       sources: (rule?.sourceDocument ?? "").split(";").map((d) => docTitle(d.trim())).filter(Boolean).join("; ") || "—",

@@ -321,3 +321,13 @@ main().catch((e) => {
   console.error(e);
   process.exitCode = 1;
 });
+
+// NT must not state a current status or a 2026-27 publication claim until confirmed from the official page.
+{
+  const { STATE_RULES } = require("../lib/state-nomination/state-rules-config");
+  const nt = STATE_RULES.NT;
+  const text = [nt.note, nt.aiSummary, ...nt.keyFacts].join(" ");
+  const ok = nt.status === "Check official page" && !/not published|exhausted|had not|closed for/i.test(text);
+  console.log(ok ? "  ✅ NT states no current status and no 2026-27 publication claim" : "  ❌ NT wording claims a status");
+  if (!ok) process.exitCode = 1;
+}

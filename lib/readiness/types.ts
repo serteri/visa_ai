@@ -680,7 +680,8 @@ export type StateNominationStatus =
   | "Open (Onshore & Offshore)"
   | "Open (Onshore Only)"
   | "Open (Offshore Only)"
-  | "Suspended / Closed";
+  | "Suspended / Closed"
+  | "Check official page";
 
 export type StateMatchLevel = "high" | "medium" | "low";
 

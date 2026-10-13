@@ -7,26 +7,34 @@ import { STATE_NOTE_TRANSLATIONS } from "./state-note-translations";
  * English wording is shown unchanged. Numbers, dates, fees and subclass numbers are carried over exactly as published.
  */
 const KEY_FACTS: Record<string, { tr: string; zh: string }> = {
-  // Verification statements (11 October 2026 check).
-  "These are the latest published settings (2025-26). As of 11 October 2026 New South Wales had not published 2026-27 settings.": {
-    tr: "Bunlar yayımlanmış en güncel ayarlardır (2025-26). 11 Ekim 2026 itibarıyla Yeni Güney Galler 2026-27 ayarlarını yayımlamamıştı.",
-    zh: "这些是已公布的最新设置（2025-26）。截至 2026 年 10 月 11 日，新南威尔士州尚未公布 2026-27 年度设置。",
+  // Verification statements: neutral, no claim about 2026-27 publication.
+  "These settings come from the 2025-26 program documents. Check the official New South Wales page for current settings.": {
+    tr: "Bu ayarlar 2025-26 program belgelerinden alınmıştır. Güncel ayarlar için resmi Yeni Güney Galler sayfasını kontrol edin.",
+    zh: "这些设置来自 2025-26 年度计划文件。当前设置请查看新南威尔士州官方页面。",
   },
-  "These are the latest published settings (2025-26). As of 11 October 2026 Victoria had not published 2026-27 settings.": {
-    tr: "Bunlar yayımlanmış en güncel ayarlardır (2025-26). 11 Ekim 2026 itibarıyla Victoria 2026-27 ayarlarını yayımlamamıştı.",
-    zh: "这些是已公布的最新设置（2025-26）。截至 2026 年 10 月 11 日，维多利亚州尚未公布 2026-27 年度设置。",
+  "These settings come from the 2025-26 program documents. Check the official Victoria page for current settings.": {
+    tr: "Bu ayarlar 2025-26 program belgelerinden alınmıştır. Güncel ayarlar için resmi Victoria sayfasını kontrol edin.",
+    zh: "这些设置来自 2025-26 年度计划文件。当前设置请查看维多利亚州官方页面。",
   },
-  "These are the latest published settings (2025-26). As of 11 October 2026 Queensland had not published 2026-27 settings.": {
-    tr: "Bunlar yayımlanmış en güncel ayarlardır (2025-26). 11 Ekim 2026 itibarıyla Queensland 2026-27 ayarlarını yayımlamamıştı.",
-    zh: "这些是已公布的最新设置（2025-26）。截至 2026 年 10 月 11 日，昆士兰州尚未公布 2026-27 年度设置。",
+  "These settings come from the 2025-26 program documents. Check the official Queensland page for current settings.": {
+    tr: "Bu ayarlar 2025-26 program belgelerinden alınmıştır. Güncel ayarlar için resmi Queensland sayfasını kontrol edin.",
+    zh: "这些设置来自 2025-26 年度计划文件。当前设置请查看昆士兰州官方页面。",
   },
-  "These are the latest published settings (2025-26). As of 11 October 2026 the Northern Territory had not published 2026-27 settings.": {
-    tr: "Bunlar yayımlanmış en güncel ayarlardır (2025-26). 11 Ekim 2026 itibarıyla Northern Territory 2026-27 ayarlarını yayımlamamıştı.",
-    zh: "这些是已公布的最新设置（2025-26）。截至 2026 年 10 月 11 日，北领地尚未公布 2026-27 年度设置。",
+  "These settings come from the 2025-26 program documents. Check the official Australian Capital Territory page for current settings.": {
+    tr: "Bu ayarlar 2025-26 program belgelerinden alınmıştır. Güncel ayarlar için resmi Avustralya Başkent Bölgesi (ACT) sayfasını kontrol edin.",
+    zh: "这些设置来自 2025-26 年度计划文件。当前设置请查看澳大利亚首都领地官方页面。",
   },
-  "These are the latest published settings (2025-26), checked on 11 October 2026.": {
-    tr: "Bunlar yayımlanmış en güncel ayarlardır (2025-26); 11 Ekim 2026'da kontrol edildi.",
-    zh: "这些是已公布的最新设置（2025-26），于 2026 年 10 月 11 日核对。",
+  "These settings come from the 2025-26 program documents. Check the official South Australia page for current settings.": {
+    tr: "Bu ayarlar 2025-26 program belgelerinden alınmıştır. Güncel ayarlar için resmi Güney Avustralya sayfasını kontrol edin.",
+    zh: "这些设置来自 2025-26 年度计划文件。当前设置请查看南澳大利亚州官方页面。",
+  },
+  "These settings come from the 2025-26 program documents. Check the official Western Australia page for current settings.": {
+    tr: "Bu ayarlar 2025-26 program belgelerinden alınmıştır. Güncel ayarlar için resmi Batı Avustralya sayfasını kontrol edin.",
+    zh: "这些设置来自 2025-26 年度计划文件。当前设置请查看西澳大利亚州官方页面。",
+  },
+  "Current Northern Territory nomination status: check the official Northern Territory page.": {
+    tr: "Northern Territory adaylık durumu şu anda: resmi Northern Territory sayfasını kontrol edin.",
+    zh: "北领地当前提名状态：请查看北领地官方页面。",
   },
   "Checked on 11 October 2026: no change since the previous check.": {
     tr: "11 Ekim 2026'da kontrol edildi: önceki kontrolden bu yana değişiklik yok.",

@@ -395,6 +395,7 @@ function localizedStateStatus(status: string, locale: string): string {
       tr: "yalnızca Avustralya dışındaki başvuru sahiplerine açık",
       "zh-Hans": "仅对境外申请人开放",
     },
+    "Check official page": { en: "not confirmed here; check the official page", tr: "burada doğrulanmadı; resmi sayfayı kontrol edin", "zh-Hans": "此处未确认；请查看官方页面" },
     "Suspended / Closed": { en: "suspended / closed", tr: "askıya alındı / kapalı", "zh-Hans": "已暂停 / 已关闭" },
   };
   const entry = map[status];

@@ -634,7 +634,10 @@ export function calculateStateNominationTracker(
 
     // Open = the program is not closed/suspended AND the on/offshore requirement is met by this
     // applicant. Only open states may be recommended anywhere in the report (incl. the LLM step).
+    // A state whose status is "Check official page" is not confirmed open, so it is not counted as open.
     const isOpen =
+      effectiveStatus !== "Check official page" &&
+      displayStatus !== "Check official page" &&
       !isClosedStatus(effectiveStatus) &&
       !isClosedStatus(displayStatus) &&
       !(isOnshoreOnlyStatus(displayStatus) && offshore) &&
