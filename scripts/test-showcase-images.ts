@@ -106,6 +106,16 @@ async function main() {
     t(`${L}: the sample note says placeholder name / information only`, /placeholder|yer tutucu|占位符/.test(d["home.reportShowcase.sampleNote"]));
   }
 
+  console.log("\n5. other marketing surfaces (homepage tree, social images)");
+  const homeTree = pageFiles.filter((f) => f.startsWith("components/")).map(read).join("\n");
+  t("the homepage tree has no case-log / outcome-percentage content (no 'Match', 'odds' or 'X% -> Y%')", !/CaseLog|\d+% Match|Nomination Odds|%\d+ Eşleşme|提名几率/i.test(homeTree));
+  t("the homepage no longer imports the removed CaseLog", !existsSync("components/landing/CaseLog.tsx") && !read("components/home-content.tsx").includes("CaseLog"));
+  const ogRefs = new Set<string>();
+  for (const f of [...walk("app"), ...walk("components")].filter((x) => /\.(tsx?)$/.test(x))) for (const m of read(f).matchAll(/["'`](\/og\/[A-Za-z0-9_.\-]+)/g)) ogRefs.add(m[1]);
+  const ogMissing = [...ogRefs].filter((r) => !existsSync(path.join("public", r)));
+  t(`every /og/ image the pages reference exists (${[...ogRefs].join(", ") || "none"})`, ogMissing.length === 0, ogMissing.join(", "));
+  t("no OG / Twitter image points into the removed screenshot folder", [...ogRefs].every((r) => !/screenshot/.test(r)));
+
   console.log(`\n${failures === 0 ? "✅ ALL CHECKS PASSED" : `❌ ${failures} CHECK(S) FAILED`}`);
   process.exitCode = failures === 0 ? 0 : 1;
 }

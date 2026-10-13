@@ -8,7 +8,6 @@ import { Hero } from "@/components/landing/Hero";
 import { InstitutionsMarquee } from "@/components/landing/institutions-marquee";
 import { StatsBar } from "@/components/landing/StatsBar";
 import { HowItWorks } from "@/components/landing/HowItWorks";
-import { CaseLog } from "@/components/landing/CaseLog";
 import { PremiumReportShowcase } from "@/components/sections/PremiumReportShowcase";
 import { PdfGuides } from "@/components/landing/PdfGuides";
 import { FeaturesBento } from "@/components/landing/FeaturesBento";
@@ -69,7 +68,6 @@ export function HomeContent({ initialFreeDownloadsLeft }: HomeContentProps) {
       <InstitutionsMarquee locale={locale} />
       <StatsBar locale={locale} />
       <HowItWorks locale={locale} />
-      <CaseLog locale={locale} />
       <PdfGuides locale={locale} />
       <PdfDownloadModal
         locale={locale}
