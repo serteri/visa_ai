@@ -1,8 +1,8 @@
 /**
  * The official state / territory program pages the change monitor watches, and for each state the source file(s) to replace when a page changes
- * (from docs/state-recheck-2026-27.md / state-rules-config.ts `sourceDocument`). The URLs are the ones the project already cites; they were NOT
- * reachable from the build sandbox, so the first runs show which need correcting (a page that fails is reported once after repeated failures).
- * VIC's liveinmelbourne.vic.gov.au was confirmed directly on 2026-10-11.
+ * (from docs/state-recheck-2026-27.md / state-rules-config.ts `sourceDocument`). The list was supplied by the project owner on 2026-10-13;
+ * the URLs have not been fetched from the build sandbox, so the first monitor runs show which need correcting (a page that fails is reported
+ * once after repeated failures).
  */
 import { getStateRule } from "@/lib/state-nomination/state-rules-config";
 
@@ -12,21 +12,17 @@ export type StateCode = (typeof STATE_CODES)[number];
 export type MonitoredPage = { state: StateCode; url: string };
 
 export const MONITORED_PAGES: readonly MonitoredPage[] = [
-  { state: "ACT", url: "https://www.act.gov.au/migration/skilled-migration/act-skilled-migration-invitation-rounds" },
-  { state: "ACT", url: "https://www.act.gov.au/migration" },
-  { state: "NSW", url: "https://www.nsw.gov.au/visas-and-migration/skilled-visas/latest-news-and-updates" },
-  { state: "NSW", url: "https://www.nsw.gov.au/visas-and-migration" },
-  { state: "NT", url: "https://www.migration.nt.gov.au/" },
-  { state: "QLD", url: "https://migration.qld.gov.au/" },
-  { state: "QLD", url: "https://migration.qld.gov.au/latest-news" },
-  { state: "SA", url: "https://migration.sa.gov.au/" },
-  { state: "SA", url: "https://migration.sa.gov.au/news" },
-  { state: "TAS", url: "https://www.migration.tas.gov.au/" },
-  { state: "TAS", url: "https://www.migration.tas.gov.au/news" },
-  { state: "VIC", url: "https://liveinmelbourne.vic.gov.au/" },
-  { state: "VIC", url: "https://liveinmelbourne.vic.gov.au/news-events/news" },
+  { state: "ACT", url: "https://www.act.gov.au/migration/skilled-migrants" },
+  { state: "ACT", url: "https://www.act.gov.au/migration/home" },
+  { state: "NSW", url: "https://www.nsw.gov.au/visas-and-migration/skilled-visas/skilled-nominated-visa-subclass-190" },
+  { state: "NSW", url: "https://www.nsw.gov.au/visas-and-migration/skilled-visas/nsw-skills-lists" },
+  { state: "NT", url: "https://australiasnorthernterritory.com.au/move/migrate-to-work/nt-government-visa-nomination" },
+  { state: "QLD", url: "https://migration.qld.gov.au/program-updates/skilled-program" },
+  { state: "QLD", url: "https://migration.qld.gov.au/visa-options/skilled-visas" },
+  { state: "SA", url: "https://migration.sa.gov.au/skilled-migrants" },
+  { state: "TAS", url: "https://www.migration.tas.gov.au/skilled_migration" },
+  { state: "VIC", url: "https://liveinmelbourne.vic.gov.au/migrate/skilled-migration-visas" },
   { state: "WA", url: "https://migration.wa.gov.au/our-services-support/state-nominated-migration-program" },
-  { state: "WA", url: "https://migration.wa.gov.au/" },
 ];
 
 /** The knowledge-base file(s) to replace for a state ("data/knowledge/..."), or a note when the state's source is a web page only. */

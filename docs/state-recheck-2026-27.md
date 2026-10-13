@@ -20,8 +20,8 @@ The URLs below are the ones the project already cites; they could not be reached
 - State: Australian Capital Territory
 - Status in our rules: High Demand (last verified 2026-10-11)
 - Monitored pages:
-  - https://www.act.gov.au/migration/skilled-migration/act-skilled-migration-invitation-rounds
-  - https://www.act.gov.au/migration
+  - https://www.act.gov.au/migration/skilled-migrants
+  - https://www.act.gov.au/migration/home
 - Source file(s) to replace after a change:
   - `data/knowledge/State Immigrations/ACT/ACT Migration.pdf`
 
@@ -30,8 +30,8 @@ The URLs below are the ones the project already cites; they could not be reached
 - State: New South Wales
 - Status in our rules: Suspended / Closed (last verified 2026-10-11)
 - Monitored pages:
-  - https://www.nsw.gov.au/visas-and-migration/skilled-visas/latest-news-and-updates
-  - https://www.nsw.gov.au/visas-and-migration
+  - https://www.nsw.gov.au/visas-and-migration/skilled-visas/skilled-nominated-visa-subclass-190
+  - https://www.nsw.gov.au/visas-and-migration/skilled-visas/nsw-skills-lists
 - Source file(s) to replace after a change:
   - `data/knowledge/State Immigrations/NSW/Skilled Nominated visa (Subclass 190)/Skilled Nominated visa (Subclass 190).pdf`
   - `data/knowledge/State Immigrations/NSW/Skilled Work Regional visa (subclass 491)/Skilled Work Regional visa (subclass 491) NSW.pdf`
@@ -39,9 +39,9 @@ The URLs below are the ones the project already cites; they could not be reached
 ## NT
 
 - State: Northern Territory
-- Status in our rules: Closed (last verified 2026-10-11)
+- Status in our rules: Check official page (last verified 2026-10-11)
 - Monitored pages:
-  - https://www.migration.nt.gov.au/
+  - https://australiasnorthernterritory.com.au/move/migrate-to-work/nt-government-visa-nomination
 - Source file(s) to replace after a change:
   - `data/knowledge/State Immigrations/NT/NT Government visa nomination.pdf`
 
@@ -50,8 +50,8 @@ The URLs below are the ones the project already cites; they could not be reached
 - State: Queensland
 - Status in our rules: Suspended / Closed (last verified 2026-10-11)
 - Monitored pages:
-  - https://migration.qld.gov.au/
-  - https://migration.qld.gov.au/latest-news
+  - https://migration.qld.gov.au/program-updates/skilled-program
+  - https://migration.qld.gov.au/visa-options/skilled-visas
 - Source file(s) to replace after a change:
   - `data/knowledge/State Immigrations/Queensland/Skilled visa options (Queensland)/Skilled visa options (Queensland).pdf`
 
@@ -60,8 +60,7 @@ The URLs below are the ones the project already cites; they could not be reached
 - State: South Australia
 - Status in our rules: Open (Onshore & Offshore) (last verified 2026-10-11)
 - Monitored pages:
-  - https://migration.sa.gov.au/
-  - https://migration.sa.gov.au/news
+  - https://migration.sa.gov.au/skilled-migrants
 - Source file(s) to replace after a change:
   - `data/knowledge/State Immigrations/SA/State nomination South Australia/State nomination South Australia.pdf`
   - `data/knowledge/State Immigrations/SA/Skilled Nominated Visa (subclass 190)SA/Skilled Nominated Visa (subclass 190)SA.pdf`
@@ -72,8 +71,7 @@ The URLs below are the ones the project already cites; they could not be reached
 - State: Tasmania
 - Status in our rules: Open (Onshore Only) (last verified 2026-10-11)
 - Monitored pages:
-  - https://www.migration.tas.gov.au/
-  - https://www.migration.tas.gov.au/news
+  - https://www.migration.tas.gov.au/skilled_migration
 - Source file(s) to replace after a change:
   - `data/knowledge/State Immigrations/TAS/Migration Tasmania-Skilled Migration.pdf`
 
@@ -82,8 +80,7 @@ The URLs below are the ones the project already cites; they could not be reached
 - State: Victoria
 - Status in our rules: Suspended / Closed (last verified 2026-10-11)
 - Monitored pages:
-  - https://liveinmelbourne.vic.gov.au/
-  - https://liveinmelbourne.vic.gov.au/news-events/news
+  - https://liveinmelbourne.vic.gov.au/migrate/skilled-migration-visas
 - Source file(s) to replace after a change:
   - (no file: this state's source is the web page itself; update the state's rule in lib/state-nomination/state-rules-config.ts)
 
@@ -93,7 +90,6 @@ The URLs below are the ones the project already cites; they could not be reached
 - Status in our rules: Open (Onshore & Offshore) (last verified 2026-10-11)
 - Monitored pages:
   - https://migration.wa.gov.au/our-services-support/state-nominated-migration-program
-  - https://migration.wa.gov.au/
 - Source file(s) to replace after a change:
   - `data/knowledge/State Immigrations/Western Australia/State Nominated Migration Program/State Nominated Migration Program Western Australia.pdf`
   - `data/knowledge/State Immigrations/Western Australia/Last invited expression of interest - Priority trade occupations - May 2026.pdf`
