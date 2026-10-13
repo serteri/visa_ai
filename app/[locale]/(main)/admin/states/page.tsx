@@ -16,7 +16,7 @@ export async function generateMetadata(): Promise<Metadata> {
   };
 }
 
-export const maxDuration = 300; // the manual monitor run fetches every page
+export const maxDuration = 60; // the manual monitor run keeps to a 35 s budget (lib/state-monitor/run.ts)
 
 type PageProps = { params: Promise<{ locale: string }> };
 

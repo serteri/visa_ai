@@ -3,10 +3,11 @@ import { Resend } from "resend";
 
 import { adminNotificationRecipients } from "@/lib/email/admin-recipient";
 import { sendChecked } from "@/lib/email/provider";
+import { FAILURE_CLASS_LABEL, type FailureClass } from "./failure";
 import { sourceFilesFor } from "./pages";
 
 export type ChangeItem = { state: string; url: string; detectedAt: Date; summary: string };
-export type FailureItem = { state: string; url: string; failures: number; error: string };
+export type FailureItem = { state: string; url: string; failures: number; error: string; cls: FailureClass };
 export type AlertMail = { kind: "change" | "failure"; subject: string; text: string };
 
 const iso = (d: Date) => d.toISOString().slice(0, 16).replace("T", " ") + " UTC";
@@ -25,11 +26,11 @@ export function buildChangeAlert(items: ChangeItem[], adminUrl: string): AlertMa
 }
 
 export function buildFailureAlert(items: FailureItem[], adminUrl: string): AlertMail {
-  const lines = items.map((i) => `${i.state}  ${i.url}\n  failed ${i.failures} runs in a row; last error: ${i.error}`);
+  const lines = items.map((i) => `${i.state}  ${i.url}\n  class: ${FAILURE_CLASS_LABEL[i.cls]}\n  failed ${i.failures} runs in a row; last error: ${i.error}`);
   return {
     kind: "failure",
     subject: `[LogiVisa] State page monitor cannot fetch ${items.length} page(s)`,
-    text: `These official pages could not be fetched on several runs in a row (this alert is sent once per page until it succeeds again):\n\n${lines.join("\n\n")}\n\nIf a URL is wrong or the site blocks automated requests, correct it in lib/state-monitor/pages.ts. Until a page is fetched again, reports show "data may have changed since" for its state once 14 days have passed without a successful check.\nMonitor status: ${adminUrl}`,
+    text: `These official pages could not be fetched on several runs in a row (this alert is sent once per page until it succeeds again):\n\n${lines.join("\n\n")}\n\n"blocked by site" (403 / 429): the site refuses automated requests; "not found" (404): the URL is wrong or the page moved, correct it in lib/state-monitor/pages.ts; "network / timeout": the site did not answer in time. Until a page is fetched again, reports show "data may have changed since" for its state once 14 days have passed without a successful check.\nMonitor status: ${adminUrl}`,
   };
 }
 

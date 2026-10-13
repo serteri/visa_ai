@@ -22,14 +22,17 @@ export type PageRow = {
   failureAlertedAt: Date | null;
 };
 
-export type RunRow = { startedAt: Date; finishedAt: Date; trigger: string; pagesChecked: number; pagesChanged: number; pagesFailed: number; alertsSent: number; detail: string; error: string | null };
+/** A run row: written when the run STARTS (finishedAt null = still running, or the function was cut off) and updated when it ends. */
+export type RunRow = { startedAt: Date; finishedAt: Date | null; trigger: string; pagesChecked: number; pagesChanged: number; pagesFailed: number; alertsSent: number; detail: string; error: string | null };
+export type RunResult = Pick<RunRow, "finishedAt" | "pagesChecked" | "pagesChanged" | "pagesFailed" | "alertsSent" | "detail" | "error">;
 
 export interface MonitorStore {
   getPage(state: string, url: string): Promise<PageRow | null>;
   savePage(row: PageRow): Promise<void>;
   listPages(): Promise<PageRow[]>;
   markApplied(state: string, at: Date): Promise<number>;
-  insertRun(run: RunRow): Promise<void>;
+  startRun(startedAt: Date, trigger: string): Promise<string>;
+  finishRun(id: string, result: RunResult): Promise<void>;
   lastRuns(limit: number): Promise<Array<RunRow & { id: string }>>;
 }
 
@@ -75,10 +78,14 @@ export const prismaMonitorStore: MonitorStore = {
     const rows = (await prisma.$queryRawUnsafe(`UPDATE state_page_monitor SET change_applied_at = $2 WHERE state_code = $1 AND change_detected_at IS NOT NULL RETURNING id`, state, at)) as unknown[];
     return rows.length;
   },
-  async insertRun(run) {
+  async startRun(startedAt, trigger) {
+    const rows = (await prisma.$queryRawUnsafe(`INSERT INTO state_monitor_runs (started_at, trigger, detail) VALUES ($1, $2, 'running') RETURNING id`, startedAt, trigger)) as Array<{ id: string }>;
+    return String(rows[0]?.id);
+  },
+  async finishRun(id, r) {
     await prisma.$queryRawUnsafe(
-      `INSERT INTO state_monitor_runs (started_at, finished_at, trigger, pages_checked, pages_changed, pages_failed, alerts_sent, detail, error) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9)`,
-      run.startedAt, run.finishedAt, run.trigger, run.pagesChecked, run.pagesChanged, run.pagesFailed, run.alertsSent, run.detail, run.error,
+      `UPDATE state_monitor_runs SET finished_at = $2, pages_checked = $3, pages_changed = $4, pages_failed = $5, alerts_sent = $6, detail = $7, error = $8 WHERE id = $1`,
+      id, r.finishedAt, r.pagesChecked, r.pagesChanged, r.pagesFailed, r.alertsSent, r.detail, r.error,
     );
   },
   async lastRuns(limit) {
@@ -86,7 +93,7 @@ export const prismaMonitorStore: MonitorStore = {
     return rows.filter((r) => typeof r.trigger === "string").map((r) => ({
       id: String(r.id),
       startedAt: new Date(r.started_at as string),
-      finishedAt: new Date((r.finished_at as string) ?? (r.started_at as string)),
+      finishedAt: r.finished_at ? new Date(r.finished_at as string) : null,
       trigger: String(r.trigger),
       pagesChecked: Number(r.pages_checked ?? 0),
       pagesChanged: Number(r.pages_changed ?? 0),

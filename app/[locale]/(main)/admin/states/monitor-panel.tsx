@@ -1,4 +1,5 @@
 import { Button } from "@/components/ui/button";
+import { decodeFailure } from "@/lib/state-monitor/failure";
 import { changeIsPending } from "@/lib/state-monitor/status";
 import { prismaMonitorStore, type PageRow } from "@/lib/state-monitor/store";
 import { markStateAppliedAction, runMonitorNowAction } from "./monitor-actions";
@@ -71,7 +72,10 @@ export async function MonitorPanel() {
                     <td className="py-2 pr-3 font-medium">{p.state}</td>
                     <td className="pr-3 break-all">{p.url}</td>
                     <td className="pr-3">{fmt(p.lastSuccessAt)}</td>
-                    <td className="pr-3">{p.consecutiveFailures}{p.lastError ? ` (${p.lastError})` : ""}</td>
+                    <td className="pr-3">
+                      {p.consecutiveFailures}
+                      {decodeFailure(p.lastError) && p.consecutiveFailures > 0 ? <span data-failure-class={decodeFailure(p.lastError)!.cls}> · {decodeFailure(p.lastError)!.label}: {decodeFailure(p.lastError)!.message}</span> : null}
+                    </td>
                     <td>{changeIsPending(p) ? `detected ${fmt(p.changeDetectedAt)}` : p.changeDetectedAt ? "applied" : "none"}</td>
                   </tr>
                 ))}
@@ -84,7 +88,7 @@ export async function MonitorPanel() {
               {runs.length === 0 && <li>No runs yet.</li>}
               {runs.map((r) => (
                 <li key={r.id}>
-                  {fmt(r.startedAt)} · {r.trigger} · checked {r.pagesChecked}, changed {r.pagesChanged}, failed {r.pagesFailed}, alerts {r.alertsSent}
+                  {fmt(r.startedAt)} · {r.trigger} · {r.finishedAt ? `finished ${fmt(r.finishedAt)}` : "NOT FINISHED (still running, or the function was cut off)"} · checked {r.pagesChecked}, changed {r.pagesChanged}, failed {r.pagesFailed}, alerts {r.alertsSent}
                   {r.error ? ` · error: ${r.error.slice(0, 120)}` : ""}
                 </li>
               ))}

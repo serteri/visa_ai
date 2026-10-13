@@ -43,10 +43,12 @@ const CHANGED = page(`<h1>Skilled migration</h1><p>${LONG}</p><p>The 2026-27 pro
 
 async function main() {
   const { extractMainText, normalise, hashText, summariseDiff, snippetOf } = await import("../lib/state-monitor/extract");
-  const { runStateMonitor, FAILURE_ALERT_AFTER } = await import("../lib/state-monitor/run");
+  const mon = await import("../lib/state-monitor/run");
+  const { runStateMonitor, FAILURE_ALERT_AFTER } = mon;
   const { snapshotFromRows, changeIsPending } = await import("../lib/state-monitor/status");
   type PageRow = import("../lib/state-monitor/store").PageRow;
   type RunRow = import("../lib/state-monitor/store").RunRow;
+  type RunResult = import("../lib/state-monitor/store").RunResult;
 
   console.log("1. text, hash, diff");
   const text = normalise(extractMainText(BASE));
@@ -62,16 +64,19 @@ async function main() {
     const rows = new Map<string, PageRow>();
     const runs: Array<RunRow & { id: string }> = [];
     let broken = false;
+    const events: string[] = [];
     return {
       runs,
       rows,
+      events,
       breakIt: () => { broken = true; },
       store: {
         getPage: async (s: string, u: string) => { if (broken) throw new Error('relation "state_page_monitor" does not exist'); return rows.get(`${s}|${u}`) ?? null; },
         savePage: async (r: PageRow) => { rows.set(`${r.state}|${r.url}`, { ...r }); },
         listPages: async () => [...rows.values()],
         markApplied: async (s: string, at: Date) => { let n = 0; for (const r of rows.values()) if (r.state === s && r.changeDetectedAt) { r.changeAppliedAt = at; n++; } return n; },
-        insertRun: async (r: RunRow) => { runs.push({ ...r, id: String(runs.length) }); },
+        startRun: async (startedAt: Date, trigger: string) => { if (broken) throw new Error('relation "state_monitor_runs" does not exist'); events.push("startRun"); runs.push({ id: String(runs.length), startedAt, finishedAt: null, trigger, pagesChecked: 0, pagesChanged: 0, pagesFailed: 0, alertsSent: 0, detail: "running", error: null }); return String(runs.length - 1); },
+        finishRun: async (id: string, r: RunResult) => { events.push("finishRun"); Object.assign(runs[Number(id)], r); },
         lastRuns: async () => runs,
       },
     };
@@ -166,7 +171,7 @@ async function main() {
     const w = mkWeb({ [PAGES[0].url]: BASE, [PAGES[1].url]: 404 });
     await run(h, w, "manual");
     await run(h, w, "cron");
-    t("every run is logged (trigger, counts)", h.runs.length === 2 && h.runs[0].trigger === "manual" && h.runs[1].trigger === "cron" && h.runs[0].pagesChecked === 2 && h.runs[0].pagesFailed === 1);
+    t("every run is logged (trigger, counts, finished)", h.runs.length === 2 && h.runs[0].trigger === "manual" && h.runs[1].trigger === "cron" && h.runs[0].pagesChecked === 2 && h.runs[0].pagesFailed === 1 && !!h.runs[0].finishedAt && !!h.runs[1].finishedAt);
     const h3 = mkStore();
     h3.breakIt();
     mails.length = 0;
@@ -242,6 +247,71 @@ async function main() {
   t("schema.prisma declares both tables (so `prisma db push` never proposes dropping them)", /model StatePageMonitor[\s\S]*@@map\("state_page_monitor"\)/.test(readFileSync("prisma/schema.prisma", "utf8")) && /model StateMonitorRun[\s\S]*@@map\("state_monitor_runs"\)/.test(readFileSync("prisma/schema.prisma", "utf8")));
   const pages = await import("../lib/state-monitor/pages");
   t("every state has at least one monitored page and a source file (or web-page note) to replace", pages.STATE_CODES.every((c) => pages.MONITORED_PAGES.some((p) => p.state === c) && pages.sourceFilesFor(c).length > 0));
+
+
+  console.log("\n7. a run always finishes and logs: timeouts, partial runs, failure classes, headers");
+  {
+    // the run row is written BEFORE any page is fetched
+    const h = mkStore();
+    const order: string[] = [];
+    const w = mkWeb({ [PAGES[0].url]: BASE, [PAGES[1].url]: BASE });
+    await runStateMonitor({ trigger: "manual", pages: PAGES, store: h.store, fetchPage: async (u) => { order.push(`fetch:${h.events.join(",")}`); return w.fetchPage(u); }, sendAlert, now });
+    t("the run row is written before the first page is fetched, and updated at the end", order.every((o) => o.startsWith("fetch:startRun")) && h.events.join(",") === "startRun,finishRun" && !!h.runs[0].finishedAt && h.runs[0].detail !== "running");
+    // a hung page: the run still finishes, the others are processed, the run is logged
+    const h2 = mkStore();
+    const hung = new Promise<never>(() => undefined);
+    const started = Date.now();
+    mails.length = 0;
+    const r = await runStateMonitor({ trigger: "cron", pages: PAGES, store: h2.store, fetchPage: async (u) => (u === PAGES[0].url ? hung : { status: 200, body: BASE }), sendAlert, now, pageTimeoutMs: 40 });
+    t("a page that never answers times out per page: the run finishes quickly, the other page is stored", Date.now() - started < 3000 && r.failed.length === 1 && r.failed[0].cls === "network" && /no answer within/.test(r.failed[0].error) && r.baselined.length === 1);
+    t("...and the partial run is logged (finished, 1 checked ok, 1 failed)", !!h2.runs[0].finishedAt && h2.runs[0].pagesChecked === 2 && h2.runs[0].pagesFailed === 1 && /\[network\]/.test(h2.runs[0].detail));
+    // the time budget: 10 pages, 2 at a time, a clock that advances 10 s per page; the budget lets only some start; the rest go first next time
+    const ten = Array.from({ length: 10 }, (_, i) => ({ state: "NSW" as const, url: `https://nsw.example/p${i}` }));
+    const h3 = mkStore();
+    let ms = 0;
+    const body = (u: string) => page(`<h1>${u}</h1><p>${LONG}</p>`);
+    const fetched1: string[] = [];
+    const r1 = await runStateMonitor({ trigger: "cron", pages: ten, store: h3.store, fetchPage: async (u) => { fetched1.push(u); ms += 10_000; return { status: 200, body: body(u) }; }, sendAlert, now, nowMs: () => ms, budgetMs: 35_000, concurrency: 1 });
+    t("the total time budget stops new pages from starting; the rest are reported as skipped", r1.checked === 4 && r1.skipped.length === 6 && !!h3.runs[0].finishedAt && /skipped/.test(h3.runs[0].detail), `${r1.checked} checked, ${r1.skipped.length} skipped`);
+    ms = 0;
+    const fetched2: string[] = [];
+    const r2 = await runStateMonitor({ trigger: "cron", pages: ten, store: h3.store, fetchPage: async (u) => { fetched2.push(u); ms += 10_000; return { status: 200, body: body(u) }; }, sendAlert, now, nowMs: () => ms, budgetMs: 35_000, concurrency: 1 });
+    t("the next run starts with the pages the budget did not reach (never starved)", fetched2.slice(0, 4).every((u) => !fetched1.includes(u)) && r2.checked === 4, fetched2.slice(0, 4).join(","));
+    // a failure in the middle of a run (an email provider that throws) still finishes and logs the run
+    const h4 = mkStore();
+    await runStateMonitor({ trigger: "manual", pages: PAGES, store: h4.store, fetchPage: mkWeb({ [PAGES[0].url]: BASE, [PAGES[1].url]: BASE }).fetchPage, sendAlert, now });
+    const r4 = await runStateMonitor({ trigger: "manual", pages: PAGES, store: h4.store, fetchPage: mkWeb({ [PAGES[0].url]: CHANGED, [PAGES[1].url]: BASE }).fetchPage, sendAlert: async () => { throw new Error("provider down"); }, now });
+    t("an alert that throws: the run is still logged as finished, with the error", !!h4.runs[1].finishedAt && !!r4.error && /provider down/.test(r4.error) && h4.runs[1].error === r4.error);
+    t("maxDuration is explicit (60 s) on the cron route and the admin page, and budget + page timeout stay under it", /export const maxDuration = 60;/.test(readFileSync("app/api/cron/state-monitor/route.ts", "utf8")) && /export const maxDuration = 60;/.test(readFileSync("app/[locale]/(main)/admin/states/page.tsx", "utf8")) && mon.RUN_BUDGET_MS + mon.PAGE_TIMEOUT_MS < mon.MONITOR_MAX_DURATION_S * 1000, `${mon.RUN_BUDGET_MS}+${mon.PAGE_TIMEOUT_MS}`);
+  }
+  {
+    // failure classes
+    const cases: Array<[string, string | number | Error, string]> = [["403", 403, "blocked"], ["429", 429, "blocked"], ["404", 404, "not_found"], ["410", 410, "not_found"], ["500", 500, "other"], ["thrown", new Error("fetch failed"), "network"], ["empty page", page("<p>hi</p>"), "other"]];
+    for (const [label, v, want] of cases) {
+      const h = mkStore();
+      const r = await runStateMonitor({ trigger: "test", pages: [PAGES[0]], store: h.store, fetchPage: mkWeb({ [PAGES[0].url]: v }).fetchPage, sendAlert, now });
+      const row = [...h.rows.values()][0];
+      t(`failure class: ${label} -> ${want}`, r.failed[0]?.cls === want && /^(blocked|not_found|network|other): /.test(row.lastError ?? "") && (row.lastError ?? "").startsWith(`${want}: `), row.lastError ?? "");
+    }
+    const { decodeFailure, FAILURE_CLASS_LABEL } = await import("../lib/state-monitor/failure");
+    t("labels: blocked by site / not found / network / timeout", FAILURE_CLASS_LABEL.blocked === "blocked by site" && FAILURE_CLASS_LABEL.not_found === "not found" && FAILURE_CLASS_LABEL.network === "network / timeout" && decodeFailure("blocked: HTTP 403")?.label === "blocked by site" && decodeFailure("not_found: HTTP 404")?.message === "HTTP 404");
+    // the class is in the alert email and in the admin table
+    const h = mkStore();
+    const w = mkWeb({ [PAGES[0].url]: 403, [PAGES[1].url]: 404 });
+    mails.length = 0;
+    for (let i = 0; i < FAILURE_ALERT_AFTER; i++) await runStateMonitor({ trigger: "test", pages: PAGES, store: h.store, fetchPage: w.fetchPage, sendAlert, now });
+    t("the failure email shows each page's class", mails.length === 1 && /class: blocked by site/.test(mails[0].text) && /class: not found/.test(mails[0].text), mails[0]?.text.slice(0, 300));
+    const panel = readFileSync("app/[locale]/(main)/admin/states/monitor-panel.tsx", "utf8");
+    t("the admin table shows the class; the run log shows unfinished runs", /decodeFailure\(p\.lastError\)/.test(panel) && /data-failure-class/.test(panel) && /NOT FINISHED/.test(panel));
+    // browser-like request
+    const seen: Array<{ url: string; init: RequestInit }> = [];
+    const realFetch = globalThis.fetch;
+    globalThis.fetch = (async (u: RequestInfo | URL, init?: RequestInit) => { seen.push({ url: String(u), init: init ?? {} }); return new Response("<main>x</main>", { status: 200 }); }) as typeof fetch;
+    await mon.defaultFetchPage("https://example.test/p");
+    globalThis.fetch = realFetch;
+    const hd = (seen[0]?.init.headers ?? {}) as Record<string, string>;
+    t("requests are browser-like (Chrome user agent, Accept, Accept-Language) and follow redirects", /Mozilla\/5\.0 .*Chrome\/\d+/.test(hd["user-agent"]) && /text\/html/.test(hd.accept) && /en-AU/.test(hd["accept-language"]) && seen[0]?.init.redirect === "follow" && !!seen[0]?.init.signal);
+  }
 
   console.log(`\n${failures === 0 ? "✅ ALL CHECKS PASSED" : `❌ ${failures} CHECK(S) FAILED`}`);
   process.exitCode = failures === 0 ? 0 : 1;

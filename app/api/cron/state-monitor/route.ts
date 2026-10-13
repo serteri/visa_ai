@@ -2,7 +2,7 @@ import { safeEqual } from "@/lib/admin-auth";
 import { runStateMonitor } from "@/lib/state-monitor/run";
 
 export const dynamic = "force-dynamic";
-export const maxDuration = 300;
+export const maxDuration = 60; // the run keeps to a 35 s budget (lib/state-monitor/run.ts)
 
 /**
  * Weekly state-page change monitor (vercel.json "crons"): same CRON_SECRET bearer auth as the other cron routes. Fetches the official state pages,
