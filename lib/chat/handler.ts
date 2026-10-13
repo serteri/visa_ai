@@ -11,6 +11,7 @@ import {
 } from "./config";
 import { visitorAuthorityFee } from "./authority-fees";
 import { residenceFacts } from "./residence";
+import { findBannedPatterns, logRewrites, sanitizeAnswer } from "./information-only";
 import { findEngineConflicts, type EngineConflict } from "./answer-check";
 import { buildCorrections, capCorrections, dropRedundant, conversationLocale, type Correction } from "./corrections";
 import { buildPlanSummary, lastShownLeadFingerprint, profileFingerprint, shouldShowLead, type PlanFacts } from "./plan-summary";
@@ -55,6 +56,11 @@ export interface StreamRequest {
   lead?: string;
   /** The saved profile's fingerprint; written with the summary so later requests know it was shown. */
   leadFingerprint?: string;
+  /**
+   * Information-only rewrite of the finished answer (lib/chat/information-only.ts): the stream holds each text part, passes it
+   * through this, and shows the result. Every rewrite is logged by the handler.
+   */
+  sanitize?: (text: string) => string;
   /** The model call failed or the client went away before a reply: nothing was delivered. */
   onFailure: () => Promise<void>;
 }
@@ -142,6 +148,12 @@ export async function handleChat(req: Request, deps: ChatDeps): Promise<Response
       return null;
     }
   };
+  // Information-only: the answer the visitor sees contains no verdict, pick, chance or instruction (every rewrite is logged).
+  const sanitize = (premium: boolean) => (text: string): string => {
+    const result = sanitizeAnswer(text, { locale: convLocale, userText: lastUserText });
+    logRewrites(result.rewrites, { path: premium ? "premium" : "free", locale: convLocale });
+    return result.text;
+  };
   const check = (text: string, opts: { premium: boolean; hasProfile: boolean; plan?: PlanFacts; groundingText?: string; input?: object }): Correction[] => {
     const residence = residenceFacts(opts.input);
     const profileInput = opts.input as Partial<ReadinessInput> | undefined;
@@ -164,7 +176,10 @@ export async function handleChat(req: Request, deps: ChatDeps): Promise<Response
     // At most two correction blocks per answer, the most serious first; the rest are logged.
     const { kept, redundant } = dropRedundant(buildCorrections(conflicts, locale, { plan: opts.plan, input: profileInput, residence }), text);
     if (redundant.length > 0) console.warn("[chat_correction_redundant]", JSON.stringify(redundant.map((d) => ({ kind: d.kind, subclass: d.subclass, figures: d.figures }))));
-    const { shown, dropped } = capCorrections(kept, MAX_CORRECTIONS);
+    // Safety net: a correction block that would itself carry a banned pattern is withheld (logged), never shown.
+    const clean = kept.filter((k) => findBannedPatterns(k.text, locale).length === 0);
+    if (clean.length < kept.length) console.warn("[chat_correction_withheld]", JSON.stringify(kept.filter((k) => !clean.includes(k)).map((k) => ({ kind: k.kind, text: k.text }))));
+    const { shown, dropped } = capCorrections(clean, MAX_CORRECTIONS);
     if (dropped.length > 0) console.warn("[chat_correction_dropped]", JSON.stringify(dropped.map((d) => ({ kind: d.kind, text: d.text }))));
     return shown;
   };
@@ -191,6 +206,7 @@ export async function handleChat(req: Request, deps: ChatDeps): Promise<Response
         system: buildSystemPrompt(chunks, { engineFacts, guidance, locale: convLocale, ...(profile ? { profile: { summary: profile.summary, source: profile.source, lead: plan?.lead, leadShownEarlier: plan ? plan.earlier : undefined, leadWithheld: plan ? plan.withheld : undefined } } : {}) }),
         messages,
         locale: convLocale,
+        sanitize: sanitize(false),
         ...(plan?.show ? { lead: plan.lead, leadFingerprint: plan.fingerprint } : {}),
         correct: (text) => check(text, { premium: false, hasProfile: Boolean(profile), plan: plan?.facts, groundingText: groundingOf(engineFacts, chunks), input: profile?.input }),
         onFinish: async () => {
@@ -226,6 +242,7 @@ export async function handleChat(req: Request, deps: ChatDeps): Promise<Response
       }),
       messages,
       locale: convLocale,
+      sanitize: sanitize(true),
       sources: catalogRefs(catalog),
       profileSource: profile?.source ?? null,
       ...(plan?.show ? { lead: plan.lead, leadFingerprint: plan.fingerprint } : {}),

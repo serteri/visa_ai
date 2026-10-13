@@ -72,35 +72,35 @@ async function main() {
       return captured!;
     };
     const tr = await lead("500 vizesindeyim, 491 için puanım yeterli mi?", "en");
-    t("a Turkish question on an English page (client language en): the summary is Turkish", (tr.lead ?? "").startsWith("Şu an 40 puanınız var") && !/Your estimate|You have 40/.test(tr.lead ?? ""), tr.lead);
+    t("a Turkish question on an English page (client language en): the summary is Turkish", (tr.lead ?? "").startsWith("Profil özeti") && !/Profile recap|You have 40/.test(tr.lead ?? ""), tr.lead);
     const zh = await lead("我现在持500签证，我的积分和资格怎么样？", "en");
-    t("a Chinese question on an English page: the summary is Chinese", (zh.lead ?? "").startsWith("您目前有 40 分"), zh.lead);
+    t("a Chinese question on an English page: the summary is Chinese", (zh.lead ?? "").startsWith("资料回顾"), zh.lead);
     const enq = await lead("What can I do for the 491, what are my chances?", "tr");
-    t("an English question on a Turkish page: the summary is English", (enq.lead ?? "").startsWith("You have 40 points now"), enq.lead);
+    t("an English question on a Turkish page: the summary is English", (enq.lead ?? "").startsWith("Profile recap"), enq.lead);
     const none = await lead("491 PR?", "tr");
-    t("no language cue in the message: the client's language (tr)", (none.lead ?? "").startsWith("Şu an 40 puanınız var"), none.lead);
+    t("no language cue in the message: the client's language (tr)", (none.lead ?? "").startsWith("Profil özeti"), none.lead);
     t("the corrections follow the same language", buildCorrections(findEngineConflicts("Subclass 491 can be lodged without a skills assessment."), conversationLocale(["491 vizesi için ne yapmalıyım?"], "en"), {}).every((c) => /^Düzeltme:/.test(c.text)));
     t("conversationLocale: newest clearly-non-English message wins; falls back to the client, then en", conversationLocale(["What is 491?", "Peki ya 190 nasıl?"], "en") === "tr" && conversationLocale(["491?"], "zh-Hans") === "zh-Hans" && conversationLocale(["What is 491?"], "tr") === "en" && conversationLocale(["hi"], undefined) === "en");
     // The same summary exists in all three languages.
-    t("the summary is built in en, tr and zh-Hans with the same figures", LOCALES.every((l) => plan(l).lead.includes(": 55 + 15 = 70") && plan(l).facts.benchmarks?.["491"]?.benchmark === 75));
+    t("the summary is built in en, tr and zh-Hans with the same figures", LOCALES.every((l) => plan(l).lead.includes("55 + 15 = 70") && plan(l).facts.benchmarks?.["491"]?.benchmark === 75));
   }
 
   section("2. benchmarks in the summary; 'enough' claims below the benchmark are corrected");
   {
     const e = plan("en").lead;
-    t("en: 491 — sum, the 65 minimum and the recent invitation level", e.includes("491 – Next step required: 55 + 15 = 70 — meets the 65 minimum, 5 below the recent invitation level of 75"), e);
-    t("en: 190 and 189 likewise (nomination included for 190 only)", e.includes("190 – Next step required: 55 + 5 = 60 — 5 short of the 65 minimum, 25 below the recent invitation level of 85") && e.includes("189 – Next step required: 55 — 10 short of the 65 minimum, 40 below the recent invitation level of 95"), e);
+    t("en: 491 — your figure with the nomination points, the published minimum and the dated recent invitation level", /491: your figure with those points 55 \+ 15 = 70; published minimum 65; recent invitation level 75 \(/.test(e), e);
+    t("en: 190 and 189 likewise (nomination included for 190 only)", /190: your figure with those points 55 \+ 5 = 60; published minimum 65; recent invitation level 85 \(/.test(e) && /189: your figure with those points 55; published minimum 65; recent invitation level 95 \(/.test(e), e);
     const tr = plan("tr").lead;
     const zh = plan("zh-Hans").lead;
-    t("tr: 491 — sum, asgari 65 and the recent level", tr.includes("491 – Sonraki adım gerekli: 55 + 15 = 70 — 65 asgari puanı karşılıyor, son davet seviyesi olan 75'in 5 puan altında"), tr);
-    t("zh-Hans: 491 — sum, minimum and the recent level", zh.includes("491 – 需先完成下一步: 55 + 15 = 70 — 达到 65 分最低要求，比近期邀请水平 75 分低 5 分"), zh);
+    t("tr: 491 — sum, yayımlanmış asgari 65 and the recent level", /491: bu puanlarla sizin rakamınız 55 \+ 15 = 70; yayımlanmış asgari 65; son davet seviyesi 75 \(/.test(tr), tr);
+    t("zh-Hans: 491 — sum, minimum and the recent level", /491：含上述分数的您的数字 55 \+ 15 = 70；公布的最低分 65；近期邀请水平 75（/.test(zh), zh);
     const { input, report } = personaFor("en");
-    t("the engine's status labels are used", e.includes("189 – Next step required") && e.includes("491 – Next step required"));
+    t("no status label is shown (information-only recap)", !/Next step required|Not eligible now|Eligible to pursue/.test(e));
     // "Eligible, but below recent invitation levels": the reference profile with a completed assessment.
     const ref = REVIEW_PERSONAS["ref-xyz-wa-job"] as ReadinessInput;
     const refReport = JSON.parse(JSON.stringify(runReadinessEngine({ ...ref, locale: "en" }))) as ReadinessReport;
     const refLead = buildPlanSummary(refReport, ref, "en")!.lead;
-    t("an eligible-but-below visa shows the engine's label and the figures (190: 70 + 5 = 75 vs 85)", refLead.includes("190 – Eligible, but below recent invitation levels (your 75 vs recent 85, 10 points short)") && refLead.includes("190 – Eligible, but below recent invitation levels (your 75 vs recent 85, 10 points short): 70 + 5 = 75 — meets the 65 minimum, 10 below the recent invitation level of 85") && refLead.includes("491 – Eligible to pursue: 70 + 15 = 85 — meets the 65 minimum, above the recent invitation level of 75"), refLead);
+    t("a profile with a completed assessment shows the figures only (190: 70 + 5 = 75 next to the published minimum and the recent level 85), no label", /190: your figure[^\n]*70 \+ 5 = 75; published minimum 65; recent invitation level 85/.test(refLead) && !/Eligible, but below/.test(refLead), refLead);
     void input; void report;
 
     const facts = plan("en").facts;
@@ -130,9 +130,9 @@ async function main() {
   section("3. unambiguous points wording; only the engine ceiling is a maximum");
   {
     const lead = { en: plan("en").lead, tr: plan("tr").lead, "zh-Hans": plan("zh-Hans").lead };
-    t("en: '40 points now; 55 once a positive skills assessment lets you claim your qualification and experience points'", lead.en.startsWith("You have 40 points now; 55 once a positive skills assessment lets you claim your qualification and experience points.\n") && !lead.en.includes("(55 with"), lead.en);
-    t("tr: 'Şu an 40 puanınız var; olumlu bir beceri değerlendirmesi nitelik ve deneyim puanlarınızı almanızı sağladığında 55'", lead.tr.startsWith("Şu an 40 puanınız var; olumlu bir beceri değerlendirmesi nitelik ve deneyim puanlarınızı almanızı sağladığında 55.\n"), lead.tr);
-    t("zh-Hans: the 55 is tied to claiming the qualification and experience points", lead["zh-Hans"].startsWith("您目前有 40 分；获得正面技能评估、可以申报学历和工作经验加分后为 55 分。\n"), lead["zh-Hans"]);
+    t("en: points from the entries, then the points a positive skills assessment lets the visitor claim", lead.en.includes("Points from your entries: 40") && lead.en.includes("With the qualification and experience points a positive skills assessment lets you claim: 55."), lead.en);
+    t("tr: the same two lines", lead.tr.includes("Girişlerinizden puan: 40") && lead.tr.includes("Olumlu beceri değerlendirmesiyle talep edilebilen nitelik ve deneyim puanlarıyla: 55."), lead.tr);
+    t("zh-Hans: the same two lines", lead["zh-Hans"].includes("根据您的填写得到的分数：40") && lead["zh-Hans"].includes("加上正面技能评估后可申报的学历和工作经验分数：55。"), lead["zh-Hans"]);
     const ceiling = plan("en").facts.ceiling!;
     const opts = { hasProfile: true, ceiling };
     const bad = [
@@ -168,7 +168,7 @@ async function main() {
     // WA's own status is "Check official page" since the 2026-10-13 refresh; this check is about its 190 stream condition, so WA is set open by an admin row.
     const refReport = runReadinessEngine({ ...ref, locale: "en", stateNominationConfig: { WA: { status: "Open (Onshore & Offshore)", updatedAt: "2026-10-14T00:00:00.000Z" } } });
     const summary = buildProfileSummary(JSON.parse(JSON.stringify(refReport)), ref)!;
-    t("the visitor's profile lists WA as 'Not available for 190 (Requires a WA job offer)' and still open for 491", summary.includes("Not available on the visitor's answers (state stream condition unmet): 190 -> WA (Requires a WA job offer)") && summary.includes("491 -> WA"), summary);
+    t("the profile given to the model lists NO unmet-condition / states-open line (information-only)", !summary.includes("Not available on the visitor's answers") && !summary.includes("States open for this occupation"), summary);
     const flagged: Record<Locale, string> = {
       en: "To qualify for subclass 190 in WA you should move to Western Australia.",
       tr: "WA'daki 190 için Batı Avustralya'ya taşınmalısınız.",
@@ -264,7 +264,7 @@ async function main() {
     for (const l of LOCALES) {
       const lines = plan(l).lead.split("\n");
       const label = { en: "Next step required", tr: "Sonraki adım gerekli", "zh-Hans": "需先完成下一步" }[l];
-      t(`${l}: one line for points, one line per visa (status, nomination-inclusive score, 65 minimum, recent level), one line for the gap plan`, lines.length === 6 && !/^\d{3} –/.test(lines[0]) && lines.slice(1, 4).map((x) => x.slice(0, 3)).join() === "189,190,491" && lines.slice(1, 4).every((x) => x.includes(`– ${label}: `) && /65/.test(x) && /(95|85|75)/.test(x)) && /^485 – /.test(lines[4]) && /189:/.test(lines[5]) && !/^\d{3} –/.test(lines[5]), JSON.stringify(lines));
+      t(`${l}: a recap header, the entered details, points from the entries, one line per visa (your figure, 65 minimum, recent level), the published requirement links; no gap-plan line`, lines.length >= 7 && !/^\d{3}[:：]/.test(lines[0]) && lines.filter((x) => /^\d{3}[:：]/.test(x)).map((x) => x.slice(0, 3)).join() === "189,190,491" && lines.filter((x) => /^\d{3}[:：]/.test(x)).every((x) => /65/.test(x) && /(95|85|75)/.test(x)) && lines[lines.length - 1].includes("immi.homeaffairs.gov.au") && !/Closing the gap|Açığı kapatma|补足差距/.test(lines.join("\n")), JSON.stringify(lines));
     }
   }
 

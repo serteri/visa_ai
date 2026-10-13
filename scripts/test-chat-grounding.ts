@@ -155,9 +155,9 @@ async function main() {
     const sys = captured[0]?.system ?? "";
     const pe = report?.pointsEstimate;
     t("the prompt carries the engine's points breakdown", Boolean(pe) && sys.includes(`Points: ${pe!.estimatedPoints}`) && sys.includes("/30"), sys.slice(sys.indexOf("block-2:"), sys.indexOf("block-2:") + 600));
-    t("... the gate result per visa", Object.entries(report?.visaGates ?? {}).every(([v, g]) => sys.includes(`${v}: ${pathwayStatusLabel(g, "en")}`)));
+    t("... NOT a status per visa (information-only: no verdict labels reach the model)", !/Status by visa/.test(sys) && !Object.entries(report?.visaGates ?? {}).some(([v, g]) => sys.includes(`${v}: ${pathwayStatusLabel(g, "en")}`)));
     const avail = report?.stateNominationTracker?.nominationAvailability;
-    t("... the available states", Boolean(avail) && sys.includes("States open for this occupation: 190 ->"));
+    t("... NOT the states open for the occupation (a state's availability is a conclusion about the visitor)", Boolean(avail) && !sys.includes("States open for this occupation"));
     t("... the current visa, and the profile is marked as the engine run on the quick profile card", sys.includes("Current visa: subclass 500") && sys.includes("quick profile card") && captured[0]?.profileSource === "quick");
     t("5. subclass 500: the prompt requires the Australian-study points factors", sys.includes("block-4 (internal") && /Australian study requirement: \+5/.test(sys) && /Study in regional Australia: \+5/.test(sys) && /Professional Year: \+5/.test(sys) && /Specialist education: \+10/.test(sys));
     t("5. ... and the 485 gates from the gate matrix, evaluated for this profile", sys.includes("35 or under when applying") && sys.includes("An eligible degree (Bachelor or above) awarded in the last 6 months") && sys.includes("Study with a CRICOS-registered Australian provider") && sys.includes("An English test result from the last 12 months") && /In Australia when applying: met/.test(sys));

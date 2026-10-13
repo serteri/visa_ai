@@ -26,6 +26,7 @@ import { correctedUIStreamResponse } from "../lib/chat/corrected-stream";
 import { buildCorrections } from "../lib/chat/corrections";
 import { buildEngineFacts } from "../lib/chat/engine-facts";
 import { handleChat, type ChatDeps, type StreamRequest } from "../lib/chat/handler";
+import { findBannedPatterns } from "../lib/chat/information-only";
 import { findInternalLabels, stripInternalLabels } from "../lib/chat/internal-labels";
 import { asksAboutPosition, buildPlanSummary, lastShownLeadFingerprint, profileFingerprint } from "../lib/chat/plan-summary";
 import { buildPremiumSystemPrompt, buildSystemPrompt } from "../lib/chat/prompts";
@@ -128,11 +129,10 @@ async function main() {
     const plan = buildPlanSummary(report, input, l)!;
     const lead = plan.lead;
     t(`${l}: current points (40)`, lead.includes("40") && plan.facts.points === 40);
-    t(`${l}: the status per visa in the engine's own labels (189 / 190 / 491)`, ["189", "190", "491"].every((v) => lead.includes(`${v} – ${pathwayStatusLabel(report.visaGates![v], l)}`)), lead);
-    t(`${l}: 490/191-style: 190 and 491 scores include the required nomination ("40 + 15 = 55", "40 + 5 = 45") and the gap to 65`, lead.includes("40 + 15 = 55") && lead.includes("40 + 5 = 45") && /10/.test(lead.slice(lead.indexOf("40 + 15 = 55"))) && lead.includes("65"), lead);
-    const closure = pointsClosureOf(report.pointsEstimate, input, l)!;
-    t(`${l}: the engine's gap plan (what closes it, how long) and its own ceiling (${closure.baseTotal + closure.gain}), nothing else`, lead.includes("Proficient") && (l === "en" ? lead.includes("no waiting time needed") : true) && lead.includes(String(closure.baseTotal + closure.gain)) && plan.facts.ceiling === closure.baseTotal + closure.gain, lead);
-    t(`${l}: short lines (points, one per visa, the gap plan), in the visitor's language, no internal label`, lead.split("\n").length === 6 && /^\d{3} – /.test(lead.split("\n")[1]) && !/^\d{3} – /.test(lead.split("\n")[0]) && findInternalLabels(lead).length === 0, lead);
+    t(`${l}: NO status label per visa (information-only recap)`, !["189", "190", "491"].some((v) => lead.includes(`${v} – ${pathwayStatusLabel(report.visaGates![v], l)}`)) && !/Eligible to pursue|Not eligible now|Next step required/i.test(lead), lead);
+    t(`${l}: 190 and 491 totals include the nomination points ("40 + 15 = 55", "40 + 5 = 45") next to the published minimum 65`, lead.includes("40 + 15 = 55") && lead.includes("40 + 5 = 45") && lead.includes("65"), lead);
+    t(`${l}: NO gap plan and no ceiling line (nothing about what closes a gap)`, !/Closing the gap|Açığı kapatma|补足差距|no waiting time needed|Proficient/.test(lead.replace(/English Language \(proficient\)/i, "")), lead);
+    t(`${l}: neutral recap: entered details, points from the entries, one line per visa, the published requirement links; no banned pattern, no internal label`, lead.split("\n").filter((x) => /^\d{3}[:：]/.test(x)).length === 3 && !/^\d{3}[:：]/.test(lead.split("\n")[0]) && lead.includes("immi.homeaffairs.gov.au") && findInternalLabels(lead).length === 0 && findBannedPatterns(lead, l).length === 0, lead);
   }
   {
     const { input, report } = personaFor("en");
@@ -200,7 +200,6 @@ async function main() {
     const { input, report } = personaFor("en");
     const planFacts = buildPlanSummary(report, input, "en")!.facts;
     const errors: Array<{ kind: string; text: Record<Locale, string>; expect: Record<Locale, RegExp> }> = [
-      { kind: "status_wording", text: { en: "You are not eligible for subclass 491.", tr: "491 alt sınıfı için uygun değilsiniz.", "zh-Hans": "您不符合子类 491 的条件。" }, expect: { en: /Correction: your status for subclass 491 is "Next step required", not "not eligible"/, tr: /Düzeltme: 491 alt sınıfı için durumunuz "Sonraki adım gerekli"/, "zh-Hans": /更正：您在子类 491 的状态是“需先完成下一步”/ } },
       { kind: "visa_name", text: { en: "Subclass 482 (Temporary Skill Shortage) needs an employer sponsor.", tr: "482 alt sınıfı (Temporary Skill Shortage) işveren sponsorluğu gerektirir.", "zh-Hans": "子类 482 是临时技能短缺签证。" }, expect: { en: /Correction: subclass 482 is the Skills in Demand visa \(Home Affairs, Subclass 482 page, p\.\d+\)/, tr: /Düzeltme: 482 alt sınıfı Skills in Demand vizesidir/, "zh-Hans": /更正：子类 482 是 Skills in Demand 签证/ } },
       { kind: "trt_period", text: { en: "Moving from 482 to 186 through the TRT stream takes 3 years of sponsored employment.", tr: "482'den 186'ya geçiş (TRT) için 3 yıl sponsorlu çalışma gerekir.", "zh-Hans": "从 482 转到 186（TRT）需要 3 年担保雇佣。" }, expect: { en: /Correction: the subclass 186 Temporary Residence Transition stream needs 2 years of full-time eligible sponsored employment in the 3 years before you apply \(Home Affairs, Subclass 186 page, p\.53\)/, tr: /Düzeltme: 186 alt sınıfı Temporary Residence Transition akışı, başvurudan önceki 3 yıl içinde 2 yıl/, "zh-Hans": /更正：子类 186 临时居留过渡类别要求在申请前的 3 年内有 2 年/ } },
       { kind: "experience_points", text: { en: "2 years of Australian experience = +5/+10 points.", tr: "Avustralya'da 2 yıl deneyim +5/+10 puan sağlar.", "zh-Hans": "在澳大利亚工作 2 年可得 +5/+10 分。" }, expect: { en: /Correction: 2 years of skilled employment in Australia earns 5 points \(LogiVisa points table/, tr: /Düzeltme: 2 yıl Avustralya'da nitelikli iş deneyimi 5 puan kazandırır/, "zh-Hans": /更正：2 年澳大利亚境内技术工作经验可得 5 分/ } },
@@ -232,7 +231,7 @@ async function main() {
   section("4. length");
   {
     const p = buildPremiumSystemPrompt({ references: "r", profile: "Points: 40", profileSource: "quick", isFirstAnswer: false, lead: "LEAD", extras: { engineFacts: buildEngineFacts() } });
-    t("with a profile the prompt asks for: the summary, at most one short section per visa, then the action plan, no restated requirement", p.includes("EN FAZLA bir kısa bölüm") && p.includes("eylem planı") && p.includes("tekrar anlatma"));
+    t("with a profile the prompt asks for: the summary, at most one short section per visa, then the action plan, no restated requirement", p.includes("EN FAZLA bir kısa bölüm") && p.includes("plan, öneri veya talimat ekleme") && !p.includes("sonra eylem planı") && p.includes("tekrar anlatma"));
   }
 
   section("5. when the opening summary is shown");
@@ -274,7 +273,7 @@ async function main() {
       const a2 = await answer(cap2, "The charge is AUD 6,140.");
       t(`${path}: the next answer does not repeat it (no lead, no marker, the shown text is the model's own)`, cap2.lead === undefined && cap2.leadFingerprint === undefined && textOf(a2) === "The charge is AUD 6,140." && markerOf(a2).length === 0);
       t(`${path}: the prompt still holds the facts, tells the model it was shown earlier, to refer back briefly and not repeat it`, cap2.system.includes(EARLIER) && cap2.system.includes("TEKRAR ETME") && cap2.system.includes("kısaca atıf") && !cap2.system.includes(SHOWN) && cap2.system.includes("40 + 15 = 55"));
-      t(`${path}: the answer check still has the engine's statuses when the summary is not shown`, cap2.correct?.("You are not eligible for subclass 491.")?.some((c) => c.kind === "status_wording") === true);
+      t(`${path}: no status label / eligibility correction block is ever shown (the verdict itself is rewritten by the information-only layer)`, cap2.correct?.("You are not eligible for subclass 491.")?.length === 0);
 
       const cap3 = await run(premium, [q1, a1, user("What is the 491 visa fee?"), a2, user("And the 190?")]);
       t(`${path}: still not repeated on a third answer (the marker is read from the last answer that showed it)`, cap3.lead === undefined);

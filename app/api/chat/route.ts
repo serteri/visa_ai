@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 
 import type { AssistantReportData } from "@/lib/readiness/types";
+import { INFORMATION_ONLY_RULES, logRewrites, sanitizeAnswer } from "@/lib/chat/information-only";
 import { CURRENT_CSIT, BASE_VAC_AUD, SECOND_INSTALMENT_AUD } from "@/lib/readiness/constants";
 
 type ChatMessage = {
@@ -18,19 +19,19 @@ type SupportedAssistantLocale = "en" | "tr" | "zh-Hans";
 
 const SYSTEM_PROMPTS: Record<"AU" | "CA", string> = {
   AU: [
-    "You are Logi AI, a strict and accurate Australian immigration assistant operating with rule validity anchored to 1 July 2026.",
-    "You must not provide legal advice and must refer users to a registered MARA professional for formal strategy/lodgement advice.",
+    "You are Logi AI, an information-only Australian immigration assistant operating with rule validity anchored to 1 July 2026.",
+    "You must not provide legal or migration advice. Advice on the user's own situation must come from a registered migration agent (MARA) or an Australian legal practitioner.",
     "Use only the supplied reportData context plus the fixed July 2026 rule constants below.",
     "Mandatory July 2026 AU rules:",
     `- Core Skills Income Threshold (CSIT) is exactly ${CURRENT_CSIT.label}.`,
-    `- If a declared salary offer is below ${CURRENT_CSIT.label}, employer-sponsored pathways such as Subclass 482 and 186 must be described as ineligible under this threshold.`,
+    `- The published Core Skills Income Threshold for Subclass 482 and 186 is ${CURRENT_CSIT.label}; a declared salary can be shown next to it as a figure, without saying whether the user is eligible.`,
     "- Subclass 485 maximum age is 35, except where the applicant has a Masters by Research, a PhD, or a Hong Kong/BNO passport (these exceptions can use age 50).",
     `- Cost/risk warnings: Subclass 482 base charge is AUD ${BASE_VAC_AUD["482"].toLocaleString("en-AU")}; Subclass 189 base charge is AUD ${BASE_VAC_AUD["189"].toLocaleString("en-AU")}; Subclass 190/491 base charge is about AUD ${BASE_VAC_AUD["491"].toLocaleString("en-AU")}; and a second instalment risk of about AUD ${SECOND_INSTALMENT_AUD["189"].toLocaleString("en-AU")} (189/190) or AUD ${SECOND_INSTALMENT_AUD["491"].toLocaleString("en-AU")} (491) can apply for each dependant aged 18+ without functional English.`,
     "If the user asks outside available context, say details are insufficient rather than guessing.",
   ].join(" "),
   CA: [
-    "You are Logi AI, a strict and accurate Canadian immigration assistant operating with rule validity anchored to 1 July 2026.",
-    "You must not provide legal advice and must refer users to an RCIC professional for formal strategy/lodgement advice.",
+    "You are Logi AI, an information-only Canadian immigration assistant operating with rule validity anchored to 1 July 2026.",
+    "You must not provide legal or immigration advice. Advice on the user's own situation must come from a regulated Canadian immigration consultant (RCIC) or a Canadian legal practitioner.",
     "Use only the supplied reportData context.",
     "Never generate Australian visa rules, subclasses, or MARA-specific guidance in Canada mode.",
     "If the user asks outside available context, say details are insufficient rather than guessing.",
@@ -41,6 +42,12 @@ const COMPLIANCE_REMINDERS: Record<"AU" | "CA", string> = {
   AU: "Please consult a registered MARA agent for official lodgements and personalized legal migration advice.",
   CA: "Please consult a Regulated Canadian Immigration Consultant (RCIC) for official lodgements and personalized legal migration advice.",
 };
+
+/** The information-only rules for this assistant: the context is the report data, and Canada mode names the RCIC, not MARA. */
+function assistantRules(country: "AU" | "CA"): string {
+  const rules = INFORMATION_ONLY_RULES.replace(/block-1 and the retrieved sources|block-1/g, "the report context");
+  return country === "CA" ? rules.replace("a registered migration agent (MARA) or an Australian legal practitioner", "a regulated Canadian immigration consultant (RCIC) or a Canadian legal practitioner") : rules;
+}
 
 function resolveReportCountry(reportData?: AssistantReportData): "AU" | "CA" {
   const rawCountry = (reportData as { country?: unknown } | undefined)?.country;
@@ -72,39 +79,13 @@ function getLanguageDirective(locale: SupportedAssistantLocale): string {
 function buildReportContext(reportData?: AssistantReportData): string {
   if (!reportData) return "No report data provided.";
 
-  const ranked = Array.isArray(reportData.rankedPathways)
-    ? (reportData.rankedPathways as Array<Record<string, unknown>>).map((item) => ({
-        subclass: item.subclass,
-        matchPercentage: item.matchPercentage,
-        recommendationTag: item.recommendationTag,
-        pointsSignal: item.pointsSignal,
-      }))
-    : [];
-
-  const pathways = Array.isArray(reportData.pathwayComparison)
-    ? (reportData.pathwayComparison as Array<Record<string, unknown>>)
-        .slice(0, 6)
-        .map((item) => ({
-          subclass: item.subclass,
-          visaName: item.visaName,
-          confidenceLevel: item.confidenceLevel,
-          reason: item.reason,
-        }))
-    : [];
-
+  // Information only: the user's own entered figures. No ranking, match percentage, recommendation tag, confidence, next steps,
+  // risk indicators or state availability go to the model.
   const compactContext = {
     country: reportData.country ?? "AU",
     user: reportData.user,
     targetVisa: reportData.targetVisa,
     pointsEstimate: reportData.pointsEstimate,
-    primaryLimitingFactor: reportData.primaryLimitingFactor,
-    rankedPathways: ranked,
-    stateNominationTracker: reportData.stateNominationTracker,
-    lodgementReadyChecklist: reportData.lodgementReadyChecklist,
-    pathwayComparison: pathways,
-    executiveSummary: reportData.executiveSummary,
-    suggestedNextSteps: reportData.suggestedNextSteps,
-    riskIndicators: reportData.riskIndicators,
   };
 
   return JSON.stringify(compactContext);
@@ -122,15 +103,15 @@ function createFallbackStream(
   const responseText = (() => {
     if (locale === "tr") {
       return [
-        "Vize Hazırlık Raporu bağlamınıza göre odaklı bir yorum:",
+        "Rapor bağlamınıza dayalı bilgi:",
         `Soru: ${safeQuestion}`,
         "",
         country === "CA"
-          ? "Yalnızca rapor verinize dayanarak CRS odaklı yolları, puan boşluklarını ve uygulanabilir sonraki adımları açıklayabilirim."
-          : "Yalnızca rapor verinize dayanarak sıralı vize yollarınızı, puan boşluklarını ve uygulanabilir sonraki adımları açıklayabilirim.",
+          ? "Yalnızca rapor verinize dayanarak CRS puanınızı ve yayımlanmış CRS ölçütlerini açıklayabilirim."
+          : "Yalnızca rapor verinize dayanarak girdiğiniz rakamları ve yayımlanmış vize şartlarını yan yana açıklayabilirim.",
         country === "CA"
-          ? "İsterseniz tek bir yolu satır satır açabilirim (ör. CEC vs FSW vs PNP)."
-          : "İsterseniz tek bir yolu satır satır açabilirim (ör. 189 vs 190 vs 491).",
+          ? "İsterseniz tek bir yolun yayımlanmış şartlarını satır satır açabilirim (ör. CEC, FSW veya PNP)."
+          : "İsterseniz tek bir vizenin yayımlanmış şartlarını satır satır açabilirim (ör. 189, 190 veya 491).",
         "",
         COMPLIANCE_REMINDERS[country],
         "",
@@ -140,15 +121,15 @@ function createFallbackStream(
 
     if (locale === "zh-Hans") {
       return [
-        "基于你的签证准备度报告，以下是聚焦解读：",
+        "基于你的报告内容的信息：",
         `问题：${safeQuestion}`,
         "",
         country === "CA"
-          ? "我可以仅基于你的报告数据，解释 CRS 相关路径、分数差距与可执行下一步。"
-          : "我可以仅基于你的报告数据，解释路径排序、分数差距与可执行下一步。",
+          ? "我可以仅基于你的报告数据，解释你的 CRS 分数和已公布的 CRS 标准。"
+          : "我可以仅基于你的报告数据，把你填写的数字与已公布的签证要求并列说明。",
         country === "CA"
-          ? "如果你愿意，我可以逐条拆解某一条路径（例如 CEC vs FSW vs PNP）。"
-          : "如果你愿意，我可以逐条拆解某一条路径（例如 189 vs 190 vs 491）。",
+          ? "如果你愿意，我可以逐条说明某一类别已公布的要求（例如 CEC、FSW 或 PNP）。"
+          : "如果你愿意，我可以逐条说明某一个签证已公布的要求（例如 189、190 或 491）。",
         "",
         COMPLIANCE_REMINDERS[country],
         "",
@@ -157,15 +138,15 @@ function createFallbackStream(
     }
 
     return [
-      "Based on your Visa Readiness Report context, here is a focused interpretation:",
+      "Information based on your report context:",
       `Question: ${safeQuestion}`,
       "",
       country === "CA"
-        ? "I can explain your CRS-related pathways, point gaps, and practical next steps using only your report data."
-        : "I can explain your ranked pathways, points-related gaps, and practical next steps using only your report data.",
+        ? "Using only your report data, I can explain your CRS score and the published CRS criteria."
+        : "Using only your report data, I can set your entered figures next to the published visa requirements.",
       country === "CA"
-        ? "If you want, ask me to break down one pathway line-by-line (for example CEC vs FSW vs PNP) and I will map each score driver."
-        : "If you want, ask me to break down one pathway line-by-line (for example 189 vs 190 vs 491) and I will map each score driver.",
+        ? "Ask about one pathway's published criteria (for example CEC, FSW or PNP) and I will list them line by line."
+        : "Ask about one visa's published requirements (for example 189, 190 or 491) and I will list them line by line.",
       "",
       COMPLIANCE_REMINDERS[country],
       "",
@@ -216,6 +197,7 @@ function streamFromOpenAI(args: {
                   ? "Country context is Canada only. Never mention Australian pathways or visas such as 189/190/491 or MARA/state nomination programs."
                   : "Country context is Australia only. Never mention Canadian pathways or concepts such as CRS, IRCC, NOC, CEC, FSW, FSTP, or PNP.",
             },
+            { role: "system", content: assistantRules(args.country) },
             {
               role: "system",
               content: getLanguageDirective(args.locale),
@@ -234,11 +216,13 @@ function streamFromOpenAI(args: {
         return;
       }
 
+      // The answer is held until the model has finished, rewritten to be information-only, then streamed out.
       const stream = new ReadableStream<Uint8Array>({
         async start(controller) {
           const reader = openAiResponse.body!.getReader();
           const decoder = new TextDecoder();
           let buffer = "";
+          let full = "";
 
           try {
             while (true) {
@@ -260,16 +244,17 @@ function streamFromOpenAI(args: {
                     choices?: Array<{ delta?: { content?: string } }>;
                   };
                   const delta = parsed.choices?.[0]?.delta?.content;
-                  if (delta) {
-                    controller.enqueue(encoder.encode(delta));
-                  }
+                  if (delta) full += delta;
                 } catch {
                   // Ignore malformed SSE JSON lines.
                 }
               }
             }
 
-            controller.enqueue(encoder.encode(`\n\n${COMPLIANCE_REMINDERS[args.country]}`));
+            const lastUser = [...args.messages].reverse().find((m) => m.role === "user")?.content ?? "";
+            const result = sanitizeAnswer(full, { locale: args.locale, userText: lastUser, country: args.country });
+            logRewrites(result.rewrites, { path: "assistant", locale: args.locale });
+            controller.enqueue(encoder.encode(`${result.text}\n\n${COMPLIANCE_REMINDERS[args.country]}`));
             controller.close();
           } catch (error) {
             controller.error(error);

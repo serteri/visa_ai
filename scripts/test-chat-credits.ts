@@ -289,9 +289,9 @@ async function main() {
     check(c.retrieval.primary === 12 && c.retrieval.occupation === 2, "premium retrieval depth is 12 + 2");
     check(c.system.includes("UNIQUE-OCC-A") && c.system.includes("261313"), "profile: occupation and code");
     check(c.system.includes("Age 25/30") && c.system.includes("English 10/20") && c.system.includes("Points: 75"), "profile: points breakdown");
-    check(c.system.includes("189: Not eligible now") && c.system.includes("Positive skills assessment") && c.system.includes("190: Conditional"), "profile: gate result per visa");
-    check(c.system.includes("VIC, SA") && c.system.includes("TAS"), "profile: available states");
-    check(c.system.includes("benchmark 85") && c.system.includes("gap 5"), "profile: benchmark gaps");
+    check(!c.system.includes("189: Not eligible now") && !c.system.includes("190: Conditional") && !c.system.includes("Status by visa"), "profile: NO gate result / status per visa (information-only)");
+    check(!c.system.includes("States open for this occupation") && !c.system.includes("Not available on the visitor's answers"), "profile: NO list of open states (information-only)");
+    check(c.system.includes("recent invitation level 85"), "profile: totals next to the recent invitation level");
     check(!c.system.includes("answers are general") && !c.system.includes("yanıtların genel olduğunu"), "matched profile: no 'general answers' note");
     check(c.sources?.length === 3 && c.sources[0].id === "S1" && c.sources[0].source === "Subclass 189.pdf" && c.sources[0].page === 7, "premium sends the citation catalogue from the retrieved chunk metadata");
     // Readable source names (lib/chat/source-names.ts), never file names.

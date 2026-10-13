@@ -168,7 +168,7 @@ async function main() {
     for (const l of LOCALES) {
       const c = findEngineConflicts(suggest[l], opts);
       const fix = buildCorrections(c, l, { residence: facts })[0];
-      const re: Record<Locale, RegExp> = { en: /^Correction: you live in Queensland, and Tasmania's onshore nomination pathways require living in Tasmania/, tr: /^Düzeltme: Queensland eyaletinde yaşıyorsunuz ve Tazmanya eyaletinin Avustralya içi adaylık yolları/, "zh-Hans": /^更正：您居住在昆士兰州，而塔斯马尼亚州境内提名途径要求居住在塔斯马尼亚州/ };
+      const re: Record<Locale, RegExp> = { en: /^Note: Tasmania's onshore nomination pathways have a published residence requirement: living in Tasmania/, tr: /^Not: Tazmanya eyaletinin Avustralya içi adaylık yollarının yayımlanmış bir ikamet şartı vardır/, "zh-Hans": /^说明：塔斯马尼亚州境内提名途径有已公布的居住要求/ };
       t(`${l}: suggesting Tasmania to a Queensland resident is flagged and corrected in ${l}`, c.some((x) => x.kind === "residence" && x.state === "TAS") && !!fix && re[l].test(fix.text), fix?.text ?? JSON.stringify(c));
     }
     const fine = [

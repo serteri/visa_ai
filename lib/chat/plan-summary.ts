@@ -14,6 +14,12 @@ import { POINTS_TABLES } from "@/lib/points/calculate-australia-points";
  */
 
 const THRESHOLD = POINTS_TABLES.minimumThreshold;
+/** The Department of Home Affairs pages for the points-tested visas: the published requirements the recap points to. */
+const PUBLISHED_PAGES: ReadonlyArray<readonly [string, string]> = [
+  ["189", "https://immi.homeaffairs.gov.au/visas/getting-a-visa/visa-listing/skilled-independent-189"],
+  ["190", "https://immi.homeaffairs.gov.au/visas/getting-a-visa/visa-listing/skilled-nominated-190"],
+  ["491", "https://immi.homeaffairs.gov.au/visas/getting-a-visa/visa-listing/skilled-work-regional-provisional-491"],
+];
 const T = (l: Locale, en: string, tr: string, zh: string) => (l === "tr" ? tr : l === "zh-Hans" ? zh : en);
 
 export type PlanFacts = {
@@ -72,69 +78,53 @@ export function buildPlanSummary(reportJson: unknown, inputJson: unknown, locale
   if (/^(500|485)$/.test(String(input.currentVisaSubclass ?? "")) && statuses["485"]) visas.push("485");
 
   const sep = locale === "zh-Hans" ? "；" : "; ";
-  const stop = locale === "zh-Hans" ? "。" : ".";
-  const potentialNote = potential !== undefined;
-  const s1 = T(
-    locale,
-    `You have ${points} points now${potentialNote ? `; ${potential} once a positive skills assessment lets you claim your qualification and experience points` : ""}.`,
-    `Şu an ${points} puanınız var${potentialNote ? `; olumlu bir beceri değerlendirmesi nitelik ve deneyim puanlarınızı almanızı sağladığında ${potential}` : ""}.`,
-    `您目前有 ${points} 分${potentialNote ? `；获得正面技能评估、可以申报学历和工作经验加分后为 ${potential} 分` : ""}。`,
-  );
+  const colon = locale === "zh-Hans" ? "：" : ": ";
 
-  // Each points-tested visa: the sum (nomination included for 190 / 491), the 65 minimum AND the recent invitation level.
+  // Entered details, as the engine read them: occupation, age, current visa / country, and the points each entry carries.
+  const entered: string[] = [];
+  const occ = String(input.occupation ?? report.occupationIndication?.occupation ?? "").trim();
+  if (occ) entered.push(T(locale, `occupation ${occ}`, `meslek ${occ}`, `职业 ${occ}`));
+  if (input.age) entered.push(T(locale, `age ${input.age}`, `yaş ${input.age}`, `年龄 ${input.age}`));
+  if (input.currentCountry) entered.push(T(locale, `current country ${input.currentCountry}`, `bulunduğunuz ülke ${input.currentCountry}`, `当前所在国家 ${input.currentCountry}`));
+  const rows = (pe.breakdown ?? []).filter((b) => b && typeof b.points === "number" && b.status !== "not_assessed").map((b) => `${b.label} ${b.points}${typeof b.max === "number" ? `/${b.max}` : ""}`);
+
+  // Points per subclass, side by side with the published figures: the nomination points 190 (+5) and 491 (+15) add, the published
+  // minimum, and the recent invitation level with its date. Arithmetic and published figures only.
   const benchmarks: NonNullable<PlanFacts["benchmarks"]> = {};
-  const arithmetic = (["189", "190", "491"] as const)
+  const perSubclass = (["189", "190", "491"] as const)
     .filter((v) => statuses[v])
     .map((v) => {
-      const s = scores[v]!;
+      const sc = scores[v]!;
       const ps = report.pathwayScores?.[v];
       const benchmark = typeof ps?.benchmark === "number" ? ps.benchmark : null;
-      benchmarks[v] = { total: s.total, benchmark, ...(ps?.benchmarkAsOf ? { asOf: ps.benchmarkAsOf } : {}) };
-      const sum = s.bonus > 0 ? `${s.base} + ${s.bonus} = ${s.total}` : `${s.total}`;
-      const minimum = s.short > 0
-        ? T(locale, `${s.short} short of the ${THRESHOLD} minimum`, `${THRESHOLD} asgari puanın ${s.short} altında`, `距 ${THRESHOLD} 分最低要求差 ${s.short} 分`)
-        : T(locale, `meets the ${THRESHOLD} minimum`, `${THRESHOLD} asgari puanı karşılıyor`, `达到 ${THRESHOLD} 分最低要求`);
-      const gap = benchmark === null ? null : benchmark - s.total;
+      benchmarks[v] = { total: sc.total, benchmark, ...(ps?.benchmarkAsOf ? { asOf: ps.benchmarkAsOf } : {}) };
+      const sum = sc.bonus > 0 ? `${sc.base} + ${sc.bonus} = ${sc.total}` : `${sc.total}`;
+      const published = T(locale, `published minimum ${THRESHOLD}`, `yayımlanmış asgari ${THRESHOLD}`, `公布的最低分 ${THRESHOLD}`);
       const recent =
         benchmark === null
           ? ""
-          : gap! > 0
-            ? T(locale, `${gap} below the recent invitation level of ${benchmark}`, `son davet seviyesi olan ${benchmark}'in ${gap} puan altında`, `比近期邀请水平 ${benchmark} 分低 ${gap} 分`)
-            : gap === 0
-              ? T(locale, `equal to the recent invitation level of ${benchmark}`, `son davet seviyesi ${benchmark} ile eşit`, `与近期邀请水平 ${benchmark} 分持平`)
-              : T(locale, `above the recent invitation level of ${benchmark}`, `son davet seviyesi ${benchmark}'in üzerinde`, `高于近期邀请水平 ${benchmark} 分`);
-      return `${v}: ${sum} — ${minimum}${recent ? `${locale === "zh-Hans" ? "，" : ", "}${recent}` : ""}`;
+          : T(
+              locale,
+              `; recent invitation level ${benchmark}${ps?.benchmarkAsOf ? ` (${ps.benchmarkAsOf})` : ""}`,
+              `; son davet seviyesi ${benchmark}${ps?.benchmarkAsOf ? ` (${ps.benchmarkAsOf})` : ""}`,
+              `；近期邀请水平 ${benchmark}${ps?.benchmarkAsOf ? `（${ps.benchmarkAsOf}）` : ""}`,
+            );
+      const figure = potential !== undefined
+        ? T(locale, "your figure with those points", "bu puanlarla sizin rakamınız", "含上述分数的您的数字")
+        : T(locale, "your figure", "sizin rakamınız", "您的数字");
+      return `${v}${colon}${figure} ${sum}${locale === "zh-Hans" ? "；" : "; "}${published}${recent}`;
     });
-  // One short line per visa: status (the engine's label), the nomination-inclusive sum, the 65 minimum and the recent level.
-  const visaLines = (["189", "190", "491"] as const)
-    .filter((v) => statuses[v])
-    .map((v, i) => `${v} – ${statuses[v].label}: ${arithmetic[i].replace(/^\d{3}: /, "")}`);
-  if (visas.includes("485") && statuses["485"]) visaLines.push(`485 – ${statuses["485"].label}`);
 
-  const plans: string[] = [];
-  const seen = new Set<string>();
-  if (closure) {
-    for (const v of ["189", "190", "491"] as const) {
-      const s = scores[v]!;
-      if (!statuses[v] || s.short <= 0) continue;
-      const plan = closure.plan(s.short);
-      if (!plan) continue;
-      const text = closurePlanText(plan, s.short, locale);
-      if (seen.has(text)) continue;
-      seen.add(text);
-      plans.push(`${v}: ${text}`);
-    }
-  }
-  const anyShort = (["189", "190", "491"] as const).some((v) => statuses[v] && scores[v]!.short > 0);
-  const ceilingText =
-    anyShort && ceiling !== undefined
-      ? T(locale, `the highest score your own actions can reach before any nomination is ${ceiling}`, `kendi adımlarınızla adaylık öncesinde ulaşabileceğiniz en yüksek puan ${ceiling}`, `仅靠您自己的行动（不含提名）能达到的最高分是 ${ceiling}`)
-      : "";
-  const s3Parts = [plans.length ? plans.join(sep) : "", ceilingText].filter(Boolean);
-  const s3 = s3Parts.length ? `${T(locale, "Closing the gap", "Açığı kapatma", "补足差距")}${locale === "zh-Hans" ? "：" : " — "}${s3Parts.join(sep)}${stop}` : "";
-
-  // Short lines (the chat shows line breaks): points, one line per visa, then the gap plan.
-  const lead = [s1, ...visaLines, s3].filter(Boolean).join("\n");
+  const head = T(locale, "Profile recap (from the details you entered; information only)", "Profil özeti (girdiğiniz bilgilerden; yalnızca bilgi)", "资料回顾（根据您填写的信息；仅供参考信息）");
+  const lines = [
+    `${head}${colon.trim() === ":" ? ":" : "："}`,
+    entered.length ? T(locale, `Entered: ${entered.join(sep)}.`, `Girilen: ${entered.join(sep)}.`, `已填写：${entered.join(sep)}。`) : "",
+    rows.length ? T(locale, `Points from your entries: ${points} (${rows.join(sep)}).`, `Girişlerinizden puan: ${points} (${rows.join(sep)}).`, `根据您的填写得到的分数：${points}（${rows.join(sep)}）。`) : T(locale, `Points from your entries: ${points}.`, `Girişlerinizden puan: ${points}.`, `根据您的填写得到的分数：${points}。`),
+    potential !== undefined ? T(locale, `With the qualification and experience points a positive skills assessment lets you claim: ${potential}.`, `Olumlu beceri değerlendirmesiyle talep edilebilen nitelik ve deneyim puanlarıyla: ${potential}.`, `加上正面技能评估后可申报的学历和工作经验分数：${potential}。`) : "",
+    ...perSubclass,
+    T(locale, "Published requirements:", "Yayımlanmış şartlar:", "已公布的要求：") + ` ${PUBLISHED_PAGES.map(([v, url]) => `${v} – ${url}`).join(" | ")}`,
+  ].filter(Boolean);
+  const lead = lines.join("\n");
   return { lead, facts: { points, ...(potential !== undefined ? { potential } : {}), statuses, scores, benchmarks, currentTotals: { "189": points + nominationBonusFor("189"), "190": points + nominationBonusFor("190"), "491": points + nominationBonusFor("491") }, ...(ceiling !== undefined ? { ceiling } : {}) } };
 }
 

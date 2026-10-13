@@ -16,6 +16,7 @@ import { findInternalLabels } from "./internal-labels";
  *                      only from the engine's tracker for the visitor's profile;
  *   repeated_disclaimer more than one "not in my sources / general knowledge" statement in one answer;
  *   internal_label     internal prompt vocabulary in the answer ("engine facts", "gates", bracketed section names).
+ * status_wording (the old "not eligible vs next step required" label check) is log-only: the chat shows no status label and no eligibility verdict.
  * repeated_disclaimer and internal_label are LOG_ONLY_KINDS: reported, never corrected on screen.
  * Used on every finished answer (logged, see lib/chat/handler.ts) and by the tests.
  */
@@ -41,7 +42,7 @@ export type EngineConflictKind =
   | "closing_language";
 
 /** Conflicts that are only logged: no visible correction block (not a factual error in what the visitor was told). */
-export const LOG_ONLY_KINDS: ReadonlySet<EngineConflictKind> = new Set<EngineConflictKind>(["repeated_disclaimer", "internal_label", "state_specifics"]);
+export const LOG_ONLY_KINDS: ReadonlySet<EngineConflictKind> = new Set<EngineConflictKind>(["repeated_disclaimer", "internal_label", "state_specifics", "status_wording"]);
 
 export type EngineConflict = {
   kind: EngineConflictKind;

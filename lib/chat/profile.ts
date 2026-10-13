@@ -1,5 +1,4 @@
 import type { ReadinessInput, ReadinessReport } from "@/lib/readiness/types";
-import { pathwayStatusLabel } from "@/lib/readiness/visa-gates";
 
 import { visitorAuthorityFee } from "./authority-fees";
 import { residenceFacts, residenceLines } from "./residence";
@@ -52,22 +51,9 @@ export function buildProfileSummary(
     lines.push(`Points: ${pe.estimatedPoints}${potential}${parts.length ? ` (${parts.join("; ")})` : ""}`);
   }
 
+  // Information-only: no status label per visa, no "states open for this occupation" and no unmet-condition list (those are conclusions
+  // about the visitor); the chat gets the visitor's own figures, and the published rules come from block-1 and the sources.
   const gates = report.visaGates;
-  if (gates && typeof gates === "object") {
-    const rows = Object.entries(gates)
-      .filter(([, g]) => g && typeof g.status === "string")
-      .map(([visa, g]) => {
-        const failed = (g.notMet ?? []).slice(0, 2).map((x) => clip(x.label, 70)).filter(Boolean);
-        return `${visa}: ${pathwayStatusLabel(g, "en")}${failed.length ? ` [${failed.join("; ")}]` : ""}`;
-      });
-    if (rows.length) lines.push(`Status by visa (LogiVisa labels): ${rows.join(" | ")}`);
-  }
-
-  const avail = report.stateNominationTracker?.nominationAvailability;
-  if (avail) {
-    const fmt = (v: string[] | undefined) => (v && v.length ? v.join(", ") : "none");
-    lines.push(`States open for this occupation: 190 -> ${fmt(avail["190"])}; 491 -> ${fmt(avail["491"])}`);
-  }
 
   // Residence and the assessment fee only add to a profile that already has report content (an empty report stays empty).
   const fee = lines.length > 0 ? visitorAuthorityFee(input) : undefined;
@@ -78,18 +64,11 @@ export function buildProfileSummary(
     lines.push(`Skills assessment fee in the visitor's report: ${fee.authority} (${fee.authorityId}), ${fee.pathway} pathway, ${money(fee.amountAUD)}${gst}${fee.estimated ? " (estimate pending verification)" : ""}. Other pathways of the same authority cost differently: name the pathway whenever you quote an assessment fee.`);
   }
 
-  const blocked = report.stateNominationTracker?.conditionBlocked;
-  if (blocked) {
-    const rows = (["190", "491"] as const).flatMap((sub) => (blocked[sub] ?? []).map((b) => `${sub} -> ${b.code} (${b.reason})`));
-    if (rows.length) lines.push(`Not available on the visitor's answers (state stream condition unmet): ${rows.join("; ")}`);
-  }
-
   const gaps: string[] = [];
   for (const [visa, g] of Object.entries(gates ?? {})) {
-    if (g?.belowBenchmark) gaps.push(`${visa}: score ${g.belowBenchmark.score} vs recent invitation benchmark ${g.belowBenchmark.benchmark}`);
+    if (g?.belowBenchmark) gaps.push(`${visa}: your total ${g.belowBenchmark.score}; recent invitation level ${g.belowBenchmark.benchmark}`);
   }
-  for (const c of report.twoTierStatus?.comparisons ?? []) gaps.push(clip(c, 140));
-  if (gaps.length) lines.push(`Benchmark gaps: ${gaps.slice(0, 5).join(" | ")}`);
+  if (gaps.length) lines.push(`Totals next to recent invitation levels: ${gaps.slice(0, 5).join(" | ")}`);
 
   if (lines.length === 0) return null;
   const header = origin === "quick"

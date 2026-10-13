@@ -286,6 +286,8 @@ jobs:
       # Redundant corrections (figures already in the answer, any format / language) and 191 citations.
       - name: Chat redundant corrections, 191 citations
         run: npm run test:chat-redundant
+      - name: Chat is information-only (rewrite of banned patterns, neutral recap)
+        run: npm run test:chat-information-only
 
       # Medical registration data (src/data/health-registration/*.json, extracted from the Medical Board / Ahpra
       # "Pathways to registration for international medical graduates" document). The regenerate-and-diff drift

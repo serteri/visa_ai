@@ -181,7 +181,7 @@ export function buildEngineFacts(live: LiveStateData = {}): string {
     "State stream conditions (sourced; a state counts as available for a subclass only if the applicant meets them on their answers):",
     "- Western Australia, subclass 190, General stream (Schedule 1 or 2 occupations): a full-time WA employment contract in the nominated (or a closely related) occupation of at least six months from the date of the State nomination application (WA State Nominated Migration Program 2025-26, pp. 5, 9). This is NOT required for subclass 491. Moving to WA, or living there, does not meet it: the visitor needs a WA job offer / contract.",
     "- Western Australia Graduate stream (subclass 190 / 491): at least two academic years of full-time, on-campus study at an accredited WA institution (WA State Nominated Migration Program 2025-26, p. 13).",
-    "- In the visitor's data, a state listed as \"Not available for 190\" (for example WA: Requires a WA job offer) must never be recommended for 190; it can still be available for 491.",
+    "- A state whose published stream condition for 190 is not met by the visitor's entered answers (for example WA: a WA job contract) is stated only as the published condition; the chat does not say the visitor can or cannot use it.",
     "- Subclass 191 (permanent, after a 491): live and work in a designated regional area for at least 3 years and provide ATO notices of assessment for 3 income years within the 491's 5 years. There is NO minimum income requirement.",
     "",
     "Points test (the report's points table):",

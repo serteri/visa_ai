@@ -1,5 +1,8 @@
 import type { Locale, ReadinessInput, ReadinessReport } from "@/lib/readiness/types";
 
+import { POINTS_TABLES } from "@/lib/points/calculate-australia-points";
+import { nominationBonusFor } from "@/lib/readiness/pathway-scores";
+
 import type { LiveStateData } from "./engine-facts";
 import type { ChatVisitorLike } from "./handler";
 import { loadLinkedReport, type ProfileStore } from "./profile";
@@ -13,19 +16,23 @@ import { inputToQuickProfile, isMissingTableError, quickProfileToInput, validate
  * only the report engine runs. Both paths of the chat read the stored result as engine facts.
  */
 
-/** The compact engine result shown under the card (points, gate status per visa, states open for the occupation). */
+/**
+ * The compact engine result shown under the card: the points from the visitor's entries and the arithmetic per subclass (the nomination
+ * points 190 / 491 add) next to the published minimum. Information only: no status per visa, no list of states.
+ */
 export type EngineResultSummary = {
   points: number | null;
-  gates: Record<string, string>;
-  states: { "190": string[]; "491": string[] } | null;
+  /** 189 / 190 / 491: the points total including the nomination points the subclass adds. */
+  totals: Record<"189" | "190" | "491", number> | null;
+  minimum: number;
 };
 
 export function summarizeEngineResult(report: Partial<ReadinessReport> | null | undefined): EngineResultSummary {
-  const avail = report?.stateNominationTracker?.nominationAvailability;
+  const points = report?.pointsEstimate?.estimatedPoints ?? null;
   return {
-    points: report?.pointsEstimate?.estimatedPoints ?? null,
-    gates: Object.fromEntries(Object.entries(report?.visaGates ?? {}).map(([visa, g]) => [visa, g.status])),
-    states: avail ? { "190": avail["190"] ?? [], "491": avail["491"] ?? [] } : null,
+    points,
+    totals: points === null ? null : { "189": points + nominationBonusFor("189"), "190": points + nominationBonusFor("190"), "491": points + nominationBonusFor("491") },
+    minimum: POINTS_TABLES.minimumThreshold,
   };
 }
 

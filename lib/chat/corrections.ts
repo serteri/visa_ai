@@ -150,7 +150,7 @@ export function buildCorrections(conflicts: EngineConflict[], locale: Locale, ct
         text: T(
           locale,
           `Correction: ${AGE_LIMIT} is an upper limit, not a minimum age: you must be under ${AGE_LIMIT} when you are invited (189 / 190 / 491) or when you apply (186)${src ? ` (${src})` : ""}.`,
-          `Düzeltme: ${AGE_LIMIT} bir üst sınırdır, asgari yaş değildir: davet edildiğinizde (189 / 190 / 491) veya başvurduğunuzda (186) ${AGE_LIMIT} yaşından küçük olmalısınız${src ? ` (${src})` : ""}.`,
+          `Düzeltme: ${AGE_LIMIT} bir üst sınırdır, asgari yaş değildir: davet anında (189 / 190 / 491) veya başvuru anında (186) ${AGE_LIMIT} yaşından küçük olunmalıdır${src ? ` (${src})` : ""}.`,
           `更正：${AGE_LIMIT} 岁是上限而不是最低年龄：获邀时（189 / 190 / 491）或申请时（186）必须未满 ${AGE_LIMIT} 岁${src ? `（${src}）` : ""}。`,
         ),
       });
@@ -280,19 +280,20 @@ export function buildCorrections(conflicts: EngineConflict[], locale: Locale, ct
       const homeName = STATE_NAMES[ctx.residence.home][li];
       add(`residence:${b.code}`, {
         kind: "residence",
+        // Published condition only (information-only chat): what the state's pathways require, never whether the visitor can use the state.
         text:
           b.requirement === "required"
             ? T(
                 locale,
-                `Correction: you live in ${homeName}, and ${stateName}'s onshore nomination pathways require living in ${stateName}${b.subclasses?.length === 1 ? ` (sourced for subclass ${b.subclasses[0]}; the other subclass's rule is not confirmed)` : ""}, so the report does not count ${stateName} as available to you from where you live now (LogiVisa State Nomination Tracker).`,
-                `Düzeltme: ${homeName} eyaletinde yaşıyorsunuz ve ${stateName} eyaletinin Avustralya içi adaylık yolları ${stateName} eyaletinde yaşamayı gerektirir${b.subclasses?.length === 1 ? ` (subclass ${b.subclasses[0]} için kaynaklı; diğer subclass için kural teyit edilmedi)` : ""}; bu nedenle rapor ${stateName} eyaletini şu an yaşadığınız yerden size açık saymaz (LogiVisa Eyalet Adaylık Takipçisi).`,
-                `更正：您居住在${homeName}，而${stateName}境内提名途径要求居住在${stateName}${b.subclasses?.length === 1 ? `（仅对 subclass ${b.subclasses[0]} 有来源；另一类别的规则未确认）` : ""}，因此报告不把${stateName}计为您目前居住地可申请的州（LogiVisa 州提名追踪器）。`,
+                `Note: ${stateName}'s onshore nomination pathways have a published residence requirement: living in ${stateName}${b.subclasses?.length === 1 ? ` (sourced for subclass ${b.subclasses[0]}; the other subclass's rule is not confirmed)` : ""}. You entered ${homeName} as where you live (LogiVisa State Nomination Tracker).`,
+                `Not: ${stateName} eyaletinin Avustralya içi adaylık yollarının yayımlanmış bir ikamet şartı vardır: ${stateName} eyaletinde yaşamak${b.subclasses?.length === 1 ? ` (subclass ${b.subclasses[0]} için kaynaklı; diğer subclass için kural teyit edilmedi)` : ""}. Yaşadığınız yer olarak ${homeName} girdiniz (LogiVisa Eyalet Adaylık Takipçisi).`,
+                `说明：${stateName}境内提名途径有已公布的居住要求：居住在${stateName}${b.subclasses?.length === 1 ? `（仅对 subclass ${b.subclasses[0]} 有来源；另一类别的规则未确认）` : ""}。您填写的居住地是${homeName}（LogiVisa 州提名追踪器）。`,
               )
             : T(
                 locale,
-                `Correction: you live in ${homeName}; ${stateName}'s residence requirement for applicants living in another state is not confirmed, so the report does not count ${stateName} as available to you (LogiVisa State Nomination Tracker).`,
-                `Düzeltme: ${homeName} eyaletinde yaşıyorsunuz; ${stateName} için başka eyalette yaşayan başvuru sahiplerinin ikamet şartı teyit edilmedi, bu nedenle rapor ${stateName} eyaletini size açık saymaz (LogiVisa Eyalet Adaylık Takipçisi).`,
-                `更正：您居住在${homeName}；${stateName}对居住在其他州的申请人的居住要求未确认，因此报告不把${stateName}计为您可申请的州（LogiVisa 州提名追踪器）。`,
+                `Note: ${stateName}'s residence requirement for applicants living in another state is not confirmed in the published sources. You entered ${homeName} as where you live (LogiVisa State Nomination Tracker).`,
+                `Not: ${stateName} için başka eyalette yaşayan başvuru sahiplerinin ikamet şartı yayımlanmış kaynaklarda teyit edilmedi. Yaşadığınız yer olarak ${homeName} girdiniz (LogiVisa Eyalet Adaylık Takipçisi).`,
+                `说明：${stateName}对居住在其他州的申请人的居住要求，在已公布的资料中未确认。您填写的居住地是${homeName}（LogiVisa 州提名追踪器）。`,
               ),
       });
     } else if (c.kind === "closing_language") {
@@ -311,9 +312,9 @@ export function buildCorrections(conflicts: EngineConflict[], locale: Locale, ct
         kind: "state_availability",
         text: T(
           locale,
-          `Correction: which states list an occupation and are open to you comes only from the State Nomination Tracker for your own profile; it cannot be stated for "most states" in general (${src}). Fill in your profile to see it.`,
-          `Düzeltme: hangi eyaletlerin bir mesleği listelediği ve size açık olduğu yalnızca kendi profilinize ait Eyalet Adaylık Takipçisi'nden gelir; "çoğu eyalet" gibi genel bir ifade verilemez (${src}). Görmek için profilinizi doldurun.`,
-          `更正：哪些州列出某职业、且对您开放，只取决于您自己资料对应的州提名追踪器，不能笼统地说“大多数州”（${src}）。请填写您的资料以查看。`,
+          `Note: which states list an occupation is published state by state, and the State Nomination Tracker shows it only for the details entered in a profile; it cannot be stated for "most states" in general (${src}).`,
+          `Not: hangi eyaletlerin bir mesleği listelediği eyalet eyalet yayımlanır ve Eyalet Adaylık Takipçisi bunu yalnızca bir profilde girilen bilgiler için gösterir; "çoğu eyalet" gibi genel bir ifade verilemez (${src}).`,
+          `说明：哪些州列出某职业是按州公布的，州提名追踪器只针对资料中填写的信息显示；不能笼统地说“大多数州”（${src}）。`,
         ),
       });
     }

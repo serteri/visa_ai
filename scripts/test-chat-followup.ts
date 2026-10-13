@@ -73,7 +73,7 @@ async function main() {
     t("fee: the engine's charge for subclass 491 with its source", en.some((x) => x.startsWith("Correction: the subclass 491 visa application charge is AUD 6,140 for the main applicant") && x.includes("LogiVisa fee table")), JSON.stringify(en));
     t("gate: 'Correction: subclass 491 requires a positive skills assessment (Home Affairs, Subclass 491 page, p.25).'", en.includes("Correction: subclass 491 requires a positive skills assessment (Home Affairs, Subclass 491 page, p.25)."), JSON.stringify(en));
     t("gate: subclass 191 has no minimum income requirement, ATO notices, with its source", en.some((x) => x.startsWith("Correction: subclass 191 has no minimum income requirement") && x.includes("Home Affairs – Permanent Residence (Skilled Regional) visa (subclass 191)")));
-    t("state availability: only the tracker for the visitor's own profile can say it", en.some((x) => x.includes("State Nomination Tracker") && x.startsWith("Correction: which states")));
+    t("state availability: only the tracker for the visitor's own profile can say it", en.some((x) => x.includes("State Nomination Tracker") && x.startsWith("Note: which states")));
     t("one correction per fact (no duplicates), four here", en.length === 4, String(en.length));
 
     const tr = buildCorrections(findEngineConflicts("491 vizesi için başvuru ücreti 4.910 AUD'dir. 491 için beceri değerlendirmesi olmadan da başvurabilirsiniz."), "tr").map((c) => c.text);
@@ -93,7 +93,7 @@ async function main() {
     const { message, raw } = await readMessage(res);
     t("the answer text streams unchanged and the stream's finish comes after the corrections", textOf(message) === BAD_EN && seen[0] === BAD_EN && raw.lastIndexOf('"type":"data-correction"') < raw.lastIndexOf('"type":"finish"'));
     const stored = correctionsOf(message);
-    t("the corrections are parts of the SAME message (stored with it): fee, gate x2, state", stored.length === 4 && stored.every((c) => c.text.startsWith("Correction:")) && stored.map((c) => c.kind).sort().join() === "fee,gate,gate,state_availability", JSON.stringify(stored));
+    t("the corrections are parts of the SAME message (stored with it): fee, gate x2, state", stored.length === 4 && stored.every((c) => /^(Correction|Note):/.test(c.text)) && stored.map((c) => c.kind).sort().join() === "fee,gate,gate,state_availability", JSON.stringify(stored));
     const clean = await readMessage(correctedUIStreamResponse(chunksOf("Subclass 491 requires a positive skills assessment."), (a) => buildCorrections(findEngineConflicts(a), "en")));
     t("a clean answer streams with no correction part", correctionsOf(clean.message).length === 0 && textOf(clean.message) === "Subclass 491 requires a positive skills assessment.");
 
@@ -172,14 +172,13 @@ async function main() {
     const before = (await (await getQuickProfile(new Request("https://x.test"), qpDeps)).json()) as { premium: boolean; hasReport: boolean; available: boolean; profile: unknown; result: unknown };
     t("a free visitor without a report gets the card (premium false, no report, available, no profile yet)", before.premium === false && before.hasReport === false && before.available && before.profile === null && before.result === null);
     const res = await saveQuickProfile(new Request("https://x.test", { method: "POST", body: JSON.stringify({ locale: "en", fields: FIELDS }) }), qpDeps);
-    const body = (await res.json()) as { ok?: boolean; points: number | null; gates: Record<string, string>; states: { "190": string[]; "491": string[] } | null };
+    const body = (await res.json()) as { ok?: boolean; points: number | null; totals: Record<string, number> | null; minimum: number; gates?: unknown; states?: unknown };
     const saved = store.get("free-1")?.reportJson as ReadinessReport | undefined;
     t("saving as a free visitor runs the report engine once (no model call is possible here: no model dependency exists)", res.status === 200 && body.ok === true && engineRuns === 1);
     t("the compact result: points", typeof body.points === "number" && body.points === saved?.pointsEstimate?.estimatedPoints, JSON.stringify(body));
-    t("... gate status per visa (189 / 190 / 491 / 482 / 485 ...)", ["189", "190", "491"].every((v) => typeof body.gates[v] === "string") && Object.entries(body.gates).every(([v, s]) => saved?.visaGates?.[v]?.status === s));
-    t("... available states for 190 and 491", body.states !== null && Array.isArray(body.states["190"]) && Array.isArray(body.states["491"]) && JSON.stringify(body.states["190"]) === JSON.stringify(saved?.stateNominationTracker?.nominationAvailability?.["190"] ?? []));
-    const after = (await (await getQuickProfile(new Request("https://x.test"), qpDeps)).json()) as { result: { points: number | null; gates: Record<string, string> } | null; profile: unknown };
-    t("GET returns the same compact result for the panel on reload, and the fields for editing", after.result?.points === body.points && JSON.stringify(after.result?.gates) === JSON.stringify(body.gates) && after.profile !== null);
+    t("... totals per subclass (190 +5, 491 +15) next to the published minimum, and NO status per visa and NO list of states (information-only)", body.totals !== null && body.totals["190"] === (body.points ?? 0) + 5 && body.totals["491"] === (body.points ?? 0) + 15 && body.minimum === 65 && body.gates === undefined && body.states === undefined, JSON.stringify(body));
+    const after = (await (await getQuickProfile(new Request("https://x.test"), qpDeps)).json()) as { result: { points: number | null; totals: Record<string, number> | null } | null; profile: unknown };
+    t("GET returns the same compact result for the panel on reload, and the fields for editing", after.result?.points === body.points && JSON.stringify(after.result?.totals) === JSON.stringify(body.totals) && after.profile !== null);
 
     // Free chat answers use the same engine facts; without a profile the free prompt is unchanged.
     const captured: StreamRequest[] = [];
@@ -199,7 +198,7 @@ async function main() {
     await ask(mkDeps(free));
     const withProfile = captured[0];
     t("free path: model stays gpt-4o-mini, no citation catalogue, no credit spent", withProfile.modelId === "gpt-4o-mini" && withProfile.sources === undefined);
-    t("free path with a quick profile: the prompt carries the engine's points, gates and states", withProfile.system.includes("block-2:") && withProfile.system.includes(`Points: ${saved?.pointsEstimate?.estimatedPoints}`) && withProfile.system.includes("Status by visa (LogiVisa labels):") && withProfile.system.includes("States open for this occupation:") && !withProfile.system.includes("PREMIUM KAYNAK"));
+    t("free path with a quick profile: the prompt carries the engine's points, and no status per visa and no states-open line (information-only)", withProfile.system.includes("block-2:") && withProfile.system.includes(`Points: ${saved?.pointsEstimate?.estimatedPoints}`) && !withProfile.system.includes("Status by visa (LogiVisa labels):") && !withProfile.system.includes("States open for this occupation:") && !withProfile.system.includes("PREMIUM KAYNAK"));
     await ask(mkDeps({ id: "free-2", messageCount: 0, premiumCredits: 0 }));
     const without = captured[1];
     const refs = [{ content: "Visa application charge AUD 6,140.", metadata: { source: "x.pdf" } }];

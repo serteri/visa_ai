@@ -1,3 +1,4 @@
+import { INFORMATION_ONLY_RULES, logRewrites, sanitizeAnswer } from "@/lib/chat/information-only";
 import type { RetrievedVisaContext } from "@/lib/ai/retrieve-visa-context";
 import type { RetrievedStateContext } from "@/lib/ai/retrieve-state-context";
 import { CURRENT_CSIT } from "@/lib/readiness/constants";
@@ -27,29 +28,25 @@ const JULY_2026_189_190_BASE_AUD = 6140;
 const JULY_2026_SECOND_INSTALMENT_AUD = 4890;
 
 const SYSTEM_PROMPT = [
-  "You are Logi AI, a strict Immigration Compliance Assistant enforcing Australian immigration rules anchored to 1 July 2026.",
-  "You are not a migration agent and do not provide legal advice.",
+  "You are Logi AI, an information-only Immigration Information Assistant for Australian immigration rules anchored to 1 July 2026.",
+  "You are not a migration agent and do not provide legal or migration advice.",
   "Answer only using the supplied database context, the supplied state nomination context, plus these fixed July 2026 constants.",
   "Do not use outside knowledge and do not guess.",
-  "When state nomination context is supplied for a state (e.g. ACT, NT), its `status` field is authoritative: if status is 'Closed', you must tell the user that state's nomination program is currently closed and must not suggest applying to it as if it were open.",
-  "Strict scope rule: DO NOT evaluate, mention, or recommend any Family or Partner visas (including Subclasses 820, 801, 300, 309, 100). The current form does not collect sponsor citizenship data, so evaluating these pathways is strictly forbidden.",
-  "Limit all pathway analysis and recommendations exclusively to General Skilled Migration (Subclasses 189, 190, 491) and Employer-Sponsored pathways (Subclasses 482, 186, 494).",
-  "If no viable General Skilled Migration or Employer-Sponsored pathway is supported by the context, state a Low Confidence / No Match result for skilled pathways rather than substituting a Family or Partner visa to fill the answer.",
-  "Mandatory July 2026 AU rules (Hard Gates):",
+  "When state nomination context is supplied for a state (e.g. ACT, NT), state its `status` field and conditions exactly as supplied, with the date it was checked; do not say whether the user can or should use that state.",
+  "Strict scope rule: DO NOT evaluate or mention any Family or Partner visas (including Subclasses 820, 801, 300, 309, 100). The current form does not collect sponsor citizenship data.",
+  "Limit all explanations exclusively to General Skilled Migration (Subclasses 189, 190, 491) and Employer-Sponsored pathways (Subclasses 482, 186, 494).",
+  "Mandatory July 2026 AU rules (published figures):",
   `- CSIT is exactly ${CURRENT_CSIT.label}.`,
-  `- If a declared salary offer is below ${CURRENT_CSIT.label}, Subclass 482 and 186 employer-sponsored pathways are ineligible under this threshold — this is a Hard Gate, not a soft risk.`,
-  "- Subclass 485 age cap is 35 unless Masters by Research, PhD, or Hong Kong/BNO passport exception applies (exception cap is 50). Exceeding the applicable cap is a Hard Gate.",
-  "- Warn on updated base costs: Subclass 482 = AUD 4,015; Subclass 189/190 about AUD 6,140.",
-  "- Warn about second instalment risk: about AUD 4,890 for each dependant aged 18+ without functional English.",
-  `- Hard Gate instruction: if the user's stated profile trips a Hard Gate (declared salary below ${CURRENT_CSIT.label} for 482/186, or declared age above the applicable 485 cap), you must immediately and directly state the violation.`,
-  "Do not soften a Hard Gate finding with phrases like 'you might want to consider', 'it may be worth reviewing', or 'this could be a factor'.",
-  "State it exactly as: 'You are ineligible for this pathway because [Reason]', naming the specific rule and threshold that was breached.",
-  "This direct phrasing applies only to confirmed Hard Gate violations (salary or age threshold breaches). For every other question, keep using cautious, general-information language and do not state deterministic personal outcomes.",
+  `- A declared salary can be shown next to the ${CURRENT_CSIT.label} CSIT for Subclass 482 and 186 as a side-by-side figure ("your figure / published figure"); do not say whether the user is eligible.`,
+  "- Subclass 485 age cap is 35 unless Masters by Research, PhD, or Hong Kong/BNO passport exception applies (exception cap is 50); a declared age can be shown next to the applicable cap, without a verdict.",
+  "- Costs: Subclass 482 = AUD 4,015; Subclass 189/190 about AUD 6,140.",
+  "- A second instalment of about AUD 4,890 applies for each dependant aged 18+ without functional English.",
   "If information is missing, state that stored information does not contain enough detail.",
+  INFORMATION_ONLY_RULES.replace(/block-1 and the retrieved sources|block-1/g, "the supplied context"),
 ].join(" ");
 
 const PERSONALIZED_INTENT_REPLY =
-  "I can provide general information about visa pathways. For a structured assessment based on your situation, you can generate a readiness report.";
+  "I can provide published information about visa pathways. The Visa Information Report sets out published requirements and your figures side by side. Advice on your own situation must come from a registered migration agent (MARA) or an Australian legal practitioner.";
 
 const PERSONALISED_ADVICE_FALLBACK =
   "General information about visa pathways can be provided, but personalised advice is handled by a registered migration agent.";
@@ -120,10 +117,10 @@ function buildJuly2026RuleNotice(message: string, locale: "en" | "tr" | "zh-Hans
   if ((hasSubclassMention(message, "482") || hasSubclassMention(message, "186")) && salary !== null && salary < JULY_2026_CSIT_AUD) {
     notes.push(
       locale === "tr"
-        ? `Temmuz 2026 kuralına göre beyan edilen ücret (AUD ${salary.toLocaleString("en-AU")}), CSIT olan AUD ${JULY_2026_CSIT_AUD.toLocaleString("en-AU")} eşiğinin altında olduğu için 482/186 işveren sponsorlu yolları bu gelir eşiği altında uygun görünmez.`
+        ? `Temmuz 2026 kuralına göre beyan edilen ücret AUD ${salary.toLocaleString("en-AU")}; yayımlanmış CSIT eşiği AUD ${JULY_2026_CSIT_AUD.toLocaleString("en-AU")}.`
         : locale === "zh-Hans"
-          ? `按2026年7月规则，你声明的薪资（AUD ${salary.toLocaleString("en-AU")}）低于CSIT门槛AUD ${JULY_2026_CSIT_AUD.toLocaleString("en-AU")}，因此482/186雇主担保路径在该收入门槛下不具备资格。`
-          : `Under the July 2026 rule set, the declared salary (AUD ${salary.toLocaleString("en-AU")}) is below the CSIT floor of AUD ${JULY_2026_CSIT_AUD.toLocaleString("en-AU")}, so employer-sponsored pathways such as 482/186 are ineligible under this income threshold.`
+          ? `按2026年7月规则，你声明的薪资为 AUD ${salary.toLocaleString("en-AU")}；公布的 CSIT 门槛为 AUD ${JULY_2026_CSIT_AUD.toLocaleString("en-AU")}。`
+          : `Under the July 2026 rule set, the declared salary (AUD ${salary.toLocaleString("en-AU")}) is below the CSIT floor of AUD ${JULY_2026_CSIT_AUD.toLocaleString("en-AU")}, so the published threshold for employer-sponsored pathways such as 482/186 is higher than the declared figure.`
     );
   }
 
@@ -133,10 +130,10 @@ function buildJuly2026RuleNotice(message: string, locale: "en" | "tr" | "zh-Hans
     if (age > maxAge) {
       notes.push(
         locale === "tr"
-          ? `Temmuz 2026 kuralına göre 485 yaş sınırı ${hasException ? "istisna kapsamında" : "standart olarak"} ${maxAge}. Beyan edilen yaş (${age}) bu sınırı aştığı için uygun görünmez.`
+          ? `Temmuz 2026 kuralına göre 485 yaş sınırı ${hasException ? "istisna kapsamında" : "standart olarak"} ${maxAge}. Beyan edilen yaş ${age}.`
           : locale === "zh-Hans"
-            ? `按2026年7月规则，485年龄上限${hasException ? "在例外情形下为" : "为"}${maxAge}岁。你声明的年龄（${age}岁）超过该上限，因此不具资格。`
-            : `Under the July 2026 rule set, the 485 age cap is ${maxAge}${hasException ? " under the stated exception" : ""}. The declared age (${age}) is above that cap, so this pathway is ineligible on age.`
+            ? `按2026年7月规则，485年龄上限${hasException ? "在例外情形下为" : "为"}${maxAge}岁。你声明的年龄为 ${age} 岁。`
+            : `Under the July 2026 rule set, the 485 age cap is ${maxAge}${hasException ? " under the stated exception" : ""}. The declared age is ${age}.`
       );
     }
   }
@@ -222,8 +219,12 @@ function applyAssistantSafetyFooter(input: {
     isPersonalizedIntentQuestion(input.message) ||
     responseHasRiskOrDecisionLanguage(withGeneralInfo);
 
-  if (!shouldAppendFallback) return withGeneralInfo;
-  return appendPersonalisedAdviceFallback(withGeneralInfo, input.locale);
+  const composed = shouldAppendFallback ? appendPersonalisedAdviceFallback(withGeneralInfo, input.locale) : withGeneralInfo;
+  // Information-only: no verdict, pick, chance or instruction reaches the visitor (every rewrite is logged).
+  const loc = input.locale === "tr" ? "tr" : input.locale === "zh-Hans" ? "zh-Hans" : "en";
+  const result = sanitizeAnswer(composed, { locale: loc, userText: input.message });
+  logRewrites(result.rewrites, { path: "assistant-page", locale: loc });
+  return result.text;
 }
 
 const BANNED_PARTNER_FAMILY_PATTERN =
@@ -443,7 +444,7 @@ function uniqueActions(actions: GroundedNextAction[]): GroundedNextAction[] {
 
 function buildActions(locale: "en" | "tr" | "zh-Hans", context: RetrievedVisaContext): GroundedNextAction[] {
   const actions: GroundedNextAction[] = [
-    { label: "Get your full personalized assessment", href: `/${locale}/full-check` },
+    { label: "Visa Information Report", href: `/${locale}/full-check` },
   ];
 
   for (const item of context) {
@@ -607,7 +608,7 @@ export async function generateGroundedAnswer(input: {
       answer: neutralizeDeterministicLanguage(
         withSourceSubclassFooter(
           locale === "zh-Hans"
-            ? "我可以提供有关签证路径的一般信息。如需基于个人情况的结构化评估，可以生成准备度报告。"
+            ? "我可以提供有关签证途径的已公布信息。签证信息报告会把已公布的要求与您的数字并列列出。针对您自身情况的建议须来自注册移民代理（MARA）或澳大利亚执业法律人士。"
             : PERSONALIZED_INTENT_REPLY,
           input.context,
           locale

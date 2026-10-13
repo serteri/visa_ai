@@ -1,7 +1,7 @@
 import { createUIMessageStream, createUIMessageStreamResponse, type UIMessage, type UIMessageChunk } from "ai";
 
 import type { Correction } from "./corrections";
-import { InternalLabelStripper } from "./internal-labels";
+import { InternalLabelStripper, findInternalLabels, stripInternalLabels } from "./internal-labels";
 
 /**
  * Forwards the model's UI message stream as it arrives (without its closing "finish"), and once the answer is
@@ -9,8 +9,12 @@ import { InternalLabelStripper } from "./internal-labels";
  * keeps those parts with the message, so a correction is stored with, and shown under, the answer it corrects.
  * The opening summary (`lead`), when there is one to show, goes first, followed by a data-lead part with the profile's
  * fingerprint so the next request knows the summary was already shown.
+ *
+ * With `sanitize` (the information-only rewrite, lib/chat/information-only.ts) each text part is held until the model has finished
+ * it, rewritten, and then shown: nothing the model wrote reaches the visitor before the rewrite, and the answer check sees the text
+ * the visitor sees. Without it the text streams as it arrives.
  */
-export function correctedUIStreamResponse(chunks: AsyncIterable<UIMessageChunk>, correct?: (answer: string) => Correction[], lead?: string, leadFingerprint?: string): Response {
+export function correctedUIStreamResponse(chunks: AsyncIterable<UIMessageChunk>, correct?: (answer: string) => Correction[], lead?: string, leadFingerprint?: string, sanitize?: (answer: string) => string): Response {
   const stream = createUIMessageStream<UIMessage>({
     execute: async ({ writer }) => {
       let text = "";
@@ -25,11 +29,25 @@ export function correctedUIStreamResponse(chunks: AsyncIterable<UIMessageChunk>,
         if (leadFingerprint) writer.write({ type: "data-lead", data: { fp: leadFingerprint } });
       };
       // Internal block ids (any form) never reach the stored message: the model's text is stripped as it streams.
+      const held$ = new Map<string, string>();
       const strippers = new Map<string, InternalLabelStripper>();
       const stripperFor = (id: string) => strippers.get(id) ?? strippers.set(id, new InternalLabelStripper()).get(id)!;
       for await (const chunk of chunks) {
         // The engine's opening summary goes right after the message starts; the answer check sees only the model's text.
         if (chunk.type !== "start") writeLead();
+        if (sanitize && (chunk.type === "text-delta" || chunk.type === "text-end")) {
+          const held = (held$.get(chunk.id) ?? "") + (chunk.type === "text-delta" ? chunk.delta : "");
+          held$.set(chunk.id, held);
+          if (chunk.type === "text-delta") continue;
+          held$.delete(chunk.id);
+          const labels = findInternalLabels(held);
+          if (labels.length > 0) console.warn("[chat_internal_labels]", JSON.stringify(labels.map((l) => l.match)));
+          const visible = sanitize(stripInternalLabels(held));
+          text += visible;
+          if (visible) writer.write({ type: "text-delta", id: chunk.id, delta: visible } as never);
+          writer.write(chunk as never);
+          continue;
+        }
         if (chunk.type === "text-delta") {
           text += chunk.delta; // the raw text: the check still reports what the model wrote
           const clean = stripperFor(chunk.id).push(chunk.delta);
