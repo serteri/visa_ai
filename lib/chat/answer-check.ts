@@ -42,7 +42,7 @@ export type EngineConflictKind =
   | "closing_language";
 
 /** Conflicts that are only logged: no visible correction block (not a factual error in what the visitor was told). */
-export const LOG_ONLY_KINDS: ReadonlySet<EngineConflictKind> = new Set<EngineConflictKind>(["repeated_disclaimer", "internal_label", "state_specifics", "status_wording"]);
+export const LOG_ONLY_KINDS: ReadonlySet<EngineConflictKind> = new Set<EngineConflictKind>(["repeated_disclaimer", "internal_label", "state_specifics", "status_wording", "residence"]);
 
 export type EngineConflict = {
   kind: EngineConflictKind;
@@ -98,10 +98,15 @@ const stateRegex = (code: string) => {
   const all = STATE_NAMES_RE[code].split("|");
   const cjk = all.filter((n) => /[一-鿿]/.test(n)); // no word boundaries in Chinese
   const latin = all.filter((n) => !/[一-鿿]/.test(n));
-  const names = new RegExp(`(?<![\\p{L}\\p{N}])(?:${latin.join("|")})(?![\\p{L}\\p{N}])${cjk.length ? `|${cjk.join("|")}` : ""}`, "iu");
-  const abbr = new RegExp(`(?<![\\p{L}\\p{N}])${code}(?![\\p{L}\\p{N}])`, "u");
+  // Boundaries are Latin letters / digits only: a name or code glued to Chinese text ("SA也先邀请", "Tasmania的") is still the state.
+  const names = new RegExp(`(?<![A-Za-z0-9\\u00C0-\\u024F])(?:${latin.join("|")})(?![A-Za-z0-9\\u00C0-\\u024F])${cjk.length ? `|${cjk.join("|")}` : ""}`, "iu");
+  const abbr = new RegExp(`(?<![A-Za-z0-9\\u00C0-\\u024F])${code}(?![A-Za-z0-9\\u00C0-\\u024F])`, "u");
   return { test: (text: string) => names.test(text) || abbr.test(text) };
 };
+/** The state / territory codes a text names (full name in any language, or the upper-case code as a whole word). */
+export function statesNamedIn(text: string): string[] {
+  return Object.keys(STATE_NAMES_RE).filter((code) => stateRegex(code).test(text));
+}
 // A full stop ends a sentence unless it ends an abbreviation ("approx. AUD 625", "e.g.", "vs.").
 const SENTENCE_SPLIT = /(?<=[.!?。！？])(?<!\b(?:approx|e\.g|i\.e|vs|etc|incl|excl|est|no|ca)\.)\s+|\n+/i;
 const SUBCLASS = /(?:subclass|alt sınıf|vize|visa|子类)?\s*\b(189|190|191|482|485|491|500|186|820|801)\b/gi;

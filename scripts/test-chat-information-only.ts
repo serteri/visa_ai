@@ -27,6 +27,9 @@ import type { QuickProfileStore } from "../lib/chat/quick-profile";
 import { saveQuickProfile, summarizeEngineResult, type QuickProfileDeps } from "../lib/chat/quick-profile-api";
 import type { Locale, ReadinessInput, ReadinessReport } from "../lib/readiness/types";
 import { runReadinessEngine } from "../src/lib/readiness-engine";
+import { localizeStateFact } from "../lib/state-nomination/state-keyfact-translations";
+import { localizeStateNote } from "../lib/state-nomination/state-note-translations";
+import { STATE_RULES } from "../lib/state-nomination/state-rules-config";
 
 let failures = 0;
 const t = (label: string, cond: boolean, detail = "") => {
@@ -38,10 +41,11 @@ const t = (label: string, cond: boolean, detail = "") => {
 };
 const section = (s: string) => console.log(`\n==================== ${s} ====================`);
 
+const WA_CONTRACT = STATE_RULES.WA.keyFacts.find((f) => f.startsWith("Contract of employment"))!;
 const FACT: Record<Locale, { min: string; wa: string; age: string }> = {
-  en: { min: "The published minimum is 65 points.", wa: "Western Australia's 190 General stream requires a full-time WA employment contract of at least six months.", age: "Applicants must be under 45 when invited." },
-  tr: { min: "Yayımlanmış asgari puan 65'tir.", wa: "WA 190 General stream için en az altı ay süreli tam zamanlı bir WA iş sözleşmesi gerekir.", age: "Davet anında 45 yaşından küçük olunmalıdır." },
-  "zh-Hans": { min: "公布的最低分为65分。", wa: "西澳190类General stream要求至少六个月的全职西澳雇佣合同。", age: "受邀时年龄须在45岁以下。" },
+  en: { min: "The published minimum is 65 points.", wa: localizeStateFact("en", WA_CONTRACT), age: "Applicants must be under 45 when invited." },
+  tr: { min: "Yayımlanmış asgari puan 65'tir.", wa: localizeStateFact("tr", WA_CONTRACT), age: "Davet anında 45 yaşından küçük olunmalıdır." },
+  "zh-Hans": { min: "公布的最低分为65分。", wa: localizeStateFact("zh-Hans", WA_CONTRACT), age: "受邀时年龄须在45岁以下。" },
 };
 
 type Case = { locale: Locale; q: string; bad: string[]; keep: Array<keyof (typeof FACT)["en"]>; personal: boolean };
@@ -54,7 +58,7 @@ const CASES: Case[] = [
   C("en", "what should I do next?", ["Your next step is to submit an EOI.", "Apply for a skills assessment now."], ["min"]),
   C("en", "what are my chances?", ["Your chances of an invitation are high.", "You will probably be invited soon."], ["min", "age"]),
   C("en", "Am I eligible for the 491?", ["You are eligible for the 491.", "I recommend lodging an EOI."], ["min", "age"]),
-  C("en", "Which state should I choose for nomination?", ["The most realistic state for you is WA.", "Target Victoria as a fallback."], ["wa"]),
+  C("en", "Which state should I choose for nomination?", ["The most realistic state for you is WA.", "Target Victoria as a fallback."], ["min"]),
   C("en", "Is subclass 189 better than 190 for my profile?", ["The 189 is the better option for your profile.", "You do not qualify for the 190 yet."], ["min", "age"]),
   C("en", "What is the fastest way to PR?", ["The fastest pathway is the 491 route.", "You need to get a positive skills assessment first.", "Submit your EOI immediately."], ["min"]),
   C("en", "Will I get invited with 70 points?", ["You are likely to be invited with 70 points.", "Ideally you should improve your English to Superior."], ["min"]),
@@ -67,7 +71,7 @@ const CASES: Case[] = [
   C("tr", "Şimdi ne yapmalıyım?", ["Bir sonraki adım EOI göndermektir.", "Beceri değerlendirmesine başvurmalısınız."], ["min"]),
   C("tr", "Şansım nedir?", ["Davet alma olasılığınız yüksektir.", "Büyük ihtimalle davet alırsınız."], ["min", "age"]),
   C("tr", "491 için uygun muyum?", ["491 için uygunsunuz.", "EOI göndermenizi öneririm."], ["min", "age"]),
-  C("tr", "Hangi eyaleti seçmeliyim?", ["En gerçekçi eyalet WA'dır.", "Victoria'yı da hedefleyin."], ["wa"]),
+  C("tr", "Hangi eyaleti seçmeliyim?", ["En gerçekçi eyalet WA'dır.", "Victoria'yı da hedefleyin."], ["min"]),
   C("tr", "189 mu 190 mı daha iyi?", ["189 sizin için daha iyi bir seçenektir.", "190 için hak kazanamazsınız."], ["min", "age"]),
   C("tr", "PR'ye en hızlı yol hangisi?", ["En hızlı yol 491'dir.", "Önce olumlu beceri değerlendirmesi almanız gerekiyor.", "EOI'nizi hemen gönderin."], ["min"], true),
   C("tr", "70 puanla davet alır mıyım?", ["70 puanla muhtemelen davet alırsınız.", "İngilizce seviyenizi artırmalısınız."], ["min"]),
@@ -80,7 +84,7 @@ const CASES: Case[] = [
   C("zh-Hans", "我下一步该做什么？", ["下一步是提交EOI。", "请先申请技能评估。"], ["min"]),
   C("zh-Hans", "我的机会有多大？", ["您被邀请的几率很高。", "您很可能很快获得邀请。"], ["min", "age"]),
   C("zh-Hans", "我符合491的条件吗？", ["您符合491的条件。", "我建议您提交EOI。"], ["min", "age"]),
-  C("zh-Hans", "我应该选哪个州提名？", ["对您最现实的是西澳。", "把维多利亚作为备选目标。"], ["wa"]),
+  C("zh-Hans", "我应该选哪个州提名？", ["对您最现实的是西澳。", "把维多利亚作为备选目标。"], ["min"]),
   C("zh-Hans", "189比190更适合我吗？", ["189是更适合您的选择。", "您没有资格申请190。"], ["min", "age"]),
   C("zh-Hans", "拿永居最快的方式是什么？", ["最快的途径是491。", "您需要先取得正面技能评估。", "请立即提交EOI。"], ["min"]),
   C("zh-Hans", "70分会被邀请吗？", ["70分您很可能会被邀请。", "您应该把英语提高到Superior。"], ["min"]),
@@ -104,12 +108,13 @@ async function chunksOf(text: string): Promise<AsyncIterable<never>> {
   return gen();
 }
 
-async function visibleOf(res: Response): Promise<{ text: string; corrections: string[] }> {
+async function visibleOf(res: Response): Promise<{ text: string; corrections: string[]; diff?: { stated?: number; saved?: number } }> {
   const body = await res.text();
   const parts = body.split("\n").filter((l) => l.startsWith("data: ") && l !== "data: [DONE]").map((l) => JSON.parse(l.slice(6)) as { type: string; delta?: string; data?: { text?: string } });
   return {
     text: parts.filter((p) => p.type === "text-delta").map((p) => p.delta).join(""),
     corrections: parts.filter((p) => p.type === "data-correction").map((p) => p.data?.text ?? ""),
+    diff: parts.find((p) => p.type === "data-profile-diff")?.data as { stated?: number; saved?: number } | undefined,
   };
 }
 
@@ -137,6 +142,7 @@ async function main() {
 
   const captured: StreamRequest[] = [];
   let stub = "";
+  let retrieved: Array<{ content: string; metadata: unknown }> = [];
   const deps = (visitorId: string, credits: number): ChatDeps => ({
     getVisitor: async () => ({ id: visitorId, messageCount: 0, premiumCredits: credits }),
     credits: { reserve: async () => true, refund: async () => {}, recordFreeMessage: async () => {} },
@@ -145,11 +151,11 @@ async function main() {
     liveState: async () => ({}),
     premiumModelId: "stub",
     expandQuery: async () => "",
-    retrieve: async () => [],
+    retrieve: async () => retrieved,
     // The real stream wiring (corrected-stream) around a model that returns the non-compliant answer in `stub`.
     stream: async (opts) => {
       captured.push(opts);
-      return correctedUIStreamResponse((await chunksOf(stub)) as never, opts.correct, opts.lead, opts.leadFingerprint, opts.sanitize);
+      return correctedUIStreamResponse((await chunksOf(stub)) as never, opts.correct, opts.lead, opts.leadFingerprint, opts.sanitize, opts.profileDiff);
     },
   });
   const ask = async (visitorId: string, credits: number, q: string, locale: Locale, answer: string) => {
@@ -193,28 +199,73 @@ async function main() {
     t("every banned pattern family was exercised (best / recommend / chance / should / next step / eligibility / permission / imperative)", ["best_pick", "recommend", "chance", "should", "next_step", "eligibility_verdict", "permission", "imperative"].every((id) => seenIds.has(id as BannedId)), [...seenIds].join(", "));
   }
 
-  section("Live review excerpts: four regression fixtures (full transcripts pending)");
+  section("Live review of 090f9c5: reconstructed fixtures (the pasted answers did not arrive; the Turkish question is verbatim, the stubs reproduce the described errors)");
   {
-    const live = [
-      { locale: "tr" as const, q: "Hangi eyalet beni sponsor eder, şansım ne?", bad: "Queensland'de yaşadığınız için NSW, VIC, SA, TAS, NT ve ACT başvuru hakkı vermemektedir. NSW sadece yerleşik sakinler içindir. SA sizin için uygun değil. Göçmenlik yasası buna izin vermez. Bu yasal değildir.", keep: FACT.tr.wa },
-      { locale: "en" as const, q: "I have 75 points. Which state is open to me?", bad: "Because you live in Queensland, NSW is not open to you. Migration law does not allow predictions. It is illegal to recommend a state.", keep: FACT.en.min },
-      { locale: "zh-Hans" as const, q: "哪个州对我开放？英语有什么要求？", bad: "你不符合NSW条件。SA对你不开放。雅思至少Competent English。移民法不允许建议。", keep: FACT["zh-Hans"].wa },
-      { locale: "tr" as const, q: "Şimdi ne yapmalıyım?", bad: "1. EOI gönderin.\n2. Davet alın.\n3. Vizeye başvurun.", keep: FACT.tr.min },
-    ];
-    for (const c of live) {
-      const out = await ask("v-prem", 3, c.q, c.locale, `${c.bad}\n${c.keep} [S1]\n${ADVICE_NOTE[c.locale]}\n${ADVICE_NOTE[c.locale]}\nThis part is not covered by my sources; it is general information.`);
-      t(`live [${c.locale}] banned stub is cleaned`, findBannedPatterns(out.text, c.locale).length === 0, out.text);
-      t(`live [${c.locale}] factual content survives`, out.text.includes(c.keep), out.text);
-      t(`live [${c.locale}] exactly one scope line`, out.text.split(ADVICE_NOTE[c.locale]).length === 2, out.text);
-      t(`live [${c.locale}] cited answer has no unsupported footer`, !out.text.includes("not covered by my sources"));
-      if (c.locale === "en") t("stated points and saved points both shown; saved entries used", out.text.includes("75") && out.text.includes(`entries: ${savedBody.points}`) && out.text.includes("Arithmetic uses the saved profile entries"), out.text);
-      if (c.locale === "zh-Hans") t("English level named without IELTS equation", out.text.includes("Competent English") && !out.text.includes("雅思至少"), out.text);
+    const SCOPE = (l: Locale) => ADVICE_NOTE[l];
+    const pts = Number(savedBody.points);
+    const stated = pts + 10;
+
+    // 1. Turkish state question (verbatim): verdicts, invented residence rules, legal claims, two scope lines, the "not covered" footer.
+    {
+      const bad = "Queensland'de yaşadığınız için NSW, VIC, SA, TAS, NT ve ACT başvuru hakkı vermemektedir. NSW sadece yerleşik sakinler içindir. SA sizin için uygun değil. Göçmenlik yasası buna izin vermez. Bu yasal değildir.";
+      const out = await ask("v-prem", 3, "Hangi eyalet beni sponsor eder, şansım ne?", "tr", `${bad}\n${FACT.tr.min} [S1]\n${SCOPE("tr")}\n${SCOPE("tr")}\nBu kısım kaynaklarımda yer almıyor; genel bilgidir.`);
+      t("[tr] state question: no banned pattern, the minimum survives, one scope line, no footer", findBannedPatterns(out.text, "tr").length === 0 && out.text.includes(FACT.tr.min.replace(/\.$/, "")) && out.text.split(SCOPE("tr")).length === 2 && !out.text.includes("kaynaklarımda yer almıyor"), out.text);
+      t("[tr] state question: the invented residence rules are gone; each state's data is quoted with its date", !/sadece yerleşik|yalnızca yerleşik/.test(out.text) && out.text.includes(STATE_RULES.NSW.lastVerified) && out.text.includes(localizeStateNote("tr", STATE_RULES.NSW.note)) && out.text.includes(localizeStateNote("tr", STATE_RULES.SA.note)), out.text.slice(0, 600));
+      t("[tr] state question: the state block comes BEFORE the scope line", out.text.indexOf("Yayımlanmış eyalet bilgisi") > -1 && out.text.indexOf("Yayımlanmış eyalet bilgisi") < out.text.indexOf(SCOPE("tr")));
     }
+
+    // 2. English stated figure: the model computes points itself ("Your figure: <stated>" for 189).
+    {
+      const bad = `For subclass 189 your figure: ${stated}. Subclass 190: ${stated + 7} (including nomination points). ${FACT.en.min}`;
+      const out = await ask("v-prem", 3, `I have ${stated} points. Which state is open to me?`, "en", bad);
+      t("[en] stated figure: the stated-vs-entries note is shown with both figures and says which the arithmetic uses", out.text.includes(`You stated ${stated} points`) && out.text.includes(`add up to ${pts} points`) && out.text.includes(`uses ${pts}`), out.text.slice(0, 500));
+      t("[en] stated figure: no points figure other than the engine's or the stated one remains", !out.text.includes(`your figure: ${stated}`) && !out.text.includes(String(stated + 7)), out.text);
+      t("[en] stated figure: the engine arithmetic line replaces the model's own", out.text.includes("Arithmetic from the entries in your saved profile"), out.text);
+      t("[en] stated figure: the answer carries the one short \"Update your profile?\" action (profile-diff part with both figures)", out.diff?.stated === stated && out.diff?.saved === pts, JSON.stringify(out.diff));
+      t("[en] stated figure: the model prompt carries the engine figures", out.system.includes("ENGINE POINTS") && out.system.includes(`Entries total (before nomination points): ${pts}`));
+    }
+
+    // 3. Chinese cross-state claims: SA "invites 491 first" cited to a WA source; NT cited to the old 2025-26 NT PDF.
+    {
+      retrieved = [
+        { content: "WA invites 491 first.", metadata: { source: "State Nominated Migration Program Western Australia.pdf", category: "State Nominated Migration Program", page: 3 } },
+        { content: "NT converts 190 to 491.", metadata: { source: "NT Government visa nomination.pdf", category: "NT", page: 2 } },
+      ];
+      const bad = "SA也先邀请491 [S1]。NT会把190转为491 [S2]。你不符合NSW条件。雅思至少Competent English。";
+      const out = await ask("v-prem", 3, "哪个州适合491？英语有什么要求？", "zh-Hans", `${bad}\n${FACT["zh-Hans"].min} [S1]`);
+      retrieved = [];
+      t("[zh] cross-state claims: the SA sentence (WA source) and the NT sentence (old 2025-26 PDF) are dropped", !out.text.includes("SA也先邀请") && !out.text.includes("NT会把190转为491"), out.text);
+      t("[zh] cross-state claims: the verdict and the IELTS equation are rewritten; the level is named", !out.text.includes("你不符合") && !out.text.includes("雅思至少") && out.text.includes("Competent English") && out.text.includes("内政部"), out.text);
+    }
+
+    // 4. Paraphrase errors: NSW "closed for 2026-27" (the banner names no year); TAS "6-15 months, 30+ hours/week" generally.
+    {
+      const bad = "NSW is closed for 2026-27. TAS requires 6-15 months and 30+ hours/week generally.";
+      const out = await ask("v-prem", 3, "What do NSW and Tasmania require?", "en", `${bad}\n${FACT.en.min}`);
+      t("[en] paraphrases dropped, the structured data quoted verbatim", !out.text.includes("closed for 2026-27") && !out.text.includes("6-15 months and 30+ hours/week") && out.text.includes(STATE_RULES.NSW.note) && out.text.includes(STATE_RULES.TAS.keyFacts.find((f) => f.startsWith("Tasmanian Skilled Employment (TSE)"))!), out.text.slice(0, 900));
+      t("[en] NSW is not described as closed for 2026-27 anywhere", !/closed for 2026-27/i.test(out.text));
+    }
+
+    // 5. Residence: two facts side by side, inside the answer, before the scope line, only for the states asked about.
+    {
+      const out = await ask("v-prem", 3, "Can I apply in Tasmania from Victoria?", "en", FACT.en.min);
+      const line = out.text.split("\n").find((l) => l.includes("Published residence/employment condition")) ?? "";
+      t("[en] residence note: published condition and the entered residence side by side, inside the answer, before the scope line", /Published residence\/employment condition: .+\| You entered: Victoria/.test(line) && out.text.indexOf(line) < out.text.indexOf(SCOPE("en")), line);
+      t("[en] residence note: only the asked state, and no residence correction after the answer", !out.text.includes("Published residence/employment condition: no residence condition") && out.corrections.every((c) => !/residence/i.test(c)), JSON.stringify(out.corrections));
+    }
+  }
+
+  section("Process, recap and structured-data checks");
+  {
     const process = "A skilled visa usually involves: an EOI in SkillSelect, then an invitation, then the visa application.";
     t("generic descriptive process is allowed unchanged", sanitizeAnswer(process, { locale: "en" }).text === process);
     t("numbered process becomes one description", sanitizeAnswer("1. EOI in SkillSelect\n2. An invitation\n3. The visa application", { locale: "en" }).text === process);
     const { shouldShowLead } = await import("../lib/chat/plan-summary");
-    t("recap appears once even on another position question or profile change", !shouldShowLead({ fingerprint: "new", lastShown: "old", userText: "What are my points?" }));
+    t("recap: shown once per profile -- not again on a repeated question about the same profile", !shouldShowLead({ fingerprint: "same", lastShown: "same", userText: "What are my points?" }));
+    t("recap: shown again after the profile was updated (the new values)", shouldShowLead({ fingerprint: "new", lastShown: "old", userText: "What are my points?" }));
+    const ui = readFileSync("components/KnowledgeChatUI.tsx", "utf8");
+    t("chat UI: an always-visible Edit profile control (en / tr / zh) above the conversation, reopening the card with the saved values", /data-testid="chat-edit-profile"/.test(ui) && ["Edit profile", "Profili düzenle", "编辑资料"].every((x) => ui.includes(x)) && /initial=\{quick\.profile\}/.test(ui));
+    t("chat UI: one short Update your profile? action on an answer that carries the profile-diff part (en / tr / zh)", /data-testid="chat-update-profile"/.test(ui) && /data-profile-diff/.test(ui) && ["Update your profile?", "Profilinizi güncelleyelim mi?", "更新您的资料？"].every((x) => ui.includes(x)));
     const recap = "Girilen: yaşınız 28, puanınız 70.";
     const cleaned = sanitizeAnswer(`${recap}\n${recap}\n${FACT.tr.min}`, { locale: "tr", recap });
     t("duplicate Turkish profile recap removed; published minimum retained", !cleaned.text.includes(recap) && cleaned.text.includes(FACT.tr.min), cleaned.text);

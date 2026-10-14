@@ -3,6 +3,7 @@ import type { NextRequest } from "next/server";
 import { match } from "@formatjs/intl-localematcher";
 import Negotiator from "negotiator";
 import { auth } from "@/auth";
+import { occupationRedirectFor } from "@/lib/occupations/redirects";
 
 const LOCALES = ["en", "tr", "zh-Hans"] as const;
 const DEFAULT_LOCALE = "en";
@@ -113,6 +114,14 @@ export const proxy = auth((req) => {
     const redirectUrl = new URL("/zh-Hans/visas/canada", req.url);
     redirectUrl.search = searchParams.toString();
     return NextResponse.redirect(redirectUrl);
+  }
+
+  // Occupation URLs that were published and no longer resolve (old slug, code without a page now): a real 301, never a 404.
+  const occupationRedirect = occupationRedirectFor(pathname);
+  if (occupationRedirect) {
+    const redirectUrl = new URL(occupationRedirect.to, req.url);
+    redirectUrl.search = searchParams.toString();
+    return NextResponse.redirect(redirectUrl, occupationRedirect.status);
   }
 
   if (isBlockedBot(req.headers.get("user-agent"))) {

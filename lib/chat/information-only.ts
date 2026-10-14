@@ -26,7 +26,7 @@ export type BannedId =
   | "ielts_equation";
 
 /** Ids a rewrite can carry: the banned patterns above, plus the clean-ups that are not a banned pattern. */
-export type RewriteId = BannedId | "scope_line" | "general_note" | "recap_repeat" | "numbered_steps";
+export type RewriteId = BannedId | "scope_line" | "general_note" | "recap_repeat" | "numbered_steps" | "state_claim" | "points_figure";
 
 type Rule = { id: BannedId; re: Record<Locale, RegExp> };
 
@@ -282,7 +282,7 @@ const RECAP_HEADING = /^(?:#+\s*)?[*_]*(?:your profile|profile (?:summary|recap)
 
 const STOP = new Set(["the", "and", "for", "are", "was", "has", "have", "been", "its", "with", "that", "this", "from", "will", "may", "any", "you", "your", "bir", "için", "olan", "veya", "ile"]);
 /** Words (first 5 letters), numbers and Chinese character pairs: enough to tell a restatement from new content. */
-function recapTokens(text: string): Set<string> {
+export function contentTokens(text: string): Set<string> {
   const t = new Set<string>();
   for (const w of text.toLowerCase().match(/[a-zçğıöşü]{3,}|\d+(?:[-.,]\d+)*/gu) ?? []) if (!STOP.has(w)) t.add(/^\d/.test(w) ? w : w.slice(0, 5));
   const han = text.match(/\p{Script=Han}+/gu) ?? [];
@@ -291,9 +291,9 @@ function recapTokens(text: string): Set<string> {
 }
 /** True when the sentence says (nearly) nothing the recap shown with this answer does not already say: most of its words and every number are in the recap. */
 function repeatsRecap(sentence: string, recap: string): boolean {
-  const s = recapTokens(sentence);
+  const s = contentTokens(sentence);
   if (s.size < 4) return false;
-  const base = recapTokens(recap);
+  const base = contentTokens(recap);
   let shared = 0;
   for (const w of s) if (base.has(w)) shared++;
   const numbers = [...s].filter((w) => /^\d/.test(w));
@@ -341,7 +341,10 @@ function deNumber(lines: string[], rewrites: Rewrite[], locale: Locale): string[
  * shown with this answer is dropped. The factual sentences are untouched. Idempotent: a clean answer comes back unchanged (and
  * gets no note unless the question asked for one).
  */
-export function sanitizeAnswer(answer: string, opts: { locale: Locale; userText?: string; country?: "AU" | "CA"; recap?: string }): Sanitized {
+/** A pass over the answer text after the sentence clean-up and before the scope line is added (state claims, points figures). */
+export type AnswerPass = (text: string) => { text: string; rewrites: Rewrite[] };
+
+export function sanitizeAnswer(answer: string, opts: { locale: Locale; userText?: string; country?: "AU" | "CA"; recap?: string; passes?: AnswerPass[] }): Sanitized {
   const { locale } = opts;
   const rewrites: Rewrite[] = [];
   const hasCitation = CITATION.test(answer);
@@ -414,8 +417,13 @@ export function sanitizeAnswer(answer: string, opts: { locale: Locale; userText?
     else if (rewrites.length > 0 && outLines.length > 0 && !outLines[outLines.length - 1].trim()) continue; // a dropped line leaves no stray blank
   }
   let text = outLines.join("\n").replace(/\n{3,}/g, "\n\n").trim();
+  for (const pass of opts.passes ?? []) {
+    const r = pass(text);
+    text = r.text;
+    rewrites.push(...r.rewrites);
+  }
   const asked = opts.userText ? isPersonalSituationQuestion(opts.userText) : false;
-  const substantive = rewrites.some((r) => !["numbered_steps", "recap_repeat", "general_note", "scope_line"].includes(r.id));
+  const substantive = rewrites.some((r) => !["numbered_steps", "recap_repeat", "general_note", "scope_line", "state_claim", "points_figure"].includes(r.id));
   const needNote = scopeSeen || asked || substantive;
   const note = (opts.country === "CA" ? ADVICE_NOTE_CA : ADVICE_NOTE)[locale];
   if (needNote) text = `${text}${text ? "\n\n" : ""}${note}`;

@@ -300,6 +300,14 @@ const KEY_FACTS: Record<string, { tr: string; zh: string }> = {
     tr: "Bir EOI hem subclass 190 hem de 491 için aday gösterilmeyi talep ediyorsa, WA genellikle önce subclass 491 için davet eder (tipik olarak daha yüksek EOI puanı).",
     zh: "如果 EOI 同时寻求 190 和 491 子类提名，WA 通常先邀请 491 子类（通常 EOI 积分更高）。",
   },
+  "Contract of employment (General stream, 2025-26 page): a contract of employment in the nominated (or a closely related) occupation for full-time employment in Western Australia, for at least six months from the date of the application for State nomination; full-time means an average of at least 35 hours per week; not applicable to subclass 491 applicants, nor (WASMOL Schedule 2) to applicants invited through a WA building and construction industry occupation.": {
+    tr: "İstihdam sözleşmesi (General stream, 2025-26 sayfası): aday gösterilen (veya yakından ilgili) meslekte, Batı Avustralya'da tam zamanlı istihdam için, adaylık başvurusu tarihinden itibaren en az altı ay süreli bir iş sözleşmesi; tam zamanlı, haftada ortalama en az 35 saat demektir; subclass 491 başvuru sahipleri için geçerli değildir; (WASMOL Schedule 2) WA inşaat sektörü mesleğiyle davet edilenler için de geçerli değildir.",
+    zh: "雇佣合同（General stream，2025-26 页面）：提名职业（或密切相关职业）在西澳的全职雇佣合同，自州担保申请之日起至少六个月；全职指平均每周至少 35 小时；不适用于 subclass 491 申请人；（WASMOL Schedule 2）也不适用于通过西澳建筑业职业受邀的申请人。",
+  },
+  "Graduate stream study requirement (2025-26 page): at least one qualification gained in WA, studied at an accredited WA educational institution, full-time, in a face-to-face (on campus) learning environment, for at least two academic years.": {
+    tr: "Mezun akışı eğitim koşulu (2025-26 sayfası): Batı Avustralya'da kazanılmış en az bir yeterlilik; akredite bir WA eğitim kurumunda, tam zamanlı, yüz yüze (kampüste) öğrenim ortamında ve en az iki akademik yıl süreyle eğitim.",
+    zh: "毕业生类别学习要求（2025-26 页面）：在西澳获得至少一项资格；在经认可的西澳教育机构全日制、面授（校园内）学习，时长至少两个学年。",
+  },
 };
 
 export function localizeStateFact(locale: Locale, en: string): string {

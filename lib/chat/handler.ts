@@ -11,7 +11,9 @@ import {
 } from "./config";
 import { visitorAuthorityFee } from "./authority-fees";
 import { residenceFacts } from "./residence";
-import { findBannedPatterns, logRewrites, sanitizeAnswer } from "./information-only";
+import { findBannedPatterns, logRewrites, sanitizeAnswer, type AnswerPass } from "./information-only";
+import { figuresBlock, pointsGuardPass, statedFigureNote, statedPoints } from "./points-guard";
+import { stateClaimsPass } from "./state-claims";
 import { findEngineConflicts, type EngineConflict } from "./answer-check";
 import { buildCorrections, capCorrections, dropRedundant, conversationLocale, type Correction } from "./corrections";
 import { buildPlanSummary, lastShownLeadFingerprint, profileFingerprint, shouldShowLead, type PlanFacts } from "./plan-summary";
@@ -61,6 +63,8 @@ export interface StreamRequest {
    * through this, and shows the result. Every rewrite is logged by the handler.
    */
   sanitize?: (text: string) => string;
+  /** The visitor stated a points figure that differs from the saved profile: the client offers "Update your profile?". */
+  profileDiff?: { stated: number; saved: number };
   /** The model call failed or the client went away before a reply: nothing was delivered. */
   onFailure: () => Promise<void>;
 }
@@ -149,17 +153,25 @@ export async function handleChat(req: Request, deps: ChatDeps): Promise<Response
     }
   };
   // Information-only: the answer the visitor sees contains no verdict, pick, chance or instruction (every rewrite is logged).
-  const sanitize = (premium: boolean, plan: ReturnType<typeof planFor>) => (text: string): string => {
-    const result = sanitizeAnswer(text, { locale: convLocale, userText: lastUserText, recap: plan?.lead });
+  const sanitize = (premium: boolean, plan: ReturnType<typeof planFor>, extra: { input?: object; sources?: Record<string, string> } = {}) => (text: string): string => {
+    const stated = statedPoints(userTexts);
+    const passes: AnswerPass[] = [
+      // Points are the engine's: any other points figure is replaced by the engine arithmetic (the visitor's own stated figure is allowed).
+      ...(plan ? [pointsGuardPass(plan.facts, convLocale, stated !== undefined ? [stated] : [])] : []),
+      // State facts are the structured data's: sentences naming a state need that state's own current source; the data is quoted, not paraphrased.
+      stateClaimsPass({ locale: convLocale, userText: lastUserText, sources: extra.sources, home: residenceFacts(extra.input as Partial<ReadinessInput> | undefined)?.home }),
+    ];
+    const result = sanitizeAnswer(text, { locale: convLocale, userText: lastUserText, recap: plan?.lead, passes });
     logRewrites(result.rewrites, { path: premium ? "premium" : "free", locale: convLocale });
-    const claimed = lastUserText.match(/(?:my (?:points|score)(?: is| are)?|puanım|puanim)\s*[:：]?\s*(\d{1,3})|(?:I have|I am on|I’m on|我有|我的分数是)\s*(\d{1,3})\s*(?:points|分)|\b(\d{1,3})\s*puan(?:ım|im|la)/iu);
-    const stated = claimed ? Number(claimed[1] ?? claimed[2] ?? claimed[3]) : undefined;
-    const saved = plan?.facts.points;
-    if (stated !== undefined && saved !== undefined && stated !== saved) {
-      const line = convLocale === "tr" ? `Bu mesajda belirttiğiniz puan: ${stated}; kayıtlı profil girişlerinden hesaplanan: ${saved}. Aritmetik kayıtlı profil girişlerini kullanır (190: ${saved} + 5 = ${saved + 5}; 491: ${saved} + 15 = ${saved + 15}).` : convLocale === "zh-Hans" ? `您在本条消息中提供的分数：${stated}；保存的资料填写项计算结果：${saved}。计算使用保存的资料填写项（190：${saved} + 5 = ${saved + 5}；491：${saved} + 15 = ${saved + 15}）。` : `Points stated in this message: ${stated}; calculated from saved profile entries: ${saved}. Arithmetic uses the saved profile entries (190: ${saved} + 5 = ${saved + 5}; 491: ${saved} + 15 = ${saved + 15}).`;
-      return `${line}\n\n${result.text}`;
-    }
-    return result.text;
+    // The visitor's own figure next to the entries whenever they differ, and which one the arithmetic uses.
+    const note = plan && stated !== undefined ? statedFigureNote(stated, plan.facts, convLocale) : null;
+    return note ? `${note}
+
+${result.text}` : result.text;
+  };
+  const profileDiffOf = (plan: ReturnType<typeof planFor>): { profileDiff?: { stated: number; saved: number } } => {
+    const stated = statedPoints(userTexts);
+    return plan && stated !== undefined && stated !== plan.facts.points ? { profileDiff: { stated, saved: plan.facts.points } } : {};
   };
   const check = (text: string, opts: { premium: boolean; hasProfile: boolean; plan?: PlanFacts; groundingText?: string; input?: object }): Correction[] => {
     const residence = residenceFacts(opts.input);
@@ -210,10 +222,11 @@ export async function handleChat(req: Request, deps: ChatDeps): Promise<Response
       const plan = planFor(profile);
       return await deps.stream({
         modelId: CHAT_MODEL_ID,
-        system: buildSystemPrompt(chunks, { engineFacts, guidance, locale: convLocale, ...(profile ? { profile: { summary: profile.summary, source: profile.source, lead: plan?.lead, leadShownEarlier: plan ? plan.earlier : undefined, leadWithheld: plan ? plan.withheld : undefined } } : {}) }),
+        system: buildSystemPrompt(chunks, { engineFacts, guidance, locale: convLocale, ...(plan ? { figures: figuresBlock(plan.facts, convLocale) } : {}), ...(profile ? { profile: { summary: profile.summary, source: profile.source, lead: plan?.lead, leadShownEarlier: plan ? plan.earlier : undefined, leadWithheld: plan ? plan.withheld : undefined } } : {}) }),
         messages,
         locale: convLocale,
-        sanitize: sanitize(false, plan),
+        sanitize: sanitize(false, plan, { input: profile?.input }),
+        ...profileDiffOf(plan),
         ...(plan?.show ? { lead: plan.lead, leadFingerprint: plan.fingerprint } : {}),
         correct: (text) => check(text, { premium: false, hasProfile: Boolean(profile), plan: plan?.facts, groundingText: groundingOf(engineFacts, chunks), input: profile?.input }),
         onFinish: async () => {
@@ -245,11 +258,12 @@ export async function handleChat(req: Request, deps: ChatDeps): Promise<Response
         leadShownEarlier: plan ? plan.earlier : undefined,
         leadWithheld: plan ? plan.withheld : undefined,
         isFirstAnswer: !messages.some((m) => m.role === "assistant"),
-        extras: { engineFacts, guidance, locale: convLocale },
+        extras: { engineFacts, guidance, locale: convLocale, ...(plan ? { figures: figuresBlock(plan.facts, convLocale) } : {}) },
       }),
       messages,
       locale: convLocale,
-      sanitize: sanitize(true, plan),
+      ...profileDiffOf(plan),
+      sanitize: sanitize(true, plan, { input: profile?.input, sources: Object.fromEntries(catalog.flatMap((r) => (r ? [[r.id, r.source] as const] : []))) }),
       sources: catalogRefs(catalog),
       profileSource: profile?.source ?? null,
       ...(plan?.show ? { lead: plan.lead, leadFingerprint: plan.fingerprint } : {}),

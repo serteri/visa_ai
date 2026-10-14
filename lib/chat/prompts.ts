@@ -63,9 +63,17 @@ export type PromptExtras = {
   profile?: { summary: string; source: "report" | "quick"; lead?: string; leadShownEarlier?: boolean; leadWithheld?: boolean };
   /** The conversation language (what the visitor writes in): the whole answer, closing lines included, is in it. */
   locale?: Locale;
+  /** The engine's points figures for the saved profile (lib/chat/points-guard.ts figuresBlock): quoted, never computed by the model. */
+  figures?: string;
 };
 
-const extrasBlock = (x: PromptExtras) => `${x.engineFacts}\n\n${x.guidance ? `${x.guidance}\n\n` : ""}`;
+const extrasBlock = (x: PromptExtras) => `${x.engineFacts}
+
+${x.guidance ? `${x.guidance}
+
+` : ""}${x.figures ? `${x.figures}
+
+` : ""}`;
 
 /**
  * The opening summary (lib/chat/plan-summary.ts) and the length rules. Shown at the top of the answer on the first

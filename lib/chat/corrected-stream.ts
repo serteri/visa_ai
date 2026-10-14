@@ -14,7 +14,7 @@ import { InternalLabelStripper, findInternalLabels, stripInternalLabels } from "
  * it, rewritten, and then shown: nothing the model wrote reaches the visitor before the rewrite, and the answer check sees the text
  * the visitor sees. Without it the text streams as it arrives.
  */
-export function correctedUIStreamResponse(chunks: AsyncIterable<UIMessageChunk>, correct?: (answer: string) => Correction[], lead?: string, leadFingerprint?: string, sanitize?: (answer: string) => string): Response {
+export function correctedUIStreamResponse(chunks: AsyncIterable<UIMessageChunk>, correct?: (answer: string) => Correction[], lead?: string, leadFingerprint?: string, sanitize?: (answer: string) => string, profileDiff?: { stated: number; saved: number }): Response {
   const stream = createUIMessageStream<UIMessage>({
     execute: async ({ writer }) => {
       let text = "";
@@ -63,6 +63,8 @@ export function correctedUIStreamResponse(chunks: AsyncIterable<UIMessageChunk>,
       }
       writeLead();
       for (const correction of correct?.(text) ?? []) writer.write({ type: "data-correction", data: correction });
+      // The visitor stated a figure that differs from the saved profile: the client offers one short "Update your profile?" action.
+      if (profileDiff) writer.write({ type: "data-profile-diff", data: profileDiff } as never);
       writer.write({ type: "finish" });
     },
   });

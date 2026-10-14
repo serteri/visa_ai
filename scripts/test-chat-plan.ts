@@ -288,10 +288,10 @@ async function main() {
       const changedReport = JSON.parse(JSON.stringify(runReadinessEngine(changed))) as ReadinessReport;
       store.set("v", { inputJson: JSON.parse(JSON.stringify(changed)), reportJson: changedReport, updatedAt: new Date("2026-10-03") });
       const cap4 = await run(premium, [q1, a1, user("What is my score for the 491?")]);
-      t(`${path}: a changed saved profile updates prompt facts without repeating the recap`, cap4.lead === undefined && cap4.system.includes(EARLIER));
+      t(`${path}: a profile the visitor updated shows the recap once more, with the new values and a new fingerprint`, Boolean(cap4.lead) && cap4.leadFingerprint !== undefined && cap4.leadFingerprint !== cap1.leadFingerprint);
       const a4 = await answer(cap4, "Same fee.");
       const cap5 = await run(premium, [q1, a1, user("What is my score for the 491?"), a4, user("And the 190?")]);
-      t(`${path}: after the change the original recap marker is retained`, cap5.lead === undefined && lastShownLeadFingerprint([q1, a1, a4]) === cap1.leadFingerprint);
+      t(`${path}: after the update the new recap is not repeated again (the marker is the new fingerprint)`, cap5.lead === undefined && lastShownLeadFingerprint([q1, a1, a4]) === cap4.leadFingerprint);
       store.set("v", { inputJson: base.input, reportJson: base.report, updatedAt: new Date("2026-10-03") });
 
       // A conversation from before the marker existed (an answer without it): the summary is shown once more.

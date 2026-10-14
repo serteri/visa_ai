@@ -7,6 +7,7 @@ import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { activeLocales, isValidLocale, type Locale } from "@/lib/i18n/config";
 import { occupationPageContent } from "@/lib/occupations/page-content";
+import { occupationRedirectFor } from "@/lib/occupations/redirects";
 import { buildOccupationSlug, findOccupationById, getUniqueOccupations } from "@/lib/occupations/seo";
 import { pageAlternates, publicPath, publicUrl, SITE_ORIGIN } from "@/lib/seo/urls";
 
@@ -48,7 +49,13 @@ export default async function OccupationDetailsPage({ params }: PageProps) {
   if (!isValidLocale(locale)) notFound();
 
   const occupation = findOccupationById(id);
-  if (!occupation) notFound();
+  if (!occupation) {
+    // A code that was published once (no page now) goes to the occupation index; only a code that never existed is a 404.
+    // proxy.ts answers this with a 301 before rendering; this is the same answer if the proxy was bypassed.
+    const moved = occupationRedirectFor(publicPath(locale, `/occupations/${id}`));
+    if (moved) permanentRedirect(moved.to);
+    notFound();
+  }
 
   const c = occupationPageContent(occupation, locale as Locale);
   // One URL per occupation: a slug with the right code but different words resolves to the canonical slug.

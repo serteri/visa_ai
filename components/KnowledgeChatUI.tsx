@@ -25,6 +25,9 @@ const FREE_LIMIT_ERROR_CODE = "limit_reached";
 
 const QP_TEXT = {
   edit: { en: "Edit my profile", tr: "Profilimi düzenle", zh: "编辑我的资料" },
+  // Always-visible control above the conversation, and the one-line action offered when the visitor states a figure that differs from the saved profile.
+  editAlways: { en: "Edit profile", tr: "Profili düzenle", zh: "编辑资料" },
+  update: { en: "Update your profile?", tr: "Profilinizi güncelleyelim mi?", zh: "更新您的资料？" },
   cta: {
     en: "Want every section — points, visa requirements, states, costs and a plan — in one PDF?",
     tr: "Tüm bölümleri — puan, vize şartları, eyaletler, maliyetler ve plan — tek bir PDF'te mi istiyorsunuz?",
@@ -244,6 +247,18 @@ export function KnowledgeChatUI({ className, restoreToken }: KnowledgeChatUIProp
           {t("chat.restore.done", "Credits restored. Credits available now: {count}").replace("{count}", String(restoredCredits))}
         </p>
       )}
+      {quick?.available && !quick.hasReport && quick.profile && !editingProfile && (
+        <div className="flex justify-end border-b border-border px-4 py-1.5">
+          <button
+            type="button"
+            data-testid="chat-edit-profile"
+            onClick={() => setEditingProfile(true)}
+            className="text-xs font-medium text-primary underline-offset-2 hover:underline"
+          >
+            {QP_TEXT.editAlways[language === "tr" ? "tr" : language === "zh-Hans" ? "zh" : "en"]}
+          </button>
+        </div>
+      )}
       <div className="flex-1 space-y-3 overflow-y-auto p-4">
         {!quick?.hasReport && quick?.available && (!quick.profile || editingProfile) && (
           <ChatQuickProfileCard
@@ -258,11 +273,6 @@ export function KnowledgeChatUI({ className, restoreToken }: KnowledgeChatUIProp
         )}
         {quick && !quick.premium && !quick.hasReport && quick.profile && quick.result && !editingProfile && (
           <ChatQuickResult result={quick.result} locale={language} onEdit={() => setEditingProfile(true)} />
-        )}
-        {quick?.premium && !quick.hasReport && quick.profile && !editingProfile && (
-          <button type="button" onClick={() => setEditingProfile(true)} className="text-xs text-muted-foreground underline-offset-2 hover:underline">
-            {QP_TEXT.edit[language === "tr" ? "tr" : language === "zh-Hans" ? "zh" : "en"]}
-          </button>
         )}
         {messages.map((message, index) => {
           const rawText = message.parts
@@ -309,6 +319,16 @@ export function KnowledgeChatUI({ className, restoreToken }: KnowledgeChatUIProp
                   {c}
                 </div>
               ))}
+              {message.role === "assistant" && !isBusy && message.parts.some((part) => part.type === "data-profile-diff") && quick?.available && !quick.hasReport && !editingProfile && (
+                <button
+                  type="button"
+                  data-testid="chat-update-profile"
+                  onClick={() => setEditingProfile(true)}
+                  className="text-xs font-medium text-primary underline-offset-2 hover:underline"
+                >
+                  {QP_TEXT.update[lang]}
+                </button>
+              )}
               {firstQuickAnswer && !isBusy && (
                 <p className="text-xs text-muted-foreground" data-testid="chat-full-report-cta">
                   {QP_TEXT.cta[lang]}{" "}

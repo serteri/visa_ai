@@ -189,9 +189,10 @@ const TOPIC_PROFILE = new RegExp(
 export const asksAboutProfileTopics = (text: string): boolean => asksAboutPosition(text) || TOPIC_PROFILE.test(text);
 
 export function shouldShowLead(opts: { fingerprint: string; lastShown: string | undefined; userText: string }): boolean {
-  // Once per conversation, for the first question about the visitor's profile.
+  // Once per conversation for a given profile: the first question about the visitor's profile, and again only after the profile was
+  // updated (the new values), never on a repeated question about the same profile.
   if (!asksAboutProfileTopics(opts.userText)) return false;
-  return opts.lastShown === undefined;
+  return opts.lastShown === undefined || opts.lastShown !== opts.fingerprint;
 }
 
 function localizedGates(report: Partial<ReadinessReport>, input: ReadinessInput, locale: Locale): Record<string, PathwayGates> | undefined {

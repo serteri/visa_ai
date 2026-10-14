@@ -110,7 +110,7 @@ export const STATE_RULES: Record<string, StateRuleConfig> = {
     ],
     lastVerified: "2026-10-13",
     sourceDocument:
-      "data/knowledge/State Immigrations/NT/2026-27/NT user-confirmed status (checked 2026-10-13).md; data/knowledge/State Immigrations/NT/NT Government visa nomination.pdf",
+      "data/knowledge/State Immigrations/NT/2026-27/NT user-confirmed status (checked 2026-10-13).md",
   },
   TAS: {
     code: "TAS",
@@ -146,7 +146,7 @@ export const STATE_RULES: Record<string, StateRuleConfig> = {
     ],
     lastVerified: "2026-10-13",
     sourceDocument:
-      "data/knowledge/State Immigrations/TAS/2026-27/TAS user-confirmed program settings (checked 2026-10-13).md; data/knowledge/State Immigrations/TAS/Migration Tasmania-Skilled Migration.pdf",
+      "data/knowledge/State Immigrations/TAS/2026-27/TAS user-confirmed program settings (checked 2026-10-13).md",
   },
   NSW: {
     code: "NSW",
@@ -263,6 +263,8 @@ export const STATE_RULES: Record<string, StateRuleConfig> = {
       "The page still shows only the 2025-26 program; no 2026-27 settings, allocation, fees or opening have been published, and the latest SNMP news item is dated 8 December 2025. Whether WA is inviting in 2026-27 is not confirmed -- check the official page.",
       "Latest invitations shown (issued 20 May 2026, priority trade occupations): General stream WASMOL Schedule 1: 0; WASMOL Schedule 2: 167; Graduate stream higher education: 5; Graduate stream VET: 37 -- all subclass 190, none subclass 491.",
       "Covers subclass 190 (+5 DHA points) and subclass 491 (+15 DHA points) via a General stream (WASMOL Schedule 1/2 occupation lists) and a Graduate stream (Graduate Occupation List, GOL).",
+      "Contract of employment (General stream, 2025-26 page): a contract of employment in the nominated (or a closely related) occupation for full-time employment in Western Australia, for at least six months from the date of the application for State nomination; full-time means an average of at least 35 hours per week; not applicable to subclass 491 applicants, nor (WASMOL Schedule 2) to applicants invited through a WA building and construction industry occupation.",
+      "Graduate stream study requirement (2025-26 page): at least one qualification gained in WA, studied at an accredited WA educational institution, full-time, in a face-to-face (on campus) learning environment, for at least two academic years.",
       "2025-26 rules: both onshore (WA-resident) and offshore (interstate/overseas) candidates are eligible; ranking prioritises WA residents, then priority-industry occupations (building & construction, healthcare & social assistance, hospitality & tourism, education & training), then all other sectors, then EOI points, then submission date.",
       "2025-26 rules: at least 1 year of Australian OR overseas work experience in the nominated (or closely related) occupation within the last 10 years.",
       "Nomination application fee (2025-26 page): AUD 200, non-refundable; applicants have 28 calendar days to lodge the application once invited.",
