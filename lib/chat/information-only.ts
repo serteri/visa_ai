@@ -12,7 +12,21 @@ import type { Locale } from "@/lib/readiness/types";
  *   3. sanitizeAnswer: rewrites a finished answer so no banned pattern remains and the factual content stays (every rewrite is reported).
  */
 
-export type BannedId = "best_pick" | "recommend" | "chance" | "should" | "next_step" | "eligibility_verdict" | "permission" | "imperative";
+export type BannedId =
+  | "best_pick"
+  | "recommend"
+  | "chance"
+  | "should"
+  | "next_step"
+  | "eligibility_verdict"
+  | "permission"
+  | "imperative"
+  | "state_verdict"
+  | "legal_claim"
+  | "ielts_equation";
+
+/** Ids a rewrite can carry: the banned patterns above, plus the clean-ups that are not a banned pattern. */
+export type RewriteId = BannedId | "scope_line" | "general_note" | "recap_repeat" | "numbered_steps";
 
 type Rule = { id: BannedId; re: Record<Locale, RegExp> };
 
@@ -86,20 +100,71 @@ const RULES: Rule[] = [
       "zh-Hans": P("^(?:(?:请|先|首先|然后|接着|再|最后|现在|另外|同时)[，,:：]?)*(?:申请|提交|递交|注册|预约|准备|考虑|选择|专注|提高|提升|重考|联系|获取|取得|完成|开始|争取|瞄准|搬到|迁往|上传|创建|锁定)|^请[^，。]{0,14}?(?:申请|提交|递交|注册|预约|准备|联系|完成|开始|取得|获取)|(?:您|你)(?:需要|必须|得)(?:先)?(?:申请|提交|递交|注册|预约|准备|获取|取得|完成|提高|提升|重考|联系|开始|找)"),
     },
   },
+  // A conclusion that a state / territory is or is not open, available or applicable TO THIS VISITOR, or an invented residence rule.
+  // The chat shows each state's published status and conditions with their date; the visitor compares.
+  {
+    id: "state_verdict",
+    re: {
+      en: P(
+        `${B}(?:(?:is|are) (?:not )?(?:open|available|accessible|closed|unavailable) (?:to|for) (?:you|your (?:profile|situation|case))|(?:closed|unavailable|not available|not open|not accessible|not suitable|not possible) (?:to|for) you|(?:does|do|did) not (?:give|grant|allow|offer|provide) (?:you )?(?:a |the |any )?(?:right|ability|opportunity|chance|way|access)(?: to| of)? (?:apply|applying|nominat\\w*)|(?:no|not a|without a) right to apply|because you (?:currently )?(?:live|reside|are living|are based|are located) in [^.!?]{0,60}?(?:not|cannot|can't|closed|unavailable|only)|(?:only|exclusively) (?:for|to|available to|open to|available for) (?:\\w+ ){0,2}(?:residents|people living|those living|locals)|you (?:are|'re) (?:not )?(?:able|allowed|permitted) to (?:apply|use|access|be nominated))${E}`,
+      ),
+      tr: P(
+        `başvuru hakkı (?:vermemektedir|vermiyor|vermez|tanımamaktadır|tanımıyor|tanımaz|sunmamaktadır|verir|veriyor|tanır|sunar|sunmaktadır)|(?:sizin için|size|profilinize|profiliniz için) (?:uygun değil|açık değil|kapalı|uygun olmayan|uygun bir seçenek)|(?:yaşadığınız|bulunduğunuz|ikamet ettiğiniz|olduğunuz) için[^.!?]{0,90}?(?:açık değil|kapalı|uygun değil|hak|başvuramaz|yalnızca|sadece)|(?:yalnızca|sadece) (?:\\p{L}+ ){0,2}(?:ikamet|yerleşik|oturum sahibi|sakin|yerel)\\p{L}*`,
+      ),
+      "zh-Hans": P(
+        "(?:你|您)(?:不符合|不满足|不具备|无法申请|不能申请|没有资格申请)|对(?:你|您)(?:来说)?(?:不)?(?:开放|可用|适用|关闭)|不对(?:你|您)开放|不适合(?:你|您)|(?:因为|由于)(?:你|您)(?:目前)?(?:住在|居住在|位于|在)[^。！？]{0,20}(?:不|无法|没有|仅|只)|仅(?:限|对|适用于)[^。！？]{0,8}(?:居民|居住者|常住|本地)",
+      ),
+    },
+  },
+  // Legal claims used to predict or recommend ("migration law does not allow", "it is illegal"): never made. The scope line replaces them.
+  {
+    id: "legal_claim",
+    re: {
+      en: P(
+        `${B}(?:(?:migration|immigration|australian|the|federal) law (?:does not|doesn't|do not|don't|prohibits|forbids|bars|prevents|disallows|makes it)|(?:is|are|would be|will be|be|it's|it is) (?:illegal|unlawful|against the law|prohibited by law|a criminal offen[cs]e)|(?:illegal|unlawful) (?:to|for you)|not (?:legally )?(?:allowed|permitted|legal) (?:by law|under (?:the |australian )?(?:law|migration law))|legally (?:cannot|can't|can not|not allowed|prohibited|barred|impossible|required|obliged|not permitted)|by law (?:you|applicants|this)|(?:law|legislation) does not allow|not legal)${E}`,
+      ),
+      tr: P(
+        `yasal değildir|yasal değil|yasal olarak (?:mümkün değil|izin verilmiyor|yasak|zorunlu)|yasa dışı|yasadışı|gayri ?yasal|yasaya aykırı|(?:göçmenlik|vize) (?:yasası|hukuku|kanunu|mevzuatı) [^.!?]{0,30}(?:izin ver(?:mez|miyor|memektedir)|yasakl|engel)|${B}kanunen${E}|${B}hukuken${E}|mevzuat(?:a göre)? (?:izin vermiyor|izin vermemektedir|yasaklıyor)`,
+      ),
+      "zh-Hans": P("违法|不合法|非法|法律(?:不允许|禁止|不准|上不|上无法)|移民法(?:不允许|禁止|不准)|依法(?:不能|不得)"),
+    },
+  },
+  // An English level equated with an IELTS score ("IELTS at least Competent English"). The chat names the level; the accepted tests are set by Home Affairs.
+  {
+    id: "ielts_equation",
+    re: {
+      en: P(
+        `${B}(?:(?:Competent|Proficient|Superior)(?: English)?\\b[^.!?]{0,25}\\b(?:is|means|equals|equivalent to|=|corresponds to|corresponding to|requires)\\b[^.!?]{0,12}\\bIELTS|IELTS\\b[^.!?]{0,20}\\b(?:at least|minimum|min\\.?|of|equals|=|is)\\b[^.!?]{0,10}\\b(?:Competent|Proficient|Superior))`,
+      ),
+      tr: P(
+        `${B}(?:(?:Competent|Proficient|Superior)(?: English)?\\b[^.!?]{0,25}IELTS[^.!?]{0,12}(?:eşdeğer|demektir|karşılık|=)|IELTS[^.!?]{0,20}(?:en az|asgari|eşittir|=)[^.!?]{0,10}(?:Competent|Proficient|Superior))`,
+      ),
+      "zh-Hans": P(
+        "雅思[^。！？；;，,]{0,12}(?:Competent|Proficient|Superior)|(?:Competent|Proficient|Superior)(?: ?English)?[^。！？]{0,10}(?:相当于|等于|即|就是|对应|=|＝)[^。！？]{0,6}雅思",
+      ),
+    },
+  },
 ];
 
-/** The referral every personalised-looking answer carries, in the conversation language. */
+/** The single scope line an answer carries (once), in the conversation language. */
 export const ADVICE_NOTE: Record<Locale, string> = {
-  en: "This chat gives published information only: it does not say which visa, state or pathway to choose, or what the outcome of an application would be. Advice on your own situation must come from a registered migration agent (MARA) or an Australian legal practitioner.",
-  tr: "Bu sohbet yalnızca yayımlanmış bilgi verir: hangi vizenin, eyaletin veya yolun seçileceğini ya da bir başvurunun sonucunun ne olacağını söylemez. Kendi durumunuza ilişkin tavsiye, kayıtlı bir göçmenlik danışmanından (MARA) veya Avustralya'da çalışan bir hukuk uzmanından alınmalıdır.",
-  "zh-Hans": "本聊天仅提供已公布的信息：不会说明应选择哪种签证、州或途径，也不会说明申请的结果。针对您自身情况的建议，必须来自注册移民代理（MARA）或澳大利亚执业法律人士。",
+  en: "This chat gives published information only; for advice on your own situation, consult a registered migration agent or an Australian legal practitioner.",
+  tr: "Bu sohbet yalnızca yayımlanmış bilgi verir; kendi durumunuza ilişkin tavsiye için kayıtlı bir göçmenlik danışmanına (MARA) veya Avustralya'da çalışan bir hukuk uzmanına başvurun.",
+  "zh-Hans": "本聊天仅提供已公布的信息；针对您自身情况的建议，请咨询注册移民代理或澳大利亚执业法律人士。",
 };
 
 /** Canada mode of the assistant: the same line, naming the regulated consultant (RCIC) instead of MARA. */
 export const ADVICE_NOTE_CA: Record<Locale, string> = {
-  en: "This chat gives published information only: it does not say which pathway to choose, or what the outcome of an application would be. Advice on your own situation must come from a regulated Canadian immigration consultant (RCIC) or a Canadian legal practitioner.",
-  tr: "Bu sohbet yalnızca yayımlanmış bilgi verir: hangi yolun seçileceğini ya da bir başvurunun sonucunun ne olacağını söylemez. Kendi durumunuza ilişkin tavsiye, düzenlenmiş bir Kanada göçmenlik danışmanından (RCIC) veya Kanada'da çalışan bir hukuk uzmanından alınmalıdır.",
-  "zh-Hans": "本聊天仅提供已公布的信息：不会说明应选择哪种途径，也不会说明申请的结果。针对您自身情况的建议，必须来自受监管的加拿大移民顾问（RCIC）或加拿大执业法律人士。",
+  en: "This chat gives published information only; for advice on your own situation, consult a regulated Canadian immigration consultant (RCIC) or a Canadian legal practitioner.",
+  tr: "Bu sohbet yalnızca yayımlanmış bilgi verir; kendi durumunuza ilişkin tavsiye için düzenlenmiş bir Kanada göçmenlik danışmanına (RCIC) veya Kanada'da çalışan bir hukuk uzmanına başvurun.",
+  "zh-Hans": "本聊天仅提供已公布的信息；针对您自身情况的建议，请咨询受监管的加拿大移民顾问（RCIC）或加拿大执业法律人士。",
+};
+
+/** What replaces a sentence that equates an English level with an IELTS score (the level named, the tests left to Home Affairs). */
+const ENGLISH_LEVEL_LINE: Record<Locale, (level?: string) => string> = {
+  en: (level) => `${level ? `The required English level is ${level} English` : "The English level is set by the visa requirements"}; the accepted English tests and the scores that meet it are set by the Department of Home Affairs.`,
+  tr: (level) => `${level ? `Gereken İngilizce düzeyi ${level} English'tir` : "İngilizce düzeyi vize şartlarında belirlenir"}; kabul edilen İngilizce testleri ve bu düzeyi karşılayan puanlar İçişleri Bakanlığı (Department of Home Affairs) tarafından belirlenir.`,
+  "zh-Hans": (level) => `${level ? `所需的英语水平为 ${level} English` : "英语水平由签证要求规定"}；可接受的英语考试及对应分数由内政部（Department of Home Affairs）规定。`,
 };
 
 /** A sentence that is the referral itself (or names a registered agent / legal practitioner as the source of advice) is never rewritten. */
@@ -135,11 +200,12 @@ export function splitSentences(text: string): string[] {
 
 /** The banned patterns one sentence contains (a referral sentence contains none). */
 export function bannedIn(sentence: string, locale: Locale): BannedId[] {
-  if (REFERRAL.test(sentence)) return [];
+  const referral = REFERRAL.test(sentence);
   const body = stripMarker(sentence);
   const found = new Set<BannedId>();
   // All three languages are checked on every answer: the model may mix, and a Chinese answer can quote an English phrase.
   for (const rule of RULES) {
+    if (referral && !["legal_claim", "state_verdict", "eligibility_verdict"].includes(rule.id)) continue;
     for (const l of [locale, ...(["en", "tr", "zh-Hans"] as Locale[]).filter((x) => x !== locale)]) {
       if (rule.re[l].test(rule.id === "imperative" ? body : sentence)) {
         found.add(rule.id);
@@ -199,37 +265,146 @@ const PERSONAL_QUESTION = new RegExp(
 );
 export const isPersonalSituationQuestion = (text: string): boolean => PERSONAL_QUESTION.test(text);
 
-export type Rewrite = { id: BannedId; sentence: string; action: "dropped" | "kept_figures"; replacement?: string };
+export type Rewrite = { id: RewriteId; sentence: string; action: "dropped" | "kept_figures" | "replaced" | "de_numbered"; replacement?: string };
 export type Sanitized = { text: string; rewrites: Rewrite[]; noteAdded: boolean };
+
+/** A sentence that is the scope line (a referral to a registered agent / legal practitioner as the source of advice): the answer carries ONE, ours, at the end. */
+const SCOPE_WORDS = /advice|advise|consult|seek (?:advice|help|guidance)|should come from|must come from|published information only|not (?:a|an) (?:registered|licensed|licenced)|i am not|tavsiye|danış|yalnızca yayımlanmış|değilim|başvurun|başvurmalı|咨询|仅提供|建议|不是注册|我不是|必须来自/i;
+const isScopeSentence = (s: string) => REFERRAL.test(s) && SCOPE_WORDS.test(s);
+const ALL_NOTES = new Set<string>([...Object.values(ADVICE_NOTE), ...Object.values(ADVICE_NOTE_CA)]);
+
+/** The "not covered by my sources / general information" note (all three languages) and what counts as a citation in an answer. */
+const GENERAL_NOTE_RE = /not covered by my sources|kaynaklarımda yer almıyor|不在我的资料中/i;
+const CITATION = /https?:\/\/|\[S\d+\]|\b(?:sources?|kaynak(?:lar)?)\s*:|来源[:：]/i;
+
+/** A heading that only announces the profile recap ("Profile summary:", "Profil özeti"). */
+const RECAP_HEADING = /^(?:#+\s*)?[*_]*(?:your profile|profile (?:summary|recap)|summary of your profile|profil(?:iniz)?(?: özeti)?|profil özeti|档案摘要|个人资料摘要|您的资料)[*_]*\s*[:：]?\s*$/iu;
+
+const STOP = new Set(["the", "and", "for", "are", "was", "has", "have", "been", "its", "with", "that", "this", "from", "will", "may", "any", "you", "your", "bir", "için", "olan", "veya", "ile"]);
+/** Words (first 5 letters), numbers and Chinese character pairs: enough to tell a restatement from new content. */
+function recapTokens(text: string): Set<string> {
+  const t = new Set<string>();
+  for (const w of text.toLowerCase().match(/[a-zçğıöşü]{3,}|\d+(?:[-.,]\d+)*/gu) ?? []) if (!STOP.has(w)) t.add(/^\d/.test(w) ? w : w.slice(0, 5));
+  const han = text.match(/\p{Script=Han}+/gu) ?? [];
+  for (const run of han) for (let i = 0; i + 1 < run.length; i++) t.add(run.slice(i, i + 2));
+  return t;
+}
+/** True when the sentence says (nearly) nothing the recap shown with this answer does not already say: most of its words and every number are in the recap. */
+function repeatsRecap(sentence: string, recap: string): boolean {
+  const s = recapTokens(sentence);
+  if (s.size < 4) return false;
+  const base = recapTokens(recap);
+  let shared = 0;
+  for (const w of s) if (base.has(w)) shared++;
+  const numbers = [...s].filter((w) => /^\d/.test(w));
+  return shared / s.size >= 0.7 && numbers.length > 0 && numbers.every((n) => base.has(n));
+}
+
+const NUMBERED = /^(\s*)(?:\d{1,2}[.)、](?!\d)|[（(]\d{1,2}[）)]|(?:step|adım|步骤)\s*\d{1,2}\b[:.)]?|第\s*\d{1,2}\s*步[:：.]?)\s*/i;
+
+/** Numbered instructions become plain bullets: a process may be described, never given as numbered steps for the visitor to follow. */
+function deNumber(lines: string[], rewrites: Rewrite[], locale: Locale): string[] {
+  const idx = lines.map((l, i) => (NUMBERED.test(l) ? i : -1)).filter((i) => i >= 0);
+  const out = [...lines];
+  let group: number[] = [];
+  const flush = () => {
+    if (group.length >= 2) {
+      const process = group.map((i) => lines[i]).join(" ");
+      if (/EOI|SkillSelect/i.test(process) && /invitation|davet|邀请/i.test(process) && /visa application|vize|签证/i.test(process)) {
+        out[group[0]] = locale === "tr"
+          ? "Nitelikli bir vize süreci genellikle SkillSelect'te bir EOI, ardından davet ve ardından vize başvurusunu içerir."
+          : locale === "zh-Hans"
+            ? "技术签证流程通常包括：在 SkillSelect 中提交的 EOI，随后是邀请，再随后是签证申请。"
+            : "A skilled visa usually involves: an EOI in SkillSelect, then an invitation, then the visa application.";
+        for (const i of group.slice(1)) out[i] = "";
+        rewrites.push({ id: "numbered_steps", sentence: process, action: "replaced", replacement: out[group[0]] });
+      } else {
+        for (const i of group) out[i] = out[i].replace(NUMBERED, (_m, indent: string) => `${indent}- `);
+        rewrites.push({ id: "numbered_steps", sentence: lines[group[0]].trim(), action: "de_numbered" });
+      }
+    }
+    group = [];
+  };
+  for (const i of idx) {
+    if (group.length > 0 && i - group[group.length - 1] > 3) flush();
+    group.push(i);
+  }
+  flush();
+  return out;
+}
 
 /**
  * Rewrites a finished answer so that it contains no banned pattern: a flagged sentence is replaced by its figures (subclass + the
- * clauses that carry a number) or dropped; a visitor's question about their own situation gets the referral line once. The factual
- * sentences are untouched. Idempotent: a clean answer comes back unchanged (and gets no note unless the question asked for one).
+ * clauses that carry a number) or dropped; a sentence that equates an English level with an IELTS score is replaced by the level
+ * and the pointer to Home Affairs; numbered steps become bullets; the answer carries ONE scope line (ours, at the end), never the
+ * model's own, and not the "not covered by my sources" note when it has citations; a sentence that only repeats the profile recap
+ * shown with this answer is dropped. The factual sentences are untouched. Idempotent: a clean answer comes back unchanged (and
+ * gets no note unless the question asked for one).
  */
-export function sanitizeAnswer(answer: string, opts: { locale: Locale; userText?: string; country?: "AU" | "CA" }): Sanitized {
+export function sanitizeAnswer(answer: string, opts: { locale: Locale; userText?: string; country?: "AU" | "CA"; recap?: string }): Sanitized {
   const { locale } = opts;
   const rewrites: Rewrite[] = [];
-  const lines = answer.split("\n");
+  const hasCitation = CITATION.test(answer);
+  let scopeSeen = false;
+  let canonicalSeen = false;
+  let levelLineDone = false;
+  const lines = deNumber(answer.split("\n"), rewrites, locale);
   const outLines: string[] = [];
   for (const line of lines) {
     if (!line.trim()) {
       outLines.push(line);
       continue;
     }
+    if (opts.recap && RECAP_HEADING.test(line.trim())) {
+      rewrites.push({ id: "recap_repeat", sentence: line.trim(), action: "dropped" });
+      continue;
+    }
     // Rebuild the line sentence by sentence, keeping the original spacing between kept sentences.
     let rebuilt = "";
     let pendingSpace = "";
     for (const [sentence, space] of tokenize(line)) {
-      const ids = sentence.trim() ? bannedIn(sentence, locale) : [];
+      const trimmed = sentence.trim();
+      if (!trimmed) {
+        rebuilt += pendingSpace + sentence;
+        pendingSpace = space;
+        continue;
+      }
+      const bullet = (sentence.match(/^[\s>*\-–—•·]+/) ?? [""])[0];
+      if (isScopeSentence(trimmed)) {
+        // The model's own scope line: removed; the one canonical line is added at the end.
+        scopeSeen = true;
+        if (ALL_NOTES.has(trimmed)) canonicalSeen = true;
+        else rewrites.push({ id: "scope_line", sentence: trimmed, action: "dropped" });
+        continue;
+      }
+      if (hasCitation && GENERAL_NOTE_RE.test(trimmed)) {
+        rewrites.push({ id: "general_note", sentence: trimmed, action: "dropped" });
+        continue;
+      }
+      if (opts.recap && /entered|your (?:profile|points|age)|points from|girilen|girişleriniz|profiliniz|puanınız|yaşınız|已填写|您的(?:资料|分数|年龄)|根据您的填写/i.test(trimmed) && /\d/.test(trimmed) && repeatsRecap(trimmed, opts.recap)) {
+        rewrites.push({ id: "recap_repeat", sentence: trimmed, action: "dropped" });
+        continue;
+      }
+      const ids = bannedIn(sentence, locale);
       if (ids.length === 0) {
         rebuilt += pendingSpace + sentence;
         pendingSpace = space;
         continue;
       }
-      const left = residue(sentence, locale);
-      const bullet = (sentence.match(/^[\s>*\-–—•·]+/) ?? [""])[0];
-      for (const id of ids) rewrites.push({ id, sentence: sentence.trim(), action: left ? "kept_figures" : "dropped", ...(left ? { replacement: left } : {}) });
+      if (ids.includes("ielts_equation")) {
+        const level = trimmed.match(/\b(Competent|Proficient|Superior)\b/i)?.[1];
+        const named = level ? level[0].toUpperCase() + level.slice(1).toLowerCase() : undefined;
+        if (!levelLineDone) {
+          levelLineDone = true;
+          const line2 = ENGLISH_LEVEL_LINE[locale](named);
+          rewrites.push({ id: "ielts_equation", sentence: trimmed, action: "replaced", replacement: line2 });
+          rebuilt += pendingSpace + bullet + line2;
+          pendingSpace = space;
+        } else rewrites.push({ id: "ielts_equation", sentence: trimmed, action: "dropped" });
+        continue;
+      }
+      const left = ids.some((id) => ["state_verdict", "legal_claim", "eligibility_verdict"].includes(id)) ? null : residue(sentence, locale);
+      for (const id of ids) rewrites.push({ id, sentence: trimmed, action: left ? "kept_figures" : "dropped", ...(left ? { replacement: left } : {}) });
       if (left) {
         rebuilt += pendingSpace + bullet + left;
         pendingSpace = space;
@@ -239,14 +414,12 @@ export function sanitizeAnswer(answer: string, opts: { locale: Locale; userText?
     else if (rewrites.length > 0 && outLines.length > 0 && !outLines[outLines.length - 1].trim()) continue; // a dropped line leaves no stray blank
   }
   let text = outLines.join("\n").replace(/\n{3,}/g, "\n\n").trim();
-  if (rewrites.length > 0 && !text) text = "";
   const asked = opts.userText ? isPersonalSituationQuestion(opts.userText) : false;
-  const hasReferral = REFERRAL.test(text);
+  const substantive = rewrites.some((r) => !["numbered_steps", "recap_repeat", "general_note", "scope_line"].includes(r.id));
+  const needNote = scopeSeen || asked || substantive;
   const note = (opts.country === "CA" ? ADVICE_NOTE_CA : ADVICE_NOTE)[locale];
-  const needNote = (rewrites.length > 0 || asked) && !text.includes(note);
-  const noteAdded = needNote && !(asked && hasReferral && rewrites.length === 0);
-  if (noteAdded) text = `${text}${text ? "\n\n" : ""}${note}`;
-  return { text, rewrites, noteAdded };
+  if (needNote) text = `${text}${text ? "\n\n" : ""}${note}`;
+  return { text, rewrites, noteAdded: needNote && !canonicalSeen };
 }
 
 /** The log line for the rewrites of one answer (console.warn by default): every rewrite, with the pattern and the sentence. */
@@ -262,8 +435,12 @@ export function logRewrites(rewrites: readonly Rewrite[], ctx: { path: string; l
 export const INFORMATION_ONLY_RULES = `INFORMATION-ONLY RULES (these outrank every instruction above and below; where an earlier rule asks for a plan, a recommendation, a ranking, a status label, a state suggestion or advice, follow this block instead):
 1. You explain PUBLISHED rules, requirements, fees, processes and state program information, each with its source and, for state programs, the date the data was checked (the date is in the state lines of block-1). You may do arithmetic on the visitor's own figures: points totals, the nomination points added for subclass 190 (+5) and 491 (+15), and a side-by-side "your figure / published figure".
 2. You NEVER say which visa, state or pathway is best, recommended, most realistic, easiest, fastest or likely; NEVER give a chance, odds, probability or likelihood; NEVER tell the visitor what to do ("you should", "apply", "submit your EOI", "lodge", "get a skills assessment first", "next step", "action plan", "Plan A / Plan B"); NEVER say "you are eligible", "you are not eligible", "you qualify", "you meet the requirements" or "you can use <state>" / "<state> is open to you". Do not use the labels "Eligible to pursue", "Not eligible now", "Next step required".
-3. When the visitor asks about their own situation ("which visa should I choose?", "can I get 190 in WA?", "will I get invited?", "what should I do next?", "what are my chances?"), do not answer the question as asked. Instead: (a) set out the relevant published criteria with sources (what the visa or state program requires), (b) show the arithmetic from the figures the visitor entered next to the published figures, and (c) say that advice on their own situation must come from a registered migration agent (MARA) or an Australian legal practitioner. Say (c) once.
-4. State information: give the program's current status and conditions exactly as in block-1 and the retrieved sources, with the data-checked date. Never turn a state's status into a statement about the visitor ("you can use WA", "WA is a good option"). A state's listing of an occupation or a condition (for example a six-month WA employment contract for the WA 190 General stream) is a published condition, not a conclusion about the visitor.
-5. Neutral wording: "the published minimum is 65; your entered figures add up to 60" (arithmetic) instead of "you are 5 points short and should ...". "The 190 stream states ... " instead of "you need to ...". Describe what a published process involves ("The process involves an EOI in SkillSelect ...") without telling the visitor to do it.
-6. If a source gives a figure, give it exactly. If a source does not cover the point, say so once and point to the official page (Department of Home Affairs or the state government); do not guess.
+3. When the visitor asks about their own situation ("which visa should I choose?", "can I get 190 in WA?", "will I get invited?", "what should I do next?", "what are my chances?", "which state sponsors me?"), do not answer the question as asked. Instead: (a) set out the relevant published criteria with sources (what the visa or state program requires), (b) show the arithmetic from the figures the visitor entered next to the published figures, and (c) say that advice on their own situation must come from a registered migration agent (MARA) or an Australian legal practitioner. Say (c) ONCE, as one short line at the end; do not add any other referral, disclaimer or scope sentence.
+4. State information comes ONLY from the state lines of block-1 (each state's published status, published conditions and the date they were checked) ONLY. Retrieved documents and the profile cannot supply additional state rules. Quote the structured facts. Do NOT state any state rule that is not in that data: no residence rule, no "only for residents", no "needs a job in the state" unless the line says so, nothing inferred from where the visitor lives. NEVER conclude that a state is or is not available, open, closed, suitable or applicable "for you" / "for your profile" / "because you live in <state>", and never say a state "does not give a right to apply" to the visitor, in any language. When asked which state, list each state's published status and conditions with the date, briefly, and let the visitor compare. A state's listing of an occupation or a condition (for example a six-month WA employment contract for the WA 190 General stream) is a published condition, not a conclusion about the visitor.
+5. Neutral wording: "the published minimum is 65; your entered figures add up to 60" (arithmetic) instead of "you are 5 points short and should ...". "The 190 stream states ... " instead of "you need to ...". A generic process may be DESCRIBED in one sentence ("A skilled visa usually involves: an EOI in SkillSelect, then an invitation, then the visa application"); never as numbered or bulleted instructions to the visitor.
+6. If a source gives a figure, give it exactly. If a source does not cover the point, say so once and point to the official page (Department of Home Affairs or the state government); do not guess. Add the "not covered by my sources" note ONLY when the answer has no citation at all; an answer with citations never carries it.
+7. NEVER make legal claims to predict or recommend: do not write "migration law does not allow", "it is illegal / unlawful", "yasal değildir", "违法" or similar. The scope line in rule 3 is the only reference to the law or to legal advice.
+8. If the visitor states a figure that differs from the saved profile (for example "I have 75 points" while their entries add up to 70), show both and say which one the arithmetic uses (the profile entries, unless they change them).
+9. English levels: name the required level (Competent English, Proficient English, Superior English). NEVER equate a level with an IELTS score or write "IELTS at least Competent"; if needed, say the accepted English tests and scores are set by the Department of Home Affairs.
+10. The profile recap is shown by the system once per conversation, at the top of the first answer. NEVER write your own recap of the visitor's details or points, and never repeat it.
 `;

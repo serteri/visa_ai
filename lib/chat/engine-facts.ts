@@ -98,9 +98,15 @@ function pointsLines(): string[] {
 }
 
 function stateLines(live: LiveStateData = {}): string[] {
-  return Object.values(STATE_RULES).map((rule) => {
+  // Each state's published status, its published conditions (the rules file's note and key facts, each from the state's own pages) and the
+  // date they were checked. These lines are the ONLY source of state facts for the chat: quote them, add no state rule of your own.
+  return Object.values(STATE_RULES).flatMap((rule) => {
     const status = resolveDisplayStatus({ admin: live.stateNominationConfig?.[rule.code] ?? undefined, rule, intelStatus: live.stateIntelligence?.[rule.code]?.status }) ?? rule.status;
-    return `- ${rule.name} (${rule.code}): ${status} (verified ${rule.lastVerified}).`;
+    return [
+      `- ${rule.name} (${rule.code}): published status ${status}; data checked ${rule.lastVerified}; sources: ${rule.sourceDocument.split(";").map((x) => x.trim().split("/").pop()).join("; ")}.`,
+      `    Published note: ${rule.note}`,
+      ...rule.keyFacts.map((fact) => `    Published condition: ${fact}`),
+    ];
   });
 }
 
@@ -178,17 +184,12 @@ export function buildEngineFacts(live: LiveStateData = {}): string {
     `- Subclass 186 Temporary Residence Transition stream: ${TRT_EMPLOYMENT.years} years of full-time eligible sponsored employment in the ${TRT_EMPLOYMENT.withinYears} years before applying (not ${TRT_EMPLOYMENT.withinYears} years of employment). Direct Entry stream: at least ${DIRECT_ENTRY_EXPERIENCE_YEARS} years of relevant work experience.`,
     `- Age: you must be UNDER ${AGE_LIMIT} when invited (189 / 190 / 491) or when you apply (186). ${AGE_LIMIT} is an upper limit, never a minimum age; the points table gives 0 age points from ${AGE_LIMIT}.`,
     "",
-    "State stream conditions (sourced; a state counts as available for a subclass only if the applicant meets them on their answers):",
-    "- Western Australia, subclass 190, General stream (Schedule 1 or 2 occupations): a full-time WA employment contract in the nominated (or a closely related) occupation of at least six months from the date of the State nomination application (WA State Nominated Migration Program 2025-26, pp. 5, 9). This is NOT required for subclass 491. Moving to WA, or living there, does not meet it: the visitor needs a WA job offer / contract.",
-    "- Western Australia Graduate stream (subclass 190 / 491): at least two academic years of full-time, on-campus study at an accredited WA institution (WA State Nominated Migration Program 2025-26, p. 13).",
-    "- A state whose published stream condition for 190 is not met by the visitor's entered answers (for example WA: a WA job contract) is stated only as the published condition; the chat does not say the visitor can or cannot use it.",
     "- Subclass 191 (permanent, after a 491): live and work in a designated regional area for at least 3 years and provide ATO notices of assessment for 3 income years within the 491's 5 years. There is NO minimum income requirement.",
     "",
     "Points test (the report's points table):",
     ...pointsLines(),
     "",
-    "State and territory nomination program status (the report's State Nomination Tracker):",
+    "State and territory nomination program information (the report's State Nomination Tracker). This is the ONLY source of state facts: quote the status, the conditions and the date checked; state NO rule that is not written here (no residence rule, no \"only for residents\", nothing inferred from where the visitor lives); never say a state is or is not open or available for the visitor; show each state's published status and conditions with the date and let the visitor compare:",
     ...stateLines(live),
-    "- Whether a state lists a particular occupation, and whether it is open to the applicant's location and residence, comes only from the visitor's profile below; without a profile, do not claim an occupation is in demand in any number of states.",
   ].join("\n");
 }

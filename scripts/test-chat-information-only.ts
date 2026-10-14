@@ -193,6 +193,38 @@ async function main() {
     t("every banned pattern family was exercised (best / recommend / chance / should / next step / eligibility / permission / imperative)", ["best_pick", "recommend", "chance", "should", "next_step", "eligibility_verdict", "permission", "imperative"].every((id) => seenIds.has(id as BannedId)), [...seenIds].join(", "));
   }
 
+  section("Live review excerpts: four regression fixtures (full transcripts pending)");
+  {
+    const live = [
+      { locale: "tr" as const, q: "Hangi eyalet beni sponsor eder, şansım ne?", bad: "Queensland'de yaşadığınız için NSW, VIC, SA, TAS, NT ve ACT başvuru hakkı vermemektedir. NSW sadece yerleşik sakinler içindir. SA sizin için uygun değil. Göçmenlik yasası buna izin vermez. Bu yasal değildir.", keep: FACT.tr.wa },
+      { locale: "en" as const, q: "I have 75 points. Which state is open to me?", bad: "Because you live in Queensland, NSW is not open to you. Migration law does not allow predictions. It is illegal to recommend a state.", keep: FACT.en.min },
+      { locale: "zh-Hans" as const, q: "哪个州对我开放？英语有什么要求？", bad: "你不符合NSW条件。SA对你不开放。雅思至少Competent English。移民法不允许建议。", keep: FACT["zh-Hans"].wa },
+      { locale: "tr" as const, q: "Şimdi ne yapmalıyım?", bad: "1. EOI gönderin.\n2. Davet alın.\n3. Vizeye başvurun.", keep: FACT.tr.min },
+    ];
+    for (const c of live) {
+      const out = await ask("v-prem", 3, c.q, c.locale, `${c.bad}\n${c.keep} [S1]\n${ADVICE_NOTE[c.locale]}\n${ADVICE_NOTE[c.locale]}\nThis part is not covered by my sources; it is general information.`);
+      t(`live [${c.locale}] banned stub is cleaned`, findBannedPatterns(out.text, c.locale).length === 0, out.text);
+      t(`live [${c.locale}] factual content survives`, out.text.includes(c.keep), out.text);
+      t(`live [${c.locale}] exactly one scope line`, out.text.split(ADVICE_NOTE[c.locale]).length === 2, out.text);
+      t(`live [${c.locale}] cited answer has no unsupported footer`, !out.text.includes("not covered by my sources"));
+      if (c.locale === "en") t("stated points and saved points both shown; saved entries used", out.text.includes("75") && out.text.includes(`entries: ${savedBody.points}`) && out.text.includes("Arithmetic uses the saved profile entries"), out.text);
+      if (c.locale === "zh-Hans") t("English level named without IELTS equation", out.text.includes("Competent English") && !out.text.includes("雅思至少"), out.text);
+    }
+    const process = "A skilled visa usually involves: an EOI in SkillSelect, then an invitation, then the visa application.";
+    t("generic descriptive process is allowed unchanged", sanitizeAnswer(process, { locale: "en" }).text === process);
+    t("numbered process becomes one description", sanitizeAnswer("1. EOI in SkillSelect\n2. An invitation\n3. The visa application", { locale: "en" }).text === process);
+    const { shouldShowLead } = await import("../lib/chat/plan-summary");
+    t("recap appears once even on another position question or profile change", !shouldShowLead({ fingerprint: "new", lastShown: "old", userText: "What are my points?" }));
+    const recap = "Girilen: yaşınız 28, puanınız 70.";
+    const cleaned = sanitizeAnswer(`${recap}\n${recap}\n${FACT.tr.min}`, { locale: "tr", recap });
+    t("duplicate Turkish profile recap removed; published minimum retained", !cleaned.text.includes(recap) && cleaned.text.includes(FACT.tr.min), cleaned.text);
+    const { buildEngineFacts } = await import("../lib/chat/engine-facts");
+    const { STATE_RULES } = await import("../lib/state-nomination/state-rules-config");
+    const facts = buildEngineFacts();
+    t("all eight structured state statuses, dates and conditions passed to model", Object.values(STATE_RULES).every((r) => facts.includes(r.lastVerified) && facts.includes(r.note) && r.keyFacts.every((f) => facts.includes(f))));
+    t("state prompt has no profile availability inference", !facts.includes("comes only from the visitor's profile") && !facts.includes("a state counts as available"));
+  }
+
   section("2b. correction blocks carry no banned pattern");
   {
     const { buildCorrections } = await import("../lib/chat/corrections");
@@ -261,6 +293,7 @@ async function main() {
     }
     const route = readFileSync("app/api/chat/route.ts", "utf8");
     t("the report assistant route no longer sends rankings, match percentages, recommendation tags, next steps or risk indicators to the model", !/rankedPathways|matchPercentage|recommendationTag|suggestedNextSteps|riskIndicators|pathwayComparison/.test(route.replace(/\/\/.*$/gm, "")));
+    t("the Australian report chat also receives structured state facts", /content: buildEngineFacts\(\)/.test(route));
     t("... and holds the model's answer, rewrites it (sanitizeAnswer) and logs the rewrite", /sanitizeAnswer\(full/.test(route) && /logRewrites/.test(route) && /INFORMATION_ONLY_RULES|assistantRules/.test(route));
     const sys = readFileSync("lib/ai/generate-grounded-answer.ts", "utf8");
     t("the assistant page prompt no longer instructs 'You are ineligible for this pathway because'", !/You are ineligible for this pathway because/.test(sys.slice(sys.indexOf("const SYSTEM_PROMPT"), sys.indexOf("].join", sys.indexOf("const SYSTEM_PROMPT")))));

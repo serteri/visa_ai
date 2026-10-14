@@ -80,3 +80,12 @@ contain a banned word ("likely" in a quoted source) is also rewritten.
 in what the visitor sees (opening summary, answer, correction blocks), the factual sentences are still there, the referral is present for
 personal-situation questions, and every rewrite is logged. Also: prompts carry the rules; the recap is neutral; the card and profile block
 carry no status / states; the assistant page and report assistant route use the same rewrite.
+
+
+## Live review of 25e433a
+
+State facts now quote only the structured STATE_RULES status, note, key facts and checked date; retrieved prose and the profile cannot add state rules. Removed the separate historic WA prompt rules and profile availability inference. The detector covers individual state verdicts in English, Turkish and Chinese, legal prohibitions and English-level/IELTS equations. State and legal verdicts are dropped whole, even when they contain numbers.
+
+The sanitizer collapses referrals into the canonical scope line, removes the unsupported-source footer from cited answers (including URL citations), and removes repeated profile recap text. The handler passes the recap to the sanitizer and emits it once per conversation; updated profile facts remain available in subsequent prompts. Conflicting stated points are shown beside saved-entry points, explicitly using saved entries for nomination arithmetic. The assistant-page footer no longer adds separate general-information and advice disclaimers.
+
+Four regression fixtures reproduce the supplied live-review excerpts with deliberately non-compliant model output. Only the Turkish state question was supplied verbatim; the remaining prompts reconstruct the described scenarios and await the full live transcripts. Assertions cover preserved published facts, one scope line, no unsupported footer with citations, points discrepancies, Chinese English-level terminology and recap suppression.

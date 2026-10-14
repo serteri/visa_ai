@@ -189,9 +189,9 @@ const TOPIC_PROFILE = new RegExp(
 export const asksAboutProfileTopics = (text: string): boolean => asksAboutPosition(text) || TOPIC_PROFILE.test(text);
 
 export function shouldShowLead(opts: { fingerprint: string; lastShown: string | undefined; userText: string }): boolean {
-  // Only for a question about the visitor's own standing; then on the first answer / a changed profile, or whenever they ask where they stand.
+  // Once per conversation, for the first question about the visitor's profile.
   if (!asksAboutProfileTopics(opts.userText)) return false;
-  return opts.lastShown !== opts.fingerprint || asksAboutPosition(opts.userText);
+  return opts.lastShown === undefined;
 }
 
 function localizedGates(report: Partial<ReadinessReport>, input: ReadinessInput, locale: Locale): Record<string, PathwayGates> | undefined {

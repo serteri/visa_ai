@@ -137,11 +137,11 @@ export async function handleChat(req: Request, deps: ChatDeps): Promise<Response
     try {
       const plan = buildPlanSummary(profile.report, profile.input, answerLocale(lastUserText));
       if (!plan) return null;
-      // The summary opens the first answer; later it is shown again only for a changed profile or a question about the visitor's position.
+      // Show the recap once per conversation; updated figures still reach the model.
       const fingerprint = profileFingerprint(profile as { summary: string; source: string });
       const show = shouldShowLead({ fingerprint, lastShown: lastShownLeadFingerprint(messages), userText: lastUserText });
       const lastShown = lastShownLeadFingerprint(messages);
-      const earlier = !show && lastShown === fingerprint;
+      const earlier = !show && lastShown !== undefined;
       return { ...plan, fingerprint, show, earlier, withheld: !show && !earlier };
     } catch (err) {
       console.error("[knowledge-chat] plan summary failed; answering without the opening summary", err);
@@ -149,9 +149,16 @@ export async function handleChat(req: Request, deps: ChatDeps): Promise<Response
     }
   };
   // Information-only: the answer the visitor sees contains no verdict, pick, chance or instruction (every rewrite is logged).
-  const sanitize = (premium: boolean) => (text: string): string => {
-    const result = sanitizeAnswer(text, { locale: convLocale, userText: lastUserText });
+  const sanitize = (premium: boolean, plan: ReturnType<typeof planFor>) => (text: string): string => {
+    const result = sanitizeAnswer(text, { locale: convLocale, userText: lastUserText, recap: plan?.lead });
     logRewrites(result.rewrites, { path: premium ? "premium" : "free", locale: convLocale });
+    const claimed = lastUserText.match(/(?:my (?:points|score)(?: is| are)?|puanım|puanim)\s*[:：]?\s*(\d{1,3})|(?:I have|I am on|I’m on|我有|我的分数是)\s*(\d{1,3})\s*(?:points|分)|\b(\d{1,3})\s*puan(?:ım|im|la)/iu);
+    const stated = claimed ? Number(claimed[1] ?? claimed[2] ?? claimed[3]) : undefined;
+    const saved = plan?.facts.points;
+    if (stated !== undefined && saved !== undefined && stated !== saved) {
+      const line = convLocale === "tr" ? `Bu mesajda belirttiğiniz puan: ${stated}; kayıtlı profil girişlerinden hesaplanan: ${saved}. Aritmetik kayıtlı profil girişlerini kullanır (190: ${saved} + 5 = ${saved + 5}; 491: ${saved} + 15 = ${saved + 15}).` : convLocale === "zh-Hans" ? `您在本条消息中提供的分数：${stated}；保存的资料填写项计算结果：${saved}。计算使用保存的资料填写项（190：${saved} + 5 = ${saved + 5}；491：${saved} + 15 = ${saved + 15}）。` : `Points stated in this message: ${stated}; calculated from saved profile entries: ${saved}. Arithmetic uses the saved profile entries (190: ${saved} + 5 = ${saved + 5}; 491: ${saved} + 15 = ${saved + 15}).`;
+      return `${line}\n\n${result.text}`;
+    }
     return result.text;
   };
   const check = (text: string, opts: { premium: boolean; hasProfile: boolean; plan?: PlanFacts; groundingText?: string; input?: object }): Correction[] => {
@@ -206,7 +213,7 @@ export async function handleChat(req: Request, deps: ChatDeps): Promise<Response
         system: buildSystemPrompt(chunks, { engineFacts, guidance, locale: convLocale, ...(profile ? { profile: { summary: profile.summary, source: profile.source, lead: plan?.lead, leadShownEarlier: plan ? plan.earlier : undefined, leadWithheld: plan ? plan.withheld : undefined } } : {}) }),
         messages,
         locale: convLocale,
-        sanitize: sanitize(false),
+        sanitize: sanitize(false, plan),
         ...(plan?.show ? { lead: plan.lead, leadFingerprint: plan.fingerprint } : {}),
         correct: (text) => check(text, { premium: false, hasProfile: Boolean(profile), plan: plan?.facts, groundingText: groundingOf(engineFacts, chunks), input: profile?.input }),
         onFinish: async () => {
@@ -242,7 +249,7 @@ export async function handleChat(req: Request, deps: ChatDeps): Promise<Response
       }),
       messages,
       locale: convLocale,
-      sanitize: sanitize(true),
+      sanitize: sanitize(true, plan),
       sources: catalogRefs(catalog),
       profileSource: profile?.source ?? null,
       ...(plan?.show ? { lead: plan.lead, leadFingerprint: plan.fingerprint } : {}),

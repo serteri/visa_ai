@@ -280,7 +280,7 @@ async function main() {
 
       for (const [ask, loc] of [["Where do I stand?", "en"], ["Durumum nedir?", "tr"], ["我的情况怎么样？", "zh-Hans"]] as const) {
         const cap = await run(premium, [q1, a1, user(ask)], loc);
-        t(`${path}: "${ask}" shows it again (${loc})`, Boolean(cap.lead) && cap.leadFingerprint === cap1.leadFingerprint);
+        t(`${path}: "${ask}" does not repeat it (${loc})`, cap.lead === undefined);
       }
 
       // The saved profile changes (28 instead of 35 years old: different points) -> shown again, new fingerprint.
@@ -288,10 +288,10 @@ async function main() {
       const changedReport = JSON.parse(JSON.stringify(runReadinessEngine(changed))) as ReadinessReport;
       store.set("v", { inputJson: JSON.parse(JSON.stringify(changed)), reportJson: changedReport, updatedAt: new Date("2026-10-03") });
       const cap4 = await run(premium, [q1, a1, user("What is my score for the 491?")]);
-      t(`${path}: a changed saved profile shows the summary again, with the new fingerprint (${cap4.leadFingerprint} vs ${cap1.leadFingerprint})`, Boolean(cap4.lead) && cap4.lead !== cap1.lead && cap4.leadFingerprint !== cap1.leadFingerprint && cap4.system.includes(SHOWN));
+      t(`${path}: a changed saved profile updates prompt facts without repeating the recap`, cap4.lead === undefined && cap4.system.includes(EARLIER));
       const a4 = await answer(cap4, "Same fee.");
       const cap5 = await run(premium, [q1, a1, user("What is my score for the 491?"), a4, user("And the 190?")]);
-      t(`${path}: after the change it is shown once, then not again`, cap5.lead === undefined && lastShownLeadFingerprint([q1, a1, a4]) === cap4.leadFingerprint);
+      t(`${path}: after the change the original recap marker is retained`, cap5.lead === undefined && lastShownLeadFingerprint([q1, a1, a4]) === cap1.leadFingerprint);
       store.set("v", { inputJson: base.input, reportJson: base.report, updatedAt: new Date("2026-10-03") });
 
       // A conversation from before the marker existed (an answer without it): the summary is shown once more.

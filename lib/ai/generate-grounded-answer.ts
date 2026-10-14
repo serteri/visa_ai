@@ -213,13 +213,7 @@ function applyAssistantSafetyFooter(input: {
   appendFallback?: boolean;
   locale?: string;
 }) {
-  const withGeneralInfo = addGeneralInfoSentence(input.answer, input.locale);
-  const shouldAppendFallback =
-    input.appendFallback ||
-    isPersonalizedIntentQuestion(input.message) ||
-    responseHasRiskOrDecisionLanguage(withGeneralInfo);
-
-  const composed = shouldAppendFallback ? appendPersonalisedAdviceFallback(withGeneralInfo, input.locale) : withGeneralInfo;
+  const composed = input.answer;
   // Information-only: no verdict, pick, chance or instruction reaches the visitor (every rewrite is logged).
   const loc = input.locale === "tr" ? "tr" : input.locale === "zh-Hans" ? "zh-Hans" : "en";
   const result = sanitizeAnswer(composed, { locale: loc, userText: input.message });

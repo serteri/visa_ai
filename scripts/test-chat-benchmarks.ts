@@ -16,6 +16,7 @@ import { readFileSync } from "node:fs";
 import { findEngineConflicts } from "../lib/chat/answer-check";
 import { alignCitationsToSubclass, renderCitations, sourceSubclass } from "../lib/chat/citations";
 import { buildCorrections, conversationLocale } from "../lib/chat/corrections";
+import { STATE_RULES } from "../lib/state-nomination/state-rules-config";
 import { buildEngineFacts, engineFeeTable } from "../lib/chat/engine-facts";
 import { handleChat, type ChatDeps, type StreamRequest } from "../lib/chat/handler";
 import { buildProfileSummary } from "../lib/chat/profile";
@@ -163,7 +164,7 @@ async function main() {
   section("4. WA 190 stream condition in the chat facts");
   {
     const facts = buildEngineFacts();
-    t("engine facts: WA 190 needs a six-month full-time WA employment contract (p.5, 9), not 491; moving to WA does not meet it", facts.includes("subclass 190, General stream") && facts.includes("at least six months") && facts.includes("pp. 5, 9") && facts.includes("NOT required for subclass 491") && facts.includes("Moving to WA, or living there, does not meet it"));
+    t("engine facts: WA conditions come verbatim from the current structured data, with checked date", STATE_RULES.WA.keyFacts.every((f) => facts.includes(f)) && facts.includes(STATE_RULES.WA.lastVerified) && !facts.includes("Moving to WA, or living there, does not meet it"));
     const ref = REVIEW_PERSONAS["ref-xyz-qld"] as ReadinessInput;
     // WA's own status is "Check official page" since the 2026-10-13 refresh; this check is about its 190 stream condition, so WA is set open by an admin row.
     const refReport = runReadinessEngine({ ...ref, locale: "en", stateNominationConfig: { WA: { status: "Open (Onshore & Offshore)", updatedAt: "2026-10-14T00:00:00.000Z" } } });

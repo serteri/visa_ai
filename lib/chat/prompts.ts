@@ -50,7 +50,7 @@ const LANGUAGE_NAME: Record<Locale, string> = { en: "English", tr: "Türkçe", "
  */
 export function languageBlock(locale: Locale | undefined): string {
   if (!locale) return `\n${INFORMATION_ONLY_RULES}`;
-  return `\n${INFORMATION_ONLY_RULES}\nYANIT DİLİ (en son kural; diğer her şeyden önceliklidir): Bu konuşmanın dili ${LANGUAGE_NAME[locale]}. Yanıtın TAMAMI -- sondaki kaynak notu, "genel bilgidir" notu, kapanış cümlesi ve eylem çağrısı dahil -- yalnızca bu dilde olmalı; bu talimatların Türkçe olması yanıt dilini etkilemez. "Kaynaklarda yok / genel bilgidir" notunu (gerekirse, en fazla bir kez) şu cümleyle yaz: "${GENERAL_NOTE[locale]}"\n`;
+  return `\n${INFORMATION_ONLY_RULES}\nYANIT DİLİ (en son kural; diğer her şeyden önceliklidir): Bu konuşmanın dili ${LANGUAGE_NAME[locale]}. Yanıtın TAMAMI -- sondaki kaynak notu, "genel bilgidir" notu, kapanış cümlesi ve eylem çağrısı dahil -- yalnızca bu dilde olmalı; bu talimatların Türkçe olması yanıt dilini etkilemez. "Kaynaklarda yok / genel bilgidir" notunu (yalnızca yanıtta hiç atıf yoksa, en fazla bir kez) şu cümleyle yaz: "${GENERAL_NOTE[locale]}"\n`;
 }
 
 /** What both paths add after the guardrails: the engine facts (always) and visa-aware guidance (when it applies). */
@@ -78,7 +78,7 @@ const leadBlock = (lead?: string, shownEarlier?: boolean, withheld?: boolean) =>
     : withheld
       ? `\nblock-5 (bu özet bu soru için kullanıcıya GÖSTERİLMİYOR -- yanıtta özet YAZMA; yalnızca rakam kaynağı olarak kullan; puan veya eşik sorulursa buradaki rakamları aynen kullan, onlarla çelişme):\n${lead}\n`
       : shownEarlier
-      ? `\nblock-5 (bu özet bu konuşmada kullanıcıya daha önce gösterildi ve profil değişmedi -- bu yanıtta TEKRAR ETME, yeniden yazma veya yeniden hesaplama; gerekirse "yukarıdaki özetteki gibi" diye kısaca atıf yapabilirsin; onunla çelişme):\n${lead}\n\nUZUNLUK: Yalnızca sorulan soruyu yanıtla; puanı, vize durumlarını veya aynı rakamları yeniden anlatma; gereksiz giriş ve genel bilgi ekleme.\n`
+      ? `\nblock-5 (bu özet bu konuşmada kullanıcıya daha önce gösterildi; güncel profil rakamları aşağıdadır -- bu yanıtta TEKRAR ETME, yeniden yazma veya yeniden hesaplama; gerekirse "yukarıdaki özetteki gibi" diye kısaca atıf yapabilirsin; onunla çelişme):\n${lead}\n\nUZUNLUK: Yalnızca sorulan soruyu yanıtla; puanı, vize durumlarını veya aynı rakamları yeniden anlatma; gereksiz giriş ve genel bilgi ekleme.\n`
       : `\nblock-5 (kullanıcıya yanıtın EN ÜSTÜNDE zaten gösterilen özet -- sen yazma, tekrar etme, onunla çelişme, onun yerine geçme; yalnızca üzerine ekle):\n${lead}\n\nUZUNLUK: Özetten sonra sorulan konunun yayımlanmış şartlarını kaynaklarıyla, EN FAZLA bir kısa bölüm olarak yaz; plan, öneri veya talimat ekleme. Aynı şartı veya rakamı tekrar anlatma; gereksiz giriş ve genel bilgi ekleme.\n`;
 
 /** The free path's profile block: engine facts about THIS visitor, no citation or "general answers" rules. */

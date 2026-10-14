@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 
 import type { AssistantReportData } from "@/lib/readiness/types";
+import { buildEngineFacts } from "@/lib/chat/engine-facts";
 import { INFORMATION_ONLY_RULES, logRewrites, sanitizeAnswer } from "@/lib/chat/information-only";
 import { CURRENT_CSIT, BASE_VAC_AUD, SECOND_INSTALMENT_AUD } from "@/lib/readiness/constants";
 
@@ -197,6 +198,7 @@ function streamFromOpenAI(args: {
                   ? "Country context is Canada only. Never mention Australian pathways or visas such as 189/190/491 or MARA/state nomination programs."
                   : "Country context is Australia only. Never mention Canadian pathways or concepts such as CRS, IRCC, NOC, CEC, FSW, FSTP, or PNP.",
             },
+            ...(args.country === "AU" ? [{ role: "system", content: buildEngineFacts() }] : []),
             { role: "system", content: assistantRules(args.country) },
             {
               role: "system",
@@ -204,7 +206,9 @@ function streamFromOpenAI(args: {
             },
             {
               role: "system",
-              content: `Use only this report context as your factual basis:\n${args.reportContext}`,
+              content: args.country === "AU"
+                ? `Use this report context for profile figures only; published Australian state rules come only from the structured state facts in block-1:\n${args.reportContext}`
+                : `Use only this report context as your factual basis:\n${args.reportContext}`,
             },
             ...args.messages,
           ],
