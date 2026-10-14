@@ -61,7 +61,7 @@ export default async function LeadDetailPage({ params }: LeadDetailPageProps) {
   const [lead, approvedAgents] = await Promise.all([getLead(id), getApprovedAgents()]);
   if (!lead) notFound();
 
-  const input = (lead.inputJson ?? {}) as ReadinessInput;
+  const input = (lead.inputJson ?? {}) as unknown as ReadinessInput;
   const report = lead.reportJson as ReadinessReport | null;
 
   const leadData = {

@@ -1,6 +1,6 @@
 import { ensureCountrySpecificReportSchema } from "@/lib/readiness/country-scope";
 import type { ReadinessInput, ReadinessReport } from "@/lib/readiness/types";
-import { getStateIntelligenceMap, getStateNominationConfigMap } from "@/lib/state-intelligence";
+import { getAdminStateData } from "@/lib/admin-data/loader";
 import { runReadinessEngine } from "@/src/lib/readiness-engine";
 import type { ReportContentStamp } from "./report-date-stamp";
 import { contentDataAsOf } from "./content-dates";
@@ -40,9 +40,9 @@ export async function refreshStoredReport(
   if (!input || typeof input !== "object") return keep("no stored input");
   try {
     const country = stored.country === "CA" ? "CA" : "AU";
-    const [stateIntelligence, stateNominationConfig] = await Promise.all([getStateIntelligenceMap(), getStateNominationConfigMap()]);
+    const stateData = await getAdminStateData();
     const fresh = ensureCountrySpecificReportSchema(
-      runReadinessEngine({ ...input, country, stateIntelligence, stateNominationConfig }),
+      runReadinessEngine({ ...input, country, stateData }),
       country
     );
     const mismatch = coreVerdictMismatch(stored, fresh);
@@ -50,7 +50,7 @@ export async function refreshStoredReport(
     // "Updated to reflect data as of <date>" only when the recomputed content differs from what was stored; the date
     // is the latest dated source (or content deploy) behind the change -- never the view date (content-dates.ts).
     // Identical content keeps its original generation date.
-    const asOf = contentDataAsOf(stored, fresh, { generatedAt: meta.generatedAt, stateNominationConfig, stateIntelligence });
+    const asOf = contentDataAsOf(stored, fresh, { generatedAt: meta.generatedAt, stateData });
     const stamp: ReportContentStamp = asOf
       ? { recomputed: true, generatedAt: meta.generatedAt, dataAsOf: asOf.date, dataSources: asOf.sources.map((x) => `${x.source}: ${x.date}`) }
       : storedStamp;

@@ -1,4 +1,5 @@
-import { getStateRule } from "./state-rules-config";
+import { seedStateData } from "@/lib/admin-data/snapshot";
+import type { AdminStateData, LocalizedField } from "@/lib/admin-data/types";
 
 /**
  * Whether a state's ONSHORE nomination streams require living (or living/working) in that state, taken only from the
@@ -21,32 +22,27 @@ export type StateResidenceRule = {
   subclasses?: Array<"190" | "491">;
   /** The sourced fact the classification rests on (verbatim from state-rules-config.ts keyFacts), when there is one. */
   fact?: string;
+  /** The same sentence with its translations. */
+  factField?: LocalizedField;
   /** The state's source document(s). */
   source?: string;
 };
 
-/** The keyFacts line (by a stable prefix) each classification rests on. */
-const RULE_FACTS: Record<string, { requirement: Exclude<ResidenceRequirement, "not_confirmed">; factPrefix: string; subclasses?: Array<"190" | "491"> }> = {
-  // Tasmanian residence evidence is a mandatory document on every pathway.
-  TAS: { requirement: "required", factPrefix: "Mandatory documents across all pathways include:" },
-  SA: { requirement: "required", factPrefix: "Residence and work (2025-26 settings): Graduates 6 months' SA residence" },
-  QLD: { requirement: "required", factPrefix: "Residency/employment test shown on the onshore page: 6 months living and working in regional Queensland" },
-  NSW: { requirement: "required", factPrefix: "Subclass 190 residency basis: working 20+ hrs/week in NSW", subclasses: ["190"] },
-  VIC: { requirement: "required", factPrefix: "When open: subclass 491 offshore applicants are not required to claim earnings in their ROI; onshore applicants must be living and working in regional Victoria.", subclasses: ["491"] },
-  WA: { requirement: "not_required", factPrefix: "2025-26 rules: both onshore (WA-resident) and offshore (interstate/overseas) candidates are eligible" },
-  // ACT: Canberra residents need 6 months' (190) / 3 months' (491) Canberra residence and employment before the Matrix.
-  ACT: { requirement: "required", factPrefix: "Canberra residents: 190 needs 6 months' Canberra residence" },
-  // NT: the sourced facts state only a commitment to live there AFTER the visa grant, not an onshore residence
-  // requirement before nomination -> not confirmed.
-};
-
-export function stateResidenceRule(code: string): StateResidenceRule {
-  const rule = getStateRule(code);
-  const spec = RULE_FACTS[code];
-  const fact = spec && rule?.keyFacts.find((k) => k.startsWith(spec.factPrefix));
-  // The classification only stands while its sourced fact is still in the rules; otherwise it is not confirmed.
-  if (!spec || !fact) return { requirement: "not_confirmed", source: rule?.sourceDocument };
-  return { requirement: spec.requirement, fact, source: rule?.sourceDocument, ...(spec.subclasses ? { subclasses: spec.subclasses } : {}) };
+/**
+ * The residence rule of a state, from the explicit `residenceRule` flag on its residence condition (lib/admin-data/types.ts StateCondition).
+ * A state with no such flag, or "not_stated", is "not_confirmed". Never inferred from the text.
+ */
+export function stateResidenceRule(code: string, data: AdminStateData = seedStateData()): StateResidenceRule {
+  const rule = data.rules[code];
+  const cond = rule?.conditions.find((c) => c.kind === "residence" && c.residenceRule && c.residenceRule !== "not_stated");
+  if (!cond || !cond.residenceRule || cond.residenceRule === "not_stated") return { requirement: "not_confirmed", source: rule?.sourceDocument };
+  return {
+    requirement: cond.residenceRule,
+    fact: cond.text.en,
+    factField: cond.text,
+    source: rule?.sourceDocument,
+    ...(cond.subclasses.length === 1 ? { subclasses: cond.subclasses } : {}),
+  };
 }
 
 export const STATE_NAMES: Record<string, [string, string, string]> = {

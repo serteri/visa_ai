@@ -1,50 +1,21 @@
 /**
- * Authoritative, hand-verified state nomination facts parsed from the raw
- * source documents in data/knowledge/State Immigrations/{CODE}/. This is a
- * deliberately small, high-confidence override layer on top of the
- * heuristic dataset in src/data/state-nomination-status.json -- that JSON
- * still owns the full state list and drives the score formula, but the
- * `status` and `note` fields for any state covered here should come from
- * this file instead, since it reflects the actual current program state
- * (open/closed, allocation, fees) rather than a generic estimate.
- *
- * All 8 AU states/territories are covered here as of the 2026-09-22
- * rebuild (previously only ACT/NT/TAS were). ACT, NSW, NT, QLD, SA, TAS and WA were refreshed on 2026-10-13 from the official
- * pages (dated snapshots under data/knowledge/State Immigrations/<STATE>/2026-27/); NT and TAS rest on facts the project owner
- * confirmed on the official pages that day (those sites blocked the automated fetch), and VIC was not re-fetched. The admin-entered State
- * Nomination Config in the production database still takes priority over
- * both this file and the JSON at read time -- see
- * lib/state-intelligence.ts's getStateNominationConfigMap -- so a
- * discrepancy between this file and the live admin panel does not
- * self-correct; it needs a human to update the admin panel (or this file,
- * if the document is what's actually wrong).
- *
- * Two consumers:
- *  - lib/readiness/state-nomination.ts (PDF State Nomination Matrix): reads
- *    `status` (overrides the JSON row's status, and therefore the score
- *    formula) and `note` (prepended into the state's requirements/note
- *    column).
- *  - lib/ai/retrieve-state-context.ts (AI Assistant RAG): reads the full
- *    object, including `aiSummary` and `keyFacts`, as grounded context for
- *    state-nomination questions.
- *
- * Add a new entry here whenever a state's source document is parsed;
- * states not listed here fall back entirely to the JSON dataset.
+ * SEED AND OFFLINE FALLBACK ONLY. Since the admin "State nomination" page (docs/admin-data-design.md, Parts 1 and 2) the state data lives
+ * in the database and is edited there: reports, the chat and the page monitor read the admin's rows through the cached snapshot
+ * (lib/admin-data). This file is read in two places only:
+ *   - scripts/seed-admin-data.ts / lib/admin-data/seed.ts, once, to create the first rows;
+ *   - lib/admin-data/snapshot.ts seedStateData(), the fallback when the table is empty or the database cannot be read (and the default of
+ *     every test, so nothing needs a database).
+ * Do not edit it to change what customers see: change the state in the admin page. The facts below are the 2026-10-13 refresh (dated
+ * snapshots under data/knowledge/State Immigrations/<STATE>/2026-27/; NT and TAS rest on facts the project owner confirmed that day, VIC was
+ * not re-fetched).
  */
 
 // Legacy values ("Open for Offshore" | "High Demand" | "Closed" | "Onshore
 // Only") kept alongside the current admin-panel vocabulary -- see the doc
 // comment on StateNominationStatus in lib/readiness/types.ts.
-export type StateRuleStatus =
-  | "Open for Offshore"
-  | "High Demand"
-  | "Closed"
-  | "Onshore Only"
-  | "Open (Onshore & Offshore)"
-  | "Open (Onshore Only)"
-  | "Open (Offshore Only)"
-  | "Suspended / Closed"
-  | "Check official page";
+export type StateRuleStatus = StateStatus;
+
+import type { StateStatus } from "@/lib/admin-data/statuses";
 
 export interface StateRuleConfig {
   code: string;

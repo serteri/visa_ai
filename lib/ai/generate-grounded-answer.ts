@@ -1,6 +1,7 @@
 import { INFORMATION_ONLY_RULES, logRewrites, sanitizeAnswer } from "@/lib/chat/information-only";
 import type { RetrievedVisaContext } from "@/lib/ai/retrieve-visa-context";
 import type { RetrievedStateContext } from "@/lib/ai/retrieve-state-context";
+import { normalizeStateStatus } from "@/lib/admin-data/statuses";
 import { CURRENT_CSIT } from "@/lib/readiness/constants";
 
 export type GroundedSourceItem = {
@@ -380,20 +381,22 @@ function localizedStateStatus(status: string, locale: string): string {
       tr: "hem Avustralya içindeki hem de dışındaki başvuru sahiplerine açık",
       "zh-Hans": "对境内和境外申请人均开放",
     },
-    "Open (Onshore Only)": {
+    "Open (Onshore only)": {
       en: "open to onshore applicants only",
       tr: "yalnızca Avustralya içindeki başvuru sahiplerine açık",
       "zh-Hans": "仅对境内申请人开放",
     },
-    "Open (Offshore Only)": {
+    "Open (Offshore only)": {
       en: "open to offshore applicants only",
       tr: "yalnızca Avustralya dışındaki başvuru sahiplerine açık",
       "zh-Hans": "仅对境外申请人开放",
     },
     "Check official page": { en: "not confirmed here; check the official page", tr: "burada doğrulanmadı; resmi sayfayı kontrol edin", "zh-Hans": "此处未确认；请查看官方页面" },
     "Suspended / Closed": { en: "suspended / closed", tr: "askıya alındı / kapalı", "zh-Hans": "已暂停 / 已关闭" },
+    "Closed with exceptions": { en: "closed to new applications, with the exceptions stated below", tr: "yeni başvurulara kapalı, aşağıda belirtilen istisnalarla", "zh-Hans": "不接受新申请，仅有下文所述的例外" },
+    "Not yet published": { en: "not yet published for the new program year", tr: "yeni program yılı için henüz yayımlanmadı", "zh-Hans": "新计划年度尚未公布" },
   };
-  const entry = map[status];
+  const entry = map[normalizeStateStatus(status)];
   if (!entry) return status;
   if (locale === "zh-Hans") return entry["zh-Hans"];
   if (locale === "tr") return entry.tr;

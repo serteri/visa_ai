@@ -26,6 +26,7 @@ import type { SourceRef } from "../lib/chat/types";
 import type { Locale, ReadinessInput, ReadinessReport } from "../lib/readiness/types";
 import { REVIEW_PERSONAS } from "./render-persona-pdfs";
 import { runReadinessEngine } from "../src/lib/readiness-engine";
+import { seedStateData, withPrograms } from "../lib/admin-data/snapshot";
 
 let failures = 0;
 const t = (label: string, cond: boolean, detail = "") => {
@@ -166,8 +167,8 @@ async function main() {
     const facts = buildEngineFacts();
     t("engine facts: WA conditions come verbatim from the current structured data, with checked date", STATE_RULES.WA.keyFacts.every((f) => facts.includes(f)) && facts.includes(STATE_RULES.WA.lastVerified) && !facts.includes("Moving to WA, or living there, does not meet it"));
     const ref = REVIEW_PERSONAS["ref-xyz-qld"] as ReadinessInput;
-    // WA's own status is "Check official page" since the 2026-10-13 refresh; this check is about its 190 stream condition, so WA is set open by an admin row.
-    const refReport = runReadinessEngine({ ...ref, locale: "en", stateNominationConfig: { WA: { status: "Open (Onshore & Offshore)", updatedAt: "2026-10-14T00:00:00.000Z" } } });
+    // WA's own status is "Check official page" since the 2026-10-13 refresh; this check is about its 190 stream condition, so WA is set open in the state data.
+    const refReport = runReadinessEngine({ ...ref, locale: "en", stateData: withPrograms(seedStateData(), { WA: { status: "Open (Onshore & Offshore)" } }) });
     const summary = buildProfileSummary(JSON.parse(JSON.stringify(refReport)), ref)!;
     t("the profile given to the model lists NO unmet-condition / states-open line (information-only)", !summary.includes("Not available on the visitor's answers") && !summary.includes("States open for this occupation"), summary);
     const flagged: Record<Locale, string> = {

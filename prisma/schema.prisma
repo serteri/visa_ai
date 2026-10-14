@@ -688,6 +688,8 @@ model StateAllocation {
   @@map("state_allocations")
 }
 
+// RETIRED (docs/admin-data-design.md D6): nothing reads or writes this table any more. The state data is state_programs (StateProgram below); the
+// scraper route was removed. The table is kept (not dropped) until you decide to remove it.
 // Autonomous state-migration status intelligence, kept fresh by a
 // fortnightly scraper (app/api/cron/sync-states/route.ts) instead of manual
 // edits to src/data/state-nomination-status.json. One row per state/
@@ -710,6 +712,8 @@ model StateIntelligence {
   @@map("state_intelligence")
 }
 
+// RETIRED (docs/admin-data-design.md Part 2): replaced by state_programs / state_program_subclasses (the CRM admin "State nomination" page).
+// Nothing reads or writes this table any more; it is kept (not dropped) so the old rows stay available for reference.
 // Admin-managed "source of truth" for state nomination status -- distinct
 // from StateIntelligence above (which is written by the automated
 // scraper, app/api/cron/sync-states) and from
@@ -741,6 +745,77 @@ model StateNominationConfig {
   updatedAt      DateTime @updatedAt @map("updated_at")
 
   @@map("state_nomination_configs")
+}
+
+// Admin-edited state nomination data (docs/admin-data-design.md, Part 2): one row per state per program year; the CRM admin page
+// "State nomination" writes it, and the cached snapshot (lib/admin-data) is what reports, the chat and the monitor read. The admin row
+// always wins -- there is no date comparison with any other source. Created by prisma/manual-migrations/2026-10-15-create-admin-state-data.sql
+// (not by `prisma db push`). Rich fields are JSON validated by lib/admin-data/validate.ts.
+model StateProgram {
+  id              String    @id @default(dbgenerated("(gen_random_uuid())::text"))
+  stateCode       String    @map("state_code")
+  programYear     String    @map("program_year")
+  isCurrent       Boolean   @default(true) @map("is_current")
+  stateName       String    @map("state_name")
+  status          String
+  statusChangedAt DateTime? @map("status_changed_at") @db.Timestamptz(6)
+  openingDate     DateTime? @map("opening_date") @db.Date
+  closingDate     DateTime? @map("closing_date") @db.Date
+  officialUrl     String?   @map("official_url")
+  extraUrls       String[]  @default([]) @map("extra_urls")
+  exceptions      Json?
+  notes           Json
+  aiSummary       Json      @map("ai_summary")
+  conditions      Json      @default("[]")
+  scoring         Json
+  sourceText      String    @default("") @map("source_text")
+  lastVerifiedAt  DateTime  @map("last_verified_at") @db.Timestamptz(6)
+  lastVerifiedBy  String?   @map("last_verified_by")
+  createdAt       DateTime  @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt       DateTime  @default(now()) @map("updated_at") @db.Timestamptz(6)
+  updatedBy       String?   @map("updated_by")
+  subclasses      StateProgramSubclass[]
+
+  @@unique([stateCode, programYear])
+  @@map("state_programs")
+}
+
+model StateProgramSubclass {
+  id             String       @id @default(dbgenerated("(gen_random_uuid())::text"))
+  stateProgramId String       @map("state_program_id")
+  subclass       String
+  availability   String       @default("inherit")
+  allocation     Int?
+  allocationUsed Int?         @map("allocation_used")
+  feeExclGst     Decimal?     @map("fee_excl_gst") @db.Decimal(10, 2)
+  feeInclGst     Decimal?     @map("fee_incl_gst") @db.Decimal(10, 2)
+  gstBasis       String       @default("not_stated") @map("gst_basis")
+  feeNote        Json?        @map("fee_note")
+  effectiveFrom  DateTime?    @map("effective_from") @db.Date
+  program        StateProgram @relation(fields: [stateProgramId], references: [id], onDelete: Cascade)
+
+  @@unique([stateProgramId, subclass])
+  @@map("state_program_subclasses")
+}
+
+// Who changed what, when (old -> new), for the admin pages. actor_* come from the signed-in NextAuth ADMIN user, never from the request.
+model AdminAuditLog {
+  id         String   @id @default(dbgenerated("(gen_random_uuid())::text"))
+  at         DateTime @default(now()) @db.Timestamptz(6)
+  actorId    String?  @map("actor_id")
+  actorEmail String?  @map("actor_email")
+  actorLabel String   @map("actor_label")
+  entityType String   @map("entity_type")
+  entityKey  String   @map("entity_key")
+  fieldPath  String   @map("field_path")
+  oldValue   Json?    @map("old_value")
+  newValue   Json?    @map("new_value")
+  action     String
+  documentId String?  @map("document_id")
+  note       String?
+
+  @@index([entityType, entityKey, at(sort: Desc)])
+  @@map("admin_audit_log")
 }
 
 // Structured, exact-value counterpart to the RAG pipeline: parsed directly

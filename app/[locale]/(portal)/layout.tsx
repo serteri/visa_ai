@@ -45,6 +45,12 @@ export default async function PortalLayout({
                   >
                     CRM &amp; Agents
                   </Link>
+                  <Link
+                    href={`/${locale}/admin/crm/states`}
+                    className="rounded-md px-3 py-1.5 text-sm font-medium text-slate-600 transition hover:bg-[#53917E]/10 hover:text-slate-900"
+                  >
+                    State nomination
+                  </Link>
                   {/* Bridges this NextAuth ADMIN session into the legacy
                       password-cookie admin session (lib/admin-auth.ts) so
                       this lands on Data Sync directly instead of a password

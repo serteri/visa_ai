@@ -1,43 +1,28 @@
-import { STATE_RULES, type StateRuleConfig, type StateRuleStatus } from "@/lib/state-nomination/state-rules-config";
-import { getStateIntelligenceMap, getStateNominationConfigMap } from "@/lib/state-intelligence";
-import { resolveDisplayStatus } from "@/lib/state-nomination/state-status";
+import { getAdminStateData } from "@/lib/admin-data/loader";
+import { localizedText } from "@/lib/admin-data/localized";
+import type { AdminStateData, DataLocale } from "@/lib/admin-data/types";
+import type { StateRuleConfig } from "@/lib/state-nomination/state-rules-config";
 
 export type RetrievedStateContext = StateRuleConfig[];
 
 /**
- * Merges the admin-managed StateNominationConfig table (top priority --
- * see prisma/schema.prisma and app/[locale]/(main)/admin/states) over the
- * static STATE_RULES entry for a state. Only status/note are overridden;
- * the longer aiSummary/keyFacts prose still comes from state-rules-config
- * since the admin panel doesn't manage that. If a state has an admin
- * config row but no STATE_RULES entry, a minimal config-only record is
- * still returned so the assistant isn't silently blind to it.
+ * The state's rule in the shape the assistant uses, from the admin's data (lib/admin-data): the status, note and conditions the admin saved,
+ * with the note in the answer's language when its translation has been reviewed (English otherwise). The admin row is the data: there is no
+ * other source to merge it with.
  */
-function applyAdminOverride(
-  code: string,
-  base: StateRuleConfig | undefined,
-  admin: { status?: string; customAiNote?: string | null; updatedAt?: string } | undefined,
-  intelStatus?: string
-): StateRuleConfig | undefined {
-  if (!admin && !intelStatus) return base;
-
-  // The same precedence as the report (lib/state-nomination/state-status.ts): an admin status saved before the rule
-  // was last verified gives way to the rule; the scraper's status comes next.
-  const status = resolveDisplayStatus({ admin, rule: base, intelStatus });
-  if (!status) return base;
-  if (base && status === base.status && !admin?.customAiNote?.trim()) return base;
-
+function ruleFor(data: AdminStateData, code: string, locale: DataLocale): StateRuleConfig | undefined {
+  const rule = data.rules[code];
+  if (!rule) return undefined;
   return {
-    code,
-    name: base?.name ?? code,
-    status,
-    note: admin?.customAiNote?.trim() || base?.note || `${code} status was manually set by an admin.`,
-    offshoreQuotaPressure:
-      status === "Closed" || status === "Suspended / Closed" ? "closed" : (base?.offshoreQuotaPressure ?? "medium"),
-    aiSummary: base?.aiSummary ?? `${code} nomination status: ${status} (admin-set).`,
-    keyFacts: base?.keyFacts ?? [],
-    lastVerified: base?.lastVerified ?? new Date().toISOString().slice(0, 10),
-    sourceDocument: base?.sourceDocument ?? "Admin panel override (StateNominationConfig)",
+    code: rule.code,
+    name: rule.name,
+    status: rule.status,
+    note: localizedText(rule.notes, locale),
+    offshoreQuotaPressure: rule.offshoreQuotaPressure,
+    aiSummary: rule.aiSummary,
+    keyFacts: rule.keyFactFields.map((f) => localizedText(f, locale)),
+    lastVerified: rule.lastVerified,
+    sourceDocument: rule.sourceDocument,
   };
 }
 
@@ -96,27 +81,11 @@ function detectStateCodes(message: string): string[] {
 }
 
 /**
- * Retrieves grounded state-nomination context for the AI Assistant, mirroring
- * retrieve-visa-context.ts's pattern for visa subclasses. Base coverage is
- * the hand-verified lib/state-nomination/state-rules-config.ts (currently
- * ACT/NT) -- when a message mentions a state that isn't in STATE_RULES and
- * has no admin override either, this returns nothing for that state rather
- * than falling back to the generic JSON heatmap dataset, since that dataset
- * is a heuristic estimate not meant to be quoted to users as fact.
- *
- * The admin-managed StateNominationConfig table (see
- * lib/state-intelligence.ts's getStateNominationConfigMap and
- * app/[locale]/(main)/admin/states) is layered on top of STATE_RULES for
- * every detected state, so an admin closing a state is reflected in the AI
- * Assistant's answer immediately -- including for states outside ACT/NT
- * that have no static prose at all, via applyAdminOverride's fallback.
- *
- * When no specific state is mentioned but the message is clearly asking
- * about state nomination in general (190/491/"state nomination" keywords),
- * all currently-verified states (STATE_RULES ∪ admin-configured states) are
- * returned so the assistant can compare them.
+ * Retrieves grounded state-nomination context for the AI Assistant, mirroring retrieve-visa-context.ts's pattern for visa subclasses, from
+ * the admin's state data. When no specific state is mentioned but the message is clearly asking about state nomination in general
+ * (190/491/"state nomination" keywords), all states are returned so the assistant can compare them.
  */
-export async function retrieveStateContext(message: string): Promise<RetrievedStateContext> {
+export async function retrieveStateContext(message: string, locale: DataLocale = "en", data?: AdminStateData): Promise<RetrievedStateContext> {
   const lower = normalize(message);
   const detectedCodes = detectStateCodes(message);
 
@@ -129,14 +98,7 @@ export async function retrieveStateContext(message: string): Promise<RetrievedSt
 
   if (detectedCodes.length === 0 && !asksGeneralStateNomination) return [];
 
-  const [adminConfig, intelligence] = await Promise.all([getStateNominationConfigMap(), getStateIntelligenceMap()]);
-
-  const codes =
-    detectedCodes.length > 0
-      ? detectedCodes
-      : Array.from(new Set([...Object.keys(STATE_RULES), ...Object.keys(adminConfig)]));
-
-  return codes
-    .map((code) => applyAdminOverride(code, STATE_RULES[code], adminConfig[code], intelligence[code]?.status))
-    .filter((rule): rule is StateRuleConfig => Boolean(rule));
+  const snapshot = data ?? (await getAdminStateData());
+  const codes = detectedCodes.length > 0 ? detectedCodes : Object.keys(snapshot.rules);
+  return codes.map((code) => ruleFor(snapshot, code, locale)).filter((rule): rule is StateRuleConfig => Boolean(rule));
 }

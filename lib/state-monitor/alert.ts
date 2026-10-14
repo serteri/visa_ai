@@ -16,12 +16,12 @@ export function buildChangeAlert(items: ChangeItem[], adminUrl: string): AlertMa
   const states = [...new Set(items.map((i) => i.state))];
   const blocks = items.map((i) => {
     const files = sourceFilesFor(i.state).map((f) => `    - ${f}`).join("\n");
-    return `${i.state}\n  Page: ${i.url}\n  Detected: ${iso(i.detectedAt)}\n  What changed:\n${i.summary.split("\n").map((l) => `    ${l}`).join("\n")}\n  Source file(s) to replace:\n${files}`;
+    return `${i.state}\n  Page: ${i.url}\n  Detected: ${iso(i.detectedAt)}\n  What changed:\n${i.summary.split("\n").map((l) => `    ${l}`).join("\n")}\n  Source(s) recorded for this state:\n${files}`;
   });
   return {
     kind: "change",
     subject: `[LogiVisa] State page changed: ${states.join(", ")}`,
-    text: `The state-page monitor found a change on ${items.length} official page(s) (${states.join(", ")}).\n\n${blocks.join("\n\n")}\n\nNothing was changed automatically: reports keep showing the data as last verified, with a "data may have changed since" note for these states until you apply the change.\nTo apply: replace the source file(s), update the state's rule in lib/state-nomination/state-rules-config.ts (wording, lastVerified), set the live State Nomination Config in the admin panel, then press "Mark applied" for the state at ${adminUrl}.`,
+    text: `The state-page monitor found a change on ${items.length} official page(s) (${states.join(", ")}).\n\n${blocks.join("\n\n")}\n\nNothing was changed automatically: reports keep showing the data as last verified, with a "data may have changed since" note for these states until you apply the change.\nTo apply: open Admin > State nomination for the state, update what changed (status, dates, fees, conditions; saving sets "last verified"), then press "Mark applied" for the state at ${adminUrl}.`,
   };
 }
 

@@ -2,7 +2,7 @@ import { Button } from "@/components/ui/button";
 import { decodeFailure } from "@/lib/state-monitor/failure";
 import { changeIsPending } from "@/lib/state-monitor/status";
 import { prismaMonitorStore, type PageRow } from "@/lib/state-monitor/store";
-import { markStateAppliedAction, runMonitorNowAction } from "./monitor-actions";
+import { markStateAppliedAction, runMonitorNowAction } from "./actions";
 
 const fmt = (d: Date | null) => (d ? d.toISOString().slice(0, 16).replace("T", " ") + " UTC" : "never");
 

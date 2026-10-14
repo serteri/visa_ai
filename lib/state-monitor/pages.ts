@@ -5,7 +5,8 @@
  * returned HTTP 403 to that automated fetch, so they are unverified from here (the NT page is the one the project owner checked by hand); the
  * monitor reports a page that keeps failing once after repeated failures.
  */
-import { getStateRule } from "@/lib/state-nomination/state-rules-config";
+import { seedStateData } from "@/lib/admin-data/snapshot";
+import type { AdminStateData } from "@/lib/admin-data/types";
 
 export const STATE_CODES = ["ACT", "NSW", "NT", "QLD", "SA", "TAS", "VIC", "WA"] as const;
 export type StateCode = (typeof STATE_CODES)[number];
@@ -32,10 +33,27 @@ export const MONITORED_PAGES: readonly MonitoredPage[] = [
   { state: "WA", url: "https://migration.wa.gov.au/news" },
 ];
 
-/** The knowledge-base file(s) to replace for a state ("data/knowledge/..."), or a note when the state's source is a web page only. */
-export function sourceFilesFor(state: string): string[] {
-  const doc = getStateRule(state)?.sourceDocument ?? "";
+/**
+ * The pages to watch, from the admin's state data (each state's official URL and its extra URLs, edited on the admin page); the static list above
+ * when the data holds none.
+ */
+export function monitoredPagesFrom(data: AdminStateData): MonitoredPage[] {
+  const seen = new Set<string>();
+  const out: MonitoredPage[] = [];
+  for (const code of STATE_CODES) {
+    const p = data.programs[code];
+    for (const url of [p?.officialUrl, ...(p?.extraUrls ?? [])]) {
+      if (!url || seen.has(`${code}|${url}`)) continue;
+      seen.add(`${code}|${url}`);
+      out.push({ state: code, url });
+    }
+  }
+  return out.length > 0 ? out : [...MONITORED_PAGES];
+}
+
+/** The state's sources as the admin recorded them (text), or a pointer to the admin page when none is recorded. */
+export function sourceFilesFor(state: string, data: AdminStateData = seedStateData()): string[] {
+  const doc = data.rules[state]?.sourceDocument ?? "";
   const parts = doc.split(";").map((x) => x.trim()).filter(Boolean);
-  const files = parts.filter((x) => x.startsWith("data/knowledge/"));
-  return files.length > 0 ? files : ["(no file: this state's source is the web page itself; update the state's rule in lib/state-nomination/state-rules-config.ts)"];
+  return parts.length > 0 ? parts : ["(no source recorded: add it on the state's admin page)"];
 }

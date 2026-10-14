@@ -179,7 +179,7 @@ async function main() {
     t("a storage failure (tables missing) is reported by email and in the summary", !!r.error && /does not exist/.test(r.error) && mails.length === 1 && /run failed/.test(mails[0].subject));
   }
   const src = ["lib/state-monitor/run.ts", "lib/state-monitor/extract.ts", "lib/state-monitor/store.ts", "lib/state-monitor/status.ts", "lib/state-monitor/alert.ts", "lib/state-monitor/pages.ts"].map((f) => readFileSync(f, "utf8")).join("\n");
-  t("the monitor writes no file and imports no setter of state data (state-rules-config is only read for the source file names)", !/writeFile|appendFile|createWriteStream/.test(src) && !/state-nomination-status|state-sponsorship|stateNominationConfig\.(update|upsert|create)|stateIntelligence\.(update|upsert|create)/.test(src));
+  t("the monitor writes no file and imports no setter of state data (the admin state data is only read, for the pages to watch and the source names)", !/writeFile|appendFile|createWriteStream/.test(src) && !/state-nomination-status|state-sponsorship|stateNominationConfig\.(update|upsert|create)|stateIntelligence\.(update|upsert|create)/.test(src));
 
   console.log("\n5. the note: unapplied change or no successful check for 14 days");
   const { stateDataFlag, buildStateInfos } = await import("../lib/reports/report-states");
@@ -239,9 +239,9 @@ async function main() {
   const vercel = JSON.parse(readFileSync("vercel.json", "utf8")) as { crons: Array<{ path: string; schedule: string }> };
   const cron = vercel.crons.find((c) => c.path === "/api/cron/state-monitor");
   t("vercel.json: a weekly cron (once a week, on one weekday)", !!cron && /^\d+ \d+ \* \* \d$/.test(cron.schedule), cron?.schedule);
-  const actions = readFileSync("app/[locale]/(main)/admin/states/monitor-actions.ts", "utf8");
-  t("admin panel: a manual run and a 'mark applied' action, both checking the admin session first", /^"use server";/.test(actions) && (actions.match(/isAdminAuthenticated\(\)/g) ?? []).length === 2 && /runStateMonitor\(\{ trigger: "manual" \}\)/.test(actions));
-  t("the admin States page shows the monitor panel", /<MonitorPanel \/>/.test(readFileSync("app/[locale]/(main)/admin/states/page.tsx", "utf8")));
+  const actions = readFileSync("app/[locale]/(portal)/admin/crm/states/actions.ts", "utf8");
+  t("admin panel: a manual run and a 'mark applied' action, both checking the ADMIN user first", /^"use server";/.test(actions) && /export async function runMonitorNowAction[\s\S]*?await requireAdminActor\(\)[\s\S]*?runStateMonitor\(\{ trigger: "manual" \}\)/.test(actions) && /export async function markStateAppliedAction[\s\S]*?await requireAdminActor\(\)/.test(actions));
+  t("the admin States page shows the monitor panel", /<MonitorPanel \/>/.test(readFileSync("app/[locale]/(portal)/admin/crm/states/page.tsx", "utf8")));
   const sql = readFileSync("prisma/manual-migrations/2026-10-11-create-state-page-monitor.sql", "utf8");
   t("SQL: idempotent CREATE TABLE IF NOT EXISTS for the two new tables only, one transaction, no DROP / ALTER", /CREATE TABLE IF NOT EXISTS state_page_monitor/.test(sql) && /CREATE TABLE IF NOT EXISTS state_monitor_runs/.test(sql) && /BEGIN;[\s\S]*COMMIT;/.test(sql) && !/\b(DROP|ALTER|TRUNCATE|DELETE)\b/i.test(sql.replace(/--.*$/gm, "")));
   t("schema.prisma declares both tables (so `prisma db push` never proposes dropping them)", /model StatePageMonitor[\s\S]*@@map\("state_page_monitor"\)/.test(readFileSync("prisma/schema.prisma", "utf8")) && /model StateMonitorRun[\s\S]*@@map\("state_monitor_runs"\)/.test(readFileSync("prisma/schema.prisma", "utf8")));
@@ -282,7 +282,7 @@ async function main() {
     await runStateMonitor({ trigger: "manual", pages: PAGES, store: h4.store, fetchPage: mkWeb({ [PAGES[0].url]: BASE, [PAGES[1].url]: BASE }).fetchPage, sendAlert, now });
     const r4 = await runStateMonitor({ trigger: "manual", pages: PAGES, store: h4.store, fetchPage: mkWeb({ [PAGES[0].url]: CHANGED, [PAGES[1].url]: BASE }).fetchPage, sendAlert: async () => { throw new Error("provider down"); }, now });
     t("an alert that throws: the run is still logged as finished, with the error", !!h4.runs[1].finishedAt && !!r4.error && /provider down/.test(r4.error) && h4.runs[1].error === r4.error);
-    t("maxDuration is explicit (60 s) on the cron route and the admin page, and budget + page timeout stay under it", /export const maxDuration = 60;/.test(readFileSync("app/api/cron/state-monitor/route.ts", "utf8")) && /export const maxDuration = 60;/.test(readFileSync("app/[locale]/(main)/admin/states/page.tsx", "utf8")) && mon.RUN_BUDGET_MS + mon.PAGE_TIMEOUT_MS < mon.MONITOR_MAX_DURATION_S * 1000, `${mon.RUN_BUDGET_MS}+${mon.PAGE_TIMEOUT_MS}`);
+    t("maxDuration is explicit (60 s) on the cron route and the admin page, and budget + page timeout stay under it", /export const maxDuration = 60;/.test(readFileSync("app/api/cron/state-monitor/route.ts", "utf8")) && /export const maxDuration = 60;/.test(readFileSync("app/[locale]/(portal)/admin/crm/states/page.tsx", "utf8")) && mon.RUN_BUDGET_MS + mon.PAGE_TIMEOUT_MS < mon.MONITOR_MAX_DURATION_S * 1000, `${mon.RUN_BUDGET_MS}+${mon.PAGE_TIMEOUT_MS}`);
   }
   {
     // failure classes
@@ -301,7 +301,7 @@ async function main() {
     mails.length = 0;
     for (let i = 0; i < FAILURE_ALERT_AFTER; i++) await runStateMonitor({ trigger: "test", pages: PAGES, store: h.store, fetchPage: w.fetchPage, sendAlert, now });
     t("the failure email shows each page's class", mails.length === 1 && /class: blocked by site/.test(mails[0].text) && /class: not found/.test(mails[0].text), mails[0]?.text.slice(0, 300));
-    const panel = readFileSync("app/[locale]/(main)/admin/states/monitor-panel.tsx", "utf8");
+    const panel = readFileSync("app/[locale]/(portal)/admin/crm/states/monitor-panel.tsx", "utf8");
     t("the admin table shows the class; the run log shows unfinished runs", /decodeFailure\(p\.lastError\)/.test(panel) && /data-failure-class/.test(panel) && /NOT FINISHED/.test(panel));
     // browser-like request
     const seen: Array<{ url: string; init: RequestInit }> = [];

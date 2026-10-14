@@ -4,8 +4,10 @@
  * ranked or marked "available to you".
  */
 import { matchOccupationToState } from "@/lib/state-nomination/occupation-match";
-import { localizeStateFact } from "@/lib/state-nomination/state-keyfact-translations";
-import { getStateRule } from "@/lib/state-nomination/state-rules-config";
+import { localizedText } from "@/lib/admin-data/localized";
+import { normalizeStateStatus, stateStatusLabel } from "@/lib/admin-data/statuses";
+import { seedStateData } from "@/lib/admin-data/snapshot";
+import type { AdminStateData } from "@/lib/admin-data/types";
 import type { StateMonitorSnapshot } from "@/lib/state-monitor/status";
 import type { Locale, ReadinessReport } from "@/lib/readiness/types";
 import { T } from "./report-text";
@@ -43,9 +45,12 @@ const CHECK_PAGE_STATUS: Record<Locale, string> = {
   "zh-Hans": "请查看官方页面",
 };
 
-/** A status the report states as is, except "Check official page" (current status not confirmed), which is shown in the reader's language. */
+/** A status the report states as is (spelling normalised), except the ones with no settled English wording to print as they are: "Check official page" (current status not confirmed), "Closed with exceptions" and "Not yet published", shown in the reader's language. */
 function displayStatus(status: string, l: Locale): string {
-  return status === "Check official page" ? (CHECK_PAGE_STATUS[l] ?? CHECK_PAGE_STATUS.en) : status;
+  const normalized = normalizeStateStatus(status);
+  if (normalized === "Check official page") return CHECK_PAGE_STATUS[l] ?? CHECK_PAGE_STATUS.en;
+  if (normalized === "Closed with exceptions" || normalized === "Not yet published") return stateStatusLabel(normalized, l);
+  return normalized;
 }
 
 /**
@@ -82,11 +87,11 @@ const docTitle = (doc: string) => {
   return t.replace(/\.(pdf|png)$/i, "");
 };
 
-export function buildStateInfos(report: ReadinessReport, occupationRaw: string | undefined, l: Locale, now: Date = new Date(), stateMonitor?: StateMonitorSnapshot | null): StateInfo[] {
+export function buildStateInfos(report: ReadinessReport, occupationRaw: string | undefined, l: Locale, now: Date = new Date(), stateMonitor?: StateMonitorSnapshot | null, data: AdminStateData = seedStateData()): StateInfo[] {
   const tracker = report.stateNominationTracker;
   const anzsco = (occupationRaw ?? "").match(/\d{6}/)?.[0];
   return STATE_CODES.map((code): StateInfo => {
-    const rule = getStateRule(code);
+    const rule = data.rules[code];
     const s = tracker?.states.find((x) => x.code === code);
     // NSW publishes at unit-group level only: the occupation's 4-digit unit group against that list.
     const nsw = code === "NSW" && anzsco ? (["190", "491"] as const).map((sub) => matchOccupationToState(anzsco, "NSW", sub)) : [];
@@ -102,9 +107,14 @@ export function buildStateInfos(report: ReadinessReport, occupationRaw: string |
             ? T(l, "Not on the published list", "Yayımlanmış listede yok", "不在已公布的清单上")
             : T(l, "Not confirmed (no occupation-level list in our data)", "Teyit edilmedi (verilerimizde meslek düzeyinde liste yok)", "未确认（我们的数据中没有职业级别清单）");
     // The first condition is the state's summary; a later sentence that only repeats it is left out.
-    const rawConditions = [rule?.note, ...(rule?.keyFacts ?? []), ...(s?.streamNotes ?? [])].filter((x): x is string => !!x);
-    const summary = rawConditions[0] ?? "";
-    const conditions = rawConditions.filter((x, i) => i === 0 || !repeatsSummary(x, summary)).map((x) => localizeStateFact(l, x));
+    // The admin's note and conditions in the report's language (an unreviewed translation falls back to English); the stream notes are already in it.
+    const rawConditions: Array<{ en: string; shown: string }> = [
+      ...(rule ? [{ en: rule.note, shown: localizedText(rule.notes, l) }] : []),
+      ...(rule?.keyFactFields ?? []).map((f) => ({ en: f.en, shown: localizedText(f, l) })),
+      ...(s?.streamNotes ?? []).map((x) => ({ en: x, shown: x })),
+    ].filter((x) => !!x.en);
+    const summary = rawConditions[0]?.en ?? "";
+    const conditions = rawConditions.filter((x, i) => i === 0 || !repeatsSummary(x.en, summary)).map((x) => x.shown);
     const checked = (s?.lastVerifiedAt ?? rule?.lastVerified ?? "").slice(0, 10);
     return {
       code,

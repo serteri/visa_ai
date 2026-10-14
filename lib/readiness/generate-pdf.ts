@@ -1,3 +1,5 @@
+import { getAdminStateData } from "@/lib/admin-data/loader";
+import type { AdminStateData } from "@/lib/admin-data/types";
 import { AGENT_LEAD_NOTICE } from "./agent-lead-notice";
 import { REPORT_DISCLAIMER } from "@/lib/reports/report-disclaimer";
 import { CURRENT_CSIT } from "./constants";
@@ -122,6 +124,8 @@ interface PDFGeneratorInput {
   audience?: "agent";
   /** The state-page monitor status for the "data may have changed since" notes; loaded from the database when omitted (null = unavailable). */
   stateMonitor?: StateMonitorSnapshot | null;
+  /** The admin's state data (lib/admin-data); loaded (cached snapshot, else the bundled seed) when omitted. */
+  stateData?: AdminStateData;
   userInputSummary: {
     name?: string;
     email?: string;
@@ -922,6 +926,7 @@ function formatGoalText(value: string): string {
 export async function generateReadinessPDF(input: PDFGeneratorInput): Promise<Uint8Array> {
   const { report, locale, userInputSummary: rawUserInputSummary } = input;
   // The state-page monitor's status (null when unavailable: the note then rests on the date the data was verified by hand).
+  const stateData = report.country === "CA" ? undefined : input.stateData ?? (await getAdminStateData());
   const stateMonitor = report.country === "CA" ? null : input.stateMonitor !== undefined ? input.stateMonitor : await loadStateMonitorSnapshot();
   // Defense-in-depth: runReadinessEngine already checks invariants when the
   // report is built, but the PDF can also be regenerated from a
@@ -1827,6 +1832,7 @@ export async function generateReadinessPDF(input: PDFGeneratorInput): Promise<Ui
         profile: { ...userInputSummary, occupationRaw: rawUserInputSummary.occupation },
         dateText: coverDateText(),
         stateMonitor,
+        stateData,
       });
     }
     return cachedReportView;

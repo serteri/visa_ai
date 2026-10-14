@@ -23,7 +23,6 @@ import path from "node:path";
 import { generateReadinessPDF } from "../lib/readiness/generate-pdf";
 import type { ReadinessInput } from "../lib/readiness/types";
 import { runReadinessEngine } from "../src/lib/readiness-engine";
-import { getStateIntelligenceMap } from "../lib/state-intelligence";
 import { prisma } from "../lib/prisma";
 
 const testInput: ReadinessInput = {
@@ -41,9 +40,7 @@ const testInput: ReadinessInput = {
 };
 
 async function main() {
-  const stateIntelligence = await getStateIntelligenceMap();
-
-  const report = runReadinessEngine({ ...testInput, stateIntelligence });
+  const report = runReadinessEngine({ ...testInput });
 
   console.log("Estimated points:", report.assessmentState.estimatedPoints);
   console.log("Occupation eligibility:", report.assessmentState.occupationEligibility);

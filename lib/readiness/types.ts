@@ -1,3 +1,5 @@
+import type { StateStatus } from "@/lib/admin-data/statuses";
+import type { AdminStateData } from "@/lib/admin-data/types";
 import type { PathwayGates } from "./visa-gates";
 import type { PathwayBlockReason, PathwayScoreSet } from "./pathway-scores";
 import type { PathwayRanking } from "./pathway-ranking";
@@ -18,34 +20,11 @@ export type ReadinessInput = {
   /** Canada only: explicit province target for PNP eligibility (lib/readiness/pnp-provinces.ts). When omitted, resolveTargetProvince() falls back to keyword inference from mainGoal/preferredCity/preferredPathway. */
   targetProvince?: "ON" | "BC" | "AB";
   /**
-   * Live StateIntelligence rows (lib/state-intelligence.ts), keyed by state
-   * code, fetched by the caller (a server action -- runReadinessEngine
-   * itself stays synchronous) before invoking the engine. When a code is
-   * present here, calculateStateNominationTracker/
-   * buildCanadaStateNominationTracker use its status/officialNote/sourceUrl/
-   * lastVerifiedAt for that state instead of (or alongside) the static
-   * src/data/state-nomination-status.json row. Omit entirely to preserve
-   * existing JSON-only behavior.
+   * The admin-edited state nomination data (lib/admin-data): the cached snapshot the caller (a server action -- runReadinessEngine itself
+   * stays synchronous) loads with getAdminStateData() before invoking the engine. The admin row is the state's data and always wins;
+   * omitted, the engine uses the bundled seed (the same data the admin panel starts from), so tests and scripts need no database.
    */
-  stateIntelligence?: Record<
-    string,
-    { status?: string; officialNote?: string; sourceUrl?: string; lastVerifiedAt?: string }
-  >;
-  /**
-   * Admin-managed overrides (lib/state-intelligence.ts's
-   * getStateNominationConfigMap, backed by the StateNominationConfig Prisma
-   * model / app/[locale]/(main)/admin/states admin panel), keyed by state
-   * code. This is the highest-priority status source of the three
-   * (state-nomination-status.json < state-rules-config.ts <
-   * StateIntelligence < this) -- when a code is present here,
-   * calculateStateNominationTracker uses its status/customAiNote ahead of
-   * everything else, so an admin toggling a state to "Closed" is reflected
-   * immediately without a deploy.
-   */
-  stateNominationConfig?: Record<
-    string,
-    { status?: string; supportedVisas?: string[]; feeAud?: number | null; customAiNote?: string | null; updatedAt?: string }
-  >;
+  stateData?: AdminStateData;
   passportCountry?: string;
   age?: string;
   occupation?: string;
@@ -672,16 +651,7 @@ export type AssessmentState = {
  * -- "High Demand" in particular was an occupation-dependent, vague signal
  * that doesn't belong in a program-level status and is no longer offered.
  */
-export type StateNominationStatus =
-  | "Open for Offshore"
-  | "High Demand"
-  | "Closed"
-  | "Onshore Only"
-  | "Open (Onshore & Offshore)"
-  | "Open (Onshore Only)"
-  | "Open (Offshore Only)"
-  | "Suspended / Closed"
-  | "Check official page";
+export type StateNominationStatus = StateStatus;
 
 export type StateMatchLevel = "high" | "medium" | "low";
 

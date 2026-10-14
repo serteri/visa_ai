@@ -24,10 +24,7 @@ import {
   updateFullCheckProgress,
 } from "@/lib/full-check-progress";
 import { buildLeadQuality, runReadinessEngine } from "@/src/lib/readiness-engine";
-import {
-  getStateIntelligenceMap,
-  getStateNominationConfigMap,
-} from "@/lib/state-intelligence";
+import { getAdminStateData } from "@/lib/admin-data/loader";
 import { canonicalizeOccupationInput, resolveOccupationDisplayName } from "@/lib/readiness/occupation-eligibility";
 import { computeInternalLeadTier } from "@/lib/readiness/internal-lead-tier";
 import { AU_STATE_CODES, isAuStateCode, isEnglishLevel, isQualificationLevel, parseExperienceYears, resolveSkillsAssessmentAnswer } from "@/lib/intake/fields";
@@ -695,9 +692,8 @@ export async function submitFullCheckWaitlist(
     await updateFullCheckProgress(analysisProgressId, "scanning_occupations");
   }
 
-  // Live state-nomination status/citations (see lib/state-intelligence.ts and app/api/cron/sync-states) --
-  // runReadinessEngine itself stays synchronous, so these DB reads have to happen here, before calling it.
-  // Neither throws; both degrade to the static-data fallback on failure.
+  // The admin's state nomination data (lib/admin-data, the cached snapshot) -- runReadinessEngine itself stays
+  // synchronous, so the read has to happen here, before calling it. It never throws; it degrades to the bundled seed.
   //
   // getStateOccupationMatches()/StateOccupationListEntry (real occupation-list membership, DB-backed) was
   // dropped from this call in Phase 3b: that table is not populated by anything in this codebase (no cron,
@@ -708,10 +704,8 @@ export async function submitFullCheckWaitlist(
   // never the score); scripts/sync-state-occupation-lists.ts and the StateOccupationListEntry table are left
   // in place, unused, as a flagged future option (fixing its NSW unit-group/ANZSCO-code bug and deciding
   // whether occupation-matching should ever affect score again is a separate decision).
-  const [stateIntelligence, stateNominationConfig] = await Promise.all([
-    getStateIntelligenceMap(),
-    getStateNominationConfigMap(),
-  ]);
+  // The admin's state data (the cached snapshot); the bundled seed when the database cannot be read.
+  const stateData = await getAdminStateData();
 
   // AU skilled/employer intake only; persisted with the input so the refreshed PDF uses the same answers.
   const situationInput: Pick<ReadinessInput, "employerSponsorship" | "yearsWithCurrentSponsor" | "residenceState" | "applicationStage"> =
@@ -733,8 +727,7 @@ export async function submitFullCheckWaitlist(
       passportCountry,
       age,
       occupation: occupation || undefined,
-      stateIntelligence,
-      stateNominationConfig,
+      stateData,
       englishLevel: englishLevel || undefined,
       qualificationLevel,
       annualSalaryAud: annualSalaryAud !== undefined && Number.isFinite(annualSalaryAud)

@@ -1,8 +1,8 @@
 import versions from "@/src/data/knowledge-versions.json";
 import { STATE_NAMES, stateResidenceRule } from "@/lib/state-nomination/residence-rules";
-import { localizeStateFact } from "@/lib/state-nomination/state-keyfact-translations";
-import { localizeStateNote } from "@/lib/state-nomination/state-note-translations";
-import { STATE_RULES } from "@/lib/state-nomination/state-rules-config";
+import { localizedText } from "@/lib/admin-data/localized";
+import { seedStateData } from "@/lib/admin-data/snapshot";
+import type { AdminStateData } from "@/lib/admin-data/types";
 import type { Locale } from "@/lib/readiness/types";
 
 import { statesNamedIn } from "./answer-check";
@@ -34,9 +34,9 @@ export function sourceInfo(filename: string | undefined): SourceInfo {
 }
 
 /** True when the document is current for the state's data: in the 2026-27 folder, listed as the rule's source, or an occupation list. */
-export function isCurrentFor(code: string, filename: string, info: SourceInfo): boolean {
+export function isCurrentFor(code: string, filename: string, info: SourceInfo, data: AdminStateData = seedStateData()): boolean {
   if (info.archived) return false;
-  const rule = STATE_RULES[code];
+  const rule = data.rules[code];
   if (/\/2026-27\//.test(info.path ?? "")) return true;
   if (rule?.sourceDocument.includes(filename)) return true;
   return /\.(?:xlsx|csv)$/i.test(filename);
@@ -55,25 +55,27 @@ const idsIn = (s: string) => Array.from(s.matchAll(MARKER), (m) => m[1]);
 const NUMBERS = (tokens: Set<string>) => [...tokens].filter((t) => /^\d/.test(t));
 
 type Variant = { tokens: Set<string> };
-const variantCache = new Map<string, Variant[]>();
-/** The published statements of one state (note and key facts, in English and in the answer's language) as token sets. */
-function variantsOf(code: string, locale: Locale): Variant[] {
+const variantCache = new WeakMap<AdminStateData, Map<string, Variant[]>>();
+/** The published statements of one state (note and conditions, in English and in the answer's language) as token sets. */
+function variantsOf(code: string, locale: Locale, data: AdminStateData): Variant[] {
+  let perData = variantCache.get(data);
+  if (!perData) variantCache.set(data, (perData = new Map()));
   const key = `${code}|${locale}`;
-  const hit = variantCache.get(key);
+  const hit = perData.get(key);
   if (hit) return hit;
-  const rule = STATE_RULES[code];
-  const texts = rule ? [rule.note, localizeStateNote(locale, rule.note), ...rule.keyFacts.flatMap((f) => [f, localizeStateFact(locale, f)])] : [];
+  const rule = data.rules[code];
+  const texts = rule ? [rule.note, localizedText(rule.notes, locale), ...rule.keyFactFields.flatMap((f) => [f.en, localizedText(f, locale)])] : [];
   const out = texts.map((t) => ({ tokens: contentTokens(t) }));
-  variantCache.set(key, out);
+  perData.set(key, out);
   return out;
 }
 
 /** The sentence says (nearly) nothing beyond one published statement of the state: most of its words and every number are in that single statement. */
-export function supportedByState(sentence: string, code: string, locale: Locale): boolean {
+export function supportedByState(sentence: string, code: string, locale: Locale, data: AdminStateData = seedStateData()): boolean {
   const s = contentTokens(sentence.replace(MARKER, " "));
   if (s.size < 4 && NUMBERS(s).length === 0) return true; // a heading or a bare name
   const numbers = NUMBERS(s);
-  return variantsOf(code, locale).some((v) => {
+  return variantsOf(code, locale, data).some((v) => {
     let shared = 0;
     for (const t of s) if (v.tokens.has(t)) shared++;
     return shared / s.size >= 0.6 && numbers.every((n) => v.tokens.has(n));
@@ -88,6 +90,8 @@ export type StateClaimsCtx = {
   sources?: Record<string, string>;
   /** The state the visitor entered as where they live (onshore profile), when there is one. */
   home?: string;
+  /** The admin's state data (getAdminStateData()); the bundled seed when omitted. */
+  data?: AdminStateData;
 };
 
 type Verdict = { keep: true } | { keep: false; reason: "status" | "stale_source" | "no_own_source" };
@@ -97,9 +101,9 @@ function judge(sentence: string, codes: string[], ctx: StateClaimsCtx): Verdict 
   const cited = idsIn(sentence).map((id) => ({ file: ctx.sources?.[id], info: sourceInfo(ctx.sources?.[id]) }));
   for (const code of codes) {
     const own = cited.filter((c) => c.info.state === code);
-    if (own.some((c) => !isCurrentFor(code, c.file ?? "", c.info))) return { keep: false, reason: "stale_source" };
+    if (own.some((c) => !isCurrentFor(code, c.file ?? "", c.info, ctx.data))) return { keep: false, reason: "stale_source" };
     if (own.length > 0) continue;
-    if (supportedByState(sentence, code, ctx.locale)) continue;
+    if (supportedByState(sentence, code, ctx.locale, ctx.data)) continue;
     return { keep: false, reason: "no_own_source" };
   }
   return { keep: true };
@@ -122,29 +126,29 @@ const GENERIC_STATE_QUESTION = /\b(?:which|what) (?:state|territory|states)\b|\b
 const clean = (text: string, locale: Locale) => bannedIn(text, locale).length === 0;
 
 /** The structured data of one state, translated: name, checked date, note, and (for the states the visitor named) the published conditions. */
-function blockFor(code: string, locale: Locale, withConditions: boolean, home: string | undefined): string[] {
-  const rule = STATE_RULES[code];
+function blockFor(code: string, locale: Locale, withConditions: boolean, home: string | undefined, data: AdminStateData): string[] {
+  const rule = data.rules[code];
   if (!rule) return [];
   const name = STATE_NAMES[code]?.[li(locale)] ?? rule.name;
   const lines: string[] = [];
-  const note = localizeStateNote(locale, rule.note);
+  const note = localizedText(rule.notes, locale);
   if (clean(note, locale)) lines.push(`- ${name} (${code}), ${T(locale, "data checked", "veri kontrol tarihi", "数据核对日期")} ${rule.lastVerified}: ${note}`);
   else lines.push(`- ${name} (${code}), ${T(locale, "data checked", "veri kontrol tarihi", "数据核对日期")} ${rule.lastVerified}.`);
   if (withConditions) {
-    const facts = rule.keyFacts.filter((f) => !PROVENANCE.test(f)).sort((a, b) => Number(PRIORITY.test(b)) - Number(PRIORITY.test(a))).slice(0, 8);
+    const facts = rule.keyFactFields.filter((f) => !PROVENANCE.test(f.en)).sort((a, b) => Number(PRIORITY.test(b.en)) - Number(PRIORITY.test(a.en))).slice(0, 8);
     for (const f of facts) {
-      const text = localizeStateFact(locale, f);
+      const text = localizedText(f, locale);
       if (clean(text, locale)) lines.push(`  • ${text}`);
     }
   }
   // The residence condition next to what the visitor entered: two facts, no conclusion.
   if (home && home !== code && STATE_NAMES[home]) {
-    const r = stateResidenceRule(code);
+    const r = stateResidenceRule(code, data);
     if (r.requirement !== "not_required") {
       const homeName = STATE_NAMES[home][li(locale)];
       const published =
-        r.requirement === "required" && r.fact
-          ? localizeStateFact(locale, r.fact)
+        r.requirement === "required" && r.factField
+          ? localizedText(r.factField, locale)
           : T(locale, "no residence condition for applicants living in another state is stated in the published sources", "yayımlanmış kaynaklarda başka eyalette yaşayan başvuru sahipleri için bir ikamet koşulu belirtilmemiştir", "已公布的资料中未说明对居住在其他州的申请人的居住条件");
       if (clean(published, locale)) {
         lines.push(`  • ${T(locale, "Published residence/employment condition", "Yayımlanmış ikamet/çalışma koşulu", "已公布的居住/就业条件")}: ${published} | ${T(locale, "You entered", "Girdiğiniz", "您填写的居住地")}: ${homeName}.`);
@@ -186,10 +190,11 @@ export function stateClaimsPass(ctx: StateClaimsCtx): AnswerPass {
 
     const asked = statesNamedIn(ctx.userText);
     let scope = [...new Set([...asked, ...named])];
-    if (scope.length === 0 && GENERIC_STATE_QUESTION.test(ctx.userText)) scope = Object.keys(STATE_RULES);
+    const data = ctx.data ?? seedStateData();
+    if (scope.length === 0 && GENERIC_STATE_QUESTION.test(ctx.userText)) scope = Object.keys(data.rules);
     if (scope.length > 0) {
-      const order = Object.keys(STATE_RULES);
-      const lines = [STATE_BLOCK_HEADER[ctx.locale], ...order.filter((c) => scope.includes(c)).flatMap((c) => blockFor(c, ctx.locale, asked.includes(c), ctx.home))];
+      const order = Object.keys(data.rules);
+      const lines = [STATE_BLOCK_HEADER[ctx.locale], ...order.filter((c) => scope.includes(c)).flatMap((c) => blockFor(c, ctx.locale, asked.includes(c), ctx.home, data))];
       out = `${out}${out ? "\n\n" : ""}${lines.join("\n")}`;
     }
     return { text: out, rewrites };

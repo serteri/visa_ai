@@ -11,7 +11,8 @@
 import { adminMonitorUrl, buildChangeAlert, buildFailureAlert, sendMonitorAlert, type AlertMail, type ChangeItem, type FailureItem } from "./alert";
 import { extractMainText, hashText, normalise, snippetOf, summariseDiff } from "./extract";
 import { classifyStatus, classifyThrown, encodeFailure, type FailureClass, type PageFailure } from "./failure";
-import { MONITORED_PAGES, type MonitoredPage } from "./pages";
+import { getAdminStateData } from "@/lib/admin-data/loader";
+import { monitoredPagesFrom, type MonitoredPage } from "./pages";
 import { prismaMonitorStore, type MonitorStore, type PageRow } from "./store";
 
 /** The cron route and the admin page both declare maxDuration = 60 (the limit of every Vercel plan). */
@@ -74,7 +75,8 @@ export async function runStateMonitor(opts: { trigger: "cron" | "manual" | "test
   const clock = opts.nowMs ?? Date.now;
   const budgetMs = opts.budgetMs ?? RUN_BUDGET_MS;
   const pageTimeoutMs = opts.pageTimeoutMs ?? PAGE_TIMEOUT_MS;
-  const pages = opts.pages ?? MONITORED_PAGES;
+  // The pages are the admin's: each state's official URL and extra URLs (the static list when the data holds none).
+  const pages = opts.pages ?? monitoredPagesFrom(await getAdminStateData());
   const startedAt = now();
   const t0 = clock();
   const summary: RunSummary = { trigger: opts.trigger, checked: 0, baselined: [], unchanged: 0, changed: [], failed: [], skipped: [], alertsSent: 0, error: null };

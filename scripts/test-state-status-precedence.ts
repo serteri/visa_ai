@@ -1,12 +1,20 @@
 /**
- * The AI assistant (lib/ai/retrieve-state-context.ts) and the report (lib/readiness/state-nomination.ts) resolve a
- * state's status with the same precedence (lib/state-nomination/state-status.ts): the admin status unless the
- * hand-verified rule was verified on a later day, then the scraper's status, then the rule. Checked with the live
- * admin rows' dates (every live row was saved before the 2026-10-13 verification, so the rule wins for all eight), a newer admin
- * closure, and a scraper status -- every state the assistant returns must match the report's tracker.
+ * The admin row is the state's data and always wins (docs/admin-data-design.md A.1). There is no date comparison with any other source:
+ * the report (State Nomination Tracker, state section), the AI assistant and the chat facts all show the status the admin saved, whatever
+ * the dates are. Database-free: the admin rows are an in-memory store, the snapshot is built from them.
  *
  *   npx tsx scripts/test-state-status-precedence.ts
  */
+import "./lib/stub-request-context";
+
+import { seedStatePrograms, saveStateProgram } from "../lib/admin-data/service";
+import { toSnapshot, seedStateData, withPrograms } from "../lib/admin-data/snapshot";
+import { memoryStore } from "../lib/admin-data/store";
+import { stateStatusLabel } from "../lib/admin-data/statuses";
+import { retrieveStateContext } from "../lib/ai/retrieve-state-context";
+import { buildEngineFacts } from "../lib/chat/engine-facts";
+import { buildStateInfos } from "../lib/reports/report-states";
+import { runReadinessEngine } from "../src/lib/readiness-engine";
 import type { ReadinessInput } from "../lib/readiness/types";
 
 let failures = 0;
@@ -15,93 +23,90 @@ const fail = (m: string) => {
   failures++;
   console.error(`  ❌ ${m}`);
 };
+const t = (label: string, cond: boolean, detail = "") => (cond ? ok(label) : fail(`${label}${detail ? ` -- ${detail}` : ""}`));
 
-type AdminRow = { stateCode: string; status: string; supportedVisas: string[]; feeAud: number | null; customAiNote: string | null; updatedAt: Date };
-type IntelRow = { stateCode: string; status: string; officialNote: string | null; sourceUrl: string | null; lastVerifiedAt: Date };
-let adminRows: AdminRow[] = [];
-let intelRows: IntelRow[] = [];
+const ACTOR = { id: "u-1", email: "admin@example.com", label: "admin@example.com" };
+const baseProfile: ReadinessInput = {
+  locale: "en",
+  country: "AU",
+  mainGoal: "",
+  currentCountry: "AU",
+  passportCountry: "TR",
+  age: "28",
+  occupation: "Software Engineer (261313)",
+  occupationConfirmed: "no",
+  englishLevel: "superior",
+  qualificationLevel: "Bachelor's Degree",
+  isQualificationRecognized: true,
+  qualificationAwardedInAustralia: false,
+  annualSalaryAud: 90000,
+  sponsorOrFamily: "Single / No Dependants",
+};
+
+const statusIn = (input: Partial<ReadinessInput>, code: string) => runReadinessEngine({ ...baseProfile, ...input } as ReadinessInput).stateNominationTracker?.states.find((s) => s.code === code);
 
 async function main() {
-  const empty = { findMany: async () => [], findUnique: async () => null, findFirst: async () => null };
-  (globalThis as { prisma?: unknown }).prisma = {
-    stateNominationConfig: { ...empty, findMany: async () => adminRows },
-    stateIntelligence: { ...empty, findMany: async () => intelRows },
-    $disconnect: async () => undefined,
-  };
-  const { retrieveStateContext } = await import("../lib/ai/retrieve-state-context");
-  const { runReadinessEngine } = await import("../src/lib/readiness-engine");
-  const { getStateIntelligenceMap, getStateNominationConfigMap } = await import("../lib/state-intelligence");
+  console.log("seeded rows, then an admin edit saved with an OLD verification date");
+  const store = memoryStore();
+  const seeded = await seedStatePrograms(store, ACTOR, new Date("2026-10-15T00:00:00Z"));
+  t("the seed inserts all eight states", seeded.inserted.length === 8, JSON.stringify(seeded));
+  const before = toSnapshot(Object.fromEntries((await store.list()).map((p) => [p.stateCode, p])), "db", "now");
+  t("a seeded NT is 'Closed with exceptions' and TAS is spelled 'Open (Onshore only)'", before.rules.NT.status === "Closed with exceptions" && before.rules.TAS.status === "Open (Onshore only)");
 
-  const input: ReadinessInput = {
-    locale: "en",
-    country: "AU",
-    mainGoal: "",
-    currentCountry: "AU",
-    passportCountry: "TR",
-    age: "28",
-    occupation: "Software Engineer (261313)",
-    occupationConfirmed: "yes",
-    englishLevel: "superior",
-    qualificationLevel: "PhD",
-    isQualificationRecognized: true,
-    qualificationAwardedInAustralia: false,
-    sponsorOrFamily: "Single / No Dependants",
-  };
-  const admin = (stateCode: string, status: string, updatedAt: string): AdminRow => ({ stateCode, status, supportedVisas: ["190", "491"], feeAud: null, customAiNote: null, updatedAt: new Date(updatedAt) });
+  const act = (await store.get("ACT"))!;
+  const edited = await saveStateProgram(store, ACTOR, { ...act, status: "Suspended / Closed" }, new Date("2026-10-16T00:00:00Z"));
+  t("the edit saves", edited.ok === true);
+  const snap = toSnapshot(Object.fromEntries((await store.list()).map((p) => [p.stateCode, p])), "db", "now");
+  // Make the stored row look older than the seed's own verification date: the status must still be the admin's.
+  const older = withPrograms(snap, { ACT: { lastVerifiedAt: "2020-01-01T00:00:00.000Z" } });
 
-  const cases: Array<{ name: string; admin: AdminRow[]; intel: IntelRow[]; expect: Record<string, string> }> = [
-    {
-      name: "live admin rows saved before the 13 October 2026 verification (the rule was verified later, so the rule wins; re-saving in the admin panel makes the admin row win again)",
-      admin: [
-        admin("WA", "Open (Onshore & Offshore)", "2026-08-31T12:10:08.348Z"),
-        admin("SA", "Open (Onshore & Offshore)", "2026-08-31T12:11:46.621Z"),
-        admin("QLD", "Suspended / Closed", "2026-08-31T12:11:55.706Z"),
-        admin("TAS", "Open (Onshore & Offshore)", "2026-08-31T12:16:04.707Z"),
-        admin("NSW", "Suspended / Closed", "2026-09-06T13:25:23.899Z"),
-        admin("NT", "Suspended / Closed", "2026-09-22T12:46:48.682Z"),
-        admin("VIC", "Suspended / Closed", "2026-09-22T12:48:38.463Z"),
-        admin("ACT", "Open (Onshore & Offshore)", "2026-09-22T12:58:14.178Z"),
-      ],
-      intel: [],
-      expect: { TAS: "Open (Onshore Only)", ACT: "High Demand", NT: "Suspended / Closed", WA: "Check official page", SA: "Suspended / Closed" },
-    },
-    {
-      name: "an admin closure saved after the rule was verified wins",
-      admin: [admin("WA", "Suspended / Closed", "2026-10-14T09:00:00.000Z")],
-      intel: [],
-      expect: { WA: "Suspended / Closed" },
-    },
-    {
-      name: "scraper status used when no current admin status applies",
-      admin: [admin("SA", "Suspended / Closed", "2026-08-01T00:00:00.000Z")],
-      intel: [{ stateCode: "SA", status: "High Demand", officialNote: null, sourceUrl: null, lastVerifiedAt: new Date("2026-10-12T00:00:00.000Z") }],
-      expect: { SA: "High Demand" },
-    },
-  ];
-
-  for (const c of cases) {
-    adminRows = c.admin;
-    intelRows = c.intel;
-    const [stateIntelligence, stateNominationConfig] = await Promise.all([getStateIntelligenceMap(), getStateNominationConfigMap()]);
-    const report = runReadinessEngine({ ...input, stateIntelligence, stateNominationConfig });
-    const reportStatus = new Map<string, string>((report.stateNominationTracker?.states ?? []).map((s) => [s.code, s.status]));
-    const assistant = await retrieveStateContext("Which states are open for 190 or 491 state nomination?");
-    const disagreements = assistant.filter((a) => reportStatus.has(a.code) && reportStatus.get(a.code) !== a.status);
-    const expectedBad = Object.entries(c.expect).filter(
-      ([code, status]) => reportStatus.get(code) !== status || (assistant.find((a) => a.code === code)?.status ?? status) !== status
-    );
-    if (assistant.length > 0 && disagreements.length === 0 && expectedBad.length === 0) {
-      ok(`${c.name}: assistant and report agree on ${assistant.length} states (${Object.entries(c.expect).map(([k, v]) => `${k} ${v}`).join("; ")})`);
-    } else {
-      fail(`${c.name}: disagreements ${JSON.stringify(disagreements.map((a) => [a.code, a.status, reportStatus.get(a.code)]))}; expected ${JSON.stringify(expectedBad)}`);
-    }
+  for (const [name, data] of [["fresh row", snap], ["row verified in 2020", older]] as const) {
+    const tracker = statusIn({ stateData: data }, "ACT");
+    t(`[${name}] the report's State Nomination Tracker shows the admin's status and does not count ACT as open`, tracker?.status === "Suspended / Closed" && tracker.isOpen === false, JSON.stringify([tracker?.status, tracker?.isOpen]));
+    const infos = buildStateInfos(runReadinessEngine({ ...baseProfile, stateData: data }), "261313", "en", new Date("2026-10-20"), null, data);
+    t(`[${name}] the report's state section shows it`, infos.find((s) => s.code === "ACT")?.status === "Suspended / Closed");
+    const assistant = await retrieveStateContext("Which states are open for 190 or 491 state nomination?", "en", data);
+    t(`[${name}] the AI assistant shows it`, assistant.find((s) => s.code === "ACT")?.status === "Suspended / Closed");
+    t(`[${name}] the chat facts show it`, new RegExp("Australian Capital Territory \\(ACT\\): published status Suspended / Closed").test(buildEngineFacts({ stateData: data })));
   }
 
-  console.log(`\n${failures === 0 ? "✅ ALL CHECKS PASSED" : `❌ ${failures} CHECK(S) FAILED`}`);
+  console.log("a state the admin set open counts as open, whatever the old rule said");
+  {
+    const data = withPrograms(seedStateData(), { QLD: { status: "Open (Onshore & Offshore)" } });
+    const qld = statusIn({ stateData: data }, "QLD");
+    t("QLD (seeded closed) set open by the admin is open in the report", qld?.status === "Open (Onshore & Offshore)" && qld.isOpen === true, JSON.stringify([qld?.status, qld?.isOpen]));
+  }
+
+  console.log("without any rows the bundled seed is used (the same data the admin starts from)");
+  {
+    const a = statusIn({}, "NT");
+    const b = statusIn({ stateData: seedStateData() }, "NT");
+    t("no stateData = the seed", a?.status === "Closed with exceptions" && b?.status === a?.status && a?.isOpen === false);
+  }
+
+  console.log("the new statuses");
+  {
+    const cases: Array<[string, boolean]> = [
+      ["Closed with exceptions", false],
+      ["Not yet published", false],
+      ["Check official page", false],
+      ["Suspended / Closed", false],
+      ["Open (Onshore & Offshore)", true],
+    ];
+    for (const [status, open] of cases) {
+      const s = statusIn({ stateData: withPrograms(seedStateData(), { SA: { status } }) }, "SA");
+      t(`SA set to "${status}": ${open ? "open" : "not open"}`, s?.isOpen === open && s?.status === status, JSON.stringify([s?.status, s?.isOpen]));
+    }
+    const onshoreOnly = withPrograms(seedStateData(), { SA: { status: "Open (Onshore only)" } });
+    t("'Open (Onshore only)' is open to someone in Australia and not to someone abroad", statusIn({ stateData: onshoreOnly }, "SA")?.isOpen === true && statusIn({ stateData: onshoreOnly, currentCountry: "Turkey" }, "SA")?.isOpen === false);
+    t("the report prints the status in the reader's language", stateStatusLabel("Closed with exceptions", "tr") === "Kapalı, istisnalarla" && stateStatusLabel("Not yet published", "zh-Hans") === "尚未公布" && stateStatusLabel("Open (Onshore Only)", "en") === "Open (Onshore only)");
+  }
+
+  console.log(failures === 0 ? "\n✅ ALL CHECKS PASSED" : `\n❌ ${failures} CHECK(S) FAILED`);
   process.exitCode = failures === 0 ? 0 : 1;
 }
 
-main().catch((err) => {
-  console.error(err);
-  process.exitCode = 1;
+main().catch((e) => {
+  console.error(e);
+  process.exit(1);
 });

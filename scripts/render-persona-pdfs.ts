@@ -163,12 +163,15 @@ export const REVIEW_PERSONAS: Record<string, ReadinessInput> = {
   },
 };
 
+// The personas render with the bundled state data, never the database.
+process.env.ADMIN_DATA_MODE ??= "seed";
+
 export const LOCALES = ["en", "tr", "zh-Hans"] as const;
 
 export type RenderedPersona = { id: string; locale: (typeof LOCALES)[number]; text: string; report: unknown };
 
 /** Live admin state config rows, served to the stubbed client exactly as production's findMany() returns them. */
-export type LiveStateRows = { stateNominationConfig: unknown[]; stateIntelligence: unknown[] };
+export type LiveStateRows = { stateNominationConfig: unknown[]; stateIntelligence: unknown[]; stateProgram?: unknown[] };
 
 /** JSON caches turn Date columns into strings; findMany() returns Dates (e.g. updatedAt.toISOString()). */
 function reviveDates<T>(rows: T[] | undefined): T[] {
@@ -190,6 +193,8 @@ function installStubPrisma(rows: Map<string, Record<string, unknown>>, live?: Li
     roundCutoff: empty,
     stateNominationConfig: { ...empty, findMany: async () => reviveDates(live?.stateNominationConfig) },
     stateIntelligence: { ...empty, findMany: async () => reviveDates(live?.stateIntelligence) },
+    // The admin state programs (lib/admin-data): none stored -> the readers use the bundled seed.
+    stateProgram: { ...empty, findMany: async () => reviveDates(live?.stateProgram) },
   };
 }
 
@@ -222,15 +227,15 @@ export async function renderPersonaPdfTexts(
   const rows = new Map<string, Record<string, unknown>>();
   installStubPrisma(rows, live);
   const { runReadinessEngine } = await import("../src/lib/readiness-engine");
-  const { getStateIntelligenceMap, getStateNominationConfigMap } = await import("../lib/state-intelligence");
-  // The same live state inputs the intake action passes to the engine.
-  const [stateIntelligence, stateNominationConfig] = await Promise.all([getStateIntelligenceMap(), getStateNominationConfigMap()]);
+  const { getAdminStateData } = await import("../lib/admin-data/loader");
+  // The same state data the intake action passes to the engine.
+  const stateData = await getAdminStateData();
 
   const out: RenderedPersona[] = [];
   for (const [id, base] of Object.entries(personas)) {
     for (const locale of locales) {
       const input: ReadinessInput = { ...base, locale };
-      const report = runReadinessEngine({ ...input, stateIntelligence, stateNominationConfig });
+      const report = runReadinessEngine({ ...input, stateData });
       const reportId = `${id}-${locale}`;
       rows.set(reportId, { id: reportId, email: "qa@example.com", locale, report_json: JSON.parse(JSON.stringify(report)), input_json: JSON.parse(JSON.stringify(input)), agent_id: null, is_unlocked: true, full_name: fullName, preview_data: null, ...(createdAt ? { created_at: createdAt } : {}) });
       out.push({ id, locale, text: await renderRow(rows.get(reportId)!, onPdf ? (bytes) => onPdf(id, locale, bytes) : undefined), report });

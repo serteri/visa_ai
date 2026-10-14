@@ -9,7 +9,7 @@ import { CHAT_MODEL_ID, EMBEDDING_MODEL_ID, getPremiumChatModelId } from "./conf
 import { correctedUIStreamResponse } from "./corrected-stream";
 import { prismaCreditStore } from "./credits";
 import { dropSupersededChunks } from "./document-versions";
-import { getStateIntelligenceMap, getStateNominationConfigMap } from "@/lib/state-intelligence";
+import { getAdminStateData } from "@/lib/admin-data/loader";
 
 import type { LiveStateData } from "./engine-facts";
 import type { ChatDeps } from "./handler";
@@ -115,10 +115,9 @@ export const prismaQuickProfileStore: QuickProfileStore = {
   },
 };
 
-/** The live admin / scraper state status, read the same way the report's intake action reads it. */
+/** The admin's state data (the cached snapshot), read the same way the report's intake action reads it. */
 export async function liveStateData(): Promise<LiveStateData> {
-  const [stateIntelligence, stateNominationConfig] = await Promise.all([getStateIntelligenceMap(), getStateNominationConfigMap()]);
-  return { stateIntelligence, stateNominationConfig } as LiveStateData;
+  return { stateData: await getAdminStateData() };
 }
 
 export function realChatDeps(): ChatDeps {

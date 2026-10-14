@@ -1,5 +1,6 @@
 import { STATE_NAMES, stateResidenceRule } from "@/lib/state-nomination/residence-rules";
 import { isOffshore } from "@/lib/readiness/state-nomination";
+import type { AdminStateData } from "@/lib/admin-data/types";
 import type { ReadinessInput } from "@/lib/readiness/types";
 
 /**
@@ -11,13 +12,13 @@ import type { ReadinessInput } from "@/lib/readiness/types";
 export type ResidenceBlockedState = { code: string; name: string; requirement: "required" | "not_confirmed"; subclasses?: Array<"190" | "491"> };
 export type ResidenceFacts = { home: string; homeName: string; blocked: ResidenceBlockedState[] };
 
-export function residenceFacts(input: Partial<ReadinessInput> | undefined): ResidenceFacts | undefined {
+export function residenceFacts(input: Partial<ReadinessInput> | undefined, data?: AdminStateData): ResidenceFacts | undefined {
   const home = input?.residenceState;
   if (!input || !home || !STATE_NAMES[home] || isOffshore(input.currentCountry)) return undefined;
   const blocked: ResidenceBlockedState[] = [];
   for (const code of Object.keys(STATE_NAMES)) {
     if (code === home) continue;
-    const rule = stateResidenceRule(code);
+    const rule = stateResidenceRule(code, data);
     if (rule.requirement === "not_required") continue;
     blocked.push({ code, name: STATE_NAMES[code][0], requirement: rule.requirement, ...(rule.subclasses ? { subclasses: rule.subclasses } : {}) });
   }

@@ -14,7 +14,7 @@ const ADMIN_LINKS = [
   { href: "visas", label: "Visas" },
   { href: "full-check-waitlist", label: "Full Check Waitlist" },
   { href: "eoi-rounds", label: "EOI Rounds" },
-  { href: "states", label: "State Nomination" },
+  { href: "crm/states", label: "State Nomination" },
   { href: "data-sync", label: "Data Sync" },
 ];
 

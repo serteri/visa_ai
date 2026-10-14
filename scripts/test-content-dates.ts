@@ -12,6 +12,7 @@ import waList from "../src/data/state-occupation-lists/wa.json";
 import type { ReadinessInput, ReadinessReport } from "../lib/readiness/types";
 import { REPORT_CONTENT_DEPLOY_DATE, contentDataAsOf } from "../lib/reports/content-dates";
 import { STATE_RULES } from "../lib/state-nomination/state-rules-config";
+import { seedStateData, withPrograms } from "../lib/admin-data/snapshot";
 import { runReadinessEngine } from "../src/lib/readiness-engine";
 
 let failures = 0;
@@ -57,22 +58,22 @@ else fail(`REPORT_CONTENT_DEPLOY_DATE ${REPORT_CONTENT_DEPLOY_DATE} (today ${tod
 if (contentDataAsOf(clone(), fresh, { generatedAt: "2026-09-27T21:30:42Z" }) === null) ok("unchanged content -> null (original generation date shown)");
 else fail("unchanged content should not produce a data-as-of date");
 
-// 3. Only WA's tracker row changed; WA's occupation list (2026-09-28) is newer than the report (2026-09-27) -> that date.
+// 3. Only WA's tracker row changed; the WA state data (last verified 2026-10-13) and the WA occupation list (2026-09-28) are both newer than the report (2026-09-27).
 {
   const stored = clone();
   const wa = stored.stateNominationTracker!.states.find((s) => s.code === "WA")!;
   wa.score = wa.score - 10;
   const r = contentDataAsOf(stored, fresh, { generatedAt: "2026-09-27T21:30:42Z" });
-  // The WA rules were re-verified on 2026-10-13 (after the occupation list of 2026-09-28): the latest dated source decides, and the list is among the sources.
-  if (r?.date === "2026-10-13" && r.sources.some((s) => /WA occupation list/.test(s.source)) && r.sources.some((s) => /WA state rules/.test(s.source))) ok(`WA row changed after the new WA list and the 2026-10-13 re-verification -> "data as of 2026-10-13" (${r.sources.map((s) => s.source).join(", ")})`);
+  if (r?.date === "2026-10-13" && r.sources.some((s) => /WA occupation list/.test(s.source)) && r.sources.some((s) => /WA state data/.test(s.source))) ok(`WA row changed after the WA list and the WA state data's verification -> "data as of 2026-10-13" (${r.sources.map((s) => `${s.source} ${s.date}`).join("; ")})`);
   else fail(`WA-only change: ${JSON.stringify(r)}`);
   // The same change on a report generated AFTER every WA source -> it came from code: the deploy date.
-  const r2 = contentDataAsOf(stored, fresh, { generatedAt: "2026-10-12T23:00:00Z" });
+  const r2 = contentDataAsOf(stored, fresh, { generatedAt: "2026-10-13T23:00:00Z" });
   if (r2?.date === REPORT_CONTENT_DEPLOY_DATE && !r2.sources.some((s) => /WA occupation list/.test(s.source))) ok(`same change on a report newer than the WA sources -> deploy date ${REPORT_CONTENT_DEPLOY_DATE}`);
   else fail(`WA change after sources: ${JSON.stringify(r2)}`);
-  // Admin settings saved after the report -> that date counts.
-  const r3 = contentDataAsOf(stored, fresh, { generatedAt: "2026-10-12T23:00:00Z", stateNominationConfig: { WA: { updatedAt: "2026-10-14T01:00:00Z" } } });
-  if (r3?.date === "2026-10-14" && r3.sources.some((s) => /WA admin settings/.test(s.source))) ok("WA admin settings saved after the report -> their date");
+  // The admin saved WA after the report: its last verified date (set on every save) counts.
+  const saved = withPrograms(seedStateData(), { WA: { lastVerifiedAt: "2026-10-14T01:00:00.000Z" } });
+  const r3 = contentDataAsOf(stored, fresh, { generatedAt: "2026-10-12T23:00:00Z", stateData: saved });
+  if (r3?.date === "2026-10-14" && r3.sources.some((s) => /WA state data/.test(s.source))) ok("WA state data saved after the report -> its date");
   else fail(`admin date: ${JSON.stringify(r3)}`);
 }
 

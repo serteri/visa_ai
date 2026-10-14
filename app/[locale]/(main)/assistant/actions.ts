@@ -40,7 +40,7 @@ export async function runAssistantMessage(
 
   const [context, stateContext] = await Promise.all([
     retrieveVisaContext({ message }),
-    retrieveStateContext(message),
+    retrieveStateContext(message, locale),
   ]);
   const grounded = await generateGroundedAnswer({
     message,

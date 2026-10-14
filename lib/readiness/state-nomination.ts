@@ -1,5 +1,7 @@
-import stateNominationData from "@/src/data/state-nomination-status.json";
-import { getStateRule } from "@/lib/state-nomination/state-rules-config";
+import { localizedText } from "@/lib/admin-data/localized";
+import { seedStateData } from "@/lib/admin-data/snapshot";
+import { isClosedStatus, isOffshoreOnlyStatus, isOnshoreOnlyStatus, isUnconfirmedStatus } from "@/lib/admin-data/statuses";
+import type { AdminStateData, StateDatasetRowView } from "@/lib/admin-data/types";
 import { STATE_NAMES, stateResidenceRule } from "@/lib/state-nomination/residence-rules";
 import {
   matchOccupationToStateAllSubclasses,
@@ -10,8 +12,6 @@ import { findOccupationRecord } from "@/lib/readiness/occupation-eligibility";
 import { occupationMatchLine } from "@/src/lib/readiness/localization";
 import { waStreamRequirementNotes } from "@/lib/state-nomination/wa-streams";
 import { streamConditionBlock } from "@/lib/state-nomination/stream-conditions";
-import { localizeStateNote } from "@/lib/state-nomination/state-note-translations";
-import { currentAdminStatus, resolveDisplayStatus } from "@/lib/state-nomination/state-status";
 import type {
   AssessmentState,
   Locale,
@@ -52,43 +52,7 @@ function buildBlockedReason(
   );
 }
 
-type StateDatasetRow = {
-  code: StateNominationState["code"];
-  name: string;
-  status: StateNominationStatus;
-  offshoreAvailability: "open" | "limited" | "closed";
-  onshoreAvailability: "open" | "priority" | "closed";
-  minimumPoints: number;
-  minimumEnglish: "competent" | "proficient" | "superior";
-  minimumExperienceYears: number;
-  regionalFocus: boolean;
-  preferredVisaTypes: Array<"190" | "491">;
-  requiresStateResidence: boolean;
-  requiresRecentEmployment: boolean;
-  offshoreQuotaPressure: "low" | "medium" | "high" | "closed";
-  programWindow: string;
-  specialConditions: string[];
-};
-
-const STATE_ROWS = (stateNominationData as { states: StateDatasetRow[] }).states;
-
-
-// Old/new vocabulary both map to the same scoring behavior for these two --
-// see the doc comment on StateNominationStatus in ./types.ts for why both
-// exist. "Open for Offshore"/"High Demand" (legacy) and "Open (Onshore &
-// Offshore)" (current) are each scored on their own below, not merged, since
-// the two legacy values had different formulas.
-function isClosedStatus(status: string | undefined): boolean {
-  return status === "Closed" || status === "Suspended / Closed";
-}
-
-function isOnshoreOnlyStatus(status: string | undefined): boolean {
-  return status === "Onshore Only" || status === "Open (Onshore Only)";
-}
-
-function isOffshoreOnlyStatus(status: string | undefined): boolean {
-  return status === "Open (Offshore Only)";
-}
+type StateDatasetRow = StateDatasetRowView;
 
 /**
  * Whether the applicant's occupation is on this state's list for any subclass the state offers:
@@ -120,7 +84,6 @@ export function applyOccupationListFactor(score: number, status: OccupationListS
   return status === "confirmed" ? Math.min(95, score + 10) : Math.max(0, score - 10);
 }
 
-export { adminStatusStillCurrent } from "@/lib/state-nomination/state-status";
 
 function normalize(value?: string): string {
   return (value ?? "").trim().toLowerCase();
@@ -344,8 +307,8 @@ function buildRequirements(args: {
     );
   }
 
-  row.specialConditions.forEach((condition) => {
-    requirements.push(localizeStateNote(locale, condition));
+  row.specialConditionFields.forEach((condition) => {
+    requirements.push(localizedText(condition, locale));
   });
 
   return requirements.slice(0, 3);
@@ -394,11 +357,12 @@ function buildPartialDataWarning(
 function residenceCheck(
   input: ReadinessInput,
   row: StateDatasetRow,
-  offshore: boolean
+  offshore: boolean,
+  data: AdminStateData
 ): { block: "required" | "not_confirmed"; note: string } | undefined {
   const home = offshore ? undefined : input.residenceState;
   if (!home || home === row.code) return undefined;
-  const rule = stateResidenceRule(row.code);
+  const rule = stateResidenceRule(row.code, data);
   if (rule.requirement === "not_required") return undefined;
   const li = input.locale === "tr" ? 1 : input.locale === "zh-Hans" ? 2 : 0;
   const state = STATE_NAMES[row.code]?.[li] ?? row.name;
@@ -485,33 +449,19 @@ export function calculateStateNominationTracker(
   // ones (see occupationListStatus). No ANZSCO code -> every state is "unconfirmed" -- never fabricated.
   const occupationAnzscoCode = findOccupationRecord(input.occupation)?.anzsco_code;
 
-  const states = STATE_ROWS.map((row): StateNominationState => {
+  // The state data is the admin's rows (the cached snapshot the caller passes in), else the bundled seed: one source, no date comparison.
+  const data = input.stateData ?? seedStateData();
+
+  const states = data.dataset.map((row): StateNominationState => {
     const experienceGap = row.minimumExperienceYears > experienceYears;
     const regionalGap = row.regionalFocus && !regionalWilling;
     const pointsGap = typeof pointsEstimate === "number" ? pointsEstimate < row.minimumPoints : false;
     const englishGap = englishScore < requiredEnglishBand(row.minimumEnglish);
     const residenceGap = row.requiresStateResidence && offshore;
 
-    // Status precedence (highest to lowest):
-    //   1. StateNominationConfig (admin panel, app/[locale]/(main)/admin/
-    //      states) -- the top "source of truth"; an admin toggling a state
-    //      to Closed must be reflected immediately, with no deploy.
-    //   2. state-rules-config.ts -- hand-verified from the primary source
-    //      document, but static (requires a code change to update).
-    //   3. src/data/state-nomination-status.json -- generic heuristic
-    //      estimate, the fallback when nothing more authoritative exists.
-    // Applied to BOTH the score formula below and the displayed status
-    // further down, so a state marked closed always scores and renders as
-    // closed, never just shows a "Closed" badge over an unchanged score.
-    const adminConfig = input.stateNominationConfig?.[row.code];
-    const rule = getStateRule(row.code);
-    // The admin status wins unless the hand-verified rule (state-rules-config.ts) was verified on a LATER day than the
-    // admin row was last saved -- then the newer verification decides the status, so an older admin "Open (Onshore &
-    // Offshore)" cannot contradict a note verified since (TAS: admin 2026-08-31, offshore 491 paused per the rule
-    // verified 2026-09-22).
-    const adminStatus = currentAdminStatus(adminConfig, rule);
-    const effectiveStatus: StateNominationStatus =
-      adminStatus ?? rule?.status ?? row.status;
+    // The admin row is the state's data and always wins; there is no other source to compare it with.
+    const rule = data.rules[row.code];
+    const effectiveStatus: StateNominationStatus = (rule?.status ?? row.status) as StateNominationStatus;
 
     let score = 55;
 
@@ -520,7 +470,7 @@ export function calculateStateNominationTracker(
       // quota pressure both score at the harder floor; a JSON-only closed
       // estimate (no admin/rule confirmation) scores slightly higher since
       // it's a generic guess, not a confirmed program state.
-      score = isClosedStatus(adminStatus) || rule?.offshoreQuotaPressure === "closed" ? 6 : 12;
+      score = 6;
     } else if (isOnshoreOnlyStatus(effectiveStatus)) {
       score = offshore ? 18 : 74;
     } else if (isOffshoreOnlyStatus(effectiveStatus)) {
@@ -552,16 +502,7 @@ export function calculateStateNominationTracker(
 
     score = Math.max(0, Math.min(95, score));
 
-    // Live DB override (see lib/state-intelligence.ts) for this state, if
-    // the caller fetched one. Only the *displayed* status/citation fields
-    // are overridden here -- the scoring math above already folded in
-    // adminConfig/rule via effectiveStatus, so an in-progress or malformed
-    // scrape can't silently corrupt the match-score algorithm. adminConfig
-    // still wins over a scrape (currentAdminStatus(...) is
-    // checked first), matching its top-priority position in effectiveStatus.
-    const intel = input.stateIntelligence?.[row.code];
-    // Shared with the AI assistant (lib/state-nomination/state-status.ts), so both show the same status.
-    const displayStatus = resolveDisplayStatus({ admin: adminConfig, rule, intelStatus: intel?.status, fallback: row.status }) ?? effectiveStatus;
+    const displayStatus = effectiveStatus;
 
     // ── Onshore/offshore hard block, applied AFTER the heuristic score above and able to override it.
     // Previously also carried two occupation-list rules here (score=2 "not on list", score capped at 15
@@ -625,7 +566,7 @@ export function calculateStateNominationTracker(
     // Residence (intake, applicants in Australia only): a state whose onshore streams require living in it -- or whose
     // residence rule the sourced data does not state -- does not count as available to someone living in another
     // state. Older reports without the field are unaffected.
-    const residence = residenceCheck(input, row, offshore);
+    const residence = residenceCheck(input, row, offshore, data);
     // Not counted as available because of residence -- a sourced rule OR an unconfirmed one -- gets the same 0% as a
     // confirmed residence block, so it can never rank above an available state.
     if (residence) score = 0;
@@ -636,8 +577,8 @@ export function calculateStateNominationTracker(
     // applicant. Only open states may be recommended anywhere in the report (incl. the LLM step).
     // A state whose status is "Check official page" is not confirmed open, so it is not counted as open.
     const isOpen =
-      effectiveStatus !== "Check official page" &&
-      displayStatus !== "Check official page" &&
+      !isUnconfirmedStatus(effectiveStatus) &&
+      !isUnconfirmedStatus(displayStatus) &&
       !isClosedStatus(effectiveStatus) &&
       !isClosedStatus(displayStatus) &&
       !(isOnshoreOnlyStatus(displayStatus) && offshore) &&
@@ -677,7 +618,7 @@ export function calculateStateNominationTracker(
       .join("");
 
     return {
-      code: row.code,
+      code: row.code as StateNominationState["code"],
       name: row.name,
       status: displayStatus,
       matchLevel,
@@ -703,12 +644,11 @@ export function calculateStateNominationTracker(
       // priority, see StateNominationConfig), then the hand-verified
       // state-rules-config note, then the onshore/offshore rule override.
       ...(residence ? { residenceBlock: residence.block } : {}),
-      requirements: [adminConfig?.customAiNote, residence?.note, ...conditionNotes, listNote, rule?.note ? localizeStateNote(input.locale, rule.note) : undefined, ruleOverrideNote, ...requirements].filter(
+      requirements: [residence?.note, ...conditionNotes, listNote, rule ? localizedText(rule.notes, input.locale) : undefined, ruleOverrideNote, ...requirements].filter(
         (item): item is string => Boolean(item)
       ),
-      officialNote: intel?.officialNote,
-      sourceUrl: intel?.sourceUrl,
-      lastVerifiedAt: intel?.lastVerifiedAt,
+      sourceUrl: rule?.officialUrl ?? undefined,
+      lastVerifiedAt: data.programs[row.code]?.lastVerifiedAt,
       occupationMatchNote: occupationResults ? occupationMatchLine(input.locale, occupationResults) : undefined,
       ...(row.code === "WA" && listStatus === "confirmed"
         ? { streamNotes: waStreamRequirementNotes(occupationAnzscoCode, input.locale) }

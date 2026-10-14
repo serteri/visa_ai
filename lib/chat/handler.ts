@@ -23,6 +23,7 @@ import { loadChatProfile, type ProfileStore } from "./profile";
 import type { QuickProfileStore } from "./quick-profile";
 import { buildStudentVisaGuidance, isStudentVisaContext } from "./visa-guidance";
 import type { RetrievedChunk, SourceRef } from "./types";
+import type { AdminStateData } from "@/lib/admin-data/types";
 import type { Locale, ReadinessInput } from "@/lib/readiness/types";
 
 /** Correction blocks shown under one answer. */
@@ -153,13 +154,13 @@ export async function handleChat(req: Request, deps: ChatDeps): Promise<Response
     }
   };
   // Information-only: the answer the visitor sees contains no verdict, pick, chance or instruction (every rewrite is logged).
-  const sanitize = (premium: boolean, plan: ReturnType<typeof planFor>, extra: { input?: object; sources?: Record<string, string> } = {}) => (text: string): string => {
+  const sanitize = (premium: boolean, plan: ReturnType<typeof planFor>, extra: { input?: object; sources?: Record<string, string>; data?: AdminStateData } = {}) => (text: string): string => {
     const stated = statedPoints(userTexts);
     const passes: AnswerPass[] = [
       // Points are the engine's: any other points figure is replaced by the engine arithmetic (the visitor's own stated figure is allowed).
       ...(plan ? [pointsGuardPass(plan.facts, convLocale, stated !== undefined ? [stated] : [])] : []),
       // State facts are the structured data's: sentences naming a state need that state's own current source; the data is quoted, not paraphrased.
-      stateClaimsPass({ locale: convLocale, userText: lastUserText, sources: extra.sources, home: residenceFacts(extra.input as Partial<ReadinessInput> | undefined)?.home }),
+      stateClaimsPass({ locale: convLocale, userText: lastUserText, sources: extra.sources, data: extra.data, home: residenceFacts(extra.input as Partial<ReadinessInput> | undefined, extra.data)?.home }),
     ];
     const result = sanitizeAnswer(text, { locale: convLocale, userText: lastUserText, recap: plan?.lead, passes });
     logRewrites(result.rewrites, { path: premium ? "premium" : "free", locale: convLocale });
@@ -173,8 +174,8 @@ ${result.text}` : result.text;
     const stated = statedPoints(userTexts);
     return plan && stated !== undefined && stated !== plan.facts.points ? { profileDiff: { stated, saved: plan.facts.points } } : {};
   };
-  const check = (text: string, opts: { premium: boolean; hasProfile: boolean; plan?: PlanFacts; groundingText?: string; input?: object }): Correction[] => {
-    const residence = residenceFacts(opts.input);
+  const check = (text: string, opts: { premium: boolean; hasProfile: boolean; plan?: PlanFacts; groundingText?: string; input?: object; data?: AdminStateData }): Correction[] => {
+    const residence = residenceFacts(opts.input, opts.data);
     const profileInput = opts.input as Partial<ReadinessInput> | undefined;
     const gateStatus = opts.plan ? Object.fromEntries(Object.entries(opts.plan.statuses).map(([v, s]) => [v, s.status])) : undefined;
     const conflicts = findEngineConflicts(text, {
@@ -207,7 +208,7 @@ ${result.text}` : result.text;
     const expanded = await deps.expandQuery(lastUserText);
     const searchString = `${lastUserText} ${expanded}`;
     // The report's own figures and rules (one source of truth); live state status as the report reads it.
-    const live = deps.liveState ? await deps.liveState().catch(() => ({})) : {};
+    const live: LiveStateData = deps.liveState ? await deps.liveState().catch((): LiveStateData => ({})) : {};
     const engineFacts = buildEngineFacts(live);
 
     if (!premium) {
@@ -225,10 +226,10 @@ ${result.text}` : result.text;
         system: buildSystemPrompt(chunks, { engineFacts, guidance, locale: convLocale, ...(plan ? { figures: figuresBlock(plan.facts, convLocale) } : {}), ...(profile ? { profile: { summary: profile.summary, source: profile.source, lead: plan?.lead, leadShownEarlier: plan ? plan.earlier : undefined, leadWithheld: plan ? plan.withheld : undefined } } : {}) }),
         messages,
         locale: convLocale,
-        sanitize: sanitize(false, plan, { input: profile?.input }),
+        sanitize: sanitize(false, plan, { input: profile?.input, data: live.stateData }),
         ...profileDiffOf(plan),
         ...(plan?.show ? { lead: plan.lead, leadFingerprint: plan.fingerprint } : {}),
-        correct: (text) => check(text, { premium: false, hasProfile: Boolean(profile), plan: plan?.facts, groundingText: groundingOf(engineFacts, chunks), input: profile?.input }),
+        correct: (text) => check(text, { premium: false, hasProfile: Boolean(profile), plan: plan?.facts, groundingText: groundingOf(engineFacts, chunks), input: profile?.input, data: live.stateData }),
         onFinish: async () => {
           await deps.credits.recordFreeMessage(visitor.id);
         },
@@ -263,11 +264,11 @@ ${result.text}` : result.text;
       messages,
       locale: convLocale,
       ...profileDiffOf(plan),
-      sanitize: sanitize(true, plan, { input: profile?.input, sources: Object.fromEntries(catalog.flatMap((r) => (r ? [[r.id, r.source] as const] : []))) }),
+      sanitize: sanitize(true, plan, { input: profile?.input, data: live.stateData, sources: Object.fromEntries(catalog.flatMap((r) => (r ? [[r.id, r.source] as const] : []))) }),
       sources: catalogRefs(catalog),
       profileSource: profile?.source ?? null,
       ...(plan?.show ? { lead: plan.lead, leadFingerprint: plan.fingerprint } : {}),
-      correct: (text) => check(text, { premium: true, hasProfile: Boolean(profile), plan: plan?.facts, groundingText: groundingOf(engineFacts, chunks), input: profile?.input }),
+      correct: (text) => check(text, { premium: true, hasProfile: Boolean(profile), plan: plan?.facts, groundingText: groundingOf(engineFacts, chunks), input: profile?.input, data: live.stateData }),
       onFinish: async () => {},
       onFailure: refundOnce,
     });

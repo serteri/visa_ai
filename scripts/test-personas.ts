@@ -24,7 +24,6 @@ import path from "node:path";
 import { generateReadinessPDF } from "../lib/readiness/generate-pdf";
 import type { ReadinessInput } from "../lib/readiness/types";
 import { runReadinessEngine } from "../src/lib/readiness-engine";
-import { getStateIntelligenceMap } from "../lib/state-intelligence";
 import { retrieveVisaContext } from "../lib/ai/retrieve-visa-context";
 import { retrieveStateContext } from "../lib/ai/retrieve-state-context";
 import { generatePremiumStrategy } from "../lib/ai/generate-premium-strategy";
@@ -372,11 +371,8 @@ async function runPersona(persona: Persona): Promise<void> {
   console.log(`Persona ${persona.id}: ${persona.label}`);
   console.log("=".repeat(70));
 
-  const stateIntelligence = await getStateIntelligenceMap();
-
   const report = runReadinessEngine({
     ...persona.input,
-    stateIntelligence,
   });
 
   // Same hard-gate-derived signal the CRM tier gate reads -- see

@@ -2,8 +2,8 @@ import visaFees from "@/src/data/visa-fees.json";
 import gatesData from "@/src/data/visa-gates.json";
 import { calculateAustraliaPoints, POINTS_TABLES } from "@/lib/points/calculate-australia-points";
 import type { AustraliaPointsInput } from "@/lib/points/types";
-import { STATE_RULES } from "@/lib/state-nomination/state-rules-config";
-import { resolveDisplayStatus } from "@/lib/state-nomination/state-status";
+import { seedStateData } from "@/lib/admin-data/snapshot";
+import type { AdminStateData } from "@/lib/admin-data/types";
 import { evaluateVisaGates } from "@/lib/readiness/visa-gates";
 import { authorityFeeLines } from "./authority-fees";
 
@@ -15,8 +15,8 @@ import { authorityFeeLines } from "./authority-fees";
  *   fees           src/data/visa-fees.json (the Financial Roadmap's VAC figures)
  *   gates          the sourced gate matrix (src/data/visa-gates.json, lib/readiness/visa-gates.ts)
  *   points         lib/points/calculate-australia-points.ts (the report's points table)
- *   states         lib/state-nomination/state-rules-config.ts with the live admin / scraper status, the same
- *                  precedence the report's State Nomination Tracker uses (resolveDisplayStatus)
+ *   states         the admin's state data (lib/admin-data, the cached snapshot): the same rows the report's State
+ *                  Nomination Tracker uses -- the admin row is the state's data, there is no other source
  *   191            the report's Bridge to PR wording (ATO notices for 3 income years, no minimum income)
  */
 
@@ -25,8 +25,8 @@ const FEES = (visaFees as unknown as { visas: Record<string, { label: string; va
 const fmt = (n: number) => `AUD ${n.toLocaleString("en-AU")}`;
 
 export type LiveStateData = {
-  stateNominationConfig?: Record<string, { status?: string | null; updatedAt?: string }>;
-  stateIntelligence?: Record<string, { status?: string }>;
+  /** The admin's state data (getAdminStateData()); the bundled seed when omitted. */
+  stateData?: AdminStateData;
 };
 
 /** The VAC row per subclass, as the report shows it (for correction blocks). */
@@ -97,14 +97,29 @@ function pointsLines(): string[] {
   ];
 }
 
+function money(n: number | null): string | null {
+  return n === null ? null : `AUD ${n.toLocaleString("en-AU", { minimumFractionDigits: Number.isInteger(n) ? 0 : 2, maximumFractionDigits: 2 })}`;
+}
+
 function stateLines(live: LiveStateData = {}): string[] {
-  // Each state's published status, its published conditions (the rules file's note and key facts, each from the state's own pages) and the
-  // date they were checked. These lines are the ONLY source of state facts for the chat: quote them, add no state rule of your own.
-  return Object.values(STATE_RULES).flatMap((rule) => {
-    const status = resolveDisplayStatus({ admin: live.stateNominationConfig?.[rule.code] ?? undefined, rule, intelStatus: live.stateIntelligence?.[rule.code]?.status }) ?? rule.status;
+  // Each state's published status, its published conditions (the admin's note and conditions, each from the state's own pages) and the date they
+  // were checked. These lines are the ONLY source of state facts for the chat: quote them, add no state rule of your own.
+  const data = live.stateData ?? seedStateData();
+  return Object.values(data.rules).flatMap((rule) => {
+    const program = data.programs[rule.code];
+    const facts = [
+      `program year ${rule.programYear}`,
+      rule.openingDate ? `opening date ${rule.openingDate}` : null,
+      ...rule.subclasses.flatMap((s) => [
+        s.allocation !== null ? `subclass ${s.subclass} allocation ${s.allocation}` : null,
+        s.feeExclGst !== null || s.feeInclGst !== null ? `subclass ${s.subclass} nomination fee ${[s.feeExclGst !== null ? `${money(s.feeExclGst)} excl. GST` : null, s.feeInclGst !== null ? `${money(s.feeInclGst)} incl. GST` : null].filter(Boolean).join(", ")}` : null,
+      ]),
+    ].filter(Boolean);
     return [
-      `- ${rule.name} (${rule.code}): published status ${status}; data checked ${rule.lastVerified}; sources: ${rule.sourceDocument.split(";").map((x) => x.trim().split("/").pop()).join("; ")}.`,
+      `- ${rule.name} (${rule.code}): published status ${rule.status}; data checked ${rule.lastVerified}; sources: ${rule.sourceDocument.split(";").map((x) => x.trim().split("/").pop()).join("; ")}.`,
+      ...(facts.length > 0 ? [`    Published program data: ${facts.join("; ")}.`] : []),
       `    Published note: ${rule.note}`,
+      ...(program?.exceptions?.text.en ? [`    Published exceptions: ${program.exceptions.text.en}`] : []),
       ...rule.keyFacts.map((fact) => `    Published condition: ${fact}`),
     ];
   });

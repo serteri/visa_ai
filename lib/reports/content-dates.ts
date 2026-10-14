@@ -3,14 +3,15 @@ import occupationListProvenance from "@/src/data/occupation-list-provenance.json
 import waList from "@/src/data/state-occupation-lists/wa.json";
 import visaTrends from "@/src/data/visa-trends.json";
 import type { ReadinessReport } from "@/lib/readiness/types";
-import { STATE_RULES } from "@/lib/state-nomination/state-rules-config";
+import { seedStateData } from "@/lib/admin-data/snapshot";
+import type { AdminStateData } from "@/lib/admin-data/types";
 
 /**
  * The date of the most recent deploy that changed report content through code (engine logic or wording) rather
  * than a dated data source. Bump it in any commit that changes what a recomputed report shows; scripts/test-content-
  * dates.ts fails if it is in the future or older than the latest data-source date below.
  */
-export const REPORT_CONTENT_DEPLOY_DATE = "2026-10-13";
+export const REPORT_CONTENT_DEPLOY_DATE = "2026-10-14";
 
 type SourceDate = { source: string; date: string };
 
@@ -49,8 +50,8 @@ const IGNORED = new Set(["aiStrategy", "contentStamp"]);
 export type ContentDateContext = {
   /** When the stored report was generated (user_reports.created_at). */
   generatedAt?: string;
-  stateNominationConfig?: Record<string, { updatedAt?: string }>;
-  stateIntelligence?: Record<string, { lastVerifiedAt?: string }>;
+  /** The admin's state data the fresh report was computed from: its last verified date (set on every save) is the state's data date. */
+  stateData?: AdminStateData;
 };
 
 /**
@@ -87,9 +88,7 @@ export function contentDataAsOf(stored: ReadinessReport, fresh: ReadinessReport,
       const changedStates = [...new Set([...a.keys(), ...b.keys()])].filter((code) => !same(a.get(code), b.get(code)));
       const candidates: SourceDate[] = changedStates.flatMap((code) =>
         [
-          { source: `${code} state rules`, date: STATE_RULES[code]?.lastVerified },
-          { source: `${code} admin settings`, date: day(ctx.stateNominationConfig?.[code]?.updatedAt) },
-          { source: `${code} published status`, date: day(ctx.stateIntelligence?.[code]?.lastVerifiedAt) },
+          { source: `${code} state data`, date: day((ctx.stateData ?? seedStateData()).programs[code]?.lastVerifiedAt) },
           { source: `${code} occupation list`, date: occupationListDate(code) },
         ].filter((c): c is SourceDate => Boolean(c.date))
       );

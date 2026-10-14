@@ -8,7 +8,8 @@
 import { matchOccupationToState, matchOccupationToStateAllSubclasses } from "../lib/state-nomination/occupation-match";
 import { occupationMatchLine } from "../src/lib/readiness/localization";
 import { runReadinessEngine } from "../src/lib/readiness-engine";
-import { adminStatusStillCurrent, applyOccupationListFactor } from "../lib/readiness/state-nomination";
+import { seedStateData, withPrograms } from "../lib/admin-data/snapshot";
+import { applyOccupationListFactor } from "../lib/readiness/state-nomination";
 import type { ReadinessInput } from "../lib/readiness/types";
 
 let failures = 0;
@@ -244,20 +245,16 @@ console.log("\n==================== state ranking follows the occupation lists =
     else fail(`${label}: WA ${wa?.occupationListStatus} ${wa?.score}`);
   }
 
-  // Admin panel vs hand-verified rule: the admin status wins unless the rule was verified on a later day. Live dates:
-  // TAS admin "Open (Onshore & Offshore)" saved 2026-08-31, TAS rule (offshore 491 paused) verified 2026-10-13 -> rule;
-  // an admin row saved on the rule's verification day (2026-10-13) still wins (ACT here).
+  // The admin row is the state's data and always wins: there is no date comparison. An admin "Open (Onshore & Offshore)" for TAS,
+  // saved long before the 2026-10-13 refresh, is simply the status; a closed ACT row makes ACT closed.
   {
-    const cfg = {
-      TAS: { status: "Open (Onshore & Offshore)", updatedAt: "2026-08-31T12:16:04.707Z" },
-      ACT: { status: "Open (Onshore & Offshore)", updatedAt: "2026-10-13T12:58:14.178Z" },
-    };
-    const st = runReadinessEngine({ ...baseProfile, occupation: "Software Engineer 261313", currentCountry: "AU", stateNominationConfig: cfg }).stateNominationTracker?.states ?? [];
+    const data = withPrograms(seedStateData(), { TAS: { status: "Open (Onshore & Offshore)", lastVerifiedAt: "2026-08-31T12:16:04.707Z" }, ACT: { status: "Suspended / Closed" } });
+    const st = runReadinessEngine({ ...baseProfile, occupation: "Software Engineer 261313", currentCountry: "AU", stateData: data }).stateNominationTracker?.states ?? [];
     const tas = st.find((x) => x.code === "TAS");
     const act = st.find((x) => x.code === "ACT");
-    if (tas?.status === "Open (Onshore Only)" && act?.status === "Open (Onshore & Offshore)" && adminStatusStillCurrent(undefined, "2026-10-13")) {
-      ok("older admin status (TAS, 2026-08-31) gives way to the rule verified 2026-10-13; a same-day admin edit (ACT) still wins");
-    } else fail(`admin precedence: TAS ${tas?.status}, ACT ${act?.status}`);
+    if (tas?.status === "Open (Onshore & Offshore)" && act?.status === "Suspended / Closed" && act.isOpen === false) {
+      ok("the admin row always wins: an old-dated TAS row is the status, a closed ACT row is closed (no date comparison)");
+    } else fail(`admin precedence: TAS ${tas?.status}, ACT ${act?.status} open=${act?.isOpen}`);
   }
 
   // The list is a real score factor (applyOccupationListFactor): on the list +10, not confirmed -10, not listed 0.
@@ -280,8 +277,8 @@ console.log("\n==================== state ranking follows the occupation lists =
   // TAS: the general offshore 491 pathway is paused, so the status is onshore-only and an offshore applicant is blocked.
   const tasOff = se?.states.find((x) => x.code === "TAS");
   const tasOn = trackers.get("Software Engineer, onshore")?.states.find((x) => x.code === "TAS");
-  if (tasOff?.status === "Open (Onshore Only)" && tasOff.score === 0 && tasOff.isOpen === false && tasOn?.isOpen === true) {
-    ok("TAS: status Open (Onshore Only) agrees with its note; offshore applicant 0% and not open, onshore applicant open");
+  if (tasOff?.status === "Open (Onshore only)" && tasOff.score === 0 && tasOff.isOpen === false && tasOn?.isOpen === true) {
+    ok("TAS: status Open (Onshore only) agrees with its note; offshore applicant 0% and not open, onshore applicant open");
   } else fail(`TAS: offshore ${tasOff?.status} ${tasOff?.score} ${tasOff?.isOpen}; onshore ${tasOn?.isOpen}`);
   for (const [label, tracker] of trackers) {
     for (const st of tracker.states) {

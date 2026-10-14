@@ -26,6 +26,7 @@ import { agentStatement, buildDocumentsInfo, buildInvitationInfo, buildProcessIn
 import { buildGlance } from "./report-glance";
 import { buildPointsInfo } from "./report-points";
 import type { StateMonitorSnapshot } from "@/lib/state-monitor/status";
+import type { AdminStateData } from "@/lib/admin-data/types";
 import { buildStateInfos } from "./report-states";
 import { T, factLabel, tagsFor } from "./report-text";
 import { buildVisaInfos, visaLabels } from "./report-visas";
@@ -87,6 +88,8 @@ export type ReportViewArgs = {
   asOf?: Date;
   /** The page monitor's per-state status (lib/state-monitor/status.ts); drives the "data may have changed since" note. */
   stateMonitor?: StateMonitorSnapshot | null;
+  /** The admin's state data (lib/admin-data) the state section is built from; the bundled seed when omitted. */
+  stateData?: AdminStateData;
 };
 
 export type ReportView = {
@@ -185,7 +188,7 @@ export function buildReportView(args: ReportViewArgs): ReportView {
 
   // 5. States and territories.
   if (!isCA) {
-    const states = buildStateInfos(report, occupationRaw, l, asOf, args.stateMonitor);
+    const states = buildStateInfos(report, occupationRaw, l, asOf, args.stateMonitor, args.stateData);
     if (states.length) {
       const blocks: Block[] = [
         { kind: "text", text: T(l, "Published information for all eight states and territories in a fixed order, as recorded in our sources. The occupation-list line matches the occupation you entered (supplied by you) against each published list. No state is left out or ordered by your details; a list entry is published information, not a nomination.", "Sekiz eyalet ve bölgenin tamamı için, kaynaklarımızda kayıtlı yayımlanmış bilgiler, sabit sırayla. Meslek listesi satırı girdiğiniz mesleği (sizin girdiğiniz) her yayımlanmış listeyle eşleştirir. Hiçbir eyalet dışarıda bırakılmaz veya bilgilerinize göre sıralanmaz; liste kaydı yayımlanmış bilgidir, bir adaylık değildir.", "按固定顺序列出八个州和领地的公开信息，依我们的资料记录。职业清单一行将您填写的职业（由您提供）与各州已公布清单比对。不遗漏任何州，也不按您的信息排序；清单收录是已公布的信息，并非提名。") },
@@ -246,7 +249,7 @@ export function buildReportView(args: ReportViewArgs): ReportView {
   sections.push({ id: "documents", title: reportSectionTitle("documents", l), blocks: docBlocks });
 
   // 10. Sources register and the advice statement.
-  const states = isCA ? [] : buildStateInfos(report, occupationRaw, l, asOf, args.stateMonitor);
+  const states = isCA ? [] : buildStateInfos(report, occupationRaw, l, asOf, args.stateMonitor, args.stateData);
   const resources = getResourcesSection(l, isCA ? "CA" : "AU");
   const srcBlocks: Block[] = [table(sourcesHeaders(l), buildSources(report, occupationRaw, states, l).map((r) => [...r]), [0.55, 0.3, 0.15])];
   const links = resources.sections.flatMap((s) => s.links.map((k) => `${k.label} — ${k.url}`));

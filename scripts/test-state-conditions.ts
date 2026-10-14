@@ -27,6 +27,7 @@ import type { Locale, ReadinessInput, ReadinessReport } from "../lib/readiness/t
 import { streamConditionBlock } from "../lib/state-nomination/stream-conditions";
 import { REVIEW_PERSONAS, renderPersonaPdfTexts } from "./render-persona-pdfs";
 import { runReadinessEngine } from "../src/lib/readiness-engine";
+import { seedStateData, withPrograms } from "../lib/admin-data/snapshot";
 
 let failures = 0;
 const t = (label: string, cond: boolean, detail = "") => {
@@ -47,9 +48,9 @@ const REASON: Record<Locale, string> = { en: "Requires a WA job offer", tr: "Bat
 const base = REVIEW_PERSONAS["ref-xyz-qld"] as ReadinessInput;
 const withWaJob = REVIEW_PERSONAS["ref-xyz-wa-job"] as ReadinessInput;
 // These scenarios are about WA's stream conditions, which only matter when WA is open. WA's own status is "Check official page" since the
-// 2026-10-13 refresh (2026-27 intake not confirmed), so the scenarios set WA open through an admin row saved after the rule's verification date.
-const WA_OPEN = { WA: { status: "Open (Onshore & Offshore)", updatedAt: "2026-10-14T00:00:00.000Z" } };
-const run = (input: ReadinessInput, locale: Locale) => runReadinessEngine({ ...input, locale, stateNominationConfig: WA_OPEN }) as ReadinessReport;
+// 2026-10-13 refresh (2026-27 intake not confirmed), so the scenarios set WA open in the state data.
+const WA_OPEN = withPrograms(seedStateData(), { WA: { status: "Open (Onshore & Offshore)" } });
+const run = (input: ReadinessInput, locale: Locale) => runReadinessEngine({ ...input, locale, stateData: WA_OPEN }) as ReadinessReport;
 const reasonCited = (r: ReadinessReport) => r.stateNominationTracker!.states.find((s) => s.code === "WA")!;
 
 async function main() {

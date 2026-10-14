@@ -19,6 +19,9 @@ export function signOutAll() {
   nextAuthSession = null;
 }
 
+// Tests never read the admin state data from the database (lib/admin-data/loader.ts); a test of the database path sets ADMIN_DATA_MODE=db itself.
+process.env.ADMIN_DATA_MODE ??= "seed";
+
 if (!process.env.AUTH_SECRET && !process.env.REPORT_ACCESS_SECRET && !process.env.NEXTAUTH_SECRET) {
   process.env.AUTH_SECRET = "test-only-report-access-secret";
 }
