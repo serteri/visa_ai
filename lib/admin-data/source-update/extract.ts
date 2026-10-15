@@ -1,6 +1,12 @@
-import { strFromU8, unzipSync } from "fflate";
-import { PDFParse } from "pdf-parse";
-import * as XLSX from "xlsx";
+/**
+ * No parser is imported at module level: this module is reachable from the admin pages' server bundle, and a PDF library that expects browser globals
+ * (DOMMatrix) must not be evaluated when a page loads. Each parser is loaded inside extractUpload, only for a file of its type.
+ */
+type XlsxModule = typeof import("xlsx");
+async function loadXlsx(): Promise<XlsxModule> {
+  const m = (await import("xlsx")) as XlsxModule & { default?: XlsxModule };
+  return m.default ?? m;
+}
 
 /**
  * Text out of an uploaded source file, in the request (nothing is stored). PDF, DOCX, XLSX and CSV only, 10 MB at most, and the file's own bytes
@@ -19,7 +25,8 @@ const decodeEntities = (s: string) =>
   s.replace(/&lt;/g, "<").replace(/&gt;/g, ">").replace(/&quot;/g, '"').replace(/&apos;/g, "'").replace(/&#(\d+);/g, (_, n) => String.fromCodePoint(Number(n))).replace(/&#x([0-9a-f]+);/gi, (_, h) => String.fromCodePoint(parseInt(h, 16))).replace(/&amp;/g, "&");
 
 /** The paragraphs of a .docx: word/document.xml with paragraph, tab and line breaks kept. */
-export function docxText(bytes: Uint8Array): string {
+export async function docxText(bytes: Uint8Array): Promise<string> {
+  const { strFromU8, unzipSync } = await import("fflate");
   const files = unzipSync(bytes, { filter: (f) => f.name === "word/document.xml" });
   const xml = files["word/document.xml"];
   if (!xml) throw new Error("This is not a Word document (word/document.xml is missing).");
@@ -36,7 +43,7 @@ export function docxText(bytes: Uint8Array): string {
     .trim();
 }
 
-function sheetsOf(workbook: XLSX.WorkBook): { text: string; sheets: SheetRows[] } {
+function sheetsOf(XLSX: XlsxModule, workbook: import("xlsx").WorkBook): { text: string; sheets: SheetRows[] } {
   const sheets: SheetRows[] = [];
   const parts: string[] = [];
   for (const name of workbook.SheetNames) {
@@ -60,24 +67,27 @@ export async function extractUpload(fileName: string, bytes: Uint8Array): Promis
   if (ext === "pdf") {
     if (!startsWith(bytes, [0x25, 0x50, 0x44, 0x46])) throw new Error("The file is not a PDF.");
     kind = "pdf";
-    const parser = new PDFParse({ data: new Uint8Array(bytes) });
     try {
-      text = (await parser.getText()).pages.map((p) => p.text).join("\n\n");
-    } finally {
-      await parser.destroy();
+      const { extractText, getDocumentProxy } = await import("unpdf");
+      const pdf = await getDocumentProxy(new Uint8Array(bytes));
+      text = (await extractText(pdf, { mergePages: true })).text;
+    } catch {
+      throw new Error("The PDF could not be read; paste the text instead.");
     }
   } else if (ext === "docx") {
     if (!startsWith(bytes, [0x50, 0x4b])) throw new Error("The file is not a Word (.docx) document.");
     kind = "docx";
-    text = docxText(bytes);
+    text = await docxText(bytes);
   } else if (ext === "xlsx") {
     if (!startsWith(bytes, [0x50, 0x4b])) throw new Error("The file is not an Excel (.xlsx) workbook.");
     kind = "xlsx";
-    ({ text, sheets } = sheetsOf(XLSX.read(bytes, { type: "array" })));
+    const XLSX = await loadXlsx();
+    ({ text, sheets } = sheetsOf(XLSX, XLSX.read(bytes, { type: "array" })));
   } else if (ext === "csv") {
     if (bytes.subarray(0, 4096).includes(0)) throw new Error("The file is not a text CSV.");
     kind = "csv";
-    ({ text, sheets } = sheetsOf(XLSX.read(new TextDecoder("utf-8").decode(bytes), { type: "string" })));
+    const XLSX = await loadXlsx();
+    ({ text, sheets } = sheetsOf(XLSX, XLSX.read(new TextDecoder("utf-8").decode(bytes), { type: "string" })));
   } else throw new Error("Only PDF, DOCX, XLSX and CSV files are accepted.");
 
   text = text.replace(new RegExp(String.fromCharCode(0), "g"), "").trim();

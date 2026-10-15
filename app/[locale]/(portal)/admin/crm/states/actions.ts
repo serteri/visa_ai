@@ -5,7 +5,7 @@ import { revalidatePath, updateTag } from "next/cache";
 import { ADMIN_STATE_DATA_TAG } from "@/lib/admin-data/loader";
 import { markStateVerified, restoreAuditField, saveStateProgram } from "@/lib/admin-data/service";
 import { prismaStateProgramStore } from "@/lib/admin-data/store-prisma";
-import { extractUpload, MAX_UPLOAD_BYTES } from "@/lib/admin-data/source-update/extract";
+const MAX_UPLOAD_BYTES = 10 * 1024 * 1024; // same as lib/admin-data/source-update/extract.ts, which is loaded only when a file arrives
 import { prismaKnowledgeIndex } from "@/lib/admin-data/source-update/knowledge";
 import { approveSourceUpdate, createSourceUpdate, discardSourceUpdate, type SourceInput } from "@/lib/admin-data/source-update/update";
 import { isAdminTranslationLocale } from "@/lib/admin-data/locales";
@@ -131,6 +131,7 @@ export async function proposeSourceUpdateAction(formData: FormData): Promise<Pro
   if (file instanceof File && file.size > 0) {
     if (file.size > MAX_UPLOAD_BYTES) return { ok: false, error: "The file is larger than 10 MB." };
     try {
+      const { extractUpload } = await import("@/lib/admin-data/source-update/extract");
       const extracted = await extractUpload(file.name, new Uint8Array(await file.arrayBuffer()));
       fileName = file.name;
       kind = extracted.kind;
