@@ -6,6 +6,8 @@ import { useState, useTransition } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
+import { ADMIN_TRANSLATION_LOCALES, languageNativeName } from "@/lib/admin-data/locales";
+import { translationOf } from "@/lib/admin-data/types";
 import { availabilityFor, CURRENT_STATE_STATUSES, isClosedStatus } from "@/lib/admin-data/statuses";
 import type { AuditRecord } from "@/lib/admin-data/audit";
 import type { ConditionKind, LocalizedField, StateCondition, StateProgramData, SubclassData, TranslationEntry } from "@/lib/admin-data/types";
@@ -37,13 +39,13 @@ function LocalizedEditor(props: {
   const [error, setError] = useState<string | null>(null);
 
   const setEnglish = (en: string) => onChange({ ...value, en });
-  const setEntry = (lang: "tr" | "zh-Hans", entry: TranslationEntry | undefined) => {
+  const setEntry = (lang: string, entry: TranslationEntry | undefined) => {
     const next = { ...value };
     if (entry) next[lang] = entry;
     else delete next[lang];
     onChange(next);
   };
-  const draft = async (lang: "tr" | "zh-Hans") => {
+  const draft = async (lang: string) => {
     setBusy(lang);
     setError(null);
     const res = await draftTranslationAction(props.stateCode, props.fieldPath, value.en, lang);
@@ -56,9 +58,9 @@ function LocalizedEditor(props: {
     <div className="space-y-2 rounded-md border border-slate-200 p-3" data-testid={props.testId}>
       <p className={labelCls}>{props.label}</p>
       <Textarea value={value.en} rows={props.rows ?? 3} onChange={(e) => setEnglish(e.target.value)} aria-label={`${props.label} (English)`} />
-      {(["tr", "zh-Hans"] as const).map((lang) => {
-        const entry = value[lang];
-        const name = lang === "tr" ? "Türkçe" : "简体中文";
+      {ADMIN_TRANSLATION_LOCALES.map((lang) => {
+        const entry = translationOf(value, lang);
+        const name = languageNativeName(lang);
         return (
           <div key={lang} className="space-y-1">
             <div className="flex flex-wrap items-center gap-2">
@@ -154,7 +156,7 @@ function SubclassEditor({ value, onChange, stateCode }: { value: SubclassData; o
         stateCode={stateCode}
         fieldPath={`subclasses.${value.subclass}.feeNote`}
         testId={`admin-feenote-${value.subclass}`}
-        onChange={(next) => set("feeNote", next.en.trim() || next.tr || next["zh-Hans"] ? next : null)}
+        onChange={(next) => set("feeNote", next.en.trim() || ADMIN_TRANSLATION_LOCALES.some((l) => translationOf(next, l)) ? next : null)}
       />
     </div>
   );

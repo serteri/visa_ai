@@ -77,7 +77,8 @@ export function seedStateData(): AdminStateData {
 export function withPrograms(data: AdminStateData, patch: Record<string, Partial<StateProgramData>>): AdminStateData {
   const programs = { ...data.programs };
   for (const [code, p] of Object.entries(patch)) programs[code] = { ...programs[code], ...p } as StateProgramData;
-  return toSnapshot(programs, data.source, data.generatedAt);
+  const next = toSnapshot(programs, data.source, data.generatedAt);
+  return data.occupationLists ? { ...next, occupationLists: data.occupationLists } : next;
 }
 
 /** The state's rule view in a snapshot (undefined for a code the snapshot does not hold). */

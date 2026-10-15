@@ -24,7 +24,8 @@ const translation = z.object({
   reviewedAt: z.string().optional(),
 }).refine((t) => !t.reviewed || t.text.trim().length > 0, "an empty translation cannot be marked reviewed");
 
-const localized = (max: number) => z.object({ en: z.string().max(max), tr: translation.optional(), "zh-Hans": translation.optional() });
+// English plus a translation for any supported language (the keys are not listed here: a new language needs no change).
+const localized = (max: number) => z.object({ en: z.string().max(max) }).catchall(translation);
 
 const subclassSchema = z.object({
   subclass: z.enum(["190", "491"]),

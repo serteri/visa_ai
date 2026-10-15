@@ -20,7 +20,9 @@ async function loadFromDb(): Promise<AdminStateData> {
   const rows = await prismaStateProgramStore.list();
   if (rows.length === 0) return seedStateData();
   const programs = { ...buildSeedPrograms(), ...Object.fromEntries(rows.map((p) => [p.stateCode, p])) };
-  return toSnapshot(programs, "db", new Date().toISOString());
+  const lists = await prismaStateProgramStore.listOccupationLists().catch(() => []); // the table may not exist yet: the bundled lists stay
+  const snapshot = toSnapshot(programs, "db", new Date().toISOString());
+  return lists.length > 0 ? { ...snapshot, occupationLists: Object.fromEntries(lists.map((l) => [l.stateCode, l])) } : snapshot;
 }
 
 const cached = unstable_cache(loadFromDb, ["admin-state-data"], { tags: [ADMIN_STATE_DATA_TAG], revalidate: 60 });

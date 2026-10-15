@@ -66,6 +66,11 @@ async function main() {
   t("a residence condition shows its explicit rule selector", /data-testid="admin-residence-rule-c\d+"/.test(renderToString(createElement(StateEditor, { initial: programs.TAS, history: [], locale: "en" }))));
   t("carried-over translations are labelled as reviewed and carried over", /carried over from the code/.test(renderToString(createElement(StateEditor, { initial: programs.NSW, history: [], locale: "en" }))));
 
+  const { SourceUpdatePanel } = await import("../app/[locale]/(portal)/admin/crm/states/[code]/SourceUpdatePanel");
+  const panel = renderToString(createElement(SourceUpdatePanel, { stateCode: "TAS", stateName: "Tasmania", locale: "en" }));
+  t("the 'Update from official source' panel renders at the top with the text box, file upload, source URL, date and Find changes", ["source-update-panel", "source-text", "source-file", "source-url", "source-date", "source-find"].every((id) => panel.includes(`data-testid="${id}"`)) && /accept="\.pdf,\.docx,\.xlsx,\.csv"/.test(panel) && /Update from official source/.test(panel));
+  t("the panel offers no approve button before there is something to review", !panel.includes("source-approve"));
+
   console.log(failures === 0 ? "\n✅ ALL CHECKS PASSED" : `\n❌ ${failures} CHECK(S) FAILED`);
   process.exitCode = failures === 0 ? 0 : 1;
 }

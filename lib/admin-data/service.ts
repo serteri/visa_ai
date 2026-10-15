@@ -1,8 +1,9 @@
 import { diffPrograms, forEachLocalized, type Actor, type AuditEntry } from "./audit";
+import { ADMIN_TRANSLATION_LOCALES } from "./locales";
 import { buildSeedPrograms } from "./seed";
 import { availabilityFor, isClosedStatus } from "./statuses";
 import type { StateProgramStore } from "./store";
-import type { StateProgramData, TranslationEntry } from "./types";
+import { translationOf, type StateProgramData, type TranslationEntry } from "./types";
 import { validateProgram, type ValidationIssue } from "./validate";
 
 /**
@@ -15,10 +16,10 @@ export type SaveResult = { ok: true; program: StateProgramData; changed: string[
 /** A translation newly marked reviewed gets who and when from the server; an unreviewed one carries no stamp. */
 function stampReviews(next: StateProgramData, prev: StateProgramData | null, actor: Actor, at: Date): void {
   const before = new Map<string, Record<string, TranslationEntry | undefined>>();
-  if (prev) forEachLocalized(prev, (f, path) => before.set(path, { tr: f.tr, "zh-Hans": f["zh-Hans"] }));
+  if (prev) forEachLocalized(prev, (f, path) => before.set(path, Object.fromEntries(ADMIN_TRANSLATION_LOCALES.map((l) => [l, translationOf(f, l)]))));
   forEachLocalized(next, (f, path) => {
-    for (const l of ["tr", "zh-Hans"] as const) {
-      const e = f[l];
+    for (const l of ADMIN_TRANSLATION_LOCALES) {
+      const e = translationOf(f, l);
       if (!e) continue;
       const old = before.get(path)?.[l];
       if (e.reviewed && !(old?.reviewed && old.text === e.text)) {
@@ -34,7 +35,15 @@ function stampReviews(next: StateProgramData, prev: StateProgramData | null, act
 }
 
 /** Save an edit. Last verified is set here (never typed); nothing is written, and nothing is marked verified, when nothing changed. */
-export async function saveStateProgram(store: StateProgramStore, actor: Actor, input: unknown, at: Date = new Date()): Promise<SaveResult> {
+export type SaveOptions = {
+  /** The day the admin checked the source ("Update from official source"): last verified is set to it instead of the save time. */
+  verifiedOn?: string;
+  /** A note for the audit entry of a field (the source URL, date and quotes). */
+  noteFor?: (fieldPath: string) => string | undefined;
+  action?: "edit" | "source_update";
+};
+
+export async function saveStateProgram(store: StateProgramStore, actor: Actor, input: unknown, at: Date = new Date(), opts: SaveOptions = {}): Promise<SaveResult> {
   const code = (input as { stateCode?: unknown } | null)?.stateCode;
   if (typeof code !== "string") return { ok: false, issues: [{ path: "stateCode", message: "is required" }] };
   const previous = await store.get(code);
@@ -45,18 +54,18 @@ export async function saveStateProgram(store: StateProgramStore, actor: Actor, i
   const next: StateProgramData = structuredClone(checked.value);
   stampReviews(next, previous, actor, at);
 
-  const entries = diffPrograms(previous, next, "edit");
+  const entries = diffPrograms(previous, next, opts.action ?? "edit").map((e) => ({ ...e, note: opts.noteFor?.(e.fieldPath) ?? e.note }));
   if (entries.length === 0) return { ok: true, program: previous, changed: [] };
 
   const stamp = at.toISOString();
-  next.lastVerifiedAt = stamp;
+  next.lastVerifiedAt = opts.verifiedOn ? `${opts.verifiedOn}T00:00:00.000Z` : stamp;
   next.lastVerifiedBy = actor.label;
   next.updatedAt = stamp;
   next.updatedBy = actor.label;
   if (next.status !== previous.status) next.statusChangedAt = stamp;
   const audits: AuditEntry[] = [
     ...entries,
-    { entityType: "state_program", entityKey: code, fieldPath: "lastVerified", oldValue: previous.lastVerifiedAt, newValue: stamp, action: "edit", note: "set on save" },
+    { entityType: "state_program", entityKey: code, fieldPath: "lastVerified", oldValue: previous.lastVerifiedAt, newValue: next.lastVerifiedAt, action: opts.action ?? "edit", note: opts.verifiedOn ? (opts.noteFor?.("lastVerified") ?? "set to the date the source was checked") : "set on save" },
   ];
   await store.save(next, audits, actor, at);
   return { ok: true, program: next, changed: entries.map((e) => e.fieldPath) };

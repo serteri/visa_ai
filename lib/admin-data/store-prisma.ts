@@ -4,7 +4,7 @@ import { prisma } from "@/lib/prisma";
 
 import type { Actor, AuditEntry, AuditRecord } from "./audit";
 import type { StateProgramStore } from "./store";
-import type { LocalizedField, ScoringInputs, StateCondition, StateExceptions, StateProgramData, SubclassData } from "./types";
+import type { LocalizedField, OccupationListData, OccupationRow, ScoringInputs, StateCondition, StateExceptions, StateProgramData, SubclassData } from "./types";
 
 /** The Prisma implementation of the store (tables: prisma/manual-migrations/2026-10-15-create-admin-state-data.sql). Program + audit entries are written in one transaction. */
 
@@ -113,7 +113,7 @@ const recordOf = (r: Prisma.AdminAuditLogGetPayload<object>): AuditRecord => ({
   actorId: r.actorId,
   actorEmail: r.actorEmail,
   actorLabel: r.actorLabel,
-  entityType: r.entityType as "state_program",
+  entityType: r.entityType as AuditRecord["entityType"],
   entityKey: r.entityKey,
   fieldPath: r.fieldPath,
   oldValue: r.oldValue,
@@ -121,6 +121,10 @@ const recordOf = (r: Prisma.AdminAuditLogGetPayload<object>): AuditRecord => ({
   action: r.action as AuditRecord["action"],
   note: r.note,
 });
+
+function occupationListFromRow(r: Prisma.StateOccupationListGetPayload<object>): OccupationListData {
+  return { stateCode: r.stateCode, rows: r.rows as unknown as OccupationRow[], sourceUrl: r.sourceUrl, checkedOn: r.checkedOn, fileName: r.fileName, updatedAt: r.updatedAt.toISOString(), updatedBy: r.updatedBy };
+}
 
 export const prismaStateProgramStore: StateProgramStore = {
   async list() {
@@ -181,7 +185,26 @@ export const prismaStateProgramStore: StateProgramStore = {
     const r = await prisma.adminAuditLog.findUnique({ where: { id } });
     return r ? recordOf(r) : null;
   },
+  async entries(entityType, key, limit) {
+    const rows = await prisma.adminAuditLog.findMany({ where: { entityType, entityKey: key }, orderBy: { at: "desc" }, take: limit });
+    return rows.map(recordOf);
+  },
   async log(entry, actor, at) {
-    await prisma.adminAuditLog.createMany({ data: auditRows([entry], actor, at) });
+    const created = await prisma.adminAuditLog.create({ data: auditRows([entry], actor, at)[0] });
+    return created.id;
+  },
+  async listOccupationLists() {
+    return (await prisma.stateOccupationList.findMany()).map(occupationListFromRow);
+  },
+  async getOccupationList(code) {
+    const r = await prisma.stateOccupationList.findUnique({ where: { stateCode: code } });
+    return r ? occupationListFromRow(r) : null;
+  },
+  async saveOccupationList(list, audit, actor, at) {
+    await prisma.$transaction(async (tx) => {
+      const data = { rows: json(list.rows), sourceUrl: list.sourceUrl, checkedOn: list.checkedOn, fileName: list.fileName, updatedAt: at, updatedBy: list.updatedBy };
+      await tx.stateOccupationList.upsert({ where: { stateCode: list.stateCode }, create: { stateCode: list.stateCode, ...data }, update: data });
+      await tx.adminAuditLog.createMany({ data: auditRows([audit], actor, at) });
+    });
   },
 };

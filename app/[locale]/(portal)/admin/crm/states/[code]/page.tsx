@@ -4,6 +4,7 @@ import { notFound } from "next/navigation";
 
 import { prismaStateProgramStore } from "@/lib/admin-data/store-prisma";
 import { requireRole } from "@/lib/auth/rbac";
+import { SourceUpdatePanel } from "./SourceUpdatePanel";
 import { StateEditor } from "./StateEditor";
 
 export const metadata: Metadata = {
@@ -34,6 +35,7 @@ export default async function AdminStateEditorPage({ params }: PageProps) {
           {program.stateName} ({program.stateCode}) · program year {program.programYear}
         </h1>
       </div>
+      <SourceUpdatePanel stateCode={program.stateCode} stateName={program.stateName} locale={locale} />
       <StateEditor initial={program} history={history} locale={locale} />
     </main>
   );

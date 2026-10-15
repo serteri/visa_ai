@@ -799,6 +799,19 @@ model StateProgramSubclass {
 }
 
 // Who changed what, when (old -> new), for the admin pages. actor_* come from the signed-in NextAuth ADMIN user, never from the request.
+/// A state occupation list approved in the admin (replaces the bundled list of that state in the occupation match).
+model StateOccupationList {
+  stateCode String   @id @map("state_code")
+  rows      Json
+  sourceUrl String?  @map("source_url")
+  checkedOn String?  @map("checked_on")
+  fileName  String?  @map("file_name")
+  updatedAt DateTime @default(now()) @map("updated_at") @db.Timestamptz(6)
+  updatedBy String?  @map("updated_by")
+
+  @@map("state_occupation_lists")
+}
+
 model AdminAuditLog {
   id         String   @id @default(dbgenerated("(gen_random_uuid())::text"))
   at         DateTime @default(now()) @db.Timestamptz(6)

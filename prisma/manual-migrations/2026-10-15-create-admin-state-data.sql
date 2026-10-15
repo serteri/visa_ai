@@ -2,9 +2,10 @@
 --   state_programs            one row per state per program year (exactly one is_current per state)
 --   state_program_subclasses  per subclass: availability, allocation, nomination fee excl./incl. GST
 --   admin_audit_log           who changed what, when (old -> new), shared with the authorities page (Part 3, later)
+--   state_occupation_lists    a state occupation list approved from an uploaded file (Update from official source)
 -- New names only: CREATE TABLE / INDEX IF NOT EXISTS. Nothing existing is altered or dropped (the four Drizzle-owned @@ignore tables are untouched).
 -- Safe to run twice. One transaction: all or nothing.
--- Rollback:  DROP TABLE admin_audit_log; DROP TABLE state_program_subclasses; DROP TABLE state_programs;
+-- Rollback:  DROP TABLE state_occupation_lists; DROP TABLE admin_audit_log; DROP TABLE state_program_subclasses; DROP TABLE state_programs;
 -- Until the seed (scripts/seed-admin-data.ts --execute) has run, the readers use the bundled seed, so reports and the chat are unchanged.
 BEGIN;
 
@@ -68,5 +69,16 @@ CREATE TABLE IF NOT EXISTS admin_audit_log (
 );
 
 CREATE INDEX IF NOT EXISTS admin_audit_log_entity_idx ON admin_audit_log (entity_type, entity_key, at DESC);
+
+-- A state occupation list approved from an uploaded file ("Update from official source"); it replaces that state's bundled list in the occupation match.
+CREATE TABLE IF NOT EXISTS state_occupation_lists (
+  state_code text PRIMARY KEY,
+  rows jsonb NOT NULL,
+  source_url text,
+  checked_on text,
+  file_name text,
+  updated_at timestamptz NOT NULL DEFAULT now(),
+  updated_by text
+);
 
 COMMIT;

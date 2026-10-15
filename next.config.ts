@@ -1,6 +1,8 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
+  // "Update from official source" uploads a PDF / DOCX / XLSX / CSV of up to 10 MB through a server action (Vercel itself caps a request body at 4.5 MB).
+  experimental: { serverActions: { bodySizeLimit: "10mb" } },
   async redirects() {
     return [
       // English is served prefixless (see proxy.ts) -- /en/* previously

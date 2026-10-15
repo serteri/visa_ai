@@ -94,7 +94,7 @@ export function buildStateInfos(report: ReadinessReport, occupationRaw: string |
     const rule = data.rules[code];
     const s = tracker?.states.find((x) => x.code === code);
     // NSW publishes at unit-group level only: the occupation's 4-digit unit group against that list.
-    const nsw = code === "NSW" && anzsco ? (["190", "491"] as const).map((sub) => matchOccupationToState(anzsco, "NSW", sub)) : [];
+    const nsw = code === "NSW" && anzsco ? (["190", "491"] as const).map((sub) => matchOccupationToState(anzsco, "NSW", sub, data.occupationLists)) : [];
     const nswListed = nsw.flatMap((m) => (m.type === "UNIT_GROUP_ONLY" && m.onUnitGroupList ? [m.subclass] : []));
     const occupationList =
       code === "NSW" && nsw.length > 0

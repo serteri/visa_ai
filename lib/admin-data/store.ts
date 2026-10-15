@@ -1,5 +1,5 @@
 import type { Actor, AuditEntry, AuditRecord } from "./audit";
-import type { StateProgramData } from "./types";
+import type { OccupationListData, StateProgramData } from "./types";
 
 /**
  * Where the state programs live. The service (service.ts) works against this interface: the real one is Prisma (store-prisma.ts); the tests and the
@@ -16,13 +16,21 @@ export interface StateProgramStore {
   insertMissing(programs: StateProgramData[], audits: AuditEntry[], actor: Actor, at: Date): Promise<string[]>;
   history(stateCode: string, limit: number): Promise<AuditRecord[]>;
   auditEntry(id: string): Promise<AuditRecord | null>;
+  /** Audit entries of another entity type (source updates, occupation lists), newest first. */
+  entries(entityType: AuditRecord["entityType"], entityKey: string, limit: number): Promise<AuditRecord[]>;
+  /** The occupation lists approved in the admin. */
+  listOccupationLists(): Promise<OccupationListData[]>;
+  getOccupationList(stateCode: string): Promise<OccupationListData | null>;
+  /** Replace a state's occupation list and append the audit entry, atomically. */
+  saveOccupationList(list: OccupationListData, audit: AuditEntry, actor: Actor, at: Date): Promise<void>;
   /** An audit entry with no program change (for example a translation draft). */
-  log(entry: AuditEntry, actor: Actor, at: Date): Promise<void>;
+  log(entry: AuditEntry, actor: Actor, at: Date): Promise<string>;
 }
 
 export function memoryStore(initial: StateProgramData[] = []): StateProgramStore & { audits: AuditRecord[] } {
   const programs = new Map(initial.map((p) => [p.stateCode, structuredClone(p)]));
   const audits: AuditRecord[] = [];
+  const lists = new Map<string, OccupationListData>();
   let n = 0;
   const record = (e: AuditEntry, actor: Actor, at: Date): AuditRecord => ({ ...structuredClone(e), id: `a${++n}`, at: at.toISOString(), actorId: actor.id, actorEmail: actor.email, actorLabel: actor.label });
   return {
@@ -49,13 +57,29 @@ export function memoryStore(initial: StateProgramData[] = []): StateProgramStore
       return inserted;
     },
     async history(code, limit) {
-      return audits.filter((a) => a.entityKey === code).slice().reverse().slice(0, limit);
+      return audits.filter((a) => a.entityKey === code && a.entityType === "state_program").slice().reverse().slice(0, limit);
     },
     async auditEntry(id) {
       return audits.find((a) => a.id === id) ?? null;
     },
+    async entries(entityType, key, limit) {
+      return audits.filter((a) => a.entityType === entityType && a.entityKey === key).slice().reverse().slice(0, limit);
+    },
     async log(entry, actor, at) {
-      audits.push(record(entry, actor, at));
+      const r = record(entry, actor, at);
+      audits.push(r);
+      return r.id;
+    },
+    async listOccupationLists() {
+      return [...lists.values()].map((l) => structuredClone(l));
+    },
+    async getOccupationList(code) {
+      const l = lists.get(code);
+      return l ? structuredClone(l) : null;
+    },
+    async saveOccupationList(list, audit, actor, at) {
+      lists.set(list.stateCode, structuredClone(list));
+      audits.push(record(audit, actor, at));
     },
   };
 }

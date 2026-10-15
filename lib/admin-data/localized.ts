@@ -1,10 +1,11 @@
-import type { DataLocale, LocalizedField, TranslationEntry } from "./types";
+import { ADMIN_TRANSLATION_LOCALES } from "./locales";
+import { translationOf, type DataLocale, type LocalizedField, type TranslationEntry } from "./types";
 
 /** The text in the reader's language: English always; a translation only when it has been reviewed (D5) -- otherwise English. */
 export function localizedText(field: LocalizedField | null | undefined, locale: DataLocale): string {
   if (!field) return "";
   if (locale === "en") return field.en;
-  const t = field[locale];
+  const t = translationOf(field, locale);
   return t && t.reviewed && t.text.trim() ? t.text : field.en;
 }
 
@@ -17,10 +18,10 @@ export function carriedOver(text: string): TranslationEntry {
 
 /** True when a language has text that is not reviewed yet (the admin has something to read). */
 export function hasUnreviewed(field: LocalizedField | null | undefined): boolean {
-  return (["tr", "zh-Hans"] as const).some((l) => Boolean(field?.[l] && !field[l]!.reviewed && field[l]!.text.trim()));
+  return ADMIN_TRANSLATION_LOCALES.some((l) => { const t = translationOf(field, l); return Boolean(t && !t.reviewed && t.text.trim()); });
 }
 
-export function setTranslation(f: LocalizedField, locale: Exclude<DataLocale, "en">, entry: TranslationEntry | null): LocalizedField {
+export function setTranslation(f: LocalizedField, locale: DataLocale, entry: TranslationEntry | null): LocalizedField {
   const next: LocalizedField = { ...f };
   if (entry === null) delete next[locale];
   else next[locale] = entry;

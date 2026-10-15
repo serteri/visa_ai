@@ -542,7 +542,7 @@ export function calculateStateNominationTracker(
     // match 0%, and it is never recommended. A state whose list can't be confirmed is labelled so and ranked below
     // every state where the occupation is confirmed.
     const occupationResults = occupationAnzscoCode
-      ? matchOccupationToStateAllSubclasses(occupationAnzscoCode, row.code, row.preferredVisaTypes as StateOccupationSubclass[])
+      ? matchOccupationToStateAllSubclasses(occupationAnzscoCode, row.code, row.preferredVisaTypes as StateOccupationSubclass[], data.occupationLists)
       : undefined;
     const listStatus = occupationListStatus(occupationResults);
     let listNote: string | undefined;

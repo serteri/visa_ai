@@ -1,3 +1,4 @@
+import { ADMIN_TRANSLATION_LOCALES } from "./locales";
 import type { StateRuleConfig } from "@/lib/state-nomination/state-rules-config";
 
 /**
@@ -5,8 +6,9 @@ import type { StateRuleConfig } from "@/lib/state-nomination/state-rules-config"
  * (docs/admin-data-design.md sections A.3 to A.5, D.1). Everything here is plain JSON: it is stored in Postgres and passes through the cache.
  */
 
-export type DataLocale = "en" | "tr" | "zh-Hans";
-export const DATA_LOCALES: readonly DataLocale[] = ["en", "tr", "zh-Hans"];
+/** A locale code of the site's supported locales (lib/i18n/config.ts); the list is configuration, not code. */
+export type DataLocale = string;
+export const DATA_LOCALES: readonly DataLocale[] = ["en", ...ADMIN_TRANSLATION_LOCALES];
 
 /** A translation of a text. Only a reviewed one is ever shown to customers (D5); an unreviewed one is a draft the admin reads. */
 export type TranslationEntry = {
@@ -20,7 +22,15 @@ export type TranslationEntry = {
 };
 
 /** English plus the two translations. English is the source text and is always shown. */
-export type LocalizedField = { en: string; tr?: TranslationEntry; "zh-Hans"?: TranslationEntry };
+/** The index signature holds the translations of every supported language (a new language needs no change here); tr and zh-Hans are named only for readability. */
+export type LocalizedField = { en: string; tr?: TranslationEntry; "zh-Hans"?: TranslationEntry } & { [locale: string]: TranslationEntry | string | undefined };
+
+/** The translation of a field in a language (undefined for English or when there is none). */
+export function translationOf(field: LocalizedField | null | undefined, locale: string): TranslationEntry | undefined {
+  if (!field || locale === "en") return undefined;
+  const t = field[locale];
+  return t && typeof t === "object" ? t : undefined;
+}
 
 export type ConditionKind = "residence" | "employment" | "study" | "english" | "points" | "fee" | "process" | "other";
 export type ResidenceRule = "required" | "not_required" | "not_stated";
@@ -143,6 +153,20 @@ export type StateDatasetRowView = {
   specialConditionFields: LocalizedField[];
 };
 
+/** One row of a state occupation list (the shape of src/data/state-occupation-lists/*.json). */
+export type OccupationRow = { anzscoCode: string; occupationTitle: string; subclass190: boolean; subclass491: boolean; notes?: string };
+
+/** A state's occupation list as the admin approved it from an uploaded file; it replaces the bundled list of that state in the occupation match. */
+export type OccupationListData = {
+  stateCode: string;
+  rows: OccupationRow[];
+  sourceUrl: string | null;
+  checkedOn: string | null;
+  fileName: string | null;
+  updatedAt: string;
+  updatedBy: string | null;
+};
+
 export type AdminStateData = {
   /** Where the snapshot came from: the database, or the bundled seed (empty table / database unreachable). */
   source: "db" | "seed";
@@ -150,4 +174,6 @@ export type AdminStateData = {
   programs: Record<string, StateProgramData>;
   rules: Record<string, StateRuleView>;
   dataset: StateDatasetRowView[];
+  /** Occupation lists approved in the admin (absent = the bundled lists). */
+  occupationLists?: Record<string, OccupationListData>;
 };

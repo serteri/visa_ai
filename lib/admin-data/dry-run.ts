@@ -2,7 +2,9 @@ import { STATE_RULES } from "@/lib/state-nomination/state-rules-config";
 
 import { FIRST_BUILD_RESIDENCE_TAGS, matcherKindOf } from "./seed";
 import { SEED_STATUS_CHANGES } from "./seed";
+import { ADMIN_TRANSLATION_LOCALES } from "./locales";
 import { nextYearNotPublishedNote } from "./statuses";
+import { translationOf } from "./types";
 import type { StateProgramData } from "./types";
 
 /** The human-readable dry run of the seed (scripts/seed-admin-data.ts, docs/admin-data-seed-dry-run.md): exactly what would be written, per state. */
@@ -24,7 +26,7 @@ export function renderDryRun(programs: StateProgramData[], opts: { existing?: st
     const s190 = p.subclasses.find((s) => s.subclass === "190");
     const s491 = p.subclasses.find((s) => s.subclass === "491");
     const res = p.conditions.find((c) => c.residenceRule);
-    const carried = [p.notes, ...p.conditions.map((c) => c.text), ...p.scoring.specialConditions].filter((f) => f.tr?.origin === "carried_over" || f["zh-Hans"]?.origin === "carried_over").length;
+    const carried = [p.notes, ...p.conditions.map((c) => c.text), ...p.scoring.specialConditions].filter((f) => ADMIN_TRANSLATION_LOCALES.some((l) => translationOf(f, l)?.origin === "carried_over")).length;
     lines.push(`| ${p.stateCode} | ${p.status} | ${p.programYear}${nextYearNotPublishedNote(p.programYear) ? ` (${nextYearNotPublishedNote(p.programYear)})` : ""} | ${p.openingDate ?? "—"} | ${s190?.allocation ?? "—"} / ${s491?.allocation ?? "—"} | ${money(s190?.feeExclGst ?? null)} / ${money(s190?.feeInclGst ?? null)} | ${p.conditions.length} | ${res ? `${res.residenceRule}${res.subclasses.length ? ` (${res.subclasses.join("/")} only)` : ""}` : "not stated"} | ${carried} |`);
   }
   lines.push("");
@@ -64,9 +66,9 @@ export function renderDryRun(programs: StateProgramData[], opts: { existing?: st
       lines.push(`- Subclass ${s.subclass}: availability ${s.availability}; allocation ${s.allocation ?? "—"}; fee ${money(s.feeExclGst)} excl. / ${money(s.feeInclGst)} incl. GST (${s.gstBasis})${s.feeNote ? `; note: ${clip(s.feeNote.en, 200)}` : ""}`);
     }
     lines.push(`- Note (en): ${clip(p.notes.en, 300)}`);
-    lines.push(`- Note translations: tr ${p.notes.tr ? "yes" : "no"}, zh-Hans ${p.notes["zh-Hans"] ? "yes" : "no"}`);
+    lines.push(`- Note translations: ${ADMIN_TRANSLATION_LOCALES.map((l) => `${l} ${translationOf(p.notes, l) ? "yes" : "no"}`).join(", ")}`);
     lines.push(`- Conditions (${p.conditions.length}):`);
-    for (const c of p.conditions) lines.push(`  - \`${c.id}\` [${c.kind}${c.residenceRule ? `, residence: ${c.residenceRule}${c.subclasses.length ? ` ${c.subclasses.join("/")}` : ""}` : ""}] ${clip(c.text.en, 160)}${c.text.tr || c.text["zh-Hans"] ? " (translated)" : ""}`);
+    for (const c of p.conditions) lines.push(`  - \`${c.id}\` [${c.kind}${c.residenceRule ? `, residence: ${c.residenceRule}${c.subclasses.length ? ` ${c.subclasses.join("/")}` : ""}` : ""}] ${clip(c.text.en, 160)}${ADMIN_TRANSLATION_LOCALES.some((l) => translationOf(c.text, l)) ? " (translated)" : ""}`);
     lines.push(`- Scoring inputs: onshore ${p.scoring.onshoreAvailability}, offshore ${p.scoring.offshoreAvailability}, min points ${p.scoring.minimumPoints}, min English ${p.scoring.minimumEnglish}, quota pressure ${p.scoring.offshoreQuotaPressure} (rule: ${p.scoring.ruleQuotaPressure}), preferred ${p.scoring.preferredVisaTypes.join("/")}`, "");
   }
 

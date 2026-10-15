@@ -30,6 +30,9 @@ import waData from "@/src/data/state-occupation-lists/wa.json";
 import nswUnitGroupsData from "@/src/data/state-occupation-lists/nsw-unit-groups.json";
 import { getNationalVisaSubclasses } from "@/lib/readiness/occupation-eligibility";
 
+/** Occupation lists approved in the admin (lib/admin-data): when a state has one it replaces that state's bundled list. */
+export type OccupationListOverrides = Record<string, { rows: Array<{ anzscoCode: string; occupationTitle: string; subclass190: boolean; subclass491: boolean; notes?: string }> }>;
+
 export type StateOccupationSubclass = "190" | "491";
 
 export type OccupationMatchResultType = "MATCH" | "NOT_ON_LIST" | "UNIT_GROUP_ONLY" | "NO_DATA" | "NOT_APPLICABLE";
@@ -78,6 +81,13 @@ const NSW_UNIT_GROUPS = new Map(
   (nswUnitGroupsData as { occupations: NswUnitGroupRow[] }).occupations.map((r) => [r.unitGroupCode, r])
 );
 
+const OVERRIDE_INDEXES = new WeakMap<object, Map<string, StateListRow>>();
+function indexOf(rows: StateListRow[]): Map<string, StateListRow> {
+  let idx = OVERRIDE_INDEXES.get(rows);
+  if (!idx) OVERRIDE_INDEXES.set(rows, (idx = buildIndex(rows)));
+  return idx;
+}
+
 function matchFromIndex(
   index: Map<string, StateListRow>,
   stateCode: string,
@@ -108,10 +118,13 @@ function matchFromIndex(
 export function matchOccupationToState(
   anzscoCode: string,
   stateCode: string,
-  subclass: StateOccupationSubclass
+  subclass: StateOccupationSubclass,
+  overrides?: OccupationListOverrides
 ): OccupationMatchResult {
   const code = anzscoCode.trim();
   const state = stateCode.trim().toUpperCase();
+  const override = overrides?.[state];
+  if (override && ["ACT", "NT", "QLD", "WA", "SA"].includes(state)) return matchFromIndex(indexOf(override.rows), state, code, subclass);
 
   switch (state) {
     case "ACT":
@@ -153,7 +166,8 @@ export function matchOccupationToState(
 export function matchOccupationToStateAllSubclasses(
   anzscoCode: string,
   stateCode: string,
-  subclasses: readonly StateOccupationSubclass[]
+  subclasses: readonly StateOccupationSubclass[],
+  overrides?: OccupationListOverrides
 ): OccupationMatchResult[] {
-  return subclasses.map((subclass) => matchOccupationToState(anzscoCode, stateCode, subclass));
+  return subclasses.map((subclass) => matchOccupationToState(anzscoCode, stateCode, subclass, overrides));
 }

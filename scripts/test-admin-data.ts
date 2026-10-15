@@ -266,7 +266,7 @@ async function main() {
     t("the retired precedence code and scraper are gone from the code", !existsSync("lib/state-nomination/state-status.ts") && !existsSync("lib/state-intelligence.ts"));
     const sql = readFileSync("prisma/manual-migrations/2026-10-15-create-admin-state-data.sql", "utf8");
     const statements = sql.split("\n").filter((l) => /^(CREATE|ALTER|DROP|INSERT|UPDATE|DELETE)\b/i.test(l.trim()));
-    t("the migration only creates new tables / indexes (IF NOT EXISTS) in one transaction; nothing existing is altered or dropped", statements.length === 5 && statements.every((l) => /^CREATE (UNIQUE )?(TABLE|INDEX) IF NOT EXISTS (state_programs|state_program_subclasses|admin_audit_log|state_programs_one_current_idx|admin_audit_log_entity_idx)\b/.test(l.trim())) && /^BEGIN;/m.test(sql) && /^COMMIT;/m.test(sql), statements.join(" | "));
+    t("the migration only creates new tables / indexes (IF NOT EXISTS) in one transaction; nothing existing is altered or dropped", statements.length === 6 && statements.every((l) => /^CREATE (UNIQUE )?(TABLE|INDEX) IF NOT EXISTS (state_programs|state_program_subclasses|admin_audit_log|state_occupation_lists|state_programs_one_current_idx|admin_audit_log_entity_idx)\b/.test(l.trim())) && /^BEGIN;/m.test(sql) && /^COMMIT;/m.test(sql), statements.join(" | "));
     const prismaSchema = readFileSync("prisma/schema.prisma", "utf8");
     t("the Prisma models match the migration's tables", ["state_programs", "state_program_subclasses", "admin_audit_log"].every((n) => new RegExp(`@@map\\("${n}"\\)`).test(prismaSchema)));
     const seedScript = readFileSync("scripts/seed-admin-data.ts", "utf8");

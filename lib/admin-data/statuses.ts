@@ -126,8 +126,8 @@ const LABELS: Record<string, { tr: string; "zh-Hans": string }> = {
   "Check official page": { tr: "Resmi sayfayı kontrol edin", "zh-Hans": "请查看官方页面" },
 };
 
-export function stateStatusLabel(status: string, locale: "en" | "tr" | "zh-Hans"): string {
+export function stateStatusLabel(status: string, locale: string): string {
   const normalized = normalizeStateStatus(status);
   if (locale === "en") return normalized;
-  return LABELS[normalized]?.[locale] ?? normalized;
+  return (LABELS[normalized] as Record<string, string> | undefined)?.[locale] ?? normalized;
 }
