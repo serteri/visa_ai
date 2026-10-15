@@ -24,7 +24,7 @@ import { carriedOver, hasUnreviewed, localizedText } from "../lib/admin-data/loc
 import { buildSeedPrograms } from "../lib/admin-data/seed";
 import { markStateVerified, restoreAuditField, saveStateProgram, seedStatePrograms } from "../lib/admin-data/service";
 import { seedStateData, toSnapshot, withPrograms } from "../lib/admin-data/snapshot";
-import { isClosedStatus, isOffshoreOnlyStatus, isOnshoreOnlyStatus, normalizeStateStatus, stateStatusLabel } from "../lib/admin-data/statuses";
+import { availabilityFor, CURRENT_STATE_STATUSES, isClosedStatus, isOffshoreOnlyStatus, isOnshoreOnlyStatus, normalizeStateStatus, stateStatusLabel } from "../lib/admin-data/statuses";
 import { memoryStore } from "../lib/admin-data/store";
 import { draftTranslation, numbersPreserved } from "../lib/admin-data/translate";
 import type { StateProgramData } from "../lib/admin-data/types";
@@ -293,6 +293,8 @@ async function main() {
     t("Check official page / Not yet published need unknown / unknown", withInputs("WA", "Check official page", "unknown", "unknown").ok && withInputs("WA", "Not yet published", "unknown", "unknown").ok && !withInputs("WA", "Not yet published", "closed", "unknown").ok);
     t("Open (Onshore only): onshore open, offshore closed; offshore open is rejected", withInputs("TAS", "Open (Onshore only)", "open", "closed").ok && !withInputs("TAS", "Open (Onshore only)", "open", "open").ok && !withInputs("TAS", "Open (Onshore only)", "closed", "closed").ok);
     t("Closed with exceptions: closed both sides, the exception's side may open only as limited / priority", withInputs("NT", "Closed with exceptions", "closed", "closed").ok && !withInputs("NT", "Closed with exceptions", "open", "closed").ok);
+    t("Open (overseas limited): onshore open, offshore limited; offshore open or closed is rejected", withInputs("TAS", "Open (overseas limited)", "open", "limited").ok && !withInputs("TAS", "Open (overseas limited)", "open", "open").ok && !withInputs("TAS", "Open (overseas limited)", "open", "closed").ok && !withInputs("TAS", "Open (overseas limited)", "closed", "limited").ok);
+    t("Open (overseas limited) is a current status with en / tr / zh-Hans labels, derives open / limited, and is not closed", CURRENT_STATE_STATUSES.includes("Open (overseas limited)" as never) && stateStatusLabel("Open (overseas limited)", "en") === "Open (overseas limited)" && /sınırlı/.test(stateStatusLabel("Open (overseas limited)", "tr")) && /受限/.test(stateStatusLabel("Open (overseas limited)", "zh-Hans")) && availabilityFor("Open (overseas limited)")?.offshore === "limited" && availabilityFor("Open (overseas limited)")?.onshore === "open" && !isClosedStatus("Open (overseas limited)"));
     t("Open (Onshore & Offshore) cannot have a closed or unknown side", !withInputs("TAS", "Open (Onshore & Offshore)", "closed", "open").ok && !withInputs("TAS", "Open (Onshore & Offshore)", "unknown", "open").ok);
     t("the seed derives the inputs from the status: VIC closed / closed, WA unknown / unknown, TAS open / closed, NT closed / closed",
       seeded.VIC.scoring.onshoreAvailability === "closed" && seeded.VIC.scoring.offshoreAvailability === "closed" && seeded.WA.scoring.onshoreAvailability === "unknown" && seeded.WA.scoring.offshoreAvailability === "unknown" && seeded.TAS.scoring.onshoreAvailability === "open" && seeded.TAS.scoring.offshoreAvailability === "closed" && seeded.NT.scoring.onshoreAvailability === "closed" && seeded.NT.scoring.offshoreAvailability === "closed");

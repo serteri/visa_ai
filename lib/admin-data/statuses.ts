@@ -9,6 +9,7 @@ export const CURRENT_STATE_STATUSES = [
   "Open (Onshore & Offshore)",
   "Open (Onshore only)",
   "Open (Offshore only)",
+  "Open (overseas limited)",
   "Closed with exceptions",
   "Suspended / Closed",
   "Not yet published",
@@ -84,6 +85,8 @@ export function allowedAvailability(status: string, exception: "onshore" | "offs
       return { onshore: ["unknown"], offshore: ["unknown"] };
     case "Closed with exceptions":
       return { onshore: exception === "onshore" || exception === "all" ? ["closed", "priority"] : ["closed"], offshore: exception === "offshore" || exception === "all" ? ["closed", "limited"] : ["closed"] };
+    case "Open (overseas limited)":
+      return { onshore: ["open", "priority"], offshore: ["limited"] };
     case "Open (Onshore only)":
       return { onshore: ["open", "priority"], offshore: exception === "offshore" || exception === "all" ? ["closed", "limited"] : ["closed"] };
     case "Open (Offshore only)":
@@ -96,7 +99,7 @@ export function allowedAvailability(status: string, exception: "onshore" | "offs
 }
 
 /** The availabilities a status implies, used to seed the scoring inputs (null for a legacy status: the dataset value is kept). */
-export function availabilityFor(status: string): { onshore: "open" | "closed" | "unknown"; offshore: "open" | "closed" | "unknown" } | null {
+export function availabilityFor(status: string): { onshore: "open" | "closed" | "unknown"; offshore: "open" | "limited" | "closed" | "unknown" } | null {
   switch (normalizeStateStatus(status)) {
     case "Suspended / Closed":
     case "Closed with exceptions":
@@ -106,6 +109,8 @@ export function availabilityFor(status: string): { onshore: "open" | "closed" | 
       return { onshore: "unknown", offshore: "unknown" };
     case "Open (Onshore only)":
       return { onshore: "open", offshore: "closed" };
+    case "Open (overseas limited)":
+      return { onshore: "open", offshore: "limited" };
     case "Open (Offshore only)":
       return { onshore: "closed", offshore: "open" };
     case "Open (Onshore & Offshore)":
@@ -119,6 +124,7 @@ export function availabilityFor(status: string): { onshore: "open" | "closed" | 
 const LABELS: Record<string, { tr: string; "zh-Hans": string }> = {
   "Open (Onshore & Offshore)": { tr: "Açık (Avustralya içi ve dışı)", "zh-Hans": "开放（境内和境外）" },
   "Open (Onshore only)": { tr: "Açık (yalnızca Avustralya içi)", "zh-Hans": "开放（仅境内）" },
+  "Open (overseas limited)": { tr: "Açık (yurt dışı başvurular sınırlı)", "zh-Hans": "开放（境外申请受限）" },
   "Open (Offshore only)": { tr: "Açık (yalnızca Avustralya dışı)", "zh-Hans": "开放（仅境外）" },
   "Closed with exceptions": { tr: "Kapalı, istisnalarla", "zh-Hans": "已关闭（有例外）" },
   "Suspended / Closed": { tr: "Askıya alındı / kapalı", "zh-Hans": "已暂停 / 已关闭" },

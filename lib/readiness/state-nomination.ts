@@ -485,7 +485,8 @@ export function calculateStateNominationTracker(
       // viable regardless of occupation, the same way every other status branch here is a flat per-status
       // value with no occupation term.
       score = 70;
-    } else if (effectiveStatus === "Open (Onshore & Offshore)") {
+    } else if (effectiveStatus === "Open (Onshore & Offshore)" || effectiveStatus === "Open (overseas limited)") {
+      // overseas limited: the same base as open to both; the "limited" offshore penalty below then applies to overseas applicants
       score = 80;
     }
 

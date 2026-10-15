@@ -386,6 +386,11 @@ function localizedStateStatus(status: string, locale: string): string {
       tr: "yalnızca Avustralya içindeki başvuru sahiplerine açık",
       "zh-Hans": "仅对境内申请人开放",
     },
+    "Open (overseas limited)": {
+      en: "open to onshore applicants, with limited intake for overseas applicants",
+      tr: "Avustralya içindeki başvuru sahiplerine açık, yurt dışındaki başvurular için kontenjan sınırlı",
+      "zh-Hans": "对境内申请人开放，境外申请人名额有限",
+    },
     "Open (Offshore only)": {
       en: "open to offshore applicants only",
       tr: "yalnızca Avustralya dışındaki başvuru sahiplerine açık",
