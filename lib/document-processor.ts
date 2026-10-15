@@ -1,6 +1,6 @@
 import path from "node:path";
 import { readdir, readFile } from "node:fs/promises";
-import { PDFParse } from "pdf-parse";
+import { pdfPages } from "./pdf-text";
 import { chunkText } from "./chunk-text";
 import * as XLSX from "xlsx";
 import { openai } from "@ai-sdk/openai";
@@ -75,13 +75,7 @@ export async function scanKnowledgeFiles(dir: string = KNOWLEDGE_DIR): Promise<K
 
 async function extractPdfSegments(absolutePath: string): Promise<TextSegment[]> {
   const buffer = await readFile(absolutePath);
-  const parser = new PDFParse({ data: new Uint8Array(buffer) });
-  try {
-    const result = await parser.getText();
-    return result.pages.map((page) => ({ text: page.text, page: page.num }));
-  } finally {
-    await parser.destroy();
-  }
+  return (await pdfPages(new Uint8Array(buffer))).map((text, i) => ({ text, page: i + 1 }));
 }
 
 async function extractMarkdownSegments(absolutePath: string): Promise<TextSegment[]> {

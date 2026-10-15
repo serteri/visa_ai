@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { PDFParse } from "pdf-parse";
+import { pdfPages, PdfReadError } from "@/lib/pdf-text";
 
 type DocumentType = "Passport" | "English Test" | "Skills Assessment" | "Unknown";
 type ValidationStatus = "VALID" | "EXPIRED" | "MISMATCH";
@@ -211,14 +211,18 @@ async function callOpenAiForAnalysis(args: {
       },
     });
   } else if (mimeType === "application/pdf") {
-    const parser = new PDFParse({ data: Buffer.from(fileBytes) });
-    const parsedPdf = await parser.getText();
-    await parser.destroy();
+    let pdfText: string;
+    try {
+      pdfText = (await pdfPages(new Uint8Array(fileBytes))).join("\n\n");
+    } catch (e) {
+      if (e instanceof PdfReadError) throw new Error("The PDF could not be read. Upload a clearer copy or a photo of the document.");
+      throw e;
+    }
     content.push({
       type: "text",
       text: [
         "PDF extracted text:",
-        parsedPdf.text.slice(0, 14000),
+        pdfText.slice(0, 14000),
       ].join("\n"),
     });
   } else {

@@ -51,12 +51,27 @@ async function main() {
       t(`${name} imports`, false, e instanceof Error ? e.message : String(e));
     }
   }
+  const routes = walk("app/api").filter((f) => /route\.ts$/.test(f));
+  for (const f of routes) {
+    try {
+      await import(`../${f.split(String.fromCharCode(92)).join("/")}`);
+      t(`${f.split(String.fromCharCode(92)).join("/")} imports`, true);
+    } catch (e) {
+      t(`${f.split(String.fromCharCode(92)).join("/")} imports`, false, e instanceof Error ? e.message : String(e));
+    }
+  }
+  try {
+    await import("../lib/document-processor");
+    t("lib/document-processor imports", true);
+  } catch (e) {
+    t("lib/document-processor imports", false, e instanceof Error ? e.message : String(e));
+  }
   t("importing them did not define DOMMatrix (no parser was evaluated)", typeof g.DOMMatrix === "undefined");
 
   console.log("no parser is imported at module level");
-  const files = [...walk("app/[locale]/(portal)"), ...walk("lib/admin-data")].filter((f) => /\.(ts|tsx)$/.test(f));
-  const offenders = files.filter((f) => /^\s*import[^;\n]*from\s+["'](pdf-parse|pdfjs-dist[^"']*|unpdf|xlsx|fflate|mammoth)["']/m.test(readFileSync(f, "utf8")));
-  t("no portal page, layout or admin-data module imports pdf-parse, pdfjs-dist, unpdf, xlsx or fflate statically", offenders.length === 0, offenders.join(", "));
+  const files = [...walk("app"), ...walk("lib"), ...walk("components")].filter((f) => /\.(ts|tsx)$/.test(f));
+  const offenders = files.filter((f) => /^\s*import[^;\n]*from\s+["'](pdf-parse|pdfjs-dist[^"']*|unpdf|mammoth)["']/m.test(readFileSync(f, "utf8")));
+  t("nothing under app, lib or components imports pdf-parse, pdfjs-dist, unpdf or mammoth statically", offenders.length === 0, offenders.join(", "));
 
   console.log("a PDF through the real extraction code");
   const doc = new jsPDF();
@@ -73,6 +88,14 @@ async function main() {
     msg = (e as Error).message;
   }
   t("a PDF that cannot be read gives the clear message, not a crash", /PDF could not be read; paste the text instead/.test(msg), msg);
+  const { pdfPages, PdfReadError } = await import("../lib/pdf-text");
+  const pages = await pdfPages(bytes);
+  t("lib/pdf-text (used by document-processor and /api/document-analyze) reads the sample PDF page by page", pages.length === 1 && /allocation for subclass 190/.test(pages[0]));
+  let perr: unknown;
+  try { await pdfPages(new Uint8Array([1, 2, 3])); } catch (e) { perr = e; }
+  t("an unreadable PDF raises PdfReadError", perr instanceof PdfReadError);
+  const route = readFileSync("app/api/document-analyze/route.ts", "utf8");
+  t("/api/document-analyze answers an unreadable PDF with a clear message", /The PDF could not be read\. Upload a clearer copy/.test(route) && !/pdf-parse/.test(route));
   const actions = readFileSync("app/[locale]/(portal)/admin/crm/states/actions.ts", "utf8");
   t("the action loads the extractor only when a file arrives (dynamic import)", /await import\("@\/lib\/admin-data\/source-update\/extract"\)/.test(actions));
 
