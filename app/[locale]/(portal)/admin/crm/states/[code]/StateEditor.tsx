@@ -6,7 +6,7 @@ import { useState, useTransition } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { CURRENT_STATE_STATUSES } from "@/lib/admin-data/statuses";
+import { availabilityFor, CURRENT_STATE_STATUSES, isClosedStatus } from "@/lib/admin-data/statuses";
 import type { AuditRecord } from "@/lib/admin-data/audit";
 import type { ConditionKind, LocalizedField, StateCondition, StateProgramData, SubclassData, TranslationEntry } from "@/lib/admin-data/types";
 import type { ValidationIssue } from "@/lib/admin-data/validate";
@@ -271,7 +271,7 @@ export function StateEditor({ initial, history, locale }: { initial: StateProgra
         <div className="grid gap-3 sm:grid-cols-3">
           <label className="space-y-1">
             <span className={labelCls}>Status</span>
-            <select className={select} value={draft.status} onChange={(e) => update((d) => { d.status = e.target.value; })} data-testid="admin-status">
+            <select className={select} value={draft.status} onChange={(e) => update((d) => { d.status = e.target.value; const a = availabilityFor(d.status); if (a) { d.scoring.onshoreAvailability = a.onshore; d.scoring.offshoreAvailability = a.offshore; if (isClosedStatus(d.status) && d.status !== "Not yet published") d.scoring.offshoreQuotaPressure = d.scoring.ruleQuotaPressure = "closed"; } })} data-testid="admin-status">
               {legacyStatus && <option value={draft.status}>{draft.status} (legacy: keep, or pick a current status)</option>}
               {CURRENT_STATE_STATUSES.map((s) => (
                 <option key={s} value={s}>{s}</option>
@@ -395,11 +395,11 @@ export function StateEditor({ initial, history, locale }: { initial: StateProgra
         <div className="mt-3 grid gap-3 sm:grid-cols-3">
           <label className="space-y-1"><span className={labelCls}>Offshore availability</span>
             <select className={select} value={draft.scoring.offshoreAvailability} onChange={(e) => update((d) => { d.scoring.offshoreAvailability = e.target.value as Draft["scoring"]["offshoreAvailability"]; })}>
-              <option value="open">open</option><option value="limited">limited</option><option value="closed">closed</option>
+              <option value="open">open</option><option value="limited">limited</option><option value="closed">closed</option><option value="unknown">unknown</option>
             </select></label>
           <label className="space-y-1"><span className={labelCls}>Onshore availability</span>
             <select className={select} value={draft.scoring.onshoreAvailability} onChange={(e) => update((d) => { d.scoring.onshoreAvailability = e.target.value as Draft["scoring"]["onshoreAvailability"]; })}>
-              <option value="open">open</option><option value="priority">priority</option><option value="closed">closed</option>
+              <option value="open">open</option><option value="priority">priority</option><option value="closed">closed</option><option value="unknown">unknown</option>
             </select></label>
           <label className="space-y-1"><span className={labelCls}>Minimum points</span>
             <Input type="number" value={draft.scoring.minimumPoints} onChange={(e) => update((d) => { d.scoring.minimumPoints = Number(e.target.value); })} /></label>
@@ -410,7 +410,7 @@ export function StateEditor({ initial, history, locale }: { initial: StateProgra
           <label className="space-y-1"><span className={labelCls}>Minimum experience (years)</span>
             <Input type="number" step="0.5" value={draft.scoring.minimumExperienceYears} onChange={(e) => update((d) => { d.scoring.minimumExperienceYears = Number(e.target.value); })} /></label>
           <label className="space-y-1"><span className={labelCls}>Quota pressure (score penalty)</span>
-            <select className={select} value={draft.scoring.offshoreQuotaPressure} onChange={(e) => update((d) => { d.scoring.offshoreQuotaPressure = e.target.value as Draft["scoring"]["offshoreQuotaPressure"]; })}>
+            <select className={select} value={draft.scoring.offshoreQuotaPressure} onChange={(e) => update((d) => { d.scoring.offshoreQuotaPressure = d.scoring.ruleQuotaPressure = e.target.value as Draft["scoring"]["offshoreQuotaPressure"]; })}>
               <option value="low">low</option><option value="medium">medium</option><option value="high">high</option><option value="closed">closed</option>
             </select></label>
           <label className="flex items-center gap-2 text-sm"><input type="checkbox" checked={draft.scoring.regionalFocus} onChange={(e) => update((d) => { d.scoring.regionalFocus = e.target.checked; })} /> Regional focus</label>

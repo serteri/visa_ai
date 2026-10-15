@@ -1,5 +1,6 @@
 import { diffPrograms, forEachLocalized, type Actor, type AuditEntry } from "./audit";
 import { buildSeedPrograms } from "./seed";
+import { availabilityFor, isClosedStatus } from "./statuses";
 import type { StateProgramStore } from "./store";
 import type { StateProgramData, TranslationEntry } from "./types";
 import { validateProgram, type ValidationIssue } from "./validate";
@@ -85,6 +86,17 @@ export async function restoreAuditField(store: StateProgramStore, actor: Actor, 
     if (entry.oldValue) list.push(entry.oldValue as { subclass: string });
     draft.subclasses = list.sort((a, b) => a.subclass.localeCompare(b.subclass));
   } else draft[entry.fieldPath] = entry.oldValue;
+  if (entry.fieldPath === "status" && typeof entry.oldValue === "string") {
+    // The scoring inputs follow the status, so restoring a status restores what it implies (an open status gets the seed's quota pressure back if the row was closed).
+    const derived = availabilityFor(entry.oldValue);
+    const scoring = draft.scoring as StateProgramData["scoring"];
+    if (derived) {
+      scoring.onshoreAvailability = derived.onshore;
+      scoring.offshoreAvailability = derived.offshore;
+      if (isClosedStatus(entry.oldValue) && entry.oldValue !== "Not yet published") scoring.offshoreQuotaPressure = scoring.ruleQuotaPressure = "closed";
+      else if (scoring.offshoreQuotaPressure === "closed") scoring.offshoreQuotaPressure = scoring.ruleQuotaPressure = buildSeedPrograms()[entry.entityKey]?.scoring.ruleQuotaPressure ?? "medium";
+    }
+  }
   const result = await saveStateProgram(store, actor, draft, at);
   if (result.ok && result.changed.length > 0) {
     await store.log({ entityType: "state_program", entityKey: entry.entityKey, fieldPath: entry.fieldPath, oldValue: entry.newValue, newValue: entry.oldValue, action: "restore", note: `restored from history entry ${auditId}` }, actor, at);

@@ -4,7 +4,7 @@ import { STATE_NOTE_TRANSLATIONS } from "@/lib/state-nomination/state-note-trans
 import { STATE_RULES } from "@/lib/state-nomination/state-rules-config";
 
 import { carriedOver, field } from "./localized";
-import { normalizeStateStatus } from "./statuses";
+import { availabilityFor, normalizeStateStatus } from "./statuses";
 import type { ConditionKind, LocalizedField, ResidenceRule, ScoringInputs, StateCondition, StateProgramData, SubclassData } from "./types";
 
 /**
@@ -16,6 +16,9 @@ import type { ConditionKind, LocalizedField, ResidenceRule, ScoringInputs, State
  */
 
 export const SEED_PROGRAM_YEAR = "2026-27";
+
+/** The year the stored content describes. These states have not published 2026-27 settings: their rows hold the latest published year (2025-26). */
+const PROGRAM_YEAR_BY_STATE: Record<string, string> = { NSW: "2025-26", VIC: "2025-26", WA: "2025-26", SA: "2025-26", QLD: "2025-26" };
 
 type DatasetRow = (typeof stateDataset)["states"][number];
 const DATASET = stateDataset.states as DatasetRow[];
@@ -47,19 +50,69 @@ const OFFICIAL_URLS: Record<string, string[]> = {
   WA: ["https://migration.wa.gov.au/our-services-support/state-nominated-migration-program", "https://migration.wa.gov.au/news"],
 };
 
-/** The residence classification the code used to find by matching the start of a key fact (lib/state-nomination/residence-rules.ts), now explicit. */
-const RESIDENCE: Record<string, { rule: ResidenceRule; prefix: string; subclasses?: Array<"190" | "491"> }> = {
-  TAS: { rule: "required", prefix: "Mandatory documents across all pathways include:" },
-  SA: { rule: "required", prefix: "Residence and work (2025-26 settings): Graduates 6 months' SA residence" },
-  QLD: { rule: "required", prefix: "Residency/employment test shown on the onshore page: 6 months living and working in regional Queensland" },
-  NSW: { rule: "required", prefix: "Subclass 190 residency basis: working 20+ hrs/week in NSW", subclasses: ["190"] },
-  VIC: { rule: "required", prefix: "When open: subclass 491 offshore applicants are not required to claim earnings in their ROI; onshore applicants must be living and working in regional Victoria.", subclasses: ["491"] },
-  WA: { rule: "not_required", prefix: "2025-26 rules: both onshore (WA-resident) and offshore (interstate/overseas) candidates are eligible" },
-  ACT: { rule: "required", prefix: "Canberra residents: 190 needs 6 months' Canberra residence" },
+/**
+ * The reviewed category of each condition that the sentence matcher below gets wrong or cannot decide, and the residence rule of the ones that really
+ * state a residence requirement (docs/admin-data-seed-dry-run.md lists every change). A condition not named here keeps the matcher's category and has
+ * no residence rule. `rule` is only ever set on a condition that states whether living in the state is required.
+ */
+type Review = { kind: ConditionKind; rule?: ResidenceRule; subclasses?: Array<"190" | "491"> };
+const REVIEW: Record<string, Review> = {
+  // NSW
+  "NSW:c02": { kind: "process" }, // closure notice
+  "NSW:c03": { kind: "process" }, // submitted applications / review of settings
+  "NSW:c06": { kind: "residence", rule: "required", subclasses: ["190"] },
+  "NSW:c07": { kind: "residence" }, // 491 pathways: residence or employment, offshore residence accepted; no single rule
+  // VIC
+  "VIC:c06": { kind: "residence", rule: "required", subclasses: ["491"] },
+  "VIC:c08": { kind: "other" }, // DHA baseline: age, English, assessment, points
+  // WA
+  "WA:c03": { kind: "process" }, // latest invitation round data
+  "WA:c04": { kind: "other" }, // streams and bonus points
+  "WA:c07": { kind: "residence", rule: "not_required" }, // onshore and offshore candidates are eligible
+  "WA:c10": { kind: "process" }, // invitation volumes
+  // SA
+  "SA:c05": { kind: "other" }, // the four streams
+  "SA:c06": { kind: "other" }, // onshore eligibility baseline
+  "SA:c07": { kind: "residence", rule: "required" },
+  "SA:c10": { kind: "other" }, // ranking factors
+  // QLD
+  "QLD:c02": { kind: "process" }, // 2026-27 not published
+  "QLD:c03": { kind: "fee" }, // 2026-27 fees "to be advised"
+  "QLD:c04": { kind: "other" }, // subclasses covered
+  "QLD:c05": { kind: "other" }, // minimum requirements on the onshore page
+  "QLD:c06": { kind: "residence", rule: "required" },
+  "QLD:c07": { kind: "residence" }, // commitment after grant, not a precondition
+  // NT
+  "NT:c03": { kind: "other" }, // the exception itself
+  "NT:c04": { kind: "other" }, // definition of "visa deadline"
+  // TAS
+  "TAS:c10": { kind: "other" }, // DHA baseline
+  "TAS:c13": { kind: "residence", rule: "required" }, // Tasmanian Skilled Graduate: 1-2 years living in Tasmania
+  "TAS:c14": { kind: "residence", rule: "required" }, // Tasmanian Established Resident: 2-3 years living in Tasmania
+  "TAS:c16": { kind: "process" }, // mandatory documents list
+  "TAS:c19": { kind: "residence" }, // commitment after approval, not a precondition
+  // ACT
+  "ACT:c04": { kind: "process" }, // invitation round data
+  "ACT:c05": { kind: "other" }, // the two pathways
+  "ACT:c06": { kind: "other" }, // occupation list
+  "ACT:c07": { kind: "residence", rule: "required" },
+  "ACT:c08": { kind: "employment" }, // overseas applicants: work experience and no recent Australian residence
+  "ACT:c10": { kind: "residence" }, // commitment after grant, not a precondition
 };
-export const SEED_RESIDENCE_PREFIXES = RESIDENCE;
+export const SEED_CONDITION_REVIEW = REVIEW;
 
-function kindOf(text: string): ConditionKind {
+/** What the first seed build did before the review (the matcher's category, and a residence tag by sentence prefix), so the dry run can list every change. */
+export const FIRST_BUILD_RESIDENCE_TAGS: Record<string, string> = {
+  "TAS:c16": "required",
+  "SA:c07": "required",
+  "QLD:c06": "required",
+  "NSW:c06": "required (190)",
+  "VIC:c06": "required (491)",
+  "WA:c07": "not_required",
+  "ACT:c07": "required",
+};
+
+export function matcherKindOf(text: string): ConditionKind {
   if (/resid|living|live and work|lived/i.test(text)) return "residence";
   if (/employ|work|hours|job|income|business/i.test(text)) return "employment";
   if (/study|graduate|course|qualification/i.test(text)) return "study";
@@ -85,17 +138,16 @@ function factField(en: string): LocalizedField {
 }
 
 function conditionsFor(code: string, keyFacts: readonly string[]): StateCondition[] {
-  const res = RESIDENCE[code];
   return keyFacts.map((fact, i) => {
-    const kind = kindOf(fact);
-    const isResidence = Boolean(res && fact.startsWith(res.prefix));
+    const id = `c${String(i + 1).padStart(2, "0")}`;
+    const review = REVIEW[`${code}:${id}`];
     return {
-      id: `c${String(i + 1).padStart(2, "0")}`,
-      kind: isResidence ? "residence" : kind,
-      subclasses: isResidence && res?.subclasses ? res.subclasses : [],
+      id,
+      kind: review?.kind ?? matcherKindOf(fact),
+      subclasses: review?.subclasses ?? [],
       stream: null,
       text: factField(fact),
-      ...(isResidence && res ? { residenceRule: res.rule } : {}),
+      ...(review?.rule ? { residenceRule: review.rule } : {}),
       quote: null,
       source: null,
     };
@@ -135,10 +187,12 @@ function subclassesFor(code: string): SubclassData[] {
   }
 }
 
-function scoringFor(row: DatasetRow, ruleQuotaPressure: ScoringInputs["ruleQuotaPressure"]): ScoringInputs {
+function scoringFor(row: DatasetRow, status: string, ruleQuotaPressure: ScoringInputs["ruleQuotaPressure"]): ScoringInputs {
+  // Derived from the status so the two can never contradict each other; a legacy status ("High Demand") keeps the dataset's values.
+  const derived = availabilityFor(status);
   return {
-    offshoreAvailability: row.offshoreAvailability as ScoringInputs["offshoreAvailability"],
-    onshoreAvailability: row.onshoreAvailability as ScoringInputs["onshoreAvailability"],
+    offshoreAvailability: derived?.offshore ?? (row.offshoreAvailability as ScoringInputs["offshoreAvailability"]),
+    onshoreAvailability: derived?.onshore ?? (row.onshoreAvailability as ScoringInputs["onshoreAvailability"]),
     minimumPoints: row.minimumPoints,
     minimumEnglish: row.minimumEnglish as ScoringInputs["minimumEnglish"],
     minimumExperienceYears: row.minimumExperienceYears,
@@ -146,7 +200,8 @@ function scoringFor(row: DatasetRow, ruleQuotaPressure: ScoringInputs["ruleQuota
     preferredVisaTypes: row.preferredVisaTypes as Array<"190" | "491">,
     requiresStateResidence: row.requiresStateResidence,
     requiresRecentEmployment: row.requiresRecentEmployment,
-    offshoreQuotaPressure: row.offshoreQuotaPressure as ScoringInputs["offshoreQuotaPressure"],
+    // One value: the rules file's (the dataset's copy disagreed for TAS and VIC).
+    offshoreQuotaPressure: ruleQuotaPressure,
     ruleQuotaPressure,
     programWindow: row.programWindow,
     specialConditions: row.specialConditions.map((c) => withCarriedTranslations(c, STATE_NOTE_TRANSLATIONS[c])),
@@ -163,7 +218,6 @@ export const SEED_STATUS_CHANGES: Record<string, string> = {
 };
 
 export function buildSeedPrograms(opts: { programYear?: string } = {}): Record<string, StateProgramData> {
-  const programYear = opts.programYear ?? SEED_PROGRAM_YEAR;
   const out: Record<string, StateProgramData> = {};
   for (const row of DATASET) {
     const rule = STATE_RULES[row.code];
@@ -174,7 +228,7 @@ export function buildSeedPrograms(opts: { programYear?: string } = {}): Record<s
     out[row.code] = {
       stateCode: row.code,
       stateName: rule.name,
-      programYear,
+      programYear: opts.programYear ?? PROGRAM_YEAR_BY_STATE[row.code] ?? SEED_PROGRAM_YEAR,
       status,
       statusChangedAt: null,
       openingDate: row.code === "TAS" ? "2026-08-17" : null,
@@ -188,7 +242,7 @@ export function buildSeedPrograms(opts: { programYear?: string } = {}): Record<s
       notes: withCarriedTranslations(rule.note, STATE_NOTE_TRANSLATIONS[rule.note]),
       aiSummary: field(rule.aiSummary),
       conditions: conditionsFor(row.code, rule.keyFacts),
-      scoring: scoringFor(row, rule.offshoreQuotaPressure),
+      scoring: scoringFor(row, status, rule.offshoreQuotaPressure),
       subclasses: subclassesFor(row.code),
       lastVerifiedAt: `${rule.lastVerified}T00:00:00.000Z`,
       lastVerifiedBy: "seed",

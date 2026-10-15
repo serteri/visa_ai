@@ -61,6 +61,60 @@ export function isUnconfirmedStatus(status: string | undefined | null): boolean 
   return status === "Check official page";
 }
 
+/** The program year the stored content describes is older than this when the state has not published the current year's settings yet. */
+export const CURRENT_PROGRAM_YEAR = "2026-27";
+
+/** "2026-27 not yet published" for a row whose content describes an earlier year; null when the row holds the current year. */
+export function nextYearNotPublishedNote(programYear: string): string | null {
+  return programYear < CURRENT_PROGRAM_YEAR ? `${CURRENT_PROGRAM_YEAR} not yet published` : null;
+}
+
+export type AvailabilityPair = { onshore: Array<"open" | "priority" | "closed" | "unknown">; offshore: Array<"open" | "limited" | "closed" | "unknown"> };
+
+/**
+ * The scoring availabilities a status allows (null = no constraint: a legacy status keeps the inputs it was scored with). Scoring inputs are derived from
+ * the status and must never contradict it. `exception` is the side an exception on the row opens ("closed except the exception").
+ */
+export function allowedAvailability(status: string, exception: "onshore" | "offshore" | "all" | null): AvailabilityPair | null {
+  switch (normalizeStateStatus(status)) {
+    case "Suspended / Closed":
+      return { onshore: ["closed"], offshore: ["closed"] };
+    case "Check official page":
+    case "Not yet published":
+      return { onshore: ["unknown"], offshore: ["unknown"] };
+    case "Closed with exceptions":
+      return { onshore: exception === "onshore" || exception === "all" ? ["closed", "priority"] : ["closed"], offshore: exception === "offshore" || exception === "all" ? ["closed", "limited"] : ["closed"] };
+    case "Open (Onshore only)":
+      return { onshore: ["open", "priority"], offshore: exception === "offshore" || exception === "all" ? ["closed", "limited"] : ["closed"] };
+    case "Open (Offshore only)":
+      return { onshore: exception === "onshore" || exception === "all" ? ["closed", "priority"] : ["closed"], offshore: ["open", "limited"] };
+    case "Open (Onshore & Offshore)":
+      return { onshore: ["open", "priority"], offshore: ["open", "limited"] };
+    default:
+      return null;
+  }
+}
+
+/** The availabilities a status implies, used to seed the scoring inputs (null for a legacy status: the dataset value is kept). */
+export function availabilityFor(status: string): { onshore: "open" | "closed" | "unknown"; offshore: "open" | "closed" | "unknown" } | null {
+  switch (normalizeStateStatus(status)) {
+    case "Suspended / Closed":
+    case "Closed with exceptions":
+      return { onshore: "closed", offshore: "closed" };
+    case "Check official page":
+    case "Not yet published":
+      return { onshore: "unknown", offshore: "unknown" };
+    case "Open (Onshore only)":
+      return { onshore: "open", offshore: "closed" };
+    case "Open (Offshore only)":
+      return { onshore: "closed", offshore: "open" };
+    case "Open (Onshore & Offshore)":
+      return { onshore: "open", offshore: "open" };
+    default:
+      return null;
+  }
+}
+
 /** The status in the reader's language (the report prints it). Values without a translation are printed as they are. */
 const LABELS: Record<string, { tr: string; "zh-Hans": string }> = {
   "Open (Onshore & Offshore)": { tr: "Açık (Avustralya içi ve dışı)", "zh-Hans": "开放（境内和境外）" },

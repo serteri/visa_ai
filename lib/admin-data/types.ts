@@ -65,8 +65,9 @@ export type StateExceptions = {
 
 /** The inputs the report's score formula needs (docs section A.5). Seeded from state-nomination-status.json; admin-edited in an advanced section. */
 export type ScoringInputs = {
-  offshoreAvailability: "open" | "limited" | "closed";
-  onshoreAvailability: "open" | "priority" | "closed";
+  /** "unknown": the status does not confirm the program is open ("Check official page", "Not yet published"); never counted as open. */
+  offshoreAvailability: "open" | "limited" | "closed" | "unknown";
+  onshoreAvailability: "open" | "priority" | "closed" | "unknown";
   minimumPoints: number;
   minimumEnglish: "competent" | "proficient" | "superior";
   minimumExperienceYears: number;

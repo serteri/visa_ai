@@ -89,12 +89,12 @@ async function main() {
     }
     t("every rule field (name, note, quota pressure, summary, key facts, verified date, source) equals state-rules-config.ts", diffs === 0, `${diffs} differences`);
     const row = (code: string) => seed.dataset.find((r) => r.code === code)!;
-    let dsDiffs = 0;
+    const dsDiffs: string[] = [];
     for (const j of stateDataset.states) {
       const r = row(j.code) as unknown as Record<string, unknown>;
-      for (const [k, v] of Object.entries(j)) if (k !== "status" && JSON.stringify(r[k]) !== JSON.stringify(v)) dsDiffs++;
+      for (const [k, v] of Object.entries(j)) if (k !== "status" && JSON.stringify(r[k]) !== JSON.stringify(v)) dsDiffs.push(`${j.code}.${k}`);
     }
-    t("every dataset field (scoring inputs, availability, special conditions) equals state-nomination-status.json", dsDiffs === 0, `${dsDiffs} differences`);
+    t("every dataset field equals state-nomination-status.json except the five the seed review derives from the status / rule (VIC closed, WA unknown, VIC and TAS quota pressure)", dsDiffs.sort().join(",") === "TAS.offshoreQuotaPressure,VIC.offshoreQuotaPressure,VIC.onshoreAvailability,WA.offshoreAvailability,WA.onshoreAvailability", dsDiffs.join(","));
     t("the only status changes are NT (Closed with exceptions) and TAS (spelling)", Object.values(STATE_RULES).filter((r) => normalizeStateStatus(r.status) !== seed.rules[r.code].status).map((r) => r.code).join(",") === "NT");
     t("NT carries its exception as a field (subclass 491, onshore, deadline 2027-09-30)", programs.NT.exceptions?.subclass === "491" && programs.NT.exceptions.appliesTo === "onshore" && programs.NT.exceptions.deadline === "2027-09-30" && /30 Sep 2027/.test(programs.NT.exceptions.text.en));
     t("TAS: opening 17 Aug 2026, allocations 1,250 / 800, fee AUD 387 excl. / 425.70 incl. GST", programs.TAS.openingDate === "2026-08-17" && programs.TAS.subclasses.find((s) => s.subclass === "190")?.allocation === 1250 && programs.TAS.subclasses.find((s) => s.subclass === "491")?.allocation === 800 && programs.TAS.subclasses[0].feeExclGst === 387 && programs.TAS.subclasses[0].feeInclGst === 425.7);
@@ -149,6 +149,9 @@ async function main() {
 
     const edit = clone(tas);
     edit.status = "Suspended / Closed";
+    edit.scoring.onshoreAvailability = "closed";
+    edit.scoring.offshoreAvailability = "closed";
+    edit.scoring.offshoreQuotaPressure = edit.scoring.ruleQuotaPressure = "closed";
     edit.subclasses[0].allocation = 1300;
     edit.notes.en = `${edit.notes.en} (edited)`;
     const saved = await saveStateProgram(store, ADMIN, edit, NOW);
@@ -270,6 +273,41 @@ async function main() {
     t("the seed script writes only with --execute and a matching --expect-rows; the default is a dry run", /args\.includes\("--execute"\)/.test(seedScript) && /--expect-rows must equal/.test(seedScript) && /Nothing was written/.test(seedScript));
     const editor = readFileSync("app/[locale]/(portal)/admin/crm/states/[code]/StateEditor.tsx", "utf8");
     t("the editor offers the draft-translation button, the reviewed tick, the history with restore, and mark verified", /Draft translation/.test(editor) && /I have read this translation/.test(editor) && /Restore the old value/.test(editor) && /Mark verified/.test(editor) && /GST basis/.test(editor));
+  }
+
+  {
+    // Seed review: scoring inputs follow the status, program years, quota pressure, residence tags.
+    const seeded = buildSeedPrograms();
+    const clone2 = <T,>(v: T): T => JSON.parse(JSON.stringify(v)) as T;
+    t("every seeded row passes the same validation the admin save runs", Object.values(seeded).every((p) => validateProgram(p, p).ok));
+    const withInputs = (code: string, status: string, on: string, off: string, extra: Partial<StateProgramData> = {}) => {
+      const p = clone2(seeded[code]) as StateProgramData;
+      p.status = status;
+      p.scoring.onshoreAvailability = on as never;
+      p.scoring.offshoreAvailability = off as never;
+      Object.assign(p, extra);
+      return validateProgram(p, seeded[code]);
+    };
+    t("Suspended / Closed with onshore open is rejected (the VIC case)", !withInputs("VIC", "Suspended / Closed", "open", "closed").ok);
+    t("Check official page with onshore and offshore open is rejected (the WA case)", !withInputs("WA", "Check official page", "open", "open").ok);
+    t("Check official page / Not yet published need unknown / unknown", withInputs("WA", "Check official page", "unknown", "unknown").ok && withInputs("WA", "Not yet published", "unknown", "unknown").ok && !withInputs("WA", "Not yet published", "closed", "unknown").ok);
+    t("Open (Onshore only): onshore open, offshore closed; offshore open is rejected", withInputs("TAS", "Open (Onshore only)", "open", "closed").ok && !withInputs("TAS", "Open (Onshore only)", "open", "open").ok && !withInputs("TAS", "Open (Onshore only)", "closed", "closed").ok);
+    t("Closed with exceptions: closed both sides, the exception's side may open only as limited / priority", withInputs("NT", "Closed with exceptions", "closed", "closed").ok && !withInputs("NT", "Closed with exceptions", "open", "closed").ok);
+    t("Open (Onshore & Offshore) cannot have a closed or unknown side", !withInputs("TAS", "Open (Onshore & Offshore)", "closed", "open").ok && !withInputs("TAS", "Open (Onshore & Offshore)", "unknown", "open").ok);
+    t("the seed derives the inputs from the status: VIC closed / closed, WA unknown / unknown, TAS open / closed, NT closed / closed",
+      seeded.VIC.scoring.onshoreAvailability === "closed" && seeded.VIC.scoring.offshoreAvailability === "closed" && seeded.WA.scoring.onshoreAvailability === "unknown" && seeded.WA.scoring.offshoreAvailability === "unknown" && seeded.TAS.scoring.onshoreAvailability === "open" && seeded.TAS.scoring.offshoreAvailability === "closed" && seeded.NT.scoring.onshoreAvailability === "closed" && seeded.NT.scoring.offshoreAvailability === "closed");
+    t("an unknown availability is never counted as open in the score dataset", seedStateData().dataset.filter((r) => r.onshoreAvailability === "unknown").every((r) => r.code === "WA"));
+    const q = clone2(seeded.TAS) as StateProgramData;
+    q.scoring.offshoreQuotaPressure = "low";
+    t("quota pressure must equal the rule's pressure (TAS low vs medium is rejected); the seed keeps one value per state", !validateProgram(q, seeded.TAS).ok && Object.values(seeded).every((p) => p.scoring.offshoreQuotaPressure === p.scoring.ruleQuotaPressure));
+    t("a closed status needs closed quota pressure", Object.values(seeded).filter((p) => ["Suspended / Closed", "Closed with exceptions"].includes(p.status)).every((p) => p.scoring.offshoreQuotaPressure === "closed"));
+    t("program years: NSW, VIC, WA, SA, QLD hold 2025-26; NT, TAS, ACT hold 2026-27", ["NSW", "VIC", "WA", "SA", "QLD"].every((c) => seeded[c].programYear === "2025-26") && ["NT", "TAS", "ACT"].every((c) => seeded[c].programYear === "2026-27"));
+    const doc = renderDryRun(Object.values(seeded));
+    t("the dry run shows '2026-27 not yet published' for the 2025-26 states only", (doc.match(/2026-27 not yet published/g) ?? []).length >= 5 && !/\| (NT|TAS|ACT) \|[^|]*\| 2026-27 \(2026-27 not yet published\)/.test(doc));
+    const tagged = Object.values(seeded).flatMap((p) => p.conditions.filter((c) => c.residenceRule).map((c) => `${p.stateCode}:${c.id}`));
+    t("residence tags only on conditions that state a residence requirement (not TAS c16 documents, not ACT c04 round data)", !tagged.includes("TAS:c16") && !tagged.includes("ACT:c04") && seeded.TAS.conditions.find((c) => c.id === "TAS:c16".slice(4))?.kind === "process" && seeded.ACT.conditions.find((c) => c.id === "c04")?.kind === "process" && tagged.every((k) => seeded[k.split(":")[0]].conditions.find((c) => c.id === k.split(":")[1])?.kind === "residence"));
+    t("NSW c02 (closure notice) is a process condition, not employment", seeded.NSW.conditions.find((c) => c.id === "c02")?.kind === "process");
+    t("every state with a residence requirement keeps its rule for the chat", ["NSW", "VIC", "SA", "QLD", "TAS", "ACT"].every((c) => stateResidenceRule(c, seedStateData()).requirement === "required") && stateResidenceRule("WA", seedStateData()).requirement === "not_required");
   }
 
   console.log(failures === 0 ? "\n✅ ALL CHECKS PASSED" : `\n❌ ${failures} CHECK(S) FAILED`);

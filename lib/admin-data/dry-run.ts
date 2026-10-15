@@ -1,4 +1,8 @@
+import { STATE_RULES } from "@/lib/state-nomination/state-rules-config";
+
+import { FIRST_BUILD_RESIDENCE_TAGS, matcherKindOf } from "./seed";
 import { SEED_STATUS_CHANGES } from "./seed";
+import { nextYearNotPublishedNote } from "./statuses";
 import type { StateProgramData } from "./types";
 
 /** The human-readable dry run of the seed (scripts/seed-admin-data.ts, docs/admin-data-seed-dry-run.md): exactly what would be written, per state. */
@@ -21,7 +25,7 @@ export function renderDryRun(programs: StateProgramData[], opts: { existing?: st
     const s491 = p.subclasses.find((s) => s.subclass === "491");
     const res = p.conditions.find((c) => c.residenceRule);
     const carried = [p.notes, ...p.conditions.map((c) => c.text), ...p.scoring.specialConditions].filter((f) => f.tr?.origin === "carried_over" || f["zh-Hans"]?.origin === "carried_over").length;
-    lines.push(`| ${p.stateCode} | ${p.status} | ${p.programYear} | ${p.openingDate ?? "—"} | ${s190?.allocation ?? "—"} / ${s491?.allocation ?? "—"} | ${money(s190?.feeExclGst ?? null)} / ${money(s190?.feeInclGst ?? null)} | ${p.conditions.length} | ${res ? `${res.residenceRule}${res.subclasses.length ? ` (${res.subclasses.join("/")} only)` : ""}` : "not stated"} | ${carried} |`);
+    lines.push(`| ${p.stateCode} | ${p.status} | ${p.programYear}${nextYearNotPublishedNote(p.programYear) ? ` (${nextYearNotPublishedNote(p.programYear)})` : ""} | ${p.openingDate ?? "—"} | ${s190?.allocation ?? "—"} / ${s491?.allocation ?? "—"} | ${money(s190?.feeExclGst ?? null)} / ${money(s190?.feeInclGst ?? null)} | ${p.conditions.length} | ${res ? `${res.residenceRule}${res.subclasses.length ? ` (${res.subclasses.join("/")} only)` : ""}` : "not stated"} | ${carried} |`);
   }
   lines.push("");
 
@@ -31,9 +35,28 @@ export function renderDryRun(programs: StateProgramData[], opts: { existing?: st
   lines.push("- **ACT** stays `High Demand`, **WA** stays `Check official page`: a legacy status is seeded unchanged so every report score stays exactly as it is today; change it in the admin page when you decide to.", "");
   lines.push("Translations: every Turkish / Chinese text customers already see today is carried over and marked **reviewed (carried over from the code)** so no report changes language on the day of the switch. Untick one in the admin page to make customers see English until you have re-read it.", "");
 
+  lines.push("## Review changes in this version of the seed", "");
+  lines.push("**Scoring inputs follow the status.** Suspended / Closed and Closed with exceptions: onshore and offshore closed. Check official page and Not yet published: unknown / unknown (never counted as open). Open (Onshore only): onshore open, offshore closed. Saving a row whose scoring inputs contradict its status is refused (seed and admin save run the same check). A legacy status (ACT `High Demand`) keeps the inputs it is scored with today.", "");
+  lines.push("**Program year** is the year the stored content describes: NSW, VIC, WA, SA, QLD hold 2025-26 (latest published; shown as \"2026-27 not yet published\"); NT, TAS, ACT hold 2026-27.", "");
+  lines.push("**Quota pressure** is one value per state (the rules file's): TAS now medium (was low in the score dataset), VIC closed (was low). A closed status requires closed pressure; the two stored fields must be equal.", "");
+  lines.push("**Condition categories and residence tags** (only where the result differs from the first seed build; every other condition is unchanged):", "");
+  let changes = 0;
+  for (const p of programs) {
+    for (const c of p.conditions) {
+      const key = `${p.stateCode}:${c.id}`;
+      const wasTag = FIRST_BUILD_RESIDENCE_TAGS[key] ?? "-";
+      const wasKind = FIRST_BUILD_RESIDENCE_TAGS[key] ? "residence" : matcherKindOf(c.text.en);
+      const nowTag = c.residenceRule ? `${c.residenceRule}${c.subclasses.length ? ` (${c.subclasses.join("/")})` : ""}` : "-";
+      if (wasKind === c.kind && wasTag === nowTag) continue;
+      changes++;
+      lines.push(`- ${p.stateCode} \`${c.id}\`: ${wasKind}, tag ${wasTag} -> **${c.kind}, tag ${nowTag}** — ${clip(c.text.en, 90)}`);
+    }
+  }
+  lines.push("", `${changes} conditions changed. Residence rule tags now: ${programs.map((p) => { const t = p.conditions.filter((c) => c.residenceRule); return `${p.stateCode} ${t.length ? t.map((c) => `${c.id}=${c.residenceRule}`).join(", ") : "none"}`; }).join("; ")}.`, "");
+
   for (const p of programs) {
     lines.push(`## ${p.stateName} (${p.stateCode}) ${existing.has(p.stateCode) ? "(already has a row: skipped)" : ""}`, "");
-    lines.push(`- Status: **${p.status}**; program year ${p.programYear}; opening ${p.openingDate ?? "—"}; closing ${p.closingDate ?? "—"}; last verified ${p.lastVerifiedAt.slice(0, 10)} (by ${p.lastVerifiedBy})`);
+    lines.push(`- Status: **${p.status}**; program year ${p.programYear}${nextYearNotPublishedNote(p.programYear) ? ` (**${nextYearNotPublishedNote(p.programYear)}**)` : ""}; opening ${p.openingDate ?? "—"}; closing ${p.closingDate ?? "—"}; last verified ${p.lastVerifiedAt.slice(0, 10)} (by ${p.lastVerifiedBy})`);
     lines.push(`- Official page: ${p.officialUrl ?? "—"}${p.extraUrls.length ? `; also watched: ${p.extraUrls.join(", ")}` : ""}`);
     lines.push(`- Sources (text): ${clip(p.sourceText, 400)}`);
     if (p.exceptions) lines.push(`- Exceptions (${p.exceptions.subclass ?? "any"}, ${p.exceptions.appliesTo ?? "—"}, deadline ${p.exceptions.deadline ?? "—"}): ${clip(p.exceptions.text.en, 400)}`);

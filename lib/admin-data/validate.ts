@@ -1,6 +1,6 @@
 import { z } from "zod";
 
-import { CURRENT_STATE_STATUSES, isStateStatus } from "./statuses";
+import { allowedAvailability, CURRENT_STATE_STATUSES, isClosedStatus, isStateStatus, normalizeStateStatus } from "./statuses";
 import type { LocalizedField, StateProgramData, SubclassData } from "./types";
 
 /**
@@ -50,8 +50,8 @@ const conditionSchema = z.object({
 });
 
 const scoringSchema = z.object({
-  offshoreAvailability: z.enum(["open", "limited", "closed"]),
-  onshoreAvailability: z.enum(["open", "priority", "closed"]),
+  offshoreAvailability: z.enum(["open", "limited", "closed", "unknown"]),
+  onshoreAvailability: z.enum(["open", "priority", "closed", "unknown"]),
   minimumPoints: z.number().int().min(0).max(200),
   minimumEnglish: z.enum(["competent", "proficient", "superior"]),
   minimumExperienceYears: z.number().min(0).max(30),
@@ -122,6 +122,14 @@ export function validateProgram(input: unknown, previous?: StateProgramData | nu
   if (!isStateStatus(p.status)) issues.push({ path: "status", message: "is not a known status" });
   else if (!(CURRENT_STATE_STATUSES as readonly string[]).includes(p.status) && previous?.status !== p.status) issues.push({ path: "status", message: `"${p.status}" is a legacy value and cannot be chosen; pick a current status` });
   if (p.status === "Closed with exceptions" && !(p.exceptions?.text.en ?? "").trim()) issues.push({ path: "exceptions", message: 'status "Closed with exceptions" needs the exceptions text' });
+  const allowed = isStateStatus(p.status) ? allowedAvailability(p.status, p.exceptions?.appliesTo ?? null) : null;
+  if (allowed) {
+    if (!allowed.onshore.includes(p.scoring.onshoreAvailability)) issues.push({ path: "scoring.onshoreAvailability", message: `"${p.scoring.onshoreAvailability}" contradicts the status "${p.status}" (allowed: ${allowed.onshore.join(" / ")})` });
+    if (!allowed.offshore.includes(p.scoring.offshoreAvailability)) issues.push({ path: "scoring.offshoreAvailability", message: `"${p.scoring.offshoreAvailability}" contradicts the status "${p.status}" (allowed: ${allowed.offshore.join(" / ")})` });
+  }
+  if (p.scoring.offshoreQuotaPressure !== p.scoring.ruleQuotaPressure) issues.push({ path: "scoring.offshoreQuotaPressure", message: `quota pressure "${p.scoring.offshoreQuotaPressure}" differs from the rule's "${p.scoring.ruleQuotaPressure}"; they must be the same value` });
+  if (isStateStatus(p.status) && isClosedStatus(p.status) && p.status !== "Not yet published" && p.scoring.offshoreQuotaPressure !== "closed") issues.push({ path: "scoring.offshoreQuotaPressure", message: `status "${p.status}" needs quota pressure "closed"` });
+  if (isStateStatus(p.status) && /^Open \(/.test(normalizeStateStatus(p.status)) && p.scoring.offshoreQuotaPressure === "closed") issues.push({ path: "scoring.offshoreQuotaPressure", message: `status "${p.status}" cannot have quota pressure "closed"; choose low, medium or high` });
   if (!p.notes.en.trim()) issues.push({ path: "notes.en", message: "the English note is required" });
   if (p.openingDate && p.closingDate && p.closingDate < p.openingDate) issues.push({ path: "closingDate", message: "is before the opening date" });
 

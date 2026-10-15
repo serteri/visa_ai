@@ -54,7 +54,7 @@ async function main() {
   t("a seeded NT is 'Closed with exceptions' and TAS is spelled 'Open (Onshore only)'", before.rules.NT.status === "Closed with exceptions" && before.rules.TAS.status === "Open (Onshore only)");
 
   const act = (await store.get("ACT"))!;
-  const edited = await saveStateProgram(store, ACTOR, { ...act, status: "Suspended / Closed" }, new Date("2026-10-16T00:00:00Z"));
+  const edited = await saveStateProgram(store, ACTOR, { ...act, status: "Suspended / Closed", scoring: { ...act.scoring, onshoreAvailability: "closed", offshoreAvailability: "closed", offshoreQuotaPressure: "closed", ruleQuotaPressure: "closed" } }, new Date("2026-10-16T00:00:00Z"));
   t("the edit saves", edited.ok === true);
   const snap = toSnapshot(Object.fromEntries((await store.list()).map((p) => [p.stateCode, p])), "db", "now");
   // Make the stored row look older than the seed's own verification date: the status must still be the admin's.
