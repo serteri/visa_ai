@@ -28,7 +28,7 @@ Baseline snapshots: `scratch/marketing-sprint/before/`. Implementation, checks a
 - Typecheck passed. Production build passed (2,091 static routes); one existing Turbopack file-tracing warning remains.
 - New marketing regression: 54 locale/metadata/occupation cases, sitemap membership, trust wording, source links, heading structure, unresolved-mapping suppression and analytics parameter safety.
 - Relevant suites passed: occupation SEO, TRA block, visa comparison, tool-page fees, occupation redirects/matching, fee provenance, state status precedence, nomination availability, no-verdict routes, content dates and translation checks. The TRA test's optional local-PDF comparison was skipped because the source-PDF/tool prerequisite was unavailable; committed source-data checks passed.
-- Browser checks passed against development and production builds: 26 route/viewport cases at 1440/820/390px, Turkish/Chinese smoke checks, a long occupation name, search navigation, Chef/TRA continuation, unresolved mapping, state references and both click events. No horizontal overflow or uncaught browser errors. Screenshots/results: `scratch/marketing-sprint/browser-built/`.
+- Browser checks passed against development, the local production build and the live production site: 26 route/viewport cases at 1440/820/390px, Turkish/Chinese smoke checks, a long occupation name, search navigation, Chef/TRA continuation, unresolved mapping, state references and both click events. Six additional local production checks covered the Australian calculator and visa comparison at all three widths. No horizontal overflow or uncaught browser errors. Screenshots/results: `scratch/marketing-sprint/browser-built/` and `scratch/marketing-sprint/browser-production/`. Scoped lint: 44 TypeScript/TSX files, zero errors/warnings.
 - Official state entry-point checks: ACT/NSW/QLD/SA/WA returned 200; NT/TAS/VIC returned bot/access 403, so their external content was not independently audited in this sprint. No inferred government hostnames are constructed.
 
 ## Boundaries
@@ -37,4 +37,21 @@ No marketplace, agent outreach, new languages, ads, bulk article generation or p
 
 ## Deployment
 
-Pending final commit/push and live verification. Production origin redirects from `logivisa.com` to `www.logivisa.com`; verification will check that final host and `/api/version` commit identity.
+Implementation commit **1cbeb011859428ab3bf048f035ca18bfae012eb3** was pushed to `main`. Vercel reported success at [production deployment](https://vercel.com/serters-projects-8267fb48/visa-ai/2DFzGotCisJkTNez5a6udHXWTbHt); the live `/api/version` returned that commit, `main`, and `production`. The apex redirects to canonical `www.logivisa.com`.
+
+Live checks on 17 October 2026: **20/20 final HTTP 200**; all 18 HTML canonicals point directly to the final URL, all have four hreflang entries, all titles contain the brand once. Sitemap: **1,794 unique URLs**, no `/en/` entries, five additional research destinations in all locales. Robots remains valid. Browser events were checked in the live data layer with GA network requests blocked; this verifies dispatch and safe payloads, not account-side GA receipt.
+
+| Production routes | HTTP | Observable result |
+| --- | --- | --- |
+| `/` | 200 | Research positioning and search/points/comparison hierarchy |
+| Carpenter, Chef, Electrician occupation pages | 200 each | Sourced TRA section and contextual research tools |
+| Software Engineer, Developer Programmer, Civil Engineer occupation pages | 200 each | Authority/program references, source dates and research links |
+| Australian points calculator / ANZSCO finder | 200 each | Correct direct canonicals; search continues into occupation research |
+| Skills assessment finder | 200 | 69 supported mappings; Chef resolves to TRA; missing/unresolved records show coverage gaps |
+| Visa comparison | 200 | Sourced 189/190/491 comparison; corrected metadata |
+| State nomination references | 200 | Historical-date/coverage caveats; no points ranking or prediction |
+| Document checklist | 200 | Existing checklist retained; corrected canonical/title |
+| Visa 189 / 190 / 491 / 482 / 500 | 200 each | Contextual continuation and corrected metadata |
+| Sitemap / robots | 200 each | Canonical research routes present; no duplicate sitemap URLs |
+
+Machine-readable production evidence: `scratch/marketing-sprint/after/results.json`; page snapshots, browser screenshots and event results are retained locally. A subsequent documentation-only verification commit does not change the tested application code.
