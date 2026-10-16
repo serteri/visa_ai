@@ -12,10 +12,10 @@ export function LandingFooter({ locale }: LandingFooterProps) {
   const isZh = locale === "zh-Hans";
 
   const tagline = isTr
-    ? "Avustralya göçmenlik yolunuzu gerçek verilerle, saniyeler içinde keşfedin."
+    ? "Kaynak bağlantılı araçlarla Avustralya vize ve meslek araştırması."
     : isZh
-      ? "基于真实数据，在几秒内发现您的澳大利亚移民路径。"
-      : "Discover your Australia migration path in seconds, grounded in real data.";
+      ? "通过来源链接与工具研究澳大利亚签证与职业。"
+      : "Australian visa and occupation research with source-linked tools.";
 
   const columns: Array<{ heading: string; links: Array<{ label: string; href: string }> }> = [
     {
@@ -27,7 +27,7 @@ export function LandingFooter({ locale }: LandingFooterProps) {
         },
         {
           label: isTr ? "Puan Hesaplayıcı" : isZh ? "积分计算器" : "Points Calculator",
-          href: `/${locale}/tools/points-calculator`,
+          href: `/${locale}/tools/points-calculator/australia`,
         },
         {
           label: isTr ? "Beceri Değerlendirme" : isZh ? "技能评估" : "Skills Assessment",
@@ -87,7 +87,7 @@ export function LandingFooter({ locale }: LandingFooterProps) {
             <div className="cf-mono mt-6 flex flex-wrap gap-x-5 gap-y-2 text-xs uppercase tracking-wide">
               <span className="flex items-center gap-2">
                 <span className="h-1.5 w-1.5 rounded-full bg-[var(--cf-accent)]" />
-                {isTr ? "ANZSCO 2026" : isZh ? "ANZSCO 2026" : "ANZSCO 2026"}
+                {isTr ? "ANZSCO" : isZh ? "ANZSCO" : "ANZSCO"}
               </span>
               <span className="flex items-center gap-2">
                 <span className="h-1.5 w-1.5 rounded-full bg-[var(--cf-accent)]" />

@@ -11,10 +11,12 @@ export type AnalyticsEventName =
   | "calculator_start"
   | "calculator_complete"
   | "comparison_page_view"
-  | "outbound_official_link_click";
+  | "outbound_official_link_click"
+  | "occupation_tool_click"
+  | "professional_help_click";
 
 /** The only parameters that may be sent, and the only value types. */
-const ALLOWED_PARAMS = ["occupation_code", "locale", "subclass", "calculator", "link_host", "page_type"] as const;
+const ALLOWED_PARAMS = ["occupation_code", "locale", "subclass", "calculator", "link_host", "page_type", "destination", "source_page_type", "source_page_id"] as const;
 type ParamKey = (typeof ALLOWED_PARAMS)[number];
 export type AnalyticsParams = Partial<Record<ParamKey, string>>;
 
@@ -22,7 +24,16 @@ export function sanitizeParams(params: Record<string, unknown> = {}): AnalyticsP
   const out: AnalyticsParams = {};
   for (const key of ALLOWED_PARAMS) {
     const v = params[key];
-    if (typeof v === "string" && v.length <= 64 && !/[@\s]/.test(v)) out[key] = v;
+    if (typeof v !== "string" || v.length > 64 || /[@\s]/.test(v)) continue;
+    if ((key === "occupation_code" || key === "source_page_id") && !/^\d{6}$/.test(v)) continue;
+    if (key === "locale" && !["en", "tr", "zh-Hans"].includes(v)) continue;
+    if (key === "subclass" && !/^\d{3}$/.test(v)) continue;
+    if (key === "calculator" && v !== "australia_points") continue;
+    if (key === "page_type" && !["occupation", "visa", "tool", "visa_comparison", "points_calculator"].includes(v)) continue;
+    if (key === "link_host" && !/^(?:[a-z0-9-]+\.)+[a-z]{2,}$/i.test(v)) continue;
+    if (key === "source_page_type" && !["occupation", "visa", "tool"].includes(v)) continue;
+    if (key === "destination" && !["points_calculator", "skills_assessment", "state_nomination", "anzsco_finder", "visa_comparison", "document_checklist"].includes(v)) continue;
+    out[key] = v;
   }
   return out;
 }

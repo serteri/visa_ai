@@ -15,8 +15,14 @@ import {
 import anzscoList from "@/src/data/anzsco-list.json";
 import assessingData from "@/src/data/assessing-bodies.json";
 import { useTranslation } from "@/contexts/language-context";
+import { ResearchLinks } from "@/components/research-links";
+import { researchText } from "@/lib/marketing/research-journey";
+import { publicPath } from "@/lib/seo/urls";
+import { buildOccupationSlug, findOccupationById } from "@/lib/occupations/seo";
+import { supportedToolMappings } from "@/lib/skills-assessment/tool-coverage";
 
 type Occupation = { code: string; title: string; skillLevel: string; duties: string[] };
+type OccupationInput = { code: string; title_en?: string; title?: string; title_tr?: string; title_zh?: string; keywords?: string[]; skillLevel?: string | number; duties_en?: string[]; duties?: string[] };
 type Localized = string | { en: string; tr: string; "zh-Hans": string };
 type FeeFields = {
   fee: string;
@@ -43,7 +49,7 @@ function pickLocalized(value: Localized | undefined, locale: string): string {
   return locale === "tr" ? value.tr : locale === "zh-Hans" ? value["zh-Hans"] : value.en;
 }
 
-const OCCUPATIONS = (anzscoList as any[]).map((o) => ({
+const OCCUPATIONS = (anzscoList as OccupationInput[]).map((o) => ({
   code: o.code,
   title: o.title_en || o.title || "",
   title_tr: o.title_tr,
@@ -52,10 +58,11 @@ const OCCUPATIONS = (anzscoList as any[]).map((o) => ({
   skillLevel: String(o.skillLevel || ""),
   duties: o.duties_en || o.duties || [],
 })) as (Occupation & { title_tr?: string; title_zh?: string; keywords?: string[] })[];
-const { assessingBodies, occupationMapping } = assessingData as {
+const { assessingBodies, occupationMapping: legacyMapping } = assessingData as {
   assessingBodies: Record<string, AssessingBody>;
   occupationMapping: Record<string, string>;
 };
+const occupationMapping = supportedToolMappings(legacyMapping);
 
 const COLOR_MAP: Record<string, string> = {
   blue: "bg-blue-500/10 text-blue-700 border-blue-500/30",
@@ -121,17 +128,18 @@ for (const bodyKey of Object.values(occupationMapping)) {
   bodyCounts[bodyKey] = (bodyCounts[bodyKey] ?? 0) + 1;
 }
 
-function getLocalizedTitle(o: any, locale: string): string {
+function getLocalizedTitle(o: Occupation & { title_tr?: string; title_zh?: string }, locale: string): string {
   if (locale === "tr") return o.title_tr || o.title;
   if (locale === "zh-Hans") return o.title_zh || o.title;
   return o.title;
 }
 
-export function SkillsAssessmentClient({ locale }: { locale: string }) {
+export function SkillsAssessmentClient({ locale, initialQuery }: { locale: string; initialQuery?: string }) {
   const { t } = useTranslation();
-  const [query, setQuery] = useState("");
+  const text = (en: string, tr: string, zh: string) => researchText(locale, en, tr, zh);
+  const [query, setQuery] = useState(initialQuery ?? "");
   const [dropdownOpen, setDropdownOpen] = useState(false);
-  const [selected, setSelected] = useState<Occupation | null>(null);
+  const [selected, setSelected] = useState<Occupation | null>(() => OCCUPATIONS.find(o => o.code === initialQuery) ?? null);
   const [bodyFilter, setBodyFilter] = useState<string | null>(null);
   const inputRef = useRef<HTMLInputElement>(null);
   const dropdownRef = useRef<HTMLDivElement>(null);
@@ -172,15 +180,10 @@ export function SkillsAssessmentClient({ locale }: { locale: string }) {
   }
 
   const selectedBodyKey = selected ? occupationMapping[selected.code] : null;
+  const selectedPage = selected ? findOccupationById(selected.code) : null;
   const selectedBody = selectedBodyKey && selected
     ? { ...assessingBodies[selectedBodyKey], ...assessingBodies[selectedBodyKey].occupationOverrides?.[selected.code] }
     : null;
-
-  // For "all bodies" grid — filtered if bodyFilter is set
-  const allBodies = Object.entries(assessingBodies).filter(([key]) => {
-    if (!bodyFilter) return true;
-    return key === bodyFilter;
-  });
 
   // Occupations for the filtered body
   const filteredOccupations = useMemo(() => {
@@ -204,6 +207,7 @@ export function SkillsAssessmentClient({ locale }: { locale: string }) {
             <p className="mt-4 text-lg text-slate-600">
               {t("sa.subtitle", "Enter your occupation or ANZSCO code to instantly find the right assessing authority for your Australian skilled migration application.")}
             </p>
+            <p className="mt-3 text-sm text-slate-500">{Object.keys(occupationMapping).length} {text("explicit occupation mappings", "meslek-kurum kaydı", "条明确职业对应记录")} · {Object.keys(bodyCounts).length} {text("directory entries. Coverage is limited; unresolved mappings are omitted and no personal assessment is made.", "dizin kaydı. Kapsam sınırlıdır; çözülmemiş kayıtlar gösterilmez ve kişisel değerlendirme yapılmaz.", "个目录条目。覆盖范围有限；未解决的对应关系不显示，也不进行个人评估。")}</p>
           </div>
         </div>
       </section>
@@ -221,10 +225,12 @@ export function SkillsAssessmentClient({ locale }: { locale: string }) {
                 onChange={(e) => {
                   setQuery(e.target.value);
                   setDropdownOpen(true);
-                  if (!e.target.value) setSelected(null);
+                  setSelected(null);
                 }}
                 onFocus={() => query && setDropdownOpen(true)}
                 placeholder={t("sa.searchPlaceholder", "Enter occupation title or ANZSCO code…")}
+                aria-label={t("sa.searchPlaceholder", "Enter occupation title or ANZSCO code")}
+                onKeyDown={event => { if (event.key === "Enter" && suggestions[0]) selectOccupation(suggestions[0]); }}
                 className="h-16 w-full rounded-xl border border-slate-200 bg-white pl-14 pr-5 text-lg text-slate-900 outline-none transition focus:border-[#53917E] focus:ring-2 focus:ring-[#53917E]/20"
               />
               {/* Dropdown */}
@@ -240,7 +246,7 @@ export function SkillsAssessmentClient({ locale }: { locale: string }) {
                       <button
                         key={occ.code}
                         type="button"
-                        onMouseDown={() => selectOccupation(occ)}
+                        onClick={() => selectOccupation(occ)}
                         className="flex w-full items-center justify-between gap-4 px-4 py-3 text-left transition hover:bg-[#53917E]/10 first:rounded-t-xl last:rounded-b-xl"
                       >
                         <div>
@@ -377,10 +383,10 @@ export function SkillsAssessmentClient({ locale }: { locale: string }) {
                       <ExternalLink className="h-3.5 w-3.5" />
                     </a>
                     <Link
-                      href={`/${locale}/full-check`}
+                      href={publicPath(locale, "/tools/points-calculator/australia")}
                       className="flex items-center gap-2 rounded-xl border border-slate-200 bg-card px-5 py-2.5 text-sm font-semibold text-slate-600 transition hover:bg-[#53917E]/10"
                     >
-                      {t("sa.getFreeConsultation", "Get free consultation")}
+                      {text("Calculate points", "Puan hesapla", "计算积分")}
                       <ArrowRight className="h-3.5 w-3.5" />
                     </Link>
                   </div>
@@ -409,10 +415,10 @@ export function SkillsAssessmentClient({ locale }: { locale: string }) {
                   <span className="font-bold">{getLocalizedTitle(selected, locale)}</span> ({selected.code})
                 </p>
                 <p className="mt-1 text-sm text-amber-700/80">
-                  {t("sa.noMappingText", "This occupation may be assessed by VETASSESS or may not require a skills assessment for all visa types. Check with the Department of Home Affairs or a registered migration agent.")}
+                  {t("sa.noMappingText", "No verified mapping is held here. This is a coverage gap, not a conclusion about skills assessment or visa requirements. Consult the official occupation list.")}
                 </p>
                 <a
-                  href="https://immi.homeaffairs.gov.au/visas/working-in-australia/skillselect/eligible-skilled-occupations"
+                  href="https://immi.homeaffairs.gov.au/visas/working-in-australia/skill-occupation-list"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="mt-3 inline-flex items-center gap-1.5 text-sm font-semibold text-amber-700 hover:underline"
@@ -424,6 +430,12 @@ export function SkillsAssessmentClient({ locale }: { locale: string }) {
           </div>
         )}
 
+        {selected && <ResearchLinks locale={locale} code={selected.code} links={[
+          ...(selectedPage ? [{ label: text("Read occupation details", "Meslek bilgileri", "阅读职业详情"), path: `/occupations/${buildOccupationSlug(selectedPage)}`, destination: "anzsco_finder" }] : []),
+          { label: text("Calculate points", "Puan hesapla", "计算积分"), path: "/tools/points-calculator/australia", destination: "points_calculator" },
+          { label: text("Explore document checklist references", "Belge kontrol listesi kaynakları", "探索材料清单参考"), path: "/tools/document-checklist-2026", destination: "document_checklist" },
+        ]} />}
+        {query.trim() && !selected && suggestions.length === 0 && <p role="status" className="rounded-xl border border-slate-200 p-4 text-sm text-slate-600">{text("No matching record in this finder. Try another title or code, or use the official occupation list. Missing coverage does not determine visa or assessment requirements.", "Bu araçta eşleşen kayıt yok. Başka ad veya kod deneyin ya da resmî meslek listesine bakın. Veri eksikliği vize veya değerlendirme şartlarını belirlemez.", "本工具未找到匹配记录。请尝试其他名称或代码，或查阅官方职业清单。缺少数据不能确定签证或评估要求。")}</p>}
         {/* All assessing bodies grid */}
         <div>
           <div className="mb-4 flex items-center justify-between gap-3">
@@ -439,31 +451,29 @@ export function SkillsAssessmentClient({ locale }: { locale: string }) {
             )}
           </div>
           <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-            {Object.entries(assessingBodies).map(([key, body]) => {
+            {Object.entries(assessingBodies).filter(([key]) => bodyCounts[key] > 0).map(([key, body]) => {
               const count = bodyCounts[key] ?? 0;
               const isActive = bodyFilter === key;
               return (
-                <button
+                <div
                   key={key}
-                  type="button"
-                  onClick={() => setBodyFilter(isActive ? null : key)}
                   className={`rounded-xl border p-4 text-left transition ${
                     isActive
                       ? "border-[#53917E]/40 bg-[#53917E]/10 shadow-md"
                       : "border-slate-200 bg-card hover:border-[#53917E]/30 hover:bg-[#53917E]/10"
                   }`}
                 >
-                  <div className="flex items-start gap-3">
+                  <button type="button" onClick={() => setBodyFilter(isActive ? null : key)} aria-pressed={isActive} className="flex w-full items-start gap-3 text-left">
                     <span
                       className={`mt-0.5 h-3 w-3 shrink-0 rounded-full ${
                         DOT_MAP[body.color] ?? "bg-[#53917E]"
                       }`}
                     />
                     <div className="min-w-0 flex-1">
-                      <p className="truncate text-sm font-bold text-slate-900">{body.shortName}</p>
-                      <p className="mt-0.5 truncate text-xs text-slate-600">{body.name}</p>
+                      <p className="break-words text-sm font-bold text-slate-900">{body.shortName}</p>
+                      <p className="mt-0.5 break-words text-xs text-slate-600">{body.name}</p>
                     </div>
-                  </div>
+                  </button>
                   <div className="mt-3 flex items-center justify-between gap-2">
                     <span className="text-xs text-slate-600">{count} {t("sa.occupations", "occupations")}</span>
                     <a
@@ -476,7 +486,7 @@ export function SkillsAssessmentClient({ locale }: { locale: string }) {
                       {t("sa.website", "Website")} <ExternalLink className="h-3 w-3" />
                     </a>
                   </div>
-                </button>
+                </div>
               );
             })}
           </div>
@@ -518,19 +528,6 @@ export function SkillsAssessmentClient({ locale }: { locale: string }) {
           ))}
         </div>
 
-        {/* Bottom CTA */}
-        <div className="rounded-2xl border border-[#53917E]/20 bg-[#53917E]/10 p-6">
-          <h3 className="text-base font-bold text-slate-900">{t("sa.bottomCtaTitle", "Need a clear visa strategy?")}</h3>
-          <p className="mt-1 text-sm text-slate-600">
-            {t("sa.bottomCtaText", "Stop guessing. Get your personalized 20-page AI-powered PR report covering your exact points, state demand, and next steps.")}
-          </p>
-          <Link
-            href={`/${locale}/full-check`}
-            className="mt-4 inline-flex items-center gap-2 rounded-xl bg-[#53917E] px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-[#53917E]/90"
-          >
-            {t("sa.bottomCtaButton", "Get your Premium Report ➔")}
-          </Link>
-        </div>
       </div>
     </main>
   );

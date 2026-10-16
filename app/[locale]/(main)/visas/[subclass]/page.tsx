@@ -1,16 +1,18 @@
+import { pageAlternates, publicUrl, SITE_ORIGIN } from "@/lib/seo/urls";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { ArrowRight, ExternalLink, BadgeCheck, Clock3, DollarSign, ListChecks, Sparkles } from "lucide-react";
+import { ExternalLink, BadgeCheck, Clock3, DollarSign, ListChecks, Sparkles } from "lucide-react";
 
 import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { VisaPdfDownloadCard } from "@/components/visa-pdf-download-card";
 import { getTranslations } from "@/lib/i18n/get-translations";
 import type { Locale } from "@/lib/i18n/config";
 import visaDetails from "@/src/data/visa-details.json";
 import subclass186Raw from "@/src/data/visas/subclass-186.json";
+import { ResearchLinks } from "@/components/research-links";
+import { researchLinks, researchText, type ResearchLink } from "@/lib/marketing/research-journey";
 
 type PageProps = {
   params: Promise<{ locale: string; subclass: string }>;
@@ -109,7 +111,7 @@ const VISA_DETAILS: VisaDetail[] = [
       : undefined,
   })) as VisaDetail[],
 ];
-const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL?.trim() || "http://localhost:3000";
+const BASE_URL = SITE_ORIGIN;
 
 export const dynamic = "force-static";
 export const revalidate = false;
@@ -285,25 +287,18 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   const normalizedSubclass = normalizeSubclass(subclass);
   const visaName = t(translations, `visas.visa${normalizedSubclass}name`, getLocalizedVisaName(visa, locale));
   const visaDescription = t(translations, `visas.visa${normalizedSubclass}desc`, getLocalizedVisaDescription(visa, locale));
-  const title = `${visaName} | LogiVisa Hub`;
+  const title = `${visaName} (${normalizedSubclass})`;
 
   return {
     metadataBase: new URL(BASE_URL),
     title,
     description: visaDescription,
-    alternates: {
-      canonical: `/${locale}/visas/${visa.subclass}`,
-      languages: {
-        en: `/en/visas/${visa.subclass}`,
-        tr: `/tr/visas/${visa.subclass}`,
-        "zh-Hans": `/zh-Hans/visas/${visa.subclass}`,
-      },
-    },
+    alternates: pageAlternates(locale, `/visas/${visa.subclass}`),
     openGraph: {
       title,
       description: visaDescription,
       type: "website",
-      url: `/${locale}/visas/${visa.subclass}`,
+      url: publicUrl(locale, `/visas/${visa.subclass}`),
     },
   };
 }
@@ -322,8 +317,6 @@ export default async function VisaSubclassPage({ params }: PageProps) {
   const requirementsLabel = t(translations, "visas.requirements", "Requirements");
   const applicationStepsLabel = t(translations, "visas.applicationSteps", "Application Steps");
   const officialInfoLabel = t(translations, "visas.officialInfo", "Official Information");
-  const checkEligibilityLabel = t(translations, "visas.checkEligibility", "View the Visa Information Report");
-  const checkEligibilityDesc = t(translations, "visas.checkEligibilityDesc", "Published facts for every visa and state, with sources and dates");
   const visitOfficialWebsiteLabel = t(translations, "visas.visitOfficialWebsite", "Visit official website");
   const visitIRCCLabel = t(translations, "visas.visitIRCC", locale === "tr" ? "IRCC Sitesini Ziyaret Et" : locale === "zh-Hans" ? "访问 IRCC 官网" : "Visit IRCC website");
   const backToVisasLabel = t(translations, "visas.backToVisas", "Back to visas");
@@ -335,6 +328,11 @@ export default async function VisaSubclassPage({ params }: PageProps) {
   const requirements = getLocalizedVisaList(visa, locale, "requirements");
   const steps = getLocalizedVisaList(visa, locale, "steps");
   const officialUrl = visa.officialUrl;
+  const nextLinks: ResearchLink[] = ["189", "190", "491"].includes(normalizedSubclass)
+    ? researchLinks(locale).filter(link => link.destination !== "skills_assessment")
+    : normalizedSubclass === "482"
+      ? researchLinks(locale).filter(link => ["anzsco_finder", "skills_assessment"].includes(link.destination))
+      : [];
   const pdfSnapshotUrls = visa.pdfSnapshotUrls?.filter((url) => Boolean(url)) ?? [];
   const fee = formatFee(locale, visa.fee, subclass);
   const minPointsText = getMinPointsLabel(translations, visa.minPoints);
@@ -435,12 +433,6 @@ export default async function VisaSubclassPage({ params }: PageProps) {
               </div>
 
               <div className="flex flex-wrap gap-3">
-                <Link href={`/${locale}/full-check`}>
-                  <Button className="bg-cyan-600 text-white hover:bg-cyan-700">
-                    <span>{checkEligibilityLabel}</span>
-                    <ArrowRight className="ml-2 h-4 w-4" />
-                  </Button>
-                </Link>
                 <a
                   href={officialUrl}
                   target="_blank"
@@ -452,7 +444,6 @@ export default async function VisaSubclassPage({ params }: PageProps) {
                 </a>
               </div>
 
-              <p className="text-sm text-slate-500 dark:text-slate-400">{checkEligibilityDesc}</p>
             </CardContent>
           </Card>
 
@@ -684,6 +675,8 @@ export default async function VisaSubclassPage({ params }: PageProps) {
       </section>
 
       <section className="mx-auto max-w-6xl px-4 pb-16 sm:px-6 lg:px-8">
+        {nextLinks.length > 0 && <div className="mb-8"><ResearchLinks locale={locale} links={nextLinks} /></div>}
+        {normalizedSubclass === "500" && <nav className="mb-8 rounded-2xl border border-slate-200 bg-white p-6"><h2 className="text-xl font-semibold text-slate-900">{researchText(locale, "Student visa document research", "Öğrenci vizesi belge kaynakları", "学生签证材料研究")}</h2><p className="mt-3 text-sm text-slate-600">{researchText(locale, "The Student visa page on Home Affairs provides its official document guidance and application steps. Our skilled-visa checklist does not cover subclass 500.", "İçişleri Bakanlığı öğrenci vizesi sayfasında resmî belge bilgileri ve başvuru adımları bulunur. Nitelikli vize kontrol listemiz 500 alt sınıfını kapsamaz.", "内政部学生签证页面提供官方材料指导及申请步骤。本网站技术签证清单不涵盖 500 子类。")}</p><a href={officialUrl} data-official-source target="_blank" rel="noopener noreferrer" className="mt-4 inline-block py-2 text-sm font-semibold text-cyan-900 underline">{researchText(locale, "Official Student visa document guidance", "Resmî öğrenci vizesi belge bilgileri", "官方学生签证材料指导")} →</a></nav>}
         {pdfSnapshotUrls.length > 0 ? (
           <div className="mb-6">
             <VisaPdfDownloadCard

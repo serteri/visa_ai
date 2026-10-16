@@ -2,28 +2,54 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound, permanentRedirect } from "next/navigation";
 
+import { OccupationToolClickTracker } from "@/components/analytics/occupation-tool-click-tracker";
 import { OccupationViewTracker } from "@/components/analytics/occupation-view-tracker";
 import { Badge } from "@/components/ui/badge";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardHeader } from "@/components/ui/card";
+import { TraSkillsAssessment } from "@/components/occupations/tra-skills-assessment";
+import { ResearchLinks, ProfessionalHelp } from "@/components/research-links";
+import {
+  researchText,
+  STATE_RESEARCH_SOURCES,
+} from "@/lib/marketing/research-journey";
+import { resolveAssessingAuthority } from "@/lib/skills-assessment/resolve-authority";
+import assessingBodies from "@/src/data/assessing-bodies.json";
 import { activeLocales, isValidLocale, type Locale } from "@/lib/i18n/config";
 import { occupationPageContent } from "@/lib/occupations/page-content";
 import { occupationRedirectFor } from "@/lib/occupations/redirects";
-import { buildOccupationSlug, findOccupationById, getUniqueOccupations } from "@/lib/occupations/seo";
-import { pageAlternates, publicPath, publicUrl, SITE_ORIGIN } from "@/lib/seo/urls";
+import {
+  buildOccupationSlug,
+  findOccupationById,
+  getUniqueOccupations,
+} from "@/lib/occupations/seo";
+import {
+  pageAlternates,
+  publicPath,
+  publicUrl,
+  SITE_ORIGIN,
+} from "@/lib/seo/urls";
 
 // SSG: every {locale} x {listed occupation} page is pre-rendered at build time. getUniqueOccupations() is the same set
 // findOccupationById() resolves, so no generated slug 404s.
 export function generateStaticParams() {
   const occupations = getUniqueOccupations();
-  return activeLocales.flatMap((locale) => occupations.map((occupation) => ({ locale, id: buildOccupationSlug(occupation) })));
+  return activeLocales.flatMap((locale) =>
+    occupations.map((occupation) => ({
+      locale,
+      id: buildOccupationSlug(occupation),
+    })),
+  );
 }
 
 type PageProps = { params: Promise<{ locale: string; id: string }> };
 
-export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
+export async function generateMetadata({
+  params,
+}: PageProps): Promise<Metadata> {
   const { locale, id } = await params;
   const occupation = findOccupationById(id);
-  if (!occupation || !isValidLocale(locale)) return { robots: { index: false, follow: false } };
+  if (!occupation || !isValidLocale(locale))
+    return { robots: { index: false, follow: false } };
 
   const content = occupationPageContent(occupation, locale);
   const path = `/occupations/${content.slug}`;
@@ -33,13 +59,23 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
     description: content.description,
     alternates: pageAlternates(locale, path),
     // Thin pages (little or no unique data -- lib/occupations/richness.ts) stay out of the index until they carry some.
-    robots: content.richness.tier === "thin" ? { index: false, follow: true } : { index: true, follow: true },
+    robots:
+      content.richness.tier === "thin"
+        ? { index: false, follow: true }
+        : { index: true, follow: true },
     openGraph: {
       title: content.title,
       description: content.description,
       type: "article",
       url: publicUrl(locale, path),
-      images: [{ url: "/og/default-og.png", width: 1200, height: 630, alt: `${content.displayName} ${content.code}` }],
+      images: [
+        {
+          url: "/og/default-og.png",
+          width: 1200,
+          height: 630,
+          alt: `${content.displayName} ${content.code}`,
+        },
+      ],
     },
   };
 }
@@ -52,36 +88,148 @@ export default async function OccupationDetailsPage({ params }: PageProps) {
   if (!occupation) {
     // A code that was published once (no page now) goes to the occupation index; only a code that never existed is a 404.
     // proxy.ts answers this with a 301 before rendering; this is the same answer if the proxy was bypassed.
-    const moved = occupationRedirectFor(publicPath(locale, `/occupations/${id}`));
+    const moved = occupationRedirectFor(
+      publicPath(locale, `/occupations/${id}`),
+    );
     if (moved) permanentRedirect(moved.to);
     notFound();
   }
 
   const c = occupationPageContent(occupation, locale as Locale);
+  const text = (en: string, tr: string, zh: string) =>
+    researchText(locale, en, tr, zh);
+  const resolved = resolveAssessingAuthority(c.code);
+  const authority = c.richness.authority ? resolved.authority : undefined;
+  const authorityKey =
+    (
+      { EA: "Engineers Australia", CPA: "CPAA", "CA-ANZ": "ICAA" } as Record<
+        string,
+        string
+      >
+    )[resolved.authorityId] ?? resolved.authorityId;
+  const authorityWebsite = (
+    assessingBodies.assessingBodies as Record<string, { website: string }>
+  )[authorityKey]?.website;
+  const programs =
+    authority?.pathways.map((p) =>
+      typeof p.name === "string" ? p.name : p.name[locale as Locale],
+    ) ?? [];
+  const relatedOccupations = getUniqueOccupations()
+    .filter(
+      (record) =>
+        record.anzsco_code !== c.code &&
+        record.anzsco_code.slice(0, 4) === c.code.slice(0, 4),
+    )
+    .slice(0, 4);
   // One URL per occupation: a slug with the right code but different words resolves to the canonical slug.
-  if (id !== c.slug) permanentRedirect(publicPath(locale, `/occupations/${c.slug}`));
+  if (id !== c.slug)
+    permanentRedirect(publicPath(locale, `/occupations/${c.slug}`));
 
-  const row = "flex flex-col gap-1 border-b border-slate-100 py-3 sm:flex-row sm:gap-6";
-  const rowLabel = "w-full shrink-0 text-sm font-semibold text-slate-700 sm:w-64";
+  const row =
+    "flex flex-col gap-1 border-b border-slate-100 py-3 sm:flex-row sm:gap-6";
+  const rowLabel =
+    "w-full shrink-0 text-sm font-semibold text-slate-700 sm:w-64";
   const rowValue = "text-sm text-slate-600";
 
   return (
     <main className="ambient-bg relative flex-1 overflow-hidden py-12 sm:py-16">
       <OccupationViewTracker occupationCode={c.code} locale={locale} />
+      <OccupationToolClickTracker occupationCode={c.code} locale={locale} />
       <section className="relative mx-auto w-full max-w-4xl space-y-8 px-4 sm:px-6 lg:px-8">
         <header className="rounded-3xl border border-slate-200/80 bg-white/95 p-8 shadow-xl shadow-slate-900/5 sm:p-10">
-          <Badge variant="outline" className="border-cyan-200 bg-cyan-50 text-cyan-900">
+          <Badge
+            variant="outline"
+            className="border-cyan-200 bg-cyan-50 text-cyan-900"
+          >
             ANZSCO {c.code}
           </Badge>
-          <h1 className="mt-5 text-3xl font-extrabold tracking-tight text-slate-900 sm:text-4xl">{c.h1}</h1>
-          <p className="mt-4 text-base text-slate-600">{c.intro}</p>
+          <h1 className="mt-5 text-3xl font-extrabold tracking-tight text-slate-900 sm:text-4xl">
+            {c.h1}
+          </h1>
+          <p className="mt-4 text-base text-slate-600">
+            {c.duties[0] ?? c.intro}
+          </p>
+          <p className="mt-3 text-xs leading-relaxed text-slate-500">
+            {text(
+              "ANZSCO classification reference. List and visa sources may use different classification editions; this page does not classify an individual's work.",
+              "ANZSCO sınıflandırma referansı. Liste ve vize kaynakları farklı sürümler kullanabilir; bu sayfa kişinin işini sınıflandırmaz.",
+              "ANZSCO 分类参考。清单与签证来源可能使用不同分类版本；本页不对个人工作进行分类。",
+            )}
+          </p>
         </header>
+
+        {c.tra ? <TraSkillsAssessment block={c.tra} locale={locale} /> : (
+          <section className="rounded-2xl border border-slate-200 bg-white p-6 sm:p-8">
+            <h2 className="text-xl font-semibold text-slate-900">
+              {text(
+                "Skills assessment references",
+                "Beceri değerlendirme kaynakları",
+                "技能评估参考",
+              )}
+            </h2>
+            <p className="mt-3 font-medium text-slate-800">
+              {c.details.authority ?? c.labels.authorityNone}
+            </p>
+            {programs.length > 0 && (
+              <ul className="mt-3 list-disc space-y-1 pl-5 text-sm text-slate-600">
+                {programs.map((program) => (
+                  <li key={program}>{program}</li>
+                ))}
+              </ul>
+            )}
+            {authority && (
+              <p className="mt-3 break-words text-xs leading-relaxed text-slate-500">
+                {authority.sourceDocument} ·{" "}
+                {text("Last reviewed", "Son kontrol", "最近核对")}:{" "}
+                {authority.lastVerified}
+              </p>
+            )}
+            <p className="mt-3 text-sm text-slate-600">
+              {text(
+                "Published assessment programs are reference information, not a decision about which program applies to an individual.",
+                "Yayımlanmış değerlendirme programları kaynak bilgisidir; kişiye hangi programın uygulanacağını belirlemez.",
+                "已公布的评估类别仅供参考，不确定个人适用的评估类别。",
+              )}
+            </p>
+            <div className="mt-4 flex flex-wrap gap-x-5 gap-y-3 text-sm font-medium text-cyan-900">
+              <Link
+                data-tool-destination="skills_assessment"
+                href={publicPath(
+                  locale,
+                  `/tools/skills-assessment?q=${c.code}`,
+                )}
+                className="underline"
+              >
+                {text(
+                  "Explore skills assessment",
+                  "Beceri değerlendirmesi",
+                  "探索技能评估",
+                )}
+              </Link>
+              {authorityWebsite && (
+                <a
+                  data-official-source
+                  href={authorityWebsite}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="underline"
+                >
+                  {text(
+                    "Official authority source",
+                    "Resmî kurum kaynağı",
+                    "评估机构官方来源",
+                  )}
+                </a>
+              )}
+            </div>
+          </section>
+        )}
 
         <Card className="border-slate-200/80 bg-white/95 shadow-lg shadow-slate-900/5">
           <CardHeader>
-            <CardTitle>
-              <h2>{c.headings.details}</h2>
-            </CardTitle>
+            <h2 className="text-lg font-semibold leading-none tracking-tight">
+              {c.headings.details}
+            </h2>
           </CardHeader>
           <CardContent>
             <dl>
@@ -91,16 +239,22 @@ export default async function OccupationDetailsPage({ params }: PageProps) {
               </div>
               <div className={row}>
                 <dt className={rowLabel}>{c.labels.authority}</dt>
-                <dd className={rowValue}>{c.details.authority ?? c.labels.authorityNone}</dd>
+                <dd className={rowValue}>
+                  {c.details.authority ?? c.labels.authorityNone}
+                </dd>
               </div>
               <div className={row}>
                 <dt className={rowLabel}>{c.labels.lists}</dt>
-                <dd className={rowValue}>{c.details.lists ?? c.labels.listsNone}</dd>
+                <dd className={rowValue}>
+                  {c.details.lists ?? c.labels.listsNone}
+                </dd>
               </div>
               {c.details.subclasses.length > 0 && (
                 <div className={row}>
                   <dt className={rowLabel}>{c.labels.subclasses}</dt>
-                  <dd className={rowValue}>{c.details.subclasses.join(", ")}</dd>
+                  <dd className={rowValue}>
+                    {c.details.subclasses.join(", ")}
+                  </dd>
                 </div>
               )}
             </dl>
@@ -109,9 +263,9 @@ export default async function OccupationDetailsPage({ params }: PageProps) {
 
         <Card className="border-slate-200/80 bg-white/95 shadow-lg shadow-slate-900/5">
           <CardHeader>
-            <CardTitle>
-              <h2>{c.headings.states}</h2>
-            </CardTitle>
+            <h2 className="text-lg font-semibold leading-none tracking-tight">
+              {c.headings.states}
+            </h2>
           </CardHeader>
           <CardContent className="space-y-3">
             {c.stateRows.length > 0 ? (
@@ -119,9 +273,15 @@ export default async function OccupationDetailsPage({ params }: PageProps) {
                 <table className="w-full text-left text-sm">
                   <thead>
                     <tr className="border-b border-slate-200 text-slate-700">
-                      <th className="py-2 pr-4 font-semibold">{c.labels.stateColumn}</th>
-                      <th className="py-2 pr-4 font-semibold">{c.labels.stateSubclasses}</th>
-                      <th className="py-2 pr-4 font-semibold">{c.labels.stateLevel}</th>
+                      <th className="py-2 pr-4 font-semibold">
+                        {c.labels.stateColumn}
+                      </th>
+                      <th className="py-2 pr-4 font-semibold">
+                        {c.labels.stateSubclasses}
+                      </th>
+                      <th className="py-2 pr-4 font-semibold">
+                        {c.labels.stateLevel}
+                      </th>
                       <th className="py-2 font-semibold">{c.labels.checked}</th>
                     </tr>
                   </thead>
@@ -141,15 +301,44 @@ export default async function OccupationDetailsPage({ params }: PageProps) {
               <p className="text-sm text-slate-600">{c.stateNoData}</p>
             )}
             <p className="text-xs text-slate-500">{c.stateNote}</p>
+            <p className="text-xs leading-relaxed text-slate-500">
+              {text(
+                "Held list data includes 2025–26 sources. These check dates do not establish current nomination availability.",
+                "Kayıtlı listeler 2025–26 kaynaklarını içerir. Kontrol tarihleri güncel adaylık durumunu göstermez.",
+                "保存的清单含 2025–26 年来源。核对日期并非当前提名开放状态。",
+              )}
+            </p>
+            <div className="flex flex-wrap gap-4 text-xs">
+              {c.stateRows.map((row) => {
+                const source = STATE_RESEARCH_SOURCES.find(
+                  (state) => state.code === row.state,
+                );
+                return source ? (
+                  <a
+                    key={row.state}
+                    data-official-source
+                    href={source.url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-cyan-900 underline"
+                  >
+                    {row.state} ·{" "}
+                    {text("Official criteria", "Resmî kriterler", "官方标准")}
+                  </a>
+                ) : null;
+              })}
+            </div>
           </CardContent>
         </Card>
+
+        <ResearchLinks locale={locale} code={c.code} />
 
         {c.duties.length > 0 && (
           <Card className="border-slate-200/80 bg-white/95 shadow-lg shadow-slate-900/5">
             <CardHeader>
-              <CardTitle>
-                <h2>{c.headings.duties}</h2>
-              </CardTitle>
+              <h2 className="text-lg font-semibold leading-none tracking-tight">
+                {c.headings.duties}
+              </h2>
             </CardHeader>
             <CardContent>
               <ul className="list-disc space-y-2 pl-5 text-sm text-slate-600">
@@ -163,34 +352,85 @@ export default async function OccupationDetailsPage({ params }: PageProps) {
 
         <Card className="border-slate-200/80 bg-white/95 shadow-lg shadow-slate-900/5">
           <CardHeader>
-            <CardTitle>
-              <h2>{c.headings.sources}</h2>
-            </CardTitle>
+            <h2 className="text-lg font-semibold leading-none tracking-tight">
+              {c.headings.sources}
+            </h2>
           </CardHeader>
           <CardContent className="space-y-2 text-sm text-slate-600">
             {c.sourceLines.map((line) => (
               <p key={line}>{line}</p>
             ))}
             <p>
-              <a href={c.officialUrl} target="_blank" rel="noopener noreferrer" data-official-source className="font-medium text-cyan-800 underline">
+              <a
+                href={c.officialUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                data-official-source
+                className="font-medium text-cyan-800 underline"
+              >
                 {c.officialLabel}
               </a>
             </p>
           </CardContent>
         </Card>
 
-        <nav aria-label={c.headings.related} className="rounded-2xl border border-slate-200/80 bg-white/95 p-6">
-          <h2 className="text-base font-semibold text-slate-900">{c.headings.related}</h2>
+        <nav
+          aria-label={c.headings.related}
+          className="rounded-2xl border border-slate-200/80 bg-white/95 p-6"
+        >
+          <h2 className="text-base font-semibold text-slate-900">
+            {c.headings.related}
+          </h2>
           <ul className="mt-3 flex flex-wrap gap-x-6 gap-y-2 text-sm">
             {c.related.map((link) => (
               <li key={link.path}>
-                <Link href={publicPath(locale, link.path)} className="font-medium text-cyan-800 underline">
+                <Link
+                  href={publicPath(locale, link.path)}
+                  data-tool-destination={link.destination}
+                  className="font-medium text-cyan-800 underline"
+                >
                   {link.label}
                 </Link>
               </li>
             ))}
           </ul>
         </nav>
+
+        {relatedOccupations.length > 0 && (
+          <nav
+            className="rounded-2xl border border-slate-200 bg-white p-6"
+            aria-label={text(
+              "Related occupations",
+              "İlgili meslekler",
+              "相关职业",
+            )}
+          >
+            <h2 className="font-semibold text-slate-900">
+              {text(
+                "Related occupations in this unit group",
+                "Bu birim grubundaki ilgili meslekler",
+                "同一单元组的相关职业",
+              )}
+            </h2>
+            <ul className="mt-3 space-y-3 text-sm">
+              {relatedOccupations.map((record) => (
+                <li key={record.anzsco_code}>
+                  <Link
+                    className="text-cyan-900 underline"
+                    href={publicPath(
+                      locale,
+                      `/occupations/${buildOccupationSlug(record)}`,
+                    )}
+                  >
+                    {record.occupation_name} · {record.anzsco_code}
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </nav>
+        )}
+
+        <ProfessionalHelp locale={locale} />
 
         <p className="text-xs text-slate-500">{c.notice}</p>
       </section>

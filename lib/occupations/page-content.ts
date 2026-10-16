@@ -7,6 +7,7 @@ import occupationsData from "@/src/data/occupations.json";
 import type { Locale } from "@/lib/i18n/config";
 import { authorityDisplayName, resolveAssessingAuthority } from "@/lib/skills-assessment/resolve-authority";
 import { occupationRichness, stateListRows, latestVerifiedDate, type OccupationRichness, type StateListRow } from "./richness";
+import { traBlockFor, traBlockText, traDescriptionNote, type TraBlock } from "./tra-block";
 import { buildOccupationSlug, deriveSubclasses, findAnzscoListEntry, localizedDuties, localizedTitle, type OccupationRecord } from "./seo";
 
 export const OCCUPATION_DATASET_DATE = (occupationsData as { generated_on: string }).generated_on;
@@ -36,7 +37,7 @@ type Strings = {
   stateNote: string;
   stateNoData: string;
   sources: { dataset: (d: string) => string; authority: (d: string) => string; states: (d: string) => string; official: string };
-  related: { calculator: string; finder: string; visa: (s: string) => string };
+  related: { calculator: string; finder: string; visa: (s: string) => string; skillsAssessment: string; stateNomination: string };
   notice: string;
 };
 
@@ -62,7 +63,7 @@ const STRINGS: Record<Locale, Strings> = {
       states: (d) => `State and territory lists last verified ${d}.`,
       official: "Official list: Department of Home Affairs, Skilled Occupation List",
     },
-    related: { calculator: "Points calculator", finder: "ANZSCO finder", visa: (s) => `Subclass ${s} information` },
+    related: { calculator: "Points calculator", finder: "ANZSCO finder", visa: (s) => `Subclass ${s} information`, skillsAssessment: "Skills assessment information", stateNomination: "State nomination data" },
     notice: "General information compiled from published sources. It is not migration advice and is not reviewed by a migration agent.",
   },
   tr: {
@@ -86,7 +87,7 @@ const STRINGS: Record<Locale, Strings> = {
       states: (d) => `Eyalet ve bölge listeleri en son ${d} tarihinde doğrulandı.`,
       official: "Resmî liste: İçişleri Bakanlığı (Department of Home Affairs), Skilled Occupation List",
     },
-    related: { calculator: "Puan hesaplayıcı", finder: "ANZSCO bulucu", visa: (s) => `Subclass ${s} bilgileri` },
+    related: { calculator: "Puan hesaplayıcı", finder: "ANZSCO bulucu", visa: (s) => `Subclass ${s} bilgileri`, skillsAssessment: "Beceri değerlendirmesi bilgileri", stateNomination: "Eyalet adaylık verileri" },
     notice: "Yayımlanmış kaynaklardan derlenen genel bilgidir. Göçmenlik danışmanlığı değildir ve bir göçmenlik danışmanı tarafından incelenmemiştir.",
   },
   "zh-Hans": {
@@ -110,7 +111,7 @@ const STRINGS: Record<Locale, Strings> = {
       states: (d) => `州和领地清单最近核对于 ${d}。`,
       official: "官方清单：澳大利亚内政部（Department of Home Affairs）技术职业清单",
     },
-    related: { calculator: "积分计算器", finder: "ANZSCO 职业查找", visa: (s) => `${s} 子类信息` },
+    related: { calculator: "积分计算器", finder: "ANZSCO 职业查找", visa: (s) => `${s} 子类信息`, skillsAssessment: "技能评估信息", stateNomination: "州提名数据" },
     notice: "本页为根据公开来源整理的一般信息，不属于移民咨询意见，也未经移民代理审阅。",
   },
 };
@@ -134,7 +135,9 @@ export type OccupationPageContent = {
   sourceLines: string[];
   officialLabel: string;
   officialUrl: string;
-  related: Array<{ label: string; path: string }>;
+  related: Array<{ label: string; path: string; destination?: string }>;
+  /** TRA skills-assessment block; null unless the registry authority for the code is TRA. */
+  tra: TraBlock | null;
   notice: string;
   richness: OccupationRichness;
   /** ISO date the page's most recent source was verified, else the dataset date. */
@@ -153,21 +156,24 @@ export function occupationPageContent(record: OccupationRecord, locale: Locale):
   const listTokens = record.visa_lists ?? [];
   const lists = listTokens.length ? listTokens.map((t) => LIST_NAMES[t] ?? t).join("; ") : undefined;
   const states = stateListRows(record);
+  const tra = traBlockFor(code, locale);
   const verified = latestVerifiedDate(richness);
 
   const verifiedKind = verified ? "verified" : "dataset";
   const verifiedDate = verified ?? OCCUPATION_DATASET_DATE;
   const stateNames = states.map((r) => r.state).join(", ");
   // Longest first to drop: the list tokens, then the state names. Search results show ~160 characters; keep under 300.
-  const build = (withLists: boolean, withStates: boolean) =>
+  const build = (withLists: boolean, withStates: boolean, withTra = true) =>
     s.descParts.head(displayName, code) +
     (authority ? s.descParts.authority(authority) : "") +
     (withLists && lists ? s.descParts.lists(listTokens.join(", ")) : "") +
     (withStates && states.length ? s.descParts.states(states.length, stateNames) : "") +
+    (withTra && tra ? traDescriptionNote(locale) : "") +
     s.descParts.tail(verifiedKind, verifiedDate);
   let description = build(true, true);
   if (description.length > 300) description = build(false, true);
-  if (description.length > 300) description = build(false, false);
+  if (description.length > 300) description = build(false, true, false);
+  if (description.length > 300) description = build(false, false, false);
 
   const authorityDates = richness.authority ? (resolved.authority?.lastVerified ? [resolved.authority.lastVerified] : []) : [];
   const stateDates = [...new Set(states.map((r) => r.checked))].sort();
@@ -197,11 +203,14 @@ export function occupationPageContent(record: OccupationRecord, locale: Locale):
     officialLabel: s.sources.official,
     officialUrl: HOME_AFFAIRS_SOL_URL,
     related: [
-      { label: s.related.calculator, path: "/tools/points-calculator/australia" },
-      { label: s.related.finder, path: "/tools/anzsco-finder" },
+      { label: s.related.calculator, path: "/tools/points-calculator/australia", destination: "points_calculator" },
+      { label: s.related.skillsAssessment, path: "/tools/skills-assessment", destination: "skills_assessment" },
+      { label: s.related.stateNomination, path: "/tools/state-nomination", destination: "state_nomination" },
+      { label: s.related.finder, path: "/tools/anzsco-finder", destination: "anzsco_finder" },
       ...["189", "190", "491"].map((v) => ({ label: s.related.visa(v), path: `/visas/${v}` })),
     ],
     notice: s.notice,
+    tra,
     richness,
     lastModified: verified ?? OCCUPATION_DATASET_DATE,
   };
@@ -212,6 +221,6 @@ export function occupationPageText(c: OccupationPageContent): string {
   return [
     c.title, c.description, c.h1, c.intro, ...Object.values(c.headings), ...Object.values(c.labels),
     c.details.authority, c.details.lists, ...c.stateRows.map((r) => `${r.state} ${r.levelLabel}`), c.stateNote, c.stateNoData,
-    ...c.duties, ...c.sourceLines, c.officialLabel, ...c.related.map((r) => r.label), c.notice,
+    ...c.duties, ...c.sourceLines, c.officialLabel, ...c.related.map((r) => r.label), c.notice, c.tra ? traBlockText(c.tra) : undefined,
   ].filter(Boolean).join("\n");
 }

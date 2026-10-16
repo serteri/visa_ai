@@ -1,9 +1,10 @@
-import type { SkillsAssessmentAuthority, LocalizedString } from "../types";
+import type { SkillsAssessmentAuthority } from "../types";
 
 /**
  * Trades Recognition Australia (TRA)
  * Source: TRA — Migration Skills Assessment Program Guidelines (July 2026)
- * Verified: 2026-08-05
+ * Verified: 2026-10-11 against TRA_MSA_Program Guidelines_July 2026.pdf (MSA fees pp.5, 13) and the TRA program pages capture
+ * (OSAP fees p.5); see src/data/skills-assessment/tra-sources.json
  *
  * TRA covers 133 trade occupations. This module includes the most common ones.
  * Licensed occupations (Electrician, Plumber, Air-con Mechanic) MUST go through
@@ -133,7 +134,7 @@ export const traAustraliaAuthority: SkillsAssessmentAuthority = {
     { anzscoCode: "312412", title: "Electronic Engineering Technician" },
     { anzscoCode: "312512", title: "Mechanical Engineering Technician" },
   ],
-  lastVerified: "2026-08-05",
+  lastVerified: "2026-10-11",
   sourceDocument:
     "Trades Recognition Australia — Migration Skills Assessment Program Guidelines (July 2026)",
   notes: [

@@ -3,6 +3,8 @@
 import { Header } from "@/components/header";
 import { PreFooterCta } from "@/components/pre-footer-cta";
 import { GlobalDisclaimerFooter } from "@/components/global-disclaimer-footer";
+import { usePathname } from "next/navigation";
+import { publicPath } from "@/lib/seo/urls";
 
 /**
  * ShellHeaderGate — now simply renders the unified Header on every page.
@@ -20,6 +22,9 @@ export function ShellHeaderGate({
 }
 
 export function ShellFooterGate({ locale }: { locale: string }) {
+  const pathname = usePathname();
+  const homePaths = [publicPath(locale, "/"), `/${locale}`];
+  if (homePaths.includes(pathname?.replace(/\/$/, "") || "/")) return null;
   return (
     <>
       <PreFooterCta locale={locale} />

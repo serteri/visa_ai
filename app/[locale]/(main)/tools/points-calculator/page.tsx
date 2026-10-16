@@ -1,10 +1,9 @@
+import { pageAlternates, publicUrl, SITE_ORIGIN } from "@/lib/seo/urls";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { ArrowRight, Compass, Shield } from "lucide-react";
-import { getTranslations } from "@/lib/i18n/get-translations";
-import type { Locale } from "@/lib/i18n/config";
 
-const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL?.trim() || "http://localhost:3000";
+const BASE_URL = SITE_ORIGIN;
 
 type PageProps = {
   params: Promise<{ locale: string }>;
@@ -16,23 +15,16 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 
   return {
     metadataBase: siteUrl,
-    title: "Visa Points Calculator Hub 2026 | Australia & Canada | LogiVisa",
+    title: "Visa Points Calculator Hub 2026 | Australia & Canada",
     description:
       "Calculate your immigration points for Australia (Skilled Migration) and Canada (Express Entry) instantly.",
-    alternates: {
-      canonical: `/${locale}/tools/points-calculator`,
-      languages: {
-        en: `/en/tools/points-calculator`,
-        tr: `/tr/tools/points-calculator`,
-        "zh-Hans": `/zh-Hans/tools/points-calculator`,
-      },
-    },
+    alternates: pageAlternates(locale, `/tools/points-calculator`),
     openGraph: {
-      title: "Visa Points Calculator Hub 2026 | Australia & Canada | LogiVisa",
+      title: "Visa Points Calculator Hub 2026 | Australia & Canada",
       description:
         "Calculate your immigration points for Australia (Skilled Migration) and Canada (Express Entry) instantly.",
       type: "website",
-      url: `/${locale}/tools/points-calculator`,
+      url: publicUrl(locale, `/tools/points-calculator`),
       images: [{ url: "/og/default-og.png", width: 1200, height: 630 }],
     },
   };
@@ -40,7 +32,6 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 
 export default async function PointsCalculatorHubPage({ params }: PageProps) {
   const { locale } = await params;
-  const translations = await getTranslations(locale as Locale);
   const isTr = locale === "tr";
   const isZh = locale === "zh-Hans";
 

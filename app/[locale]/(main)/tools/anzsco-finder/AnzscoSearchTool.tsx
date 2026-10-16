@@ -10,6 +10,10 @@ import { Input } from "@/components/ui/input";
 import { useTranslation } from "@/contexts/language-context";
 import { PdfDownloadModal } from "@/components/PdfDownloadModal";
 import anzscoList from "@/public/anzsco-list.json";
+import { ResearchLinks } from "@/components/research-links";
+import { researchText } from "@/lib/marketing/research-journey";
+import { publicPath } from "@/lib/seo/urls";
+import { findOccupationById, buildOccupationSlug } from "@/lib/occupations/seo";
 
 type Occupation = {
   code: string;
@@ -45,7 +49,7 @@ const POPULAR_CODES = [
   "254412", // Registered Nurse (Health)
   "221111", // Accountant (Finance)
   "241213", // Secondary School Teacher (Education)
-  "321211", // Electrician (Trades)
+  "341111", // Electrician (General)
   "351311", // Chef (Hospitality)
   "232111", // Architect (Architecture)
   "252411", // Psychologist (Health)
@@ -104,6 +108,7 @@ export function AnzscoSearchTool({
   const hasSearch = query.trim().length > 0;
   const selectedOccupation =
     matches.find((o) => o.code === selectedCode) ?? matches[0] ?? null;
+  const selectedPage = selectedOccupation ? findOccupationById(selectedOccupation.code) : null;
 
   return (
     <main className="min-h-screen">
@@ -279,12 +284,13 @@ export function AnzscoSearchTool({
                           size="lg"
                           className="mt-5 h-12 rounded-sm bg-[#53917E] px-6 text-base text-white shadow-sm hover:opacity-90"
                         >
-                          <Link href={`/${locale}/full-check?occupation=${selectedOccupation.code}`}>
-                            {t("af.cta.button")}
+                          <Link href={publicPath(locale, selectedPage ? `/occupations/${buildOccupationSlug(selectedPage)}` : `/tools/skills-assessment?q=${selectedOccupation.code}`)}>
+                            {researchText(locale, "Explore occupation research", "Meslek bilgilerini araştır", "探索职业研究")}
                             <ArrowRight className="h-4 w-4" />
                           </Link>
                         </Button>
                       </div>
+                      <ResearchLinks locale={locale} code={selectedOccupation.code} />
                     </div>
                   </CardContent>
                 </Card>

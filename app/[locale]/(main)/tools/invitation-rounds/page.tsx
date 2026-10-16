@@ -1,3 +1,4 @@
+import { pageAlternates, publicUrl, SITE_ORIGIN } from "@/lib/seo/urls";
 import type { Metadata } from "next";
 import { InvitationRoundsClient } from "./InvitationRoundsClient";
 import { SeoContentSection } from "@/components/SeoContentSection";
@@ -8,7 +9,7 @@ import { getCachedInvitationRounds } from "@/lib/cache/public-read-models";
 
 export const revalidate = 3600;
 
-const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL?.trim() || "http://localhost:3000";
+const BASE_URL = SITE_ORIGIN;
 
 type PageProps = { params: Promise<{ locale: string }> };
 
@@ -18,23 +19,16 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 
   return {
     metadataBase: siteUrl,
-    title: "Australia SkillSelect Invitation Rounds | Points Tracker | LogiVisa",
+    title: "Australia SkillSelect Invitation Rounds | Points Tracker",
     description:
       "Track Australian skilled migration invitation rounds. See historical points cutoffs for subclass 189, 190 and 491 visas.",
-    alternates: {
-      canonical: `/${locale}/tools/invitation-rounds`,
-      languages: {
-        en: `/en/tools/invitation-rounds`,
-        tr: `/tr/tools/invitation-rounds`,
-        "zh-Hans": `/zh-Hans/tools/invitation-rounds`,
-      },
-    },
+    alternates: pageAlternates(locale, `/tools/invitation-rounds`),
     openGraph: {
-      title: "Australia SkillSelect Invitation Rounds | Points Tracker | LogiVisa",
+      title: "Australia SkillSelect Invitation Rounds | Points Tracker",
       description:
         "Track Australian skilled migration invitation rounds. See historical points cutoffs for subclass 189, 190 and 491 visas.",
       type: "website",
-      url: `/${locale}/tools/invitation-rounds`,
+      url: publicUrl(locale, `/tools/invitation-rounds`),
       images: [{ url: "/og/default-og.png", width: 1200, height: 630 }],
     },
   };

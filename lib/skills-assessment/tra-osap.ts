@@ -2,8 +2,9 @@ import { traAustraliaAuthority } from "./authorities/tra-australia";
 
 /**
  * Which TRA program applies: the standard Migration Skills Assessment (MSA, AUD 795) or the Offshore Skills
- * Assessment Program (OSAP). Source: Trades Recognition Australia -- Migration Skills Assessment Program Guidelines
- * (July 2026), data/knowledge/Skill Assessments/Trades Recognition Australia:
+ * Assessment Program (OSAP). Sources: Trades Recognition Australia -- Migration Skills Assessment Program Guidelines
+ * (July 2026) and the TRA program pages capture (July 2026), both in data/knowledge/Skill Assessments/Trades Recognition
+ * Australia (page numbers below are those of "Trades Recognition Australia.pdf" unless noted; src/data/skills-assessment/tra-sources.json):
  *   - p.1-2: MSA is not open to the licensed occupations (Air conditioning and Refrigeration Mechanic, Electrician
  *     (General), Electrician (Special Class), Plumber (General)) nor to applicants whose passport country and
  *     occupation require OSAP.

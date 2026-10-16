@@ -96,8 +96,12 @@ jobs:
         run: npm run test:agent-lead-notice
       - name: SEO occupation pages (canonical, hreflang, sitemap, noindex, wording; en / tr / zh-Hans)
         run: npm run test:seo-occupation
+      - name: Marketing research journeys, canonical URLs and analytics safety
+        run: npm run test:marketing-readiness
       - name: Visa comparison table (sourced charges, no unsourced estimates, official links; en / tr / zh-Hans)
         run: npm run test:visa-comparison
+      - name: TRA skills-assessment block (MSA / OSAP fees and rules vs TRA July 2026 documents, Carpenter / Chef / Electrician, TRA occupations only, wording en / tr / zh-Hans, tool-click event)
+        run: npm run test:tra-block
       - name: Canada report generation switched off (flag, neutral message; en / tr / zh-Hans)
         run: npm run test:canada-flag
       - name: Target visa field, DISABLED mode, engine carries the target (en / tr / zh-Hans)

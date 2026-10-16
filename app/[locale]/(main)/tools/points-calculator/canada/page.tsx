@@ -1,7 +1,8 @@
+import { pageAlternates, publicUrl, SITE_ORIGIN } from "@/lib/seo/urls";
 import type { Metadata } from "next";
 import { CanadaPointsCalculatorClient } from "../canada-points-calculator-client";
 
-const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL?.trim() || "http://localhost:3000";
+const BASE_URL = SITE_ORIGIN;
 
 type PageProps = {
   params: Promise<{ locale: string }>;
@@ -13,23 +14,16 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 
   return {
     metadataBase: siteUrl,
-    title: "Canada Express Entry CRS Points Calculator 2026 | LogiVisa",
+    title: "Canada Express Entry CRS Points Calculator 2026",
     description:
       "Calculate your Comprehensive Ranking System (CRS) points score instantly for Canada immigration.",
-    alternates: {
-      canonical: `/${locale}/tools/points-calculator/canada`,
-      languages: {
-        en: `/en/tools/points-calculator/canada`,
-        tr: `/tr/tools/points-calculator/canada`,
-        "zh-Hans": `/zh-Hans/tools/points-calculator/canada`,
-      },
-    },
+    alternates: pageAlternates(locale, `/tools/points-calculator/canada`),
     openGraph: {
-      title: "Canada Express Entry CRS Points Calculator 2026 | LogiVisa",
+      title: "Canada Express Entry CRS Points Calculator 2026",
       description:
         "Calculate your Comprehensive Ranking System (CRS) points score instantly for Canada immigration.",
       type: "website",
-      url: `/${locale}/tools/points-calculator/canada`,
+      url: publicUrl(locale, `/tools/points-calculator/canada`),
       images: [{ url: "/og/default-og.png", width: 1200, height: 630 }],
     },
   };

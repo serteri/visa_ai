@@ -1,3 +1,4 @@
+import { pageAlternates, SITE_ORIGIN } from "@/lib/seo/urls";
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 
@@ -5,7 +6,7 @@ import { DocumentChecklist2026Localized } from "../DocumentChecklist2026Localize
 import { defaultLocale, isValidLocale, type Locale } from "@/lib/i18n/config";
 import { getDictionary } from "@/lib/i18n/get-dictionary";
 
-const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL?.trim() || "http://localhost:3000";
+const BASE_URL = SITE_ORIGIN;
 const VALID_SUBCLASSES = new Set(["189", "190", "491", "482", "485", "186"]);
 
 type PageProps = {
@@ -25,16 +26,9 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 
   return {
     metadataBase: new URL(BASE_URL),
-    title: `${visa.title} ${checklist.pageTitle} | LogiVisa`,
+    title: `${visa.title} ${checklist.pageTitle}`,
     description: visa.description,
-    alternates: {
-      canonical: `/${normalizedLocale}/tools/document-checklist-2026/${subclass}`,
-      languages: {
-        en: `/en/tools/document-checklist-2026/${subclass}`,
-        tr: `/tr/tools/document-checklist-2026/${subclass}`,
-        "zh-Hans": `/zh-Hans/tools/document-checklist-2026/${subclass}`,
-      },
-    },
+    alternates: pageAlternates(normalizedLocale, `/tools/document-checklist-2026/${subclass}`),
   };
 }
 

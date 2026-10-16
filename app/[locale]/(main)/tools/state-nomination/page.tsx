@@ -1,9 +1,10 @@
+import { pageAlternates, publicUrl, SITE_ORIGIN } from "@/lib/seo/urls";
 import type { Metadata } from "next";
 import { StateNominationClient } from "./StateNominationClient";
 import { SeoContentSection } from "@/components/SeoContentSection";
 import { getStateNominationSeoContent, buildStateNominationSchema } from "@/lib/seo/state-nomination-content";
 
-const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL?.trim() || "http://localhost:3000";
+const BASE_URL = SITE_ORIGIN;
 
 type PageProps = {
   params: Promise<{ locale: string }>;
@@ -15,23 +16,16 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 
   return {
     metadataBase: siteUrl,
-    title: "State Nomination Finder | Australia 190 & 491 Visa | LogiVisa",
+    title: "State Nomination References | Australia 190 & 491",
     description:
-      "Compare all 8 Australian states for skilled nomination. Find which states match your occupation and points score.",
-    alternates: {
-      canonical: `/${locale}/tools/state-nomination`,
-      languages: {
-        en: `/en/tools/state-nomination`,
-        tr: `/tr/tools/state-nomination`,
-        "zh-Hans": `/zh-Hans/tools/state-nomination`,
-      },
-    },
+      "Explore dated state and territory occupation-list references and official criteria. Historical list data does not predict nomination.",
+    alternates: pageAlternates(locale, `/tools/state-nomination`),
     openGraph: {
-      title: "State Nomination Finder | Australia 190 & 491 Visa | LogiVisa",
+      title: "State Nomination References | Australia 190 & 491",
       description:
-        "Compare all 8 Australian states for skilled nomination. Find which states match your occupation and points score.",
+        "Explore dated state and territory occupation-list references and official criteria. Historical list data does not predict nomination.",
       type: "website",
-      url: `/${locale}/tools/state-nomination`,
+      url: publicUrl(locale, `/tools/state-nomination`),
       images: [{ url: "/og/default-og.png", width: 1200, height: 630 }],
     },
   };

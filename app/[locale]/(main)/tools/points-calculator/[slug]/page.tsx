@@ -1,9 +1,10 @@
+import { pageAlternates, publicUrl, SITE_ORIGIN } from "@/lib/seo/urls";
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { getOccupationBySlug } from "@/lib/occupations";
 import { PointsCalculatorClient } from "../points-calculator-client";
 
-const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL?.trim() || "http://localhost:3000";
+const BASE_URL = SITE_ORIGIN;
 
 type PageProps = {
   params: Promise<{ locale: string; slug: string }>;
@@ -17,7 +18,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
     return {};
   }
 
-  const title = `${occupation.title} (${occupation.anzsco}) Australia Visa Points Calculator 2026 | LogiVisa`;
+  const title = `${occupation.title} (${occupation.anzsco}) Australia Visa Points Calculator 2026`;
   const description = `Calculate a points total for subclasses 189, 190 and 491 under the published points test, for ${occupation.title} (ANZSCO ${occupation.anzsco}). Information only.`;
   const siteUrl = new URL(BASE_URL);
 
@@ -25,19 +26,12 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
     metadataBase: siteUrl,
     title,
     description,
-    alternates: {
-      canonical: `/${locale}/tools/points-calculator/${slug}`,
-      languages: {
-        en: `/en/tools/points-calculator/${slug}`,
-        tr: `/tr/tools/points-calculator/${slug}`,
-        "zh-Hans": `/zh-Hans/tools/points-calculator/${slug}`,
-      },
-    },
+    alternates: pageAlternates(locale, `/tools/points-calculator/${slug}`),
     openGraph: {
       title,
       description,
       type: "website",
-      url: `/${locale}/tools/points-calculator/${slug}`,
+      url: publicUrl(locale, `/tools/points-calculator/${slug}`),
       images: [{ url: "/og/default-og.png", width: 1200, height: 630 }],
     },
   };

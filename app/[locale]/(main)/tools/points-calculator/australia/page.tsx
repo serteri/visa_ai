@@ -1,9 +1,10 @@
+import { pageAlternates, publicUrl, SITE_ORIGIN } from "@/lib/seo/urls";
 import type { Metadata } from "next";
 import { PointsCalculatorClient } from "../points-calculator-client";
 import { SeoContentSection } from "@/components/SeoContentSection";
 import { getPointsCalcSeoContent, buildPointsCalcSchema } from "@/lib/seo/points-calculator-content";
 
-const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL?.trim() || "http://localhost:3000";
+const BASE_URL = SITE_ORIGIN;
 
 type PageProps = {
   params: Promise<{ locale: string }>;
@@ -15,23 +16,16 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 
   return {
     metadataBase: siteUrl,
-    title: "Australia Visa Points Calculator 2026 | LogiVisa",
+    title: "Australia Visa Points Calculator 2026",
     description:
       "Calculate your 189, 190, and 491 visa points instantly based on 2026 DHA data.",
-    alternates: {
-      canonical: `/${locale}/tools/points-calculator/australia`,
-      languages: {
-        en: `/en/tools/points-calculator/australia`,
-        tr: `/tr/tools/points-calculator/australia`,
-        "zh-Hans": `/zh-Hans/tools/points-calculator/australia`,
-      },
-    },
+    alternates: pageAlternates(locale, `/tools/points-calculator/australia`),
     openGraph: {
-      title: "Australia Visa Points Calculator 2026 | LogiVisa",
+      title: "Australia Visa Points Calculator 2026",
       description:
         "Calculate your 189, 190, and 491 visa points instantly based on 2026 DHA data.",
       type: "website",
-      url: `/${locale}/tools/points-calculator/australia`,
+      url: publicUrl(locale, `/tools/points-calculator/australia`),
       images: [{ url: "/og/default-og.png", width: 1200, height: 630 }],
     },
   };

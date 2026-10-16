@@ -1,67 +1,53 @@
-interface StatsBarProps {
-  locale: string;
-}
-
-/** Stats strip + "powered by official data" line — unchanged copy, reskinned
- *  as a mono ledger row on the case-file background. */
-export function StatsBar({ locale }: StatsBarProps) {
-  const stats = [
+import Link from "next/link";
+import { publicPath } from "@/lib/seo/urls";
+import { researchText } from "@/lib/marketing/research-journey";
+export function StatsBar({ locale }: { locale: string }) {
+  const text = (en: string, tr: string, zh: string) =>
+    researchText(locale, en, tr, zh);
+  const items = [
     {
-      value: "707+",
-      label: locale === "tr" ? "İncelenen Meslek" : locale === "zh-Hans" ? "已分析职业" : "Occupations Analyzed",
+      title: text("Published sources", "Yayımlanmış kaynaklar", "公开来源"),
+      body: text(
+        "Occupation pages link to Home Affairs and relevant assessing authorities.",
+        "Meslek sayfalarında İçişleri Bakanlığı ve değerlendirme kurumu bağlantıları bulunur.",
+        "职业页面链接至内政部及相关评估机构。",
+      ),
+      href: "https://immi.homeaffairs.gov.au/visas/working-in-australia/skill-occupation-list",
     },
     {
-      value: locale === "tr" ? "Gerçek Zamanlı" : locale === "zh-Hans" ? "实时" : "Real-Time",
-      label: locale === "tr" ? "ANZSCO ve NOC Verisi" : locale === "zh-Hans" ? "ANZSCO 与 NOC 数据" : "ANZSCO & NOC Data",
+      title: text("Dates and context", "Tarihler ve bağlam", "日期与背景"),
+      body: text(
+        "Source and review dates are shown where available. Published information does not promise current availability.",
+        "Mevcut kaynak ve kontrol tarihleri gösterilir. Yayımlanmış bilgi, güncel durumun garantisi değildir.",
+        "在数据可用时显示来源与核对日期。已公布信息并非当前开放状态的保证。",
+      ),
+      href: publicPath(locale, "/tools/anzsco-finder"),
     },
     {
-      value: "3",
-      label: locale === "tr" ? "Dilde Bilgi" : locale === "zh-Hans" ? "种语言的信息" : "Languages",
+      title: text("Corrections welcome", "Düzeltme bildirimi", "反馈更正"),
+      body: text(
+        "Report an outdated reference or an error through our contact page.",
+        "Güncel olmayan kaynakları veya hataları iletişim sayfasından bildirin.",
+        "通过联系页面反馈过时来源或错误。",
+      ),
+      href: publicPath(locale, "/contact"),
     },
-    { value: "2026", label: locale === "tr" ? "Göç Verileri" : locale === "zh-Hans" ? "移民数据" : "Immigration Data" },
   ];
-
   return (
-    <section className="case-file border-y border-[var(--cf-line)] bg-[var(--cf-bg)] py-16">
-      <div className="section-shell">
-        <div className="grid grid-cols-2 gap-x-8 gap-y-8 sm:grid-cols-4">
-          {stats.map((stat) => (
-            <div key={stat.label} className="flex flex-col items-center gap-2 px-2 text-center">
-              <p className="cf-serif text-2xl font-semibold text-[var(--cf-fg)] sm:text-3xl">{stat.value}</p>
-              <p className="cf-mono text-[0.65rem] uppercase tracking-wide text-[var(--cf-muted)] sm:text-xs">
-                {stat.label}
-              </p>
-            </div>
-          ))}
-        </div>
-
-        <div className="mt-12 flex flex-col items-center gap-5 border-t border-[var(--cf-line)] pt-10 text-center">
-          <p className="cf-mono text-xs uppercase tracking-wider text-[var(--cf-muted)]">
-            {locale === "tr"
-              ? "Resmi Göç Verileriyle Desteklenmektedir:"
-              : locale === "zh-Hans"
-                ? "由官方移民数据提供支持："
-                : "Powered by Official Immigration Data:"}
-          </p>
-          <div className="flex flex-col items-center justify-center gap-4 sm:flex-row sm:gap-x-10">
-            <div className="flex items-center gap-2 text-sm font-medium text-[var(--cf-muted)]">
-              <span className="text-lg">🇦🇺</span>
-              <span>
-                {locale === "tr"
-                  ? "Avustralya Hükümeti İçişleri Bakanlığı (ANZSCO)"
-                  : locale === "zh-Hans"
-                    ? "澳大利亚政府内政部（ANZSCO）"
-                    : "Australian Govt. Department of Home Affairs (ANZSCO)"}
-              </span>
-            </div>
-            <div className="flex items-center gap-2 text-sm font-medium text-[var(--cf-muted)]">
-              <span className="text-lg">🇨🇦</span>
-              <span>
-                {locale === "tr" ? "Kanada Hükümeti IRCC (NOC)" : locale === "zh-Hans" ? "加拿大政府 IRCC（NOC）" : "Government of Canada IRCC (NOC)"}
-              </span>
-            </div>
+    <section className="case-file border-y border-[var(--cf-line)] py-12">
+      <div className="section-shell grid gap-8 sm:grid-cols-3">
+        {items.map((item) => (
+          <div key={item.title}>
+            <h2 className="cf-serif text-xl text-[var(--cf-fg)]">
+              <Link href={item.href} className="underline underline-offset-4">
+                {item.title}
+              </Link>
+            </h2>
+            <p className="mt-3 text-sm leading-relaxed text-[var(--cf-muted)]">
+              {item.body}
+            </p>
           </div>
-        </div>
+        ))}
       </div>
     </section>
   );

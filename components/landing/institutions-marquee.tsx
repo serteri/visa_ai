@@ -28,10 +28,10 @@ export function InstitutionsMarquee({ locale }: InstitutionsMarqueeProps) {
   const isZh = locale === "zh-Hans";
 
   const title = isTr
-    ? "Avustralya Hükümeti standartlarına ve 12+ resmi değerlendirme kurumuna tam uyumlu"
+    ? "Değerlendirme kurumları hakkında bağımsız bilgi"
     : isZh
-      ? "完全符合澳大利亚政府标准，并覆盖 12+ 个官方评估机构"
-      : "Fully aligned with Australian Government standards and 12+ official assessing authorities";
+      ? "关于评估机构的独立信息"
+      : "Independent information about assessing authorities";
 
   return (
     <section

@@ -1,11 +1,12 @@
+import { pageAlternates, publicUrl, SITE_ORIGIN } from "@/lib/seo/urls";
 import type { Metadata } from "next";
 import { SkillsAssessmentClient } from "./SkillsAssessmentClient";
 import { SeoContentSection } from "@/components/SeoContentSection";
 import { getSkillsAssessmentSeoContent, buildSkillsAssessmentSchema } from "@/lib/seo/skills-assessment-content";
 
-const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL?.trim() || "http://localhost:3000";
+const BASE_URL = SITE_ORIGIN;
 
-type PageProps = { params: Promise<{ locale: string }> };
+type PageProps = { params: Promise<{ locale: string }>; searchParams: Promise<{ q?: string }> };
 
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
   const { locale } = await params;
@@ -13,35 +14,29 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 
   return {
     metadataBase: siteUrl,
-    title: "Skills Assessment Body Finder | Australian Visa | LogiVisa",
+    title: "Skills Assessment Body Finder | Australian Visa",
     description:
-      "Find out which skills assessing body you need for your Australian visa application. Instant results for 500+ occupations.",
-    alternates: {
-      canonical: `/${locale}/tools/skills-assessment`,
-      languages: {
-        en: `/en/tools/skills-assessment`,
-        tr: `/tr/tools/skills-assessment`,
-        "zh-Hans": `/zh-Hans/tools/skills-assessment`,
-      },
-    },
+      "Explore available occupation-to-authority references and official assessment sources. Coverage is limited; missing data is not a visa outcome.",
+    alternates: pageAlternates(locale, `/tools/skills-assessment`),
     openGraph: {
-      title: "Skills Assessment Body Finder | Australian Visa | LogiVisa",
+      title: "Skills Assessment Body Finder | Australian Visa",
       description:
-        "Find out which skills assessing body you need for your Australian visa application. Instant results for 500+ occupations.",
+        "Explore available occupation-to-authority references and official assessment sources. Coverage is limited; missing data is not a visa outcome.",
       type: "website",
-      url: `/${locale}/tools/skills-assessment`,
+      url: publicUrl(locale, `/tools/skills-assessment`),
       images: [{ url: "/og/default-og.png", width: 1200, height: 630 }],
     },
   };
 }
 
-export default async function SkillsAssessmentPage({ params }: PageProps) {
+export default async function SkillsAssessmentPage({ params, searchParams }: PageProps) {
   const { locale } = await params;
+  const { q } = await searchParams;
   const seoContent = getSkillsAssessmentSeoContent(locale);
   const schemaJson = buildSkillsAssessmentSchema(locale);
   return (
     <>
-      <SkillsAssessmentClient locale={locale} />
+      <SkillsAssessmentClient key={q ?? ""} locale={locale} initialQuery={q} />
       <SeoContentSection {...seoContent} schemaJson={schemaJson} />
     </>
   );

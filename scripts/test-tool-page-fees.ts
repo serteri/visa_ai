@@ -44,6 +44,7 @@ import { aacaAuthority } from "../lib/skills-assessment/authorities/aaca";
 import { otcAustraliaAuthority } from "../lib/skills-assessment/authorities/otc-australia";
 import { resolveAssessingAuthority } from "../lib/skills-assessment/resolve-authority";
 import { OSAP_FEES, TRA_OSAP_OCCUPATIONS } from "../lib/skills-assessment/tra-osap";
+import { supportedToolMappings } from "../lib/skills-assessment/tool-coverage";
 import { eaFee } from "../lib/skills-assessment/engineers-australia-fees";
 import { AIMS_FEES, AIMS_PROCESSING, aimsFee } from "../lib/skills-assessment/aims-fees";
 import anzscoList from "../src/data/anzsco-list.json";
@@ -392,8 +393,6 @@ console.log("\n==================== Every tool-page occupation: same assessing a
     "272311": { tool: "AHPRA", report: "GENERAL", homeAffairs: "APS" },
     "272511": { tool: "ACWA", report: "GENERAL", homeAffairs: "AASW" },
     "312212": { tool: "Engineers Australia", report: "VETASSESS", homeAffairs: "VETASSESS" },
-    "351311": { tool: "VETASSESS", report: "TRA", homeAffairs: "TRA" },
-    "351411": { tool: "VETASSESS", report: "TRA", homeAffairs: "TRA" },
     "411711": { tool: "ACWA", report: "GENERAL", homeAffairs: "Community Work Australia" },
     "421111": { tool: "VETASSESS", report: "GENERAL", homeAffairs: "ACECQA" },
   };
@@ -417,6 +416,8 @@ console.log("\n==================== Every tool-page occupation: same assessing a
     else if (known.tool !== toolKey || known.report !== report) fail(`${code}: known mismatch changed (tool ${toolKey}, report ${report}; recorded tool ${known.tool}, report ${known.report}) -- re-check it and update the list`);
   }
   for (const code of Object.keys(KNOWN)) if (!(code in mapping)) fail(`${code}: in the known-mismatch list but not on the tool page`);
+  const publicMapping = supportedToolMappings(mapping);
+  for (const code of Object.keys(KNOWN)) if (code in publicMapping) fail(`${code}: unresolved legacy mismatch must be suppressed in the public finder`);
   if (failures === before) {
     ok(`${matched} tool-page occupations name the same assessing authority as the report; ${Object.keys(KNOWN).length} known pre-existing mismatches unchanged (Home Affairs authority recorded for each)`);
     for (const [code, k] of Object.entries(KNOWN)) console.log(`  ⚠️  ${code}: tool ${k.tool}, report ${k.report}; Home Affairs list: ${k.homeAffairs}`);

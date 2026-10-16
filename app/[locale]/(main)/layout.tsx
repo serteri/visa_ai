@@ -16,22 +16,22 @@ const BASE_URL = "https://www.logivisa.com";
 
 function getLocaleTitle(locale: string) {
   if (locale === "tr") {
-    return "LogiVisa — Avustralya Skilled Migration ve PR Rehberi";
+    return "LogiVisa — Avustralya Vize ve Meslek Araştırması";
   }
   if (locale === "zh-Hans") {
-    return "LogiVisa — 澳大利亚技术移民与永居指南";
+    return "LogiVisa — 澳大利亚签证与职业研究";
   }
-  return "LogiVisa — Australia Skilled Migration & PR Guide";
+  return "LogiVisa — Australian Visa & Occupation Research";
 }
 
 function getLocaleDescription(locale: string) {
   if (locale === "tr") {
-    return "Avustralya Skilled Migration (189/190/491) icin ucretsiz puan hesaplayici, ANZSCO kod bulucu ve Vize Bilgi Raporlari. Turkce ve Global Ingilizce PDF PR rehberleri GST dahil A$10.99'dan basliyor.";
+    return "Kaynak bağlantılı araçlarla Avustralya mesleklerini, beceri değerlendirmelerini ve yayımlanmış vize şartlarını araştırın.";
   }
   if (locale === "zh-Hans") {
-    return "免费的澳大利亚技术移民（189/190/491）积分计算器、ANZSCO 职业代码查找工具和签证信息报告。土耳其语和全球英语 PDF 永居指南起价 A$10.99（含GST）。";
+    return "通过来源链接与工具研究澳大利亚职业、技能评估和已公布的签证要求。";
   }
-  return "Free Australia Skilled Migration (189/190/491) points calculator, ANZSCO finder, and Visa Information Reports. Turkish and Global English PDF PR guides from A$10.99 inc. GST.";
+  return "Research Australian occupations, skills assessments and published visa requirements with source-linked tools, points estimates and visa comparisons.";
 }
 
 function getOgLocale(locale: string) {
