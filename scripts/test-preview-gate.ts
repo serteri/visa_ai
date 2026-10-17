@@ -1,8 +1,8 @@
 /**
  * The result page shows NO report content, for any user (updated parity test: the PDF is the source of truth). en / tr / zh-Hans.
  *
- *   1. locked (visitor, owner, admin): the header (title, name, date, target visa) and the purchase button only;
- *   2. unlocked (paid, free beta, admin): the header, "Your Visa Information Report is ready", "Download PDF" and "We also emailed you a link" only;
+ *   1. locked (visitor, owner, admin): the header (title, name, date, target visa), purchase button and static research guidance;
+ *   2. unlocked (paid, free beta, admin): the header, ready line, Download PDF, secure-link reminder and static research guidance;
  *   3. the report, the full view and any preview are never passed to the client component (page source / RSC payload / server-action responses);
  *   4. none of "Western Australia", "AUD 6,135", "ACS", "Published requirement" (and no other report string) is in the page, though they ARE in
  *      the report (the PDF carries them: the PDF route answers for an unlocked report);
@@ -18,6 +18,7 @@ process.env.RESEND_API_KEY = "re_test_key_not_real";
 import { readFileSync } from "node:fs";
 import path from "node:path";
 import { renderToStaticMarkup } from "react-dom/server";
+import { load } from "cheerio";
 
 import type { ReadinessInput } from "../lib/readiness/types";
 import { sectionStrings } from "../lib/reports/report-blocks";
@@ -67,7 +68,8 @@ async function page(reportId: string, locale: string, token?: string | null) {
 async function main() {
   installStub();
   const { reportAccessToken } = await import("../lib/reports/report-access");
-  const { buildReportHeader, downloadLabel, emailedLine } = await import("../lib/reports/report-header");
+  const { buildReportHeader, downloadLabel } = await import("../lib/reports/report-header");
+  const secureLinkLine = { en: "Keep your secure report link to return to this page.", tr: "Bu sayfaya dönmek için güvenli rapor bağlantınızı saklayın.", "zh-Hans": "请保留安全报告链接，以便返回此页面。" };
 
   for (const L of LOCALES) {
     console.log(`\n==================== [${L}] ====================`);
@@ -94,7 +96,10 @@ async function main() {
       t(`${label}: none of ${banned.map((f) => `"${f}"`).join(", ")} is in the props or the page`, banned.every((f) => !propsJson.includes(f) && !html.includes(f)), banned.filter((f) => propsJson.includes(f) || html.includes(f)).join(", "));
       const leaked = everything.filter((x) => propsJson.includes(JSON.stringify(x).slice(1, -1)) || html.includes(x));
       t(`${label}: none of ${everything.length} report strings is in the props or the page`, leaked.length === 0, leaked.slice(0, 2).join(" | "));
-      t(`${label}: no section titles, no points total, no stale stored preview`, view.sections.every((sec) => !html.includes(sec.title) || headerText.includes(sec.title) || sec.title.length < 12) && !html.includes("STALE OLD") && !/data-preview-(sections|points|details)/.test(html));
+      // The static reading guide mentions "Visa information" in prose. Check section headings as headings;
+      // the assertions above still scan ALL markup and props for actual report facts and body strings.
+      const headings = load(html)("h1,h2,h3,h4,h5,h6").toArray().map(el => load(el).text().trim());
+      t(`${label}: no report section headings, no points preview, no stale stored preview`, view.sections.every((sec) => !headings.includes(sec.title) || headerText.includes(sec.title) || sec.title.length < 12) && !html.includes("STALE OLD") && !/data-preview-(sections|points|details)/.test(html));
     };
 
     // 1. locked, visitor with the report's token
@@ -116,7 +121,7 @@ async function main() {
     const full = await page(unlockedId, L, reportAccessToken(unlockedId));
     const fullHtml = decode(renderToStaticMarkup(full as never));
     t("unlocked: the PDF link (with the access token) is the only route to the content", full.props.isUnlocked === true && String(full.props.downloadHref).includes(`/api/reports/${unlockedId}/pdf`));
-    t("unlocked: header, 'ready' line, Download PDF, 'We also emailed you a link'", [header.title, header.name, header.dateText, header.targetLine, header.readyLine, downloadLabel(L), emailedLine(L)].every((x) => fullHtml.includes(x)) && /data-testid="download-pdf"/.test(fullHtml));
+    t("unlocked: header, ready line, Download PDF and secure-link reminder without an unverified delivery promise", [header.title, header.name, header.dateText, header.targetLine, header.readyLine, downloadLabel(L), secureLinkLine[L]].every((x) => fullHtml.includes(x)) && /data-testid="download-pdf"/.test(fullHtml) && !/We also emailed|e-posta ile de gönderdik|也已通过电子邮件/.test(fullHtml));
     noContent("unlocked", full, fullHtml);
     t("unlocked: the page is small (header only)", fullHtml.length < 6000, String(fullHtml.length));
 

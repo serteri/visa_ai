@@ -88,7 +88,7 @@ console.log("wiring");
   const proxy = readFileSync("proxy.ts", "utf8");
   t("proxy.ts sends a real 301 (not the 307 default) and keeps the query string", /occupationRedirectFor\(pathname\)/.test(proxy) && /NextResponse\.redirect\(redirectUrl, occupationRedirect\.status\)/.test(proxy) && /redirectUrl\.search = searchParams\.toString\(\)/.test(proxy.slice(proxy.indexOf("occupationRedirectFor(pathname)"))));
   const page = readFileSync("app/[locale]/(main)/occupations/[id]/page.tsx", "utf8");
-  const at = page.indexOf("occupationRedirectFor(publicPath");
+  const at = page.search(/occupationRedirectFor\(\s*publicPath/);
   t("the occupation page answers the same way if the proxy was bypassed, and 404s only after that", at > 0 && /if \(moved\) permanentRedirect\(moved\.to\);\s*notFound\(\);/.test(page.slice(at)));
 }
 

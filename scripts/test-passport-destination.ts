@@ -92,7 +92,8 @@ async function main() {
   }
   const form = readFileSync("app/[locale]/(main)/full-check/full-check-waitlist-form.tsx", "utf8");
   check(/applyDestination\(passportCountry, c,/.test(form) && /onCountryChange=\{changeDestination\}/.test(form) && /passportIsDestination\(initialValues\.passportCountry/.test(form), "the form uses it on every destination change and on a pre-filled passport");
-  check(/\["waitlist-target-country"/.test(form) && /id="waitlist-target-country"/.test(step1), "no destination chosen: step 1 does not continue (destination required)");
+  const { assessmentStepErrors, ASSESSMENT_FIELD_IDS } = await import("../lib/intake/assessment-validation");
+  check(assessmentStepErrors(1, {}, false, true).targetCountry === "required" && ASSESSMENT_FIELD_IDS.targetCountry === "waitlist-target-country" && /assessmentStepErrors\(step, values,/.test(form) && /if \(!validateStep\(currentStep\)\)/.test(form) && /id="waitlist-target-country"/.test(step1), "no destination chosen: step 1 does not continue (shared destination validation)");
 
   console.log("\n3. the server refuses AU->AU and CA->CA");
   process.env.CANADA_REPORT_ENABLED = "true";

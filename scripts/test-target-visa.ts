@@ -7,6 +7,7 @@
 import "./lib/stub-request-context";
 
 import { readFileSync } from "node:fs";
+import { assessmentStepErrors, ASSESSMENT_FIELD_IDS } from "../lib/intake/assessment-validation";
 
 process.env.DATABASE_URL = "postgresql://u:p@localhost:5432/d?sslmode=disable"; // never connects
 process.env.RESEND_API_KEY = "re_test_stub_not_a_real_key";
@@ -50,7 +51,7 @@ async function main() {
   const step1 = readFileSync("app/[locale]/(main)/full-check/step-1-personal.tsx", "utf8");
   const form = readFileSync("app/[locale]/(main)/full-check/full-check-waitlist-form.tsx", "utf8");
   check(/id="waitlist-target-visa"[\s\S]{0,260}required/.test(step1) && /TARGET_VISAS\.map/.test(step1) && /name="visaInterest"/.test(step1), "Australia: a required Target visa select with the nine options");
-  check(/waitlist-target-visa/.test(form) && /Target visa is required/.test(form), "step 1 does not continue without it (client validation)");
+  check(ASSESSMENT_FIELD_IDS.visaInterest === "waitlist-target-visa" && assessmentStepErrors(1, { targetCountry: "AU" }, false, true).visaInterest === "required" && /assessmentStepErrors\(step, values,/.test(form) && /if \(!validateStep\(currentStep\)\)/.test(form), "step 1 does not continue without it (shared client validation)");
   check(!/Birincil göç hedefiniz nedir/.test(step1.slice(step1.indexOf('selectedCountry === "AU" ?'), step1.indexOf(") : ("))), "the multi-select goal cards are gone from the Australia form");
 
   console.log("\n3. the real submit action");

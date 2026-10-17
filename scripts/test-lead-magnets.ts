@@ -60,7 +60,7 @@ const modalUses: Array<[string, RegExp, string]> = [
   ["app/[locale]/(main)/tools/anzsco-finder/AnzscoSearchTool.tsx", /product="occupation"/, PDF_SLUGS.occupation],
 ];
 for (const [file, re, slug] of modalUses) t(`${file} -> ${slug}.pdf`, re.test(read(file)));
-t("components/home-content.tsx opens the modal with the guide chosen on the card (turkish | global | occupation)", /product=\{activePdfModal \?\? "turkish"\}/.test(read("components/home-content.tsx")));
+t("the research-first homepage uses its research sections without the retired guide-card modal", /<Hero\b/.test(read("components/home-content.tsx")) && /<HowItWorks\b/.test(read("components/home-content.tsx")) && !/PdfDownloadModal|activePdfModal/.test(read("components/home-content.tsx")));
 t("components/AnzscoClassifier.tsx passes modalProduct (occupation list or a guide) to the same modal", /product=\{modalProduct\}/.test(read("components/AnzscoClassifier.tsx")));
 t("full-check occupation dialog -> csol-2026 -> occupation list", /documentId="csol-2026"/.test(read("app/[locale]/(main)/full-check/full-check-waitlist-form.tsx")) && DOCUMENT_IDS["csol-2026"] === "occupation");
 t("/resources/occupation-list -> csol-2026 -> occupation list", /documentId="csol-2026"/.test(read("app/[locale]/(main)/resources/occupation-list/page.tsx")));
@@ -290,7 +290,8 @@ const asteriskForms = [
 for (const f of asteriskForms) {
   const src = read(f);
   const hasLegend = /<RequiredLegend\b/.test(src) || /data-required-legend/.test(src);
-  t(`${f}: asterisks and a legend`, /\*<\/span>|<RequiredMark/.test(src) && hasLegend);
+  const fieldMarkup = f.endsWith("full-check-waitlist-form.tsx") && /<Step1Personal\b/.test(src) ? read("app/[locale]/(main)/full-check/step-1-personal.tsx") : src;
+  t(`${f}: asterisks and a legend`, /\*<\/span>|<RequiredMark/.test(fieldMarkup) && hasLegend);
 }
 const modalSrc = read("components/PdfDownloadModal.tsx");
 t("the modal: Phone Number is optional (no asterisk, no required attribute), name and email are marked", !/Phone Number<\/span>|"Phone Number", "手机号"\)\}\s*<span/.test(modalSrc) && /Phone Number \(Optional\)/.test(modalSrc) && !/\n\s+required\n/.test(modalSrc.slice(modalSrc.indexOf('id="phone"'))) && (modalSrc.match(/aria-hidden="true">\*<\/span>/g) ?? []).length === 2);
