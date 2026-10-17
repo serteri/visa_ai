@@ -6,7 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { PremiumFeatureGate } from "@/components/premium-feature-gate";
 import type { ReportHeader } from "@/lib/reports/report-header";
 import { ProfessionalHelp, ResearchLinks } from "@/components/research-links";
-import { researchText } from "@/lib/marketing/research-journey";
+import { researchLinks, researchText } from "@/lib/marketing/research-journey";
 
 type ResultViewProps = {
   locale: string;
@@ -37,7 +37,13 @@ export function ResultView({ locale, reportId, isUnlocked, isAdminBypass, downlo
   const text = (en: string, tr: string, zh: string) => researchText(locale, en, tr, zh);
   const continuation = country === "AU" ? (
     <div data-assessment-continuation className="space-y-6">
-      <ResearchLinks locale={locale} />
+      <ResearchLinks
+        locale={locale}
+        links={[
+          ...researchLinks(locale),
+          { label: text("State nomination data", "Eyalet adaylık verileri", "州提名数据"), path: "/tools/state-nomination", destination: "state_nomination" },
+        ]}
+      />
       <ProfessionalHelp locale={locale} />
     </div>
   ) : null;

@@ -6,6 +6,7 @@ import { OccupationToolClickTracker } from "@/components/analytics/occupation-to
 import { OccupationViewTracker } from "@/components/analytics/occupation-view-tracker";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
+import { OccupationDistinction } from "@/components/occupations/occupation-distinction";
 import { TraSkillsAssessment } from "@/components/occupations/tra-skills-assessment";
 import { ResearchLinks, ProfessionalHelp } from "@/components/research-links";
 import {
@@ -224,6 +225,8 @@ export default async function OccupationDetailsPage({ params }: PageProps) {
             </div>
           </section>
         )}
+
+        <OccupationDistinction code={c.code} locale={locale} />
 
         <Card className="border-slate-200/80 bg-white/95 shadow-lg shadow-slate-900/5">
           <CardHeader>
