@@ -480,7 +480,7 @@ export function FullCheckWaitlistForm({
               >
                 <div className={`h-1.5 rounded-full transition-colors ${currentStep >= step ? "bg-[var(--cf-accent)]" : "bg-[var(--cf-line)]"}`} />
                 <p className={`mt-1 text-center text-[0.65rem] font-semibold uppercase tracking-wide ${step < currentStep ? "text-[var(--cf-accent)]" : "text-[var(--cf-muted)]"}`}>
-                  {step === 1 ? txt("Kişisel", "Your research", "研究背景") : step === 2 ? txt("İş veya aile", "Work or family", "工作或家庭") : txt("Eğitim & Dil", "Study & English", "学习与英语")}
+                  {step === 1 ? txt("Kişisel", "Your research", "研究背景") : step === 2 ? txt("İş veya aile", "Work or family", "工作或家庭") : isPartner ? txt("Gözden geçir", "Review", "核对") : txt("Eğitim & Dil", "Study & English", "学习与英语")}
                   <span className="ml-1 text-[var(--cf-muted)]/60">{`(${step}/3)`}</span>
                 </p>
               </button>
@@ -492,7 +492,7 @@ export function FullCheckWaitlistForm({
           </p>
 
           <p data-step-purpose className="text-sm leading-relaxed text-slate-600" aria-live="polite">
-            {currentStep === 1 ? txt("Bu bilgiler raporun konusunu ve genel bağlamını belirler. Vize numarasını bilmiyorsanız Emin değilim seçin.", "These details set the report topic and general context. Choose Not sure if you do not know a visa number.", "这些信息用于设置报告主题及一般背景。不知道签证号码时可选“不确定”。") : currentStep === 2 ? txt("İş veya aile bilgileri ilgili kaynak başlıklarını düzenlemeye yardımcı olur. Belgeler incelenmez ve uygunluk kararı verilmez.", "Work or family details help organise relevant reference topics. Documents are not reviewed and no eligibility decision is made.", "工作或家庭信息用于整理相关参考主题。不会审核文件或作资格判定。") : txt("Bu girdiler rapordaki bilgi ve puan tablosu için kullanılır. İsteğe bağlı soruları boş bırakabilirsiniz; boşluk sıfır veya Hayır anlamına gelmez.", "These entries support the report information and points table. Optional questions can be left blank; missing information is not zero or No.", "这些填写内容用于报告信息及积分表。可不回答可选问题；未提供不表示零或“否”。")}
+            {currentStep === 1 ? txt("Bu bilgiler raporun konusunu ve genel bağlamını belirler. Vize numarasını bilmiyorsanız Emin değilim seçin.", "These details set the report topic and general context. Choose Not sure if you do not know a visa number.", "这些信息用于设置报告主题及一般背景。不知道签证号码时可选“不确定”。") : currentStep === 2 ? txt("İş veya aile bilgileri ilgili kaynak başlıklarını düzenlemeye yardımcı olur. Belgeler incelenmez ve uygunluk kararı verilmez.", "Work or family details help organise relevant reference topics. Documents are not reviewed and no eligibility decision is made.", "工作或家庭信息用于整理相关参考主题。不会审核文件或作资格判定。") : isPartner ? txt("Girdilerinizi Geri ile gözden geçirin. Rapor, verdiğiniz bilgileri ve genel kaynakları içerir; ilişki veya sponsorluk kararı vermez.", "Use Back to review your entries. The report records your information and general references; it does not decide relationship or sponsorship requirements.", "可用“上一步”核对填写内容。报告记录您的信息及一般参考资料，不判定关系或担保要求。") : txt("Bu girdiler rapordaki bilgi ve puan tablosu için kullanılır. İsteğe bağlı soruları boş bırakabilirsiniz; boşluk sıfır veya Hayır anlamına gelmez.", "These entries support the report information and points table. Optional questions can be left blank; missing information is not zero or No.", "这些填写内容用于报告信息及积分表。可不回答可选问题；未提供不表示零或“否”。")}
           </p>
 
           {/* Step content — CSS hidden keeps all mounted in DOM */}
