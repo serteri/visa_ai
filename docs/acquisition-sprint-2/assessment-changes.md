@@ -88,3 +88,14 @@ GA is not initialised on private result documents or recognised prefilled assess
 Browser checks use desktop 1440px and mobile 390px, abort GA requests and every POST, and fail if any POST is attempted. They cover the research-first hierarchy, homepage/navbar entry events once, real CTA navigation, intro and actual price disclosure, validation, Back retention, removed questions, long labels, one safe start event, Partner conditional content and mobile button fit, localised mobile pages, and prefilled-query GA suppression. Final production evidence is recorded separately after deployment; local checks alone are not production evidence.
 
 **DEFERRED / NOT EXECUTED.** Real email receipt, Stripe checkout/payment, creating a customer report, and opening a real private customer result. Sending/transaction authorisation is required for those actions; synthetic route/access fixtures do not prove live delivery. Further engine simplification, saved progress, comprehensive legal/source refresh of every legacy topic, historic-data deletion and authenticated analytics configuration/reporting are outside this improvement. The current enquiry still collects personal/context fields; the audit does not label them anonymous. No outreach, post or partner distribution was sent.
+
+## Final production verification
+
+**EXECUTED — LIVE**, 17 October 2026, 04:13 UTC / 14:13 Brisbane. Vercel succeeded and `/api/version` identified product commit `d3f9e8369afaa7a0bdc75d7f62b942b36eeee665` before and after assessment checks. [Recorded evidence](C:/Users/serte/Desktop/visa_ai/docs/acquisition-sprint-2/assessment-production-verification.json) contains:
+
+- **10 passing assessment browser checks:** desktop/mobile homepage, one entry event per homepage/navbar click, real CTA navigation, explanation/price before questions, validation, Back retention, reduced questions and optional salary, long labels, one safe start event, Partner branch/Review step and mobile submit text, four localised mobile routes, prefilled-query privacy.
+- **7 passing acquisition browser checks** and **11 public routes** still HTTP 200 with one h1 and their expected declared canonicals. These are not Google-selected canonical or indexing observations.
+- No browser page errors, no POST attempted, seven GA requests actually intercepted/aborted. No report, payment or email was created.
+- Production screenshots inspected for the homepage and Partner mobile flow; synthetic Partner PDF pages inspected separately. Screenshots remain in the local evidence directory, not as customer data or performance evidence.
+
+The Partner final step now says Review and explains its actual purpose rather than promising English/points questions. The browser harness uses one network guard so the POST guard cannot override the GA blocker. Existing account metrics, referral traffic, activated-session denominators and channel results remain unavailable. Decision **E** is unchanged.

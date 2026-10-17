@@ -1,0 +1,289 @@
+{
+  "status": "EXECUTED",
+  "tested_product_commit": "d3f9e8369afaa7a0bdc75d7f62b942b36eeee665",
+  "assessment_browser": {
+    "origin": "https://www.logivisa.com",
+    "version": {
+      "commit": "d3f9e8369afaa7a0bdc75d7f62b942b36eeee665",
+      "branch": "main",
+      "deployment": "production",
+      "reportStructure": "information-first"
+    },
+    "checked_at": "2026-10-17T04:13:18.866Z",
+    "checks": [
+      {
+        "width": 1440,
+        "check": "research-first homepage; assessment section; one event per homepage/navbar click"
+      },
+      {
+        "width": 1440,
+        "check": "real CTA navigation; introduction before form; price; step validation/back retention; optional salary; long labels; one safe start event"
+      },
+      {
+        "width": 390,
+        "check": "research-first homepage; assessment section; one event per homepage/navbar click"
+      },
+      {
+        "width": 390,
+        "check": "real CTA navigation; introduction before form; price; step validation/back retention; optional salary; long labels; one safe start event"
+      },
+      {
+        "check": "Partner pathway: four truthful contents; validation; no skilled questions; Back retention; mobile submit text fits"
+      },
+      {
+        "path": "/tr",
+        "check": "localised discovery/intro at mobile width"
+      },
+      {
+        "path": "/zh-Hans",
+        "check": "localised discovery/intro at mobile width"
+      },
+      {
+        "path": "/tr/full-check",
+        "check": "localised discovery/intro at mobile width"
+      },
+      {
+        "path": "/zh-Hans/full-check",
+        "check": "localised discovery/intro at mobile width"
+      },
+      {
+        "check": "prefilled assessment query blocks GA initialization/custom events"
+      }
+    ],
+    "errors": [],
+    "post_requests_attempted": [],
+    "ga_requests_blocked": true,
+    "ga_requests_blocked_count": 7,
+    "production_report_submission": "NOT EXECUTED",
+    "payment": "NOT EXECUTED",
+    "email_delivery": "NOT EXECUTED"
+  },
+  "acquisition_regression_browser": {
+    "origin": "https://www.logivisa.com",
+    "checked_at": "2026-10-17T04:12:50.572Z",
+    "checks": [
+      {
+        "resource": "/resources/for-migration-professionals",
+        "width": 1440,
+        "status": 200,
+        "overflow": false
+      },
+      {
+        "resource": "/resources/for-migration-professionals",
+        "width": 390,
+        "status": 200,
+        "overflow": false
+      },
+      {
+        "path": "/visas/190",
+        "eventName": "research_continuation_click",
+        "payload": {
+          "locale": "en",
+          "subclass": "190",
+          "destination": "visa_comparison",
+          "source_page_type": "visa",
+          "continuation_stage": "visa_to_tool"
+        }
+      },
+      {
+        "path": "/occupations/261313-software-engineer",
+        "eventName": "occupation_tool_click",
+        "payload": {
+          "occupation_code": "261313",
+          "locale": "en",
+          "destination": "visa_comparison"
+        }
+      },
+      {
+        "path": "/tools/skills-assessment?q=351311",
+        "eventName": "research_continuation_click",
+        "payload": {
+          "locale": "en",
+          "destination": "points_calculator",
+          "source_page_type": "tool",
+          "continuation_stage": "tool_to_tool"
+        }
+      },
+      {
+        "path": "/tr/visas/190",
+        "eventName": "research_continuation_click",
+        "payload": {
+          "locale": "tr",
+          "subclass": "190",
+          "destination": "visa_comparison",
+          "source_page_type": "visa",
+          "continuation_stage": "visa_to_tool"
+        }
+      },
+      {
+        "path": "/tools/points-calculator/australia",
+        "eventName": "research_continuation_click",
+        "payload": {
+          "locale": "en",
+          "destination": "skills_assessment",
+          "source_page_type": "tool",
+          "continuation_stage": "calculator_complete_to_research"
+        }
+      }
+    ],
+    "errors": [],
+    "ga_requests_blocked": true
+  },
+  "public_route_regression": {
+    "origin": "https://www.logivisa.com",
+    "version": {
+      "commit": "d3f9e8369afaa7a0bdc75d7f62b942b36eeee665",
+      "branch": "main",
+      "deployment": "production",
+      "reportStructure": "information-first"
+    },
+    "records": [
+      {
+        "name": "Carpenter",
+        "path": "/occupations/331212-carpenter",
+        "status": 200,
+        "declared_canonical": "https://www.logivisa.com/occupations/331212-carpenter",
+        "robots": "index, follow",
+        "h1": "Carpenter (331212): Australian visa occupation information",
+        "ga_tag_present": false,
+        "checked_at": "2026-10-17T04:12:51.965Z",
+        "google_indexed_status": "DATA NOT AVAILABLE",
+        "google_selected_canonical": "DATA NOT AVAILABLE"
+      },
+      {
+        "name": "Chef",
+        "path": "/occupations/351311-chef",
+        "status": 200,
+        "declared_canonical": "https://www.logivisa.com/occupations/351311-chef",
+        "robots": "index, follow",
+        "h1": "Chef (351311): Australian visa occupation information",
+        "ga_tag_present": false,
+        "checked_at": "2026-10-17T04:12:52.789Z",
+        "google_indexed_status": "DATA NOT AVAILABLE",
+        "google_selected_canonical": "DATA NOT AVAILABLE"
+      },
+      {
+        "name": "Electrician General",
+        "path": "/occupations/341111-electrician-general",
+        "status": 200,
+        "declared_canonical": "https://www.logivisa.com/occupations/341111-electrician-general",
+        "robots": "index, follow",
+        "h1": "Electrician (General) (341111): Australian visa occupation information",
+        "ga_tag_present": false,
+        "checked_at": "2026-10-17T04:12:53.822Z",
+        "google_indexed_status": "DATA NOT AVAILABLE",
+        "google_selected_canonical": "DATA NOT AVAILABLE"
+      },
+      {
+        "name": "Software Engineer",
+        "path": "/occupations/261313-software-engineer",
+        "status": 200,
+        "declared_canonical": "https://www.logivisa.com/occupations/261313-software-engineer",
+        "robots": "index, follow",
+        "h1": "Software Engineer (261313): Australian visa occupation information",
+        "ga_tag_present": false,
+        "checked_at": "2026-10-17T04:12:53.897Z",
+        "google_indexed_status": "DATA NOT AVAILABLE",
+        "google_selected_canonical": "DATA NOT AVAILABLE"
+      },
+      {
+        "name": "Developer Programmer",
+        "path": "/occupations/261312-developer-programmer",
+        "status": 200,
+        "declared_canonical": "https://www.logivisa.com/occupations/261312-developer-programmer",
+        "robots": "index, follow",
+        "h1": "Developer Programmer (261312): Australian visa occupation information",
+        "ga_tag_present": false,
+        "checked_at": "2026-10-17T04:12:54.720Z",
+        "google_indexed_status": "DATA NOT AVAILABLE",
+        "google_selected_canonical": "DATA NOT AVAILABLE"
+      },
+      {
+        "name": "Civil Engineer",
+        "path": "/occupations/233211-civil-engineer",
+        "status": 200,
+        "declared_canonical": "https://www.logivisa.com/occupations/233211-civil-engineer",
+        "robots": "index, follow",
+        "h1": "Civil Engineer (233211): Australian visa occupation information",
+        "ga_tag_present": false,
+        "checked_at": "2026-10-17T04:12:55.734Z",
+        "google_indexed_status": "DATA NOT AVAILABLE",
+        "google_selected_canonical": "DATA NOT AVAILABLE"
+      },
+      {
+        "name": "Australia points calculator",
+        "path": "/tools/points-calculator/australia",
+        "status": 200,
+        "declared_canonical": "https://www.logivisa.com/tools/points-calculator/australia",
+        "robots": "index, follow",
+        "h1": "Australia Visa Points Test Calculator",
+        "ga_tag_present": true,
+        "checked_at": "2026-10-17T04:12:56.072Z",
+        "google_indexed_status": "DATA NOT AVAILABLE",
+        "google_selected_canonical": "DATA NOT AVAILABLE"
+      },
+      {
+        "name": "ANZSCO finder",
+        "path": "/tools/anzsco-finder",
+        "status": 200,
+        "declared_canonical": "https://www.logivisa.com/tools/anzsco-finder",
+        "robots": "index, follow",
+        "h1": "ANZSCO Code & Duty Finder",
+        "ga_tag_present": true,
+        "checked_at": "2026-10-17T04:12:56.460Z",
+        "google_indexed_status": "DATA NOT AVAILABLE",
+        "google_selected_canonical": "DATA NOT AVAILABLE"
+      },
+      {
+        "name": "Skills Assessment finder",
+        "path": "/tools/skills-assessment",
+        "status": 200,
+        "declared_canonical": "https://www.logivisa.com/tools/skills-assessment",
+        "robots": "index, follow",
+        "h1": "Explore assessing authorities",
+        "ga_tag_present": true,
+        "checked_at": "2026-10-17T04:12:56.850Z",
+        "google_indexed_status": "DATA NOT AVAILABLE",
+        "google_selected_canonical": "DATA NOT AVAILABLE"
+      },
+      {
+        "name": "Visa comparison",
+        "path": "/tools/visa-comparison",
+        "status": 200,
+        "declared_canonical": "https://www.logivisa.com/tools/visa-comparison",
+        "robots": "index, follow",
+        "h1": "189 vs 190 vs 491 Visa Comparison",
+        "ga_tag_present": true,
+        "checked_at": "2026-10-17T04:12:57.352Z",
+        "google_indexed_status": "DATA NOT AVAILABLE",
+        "google_selected_canonical": "DATA NOT AVAILABLE"
+      },
+      {
+        "name": "Professional resource context",
+        "path": "/resources/for-migration-professionals",
+        "status": 200,
+        "declared_canonical": "https://www.logivisa.com/resources/for-migration-professionals",
+        "robots": "index, follow",
+        "h1": "Better questions before professional advice.",
+        "ga_tag_present": true,
+        "checked_at": "2026-10-17T04:12:57.968Z",
+        "google_indexed_status": "DATA NOT AVAILABLE",
+        "google_selected_canonical": "DATA NOT AVAILABLE"
+      }
+    ],
+    "note": "Public HTTP/canonical/robots observations are not Google indexing, traffic or Google-selected canonical evidence."
+  },
+  "limits": [
+    "No production report submission, email, outreach, post or payment executed.",
+    "Synthetic event checks are not traffic or activation evidence.",
+    "Private result and PDF behaviour tested using stub records and real rendering/access routes; no real customer record inspected.",
+    "GA/GSC authenticated metrics remain DATA NOT AVAILABLE."
+  ],
+  "local_screenshot_directory": "scratch/assessment-addendum/production/",
+  "pdf_fixture_visual_review": {
+    "fixture": "synthetic Partner report",
+    "locale": "en",
+    "pages_inspected": 3,
+    "issues_observed": []
+  }
+}
