@@ -1,0 +1,904 @@
+{
+  "date": "2026-10-17",
+  "method": "Focused live web search plus first-party public-page GET inspection. Search result order is not a reproducible Google Australia ranking or evidence of search volume. No Reddit or Facebook-group sources used.",
+  "queries": [
+    "carpenter skills assessment Australia TRA OSAP 331212",
+    "chef skills assessment Australia chef cook TRA 351311",
+    "electrician general skills assessment Australia 341111",
+    "software engineer 261313 ACS skills assessment Australia",
+    "developer programmer 261312 ACS skills assessment Australia",
+    "civil engineer 233211 Engineers Australia skills assessment",
+    "carpenter ANZSCO 331212",
+    "developer programmer vs software engineer ACS"
+  ],
+  "sources": [
+    {
+      "title": "TRA OSAP occupation/country scope",
+      "url": "https://www.tradesrecognitionaustralia.gov.au/osap-nominated-occupations-countries-and-sars",
+      "observation": "Primary trade assessment reference; page and program context matter.",
+      "checked_date": "2026-10-17"
+    },
+    {
+      "title": "VETASSESS Electrician General",
+      "url": "https://www.vetassess.com.au/check-my-occupation/trade-occupations/electrician-general",
+      "observation": "Assessment provider explains evidence, technical and practical assessment; links licensing guidance.",
+      "checked_date": "2026-10-17"
+    },
+    {
+      "title": "ACS IT occupations",
+      "url": "https://www.acs.org.au/msa/information-for-applicants/occupations-anzsco-codes/information-technology.html",
+      "observation": "Primary descriptions for 261312 / 261313; not the similarly named commercial domains.",
+      "checked_date": "2026-10-17"
+    },
+    {
+      "title": "Engineers Australia migration assessment",
+      "url": "https://www.engineersaustralia.org.au/migrants/migration-skills-assessment",
+      "observation": "Primary qualification/pathway framework; accreditation is program-specific.",
+      "checked_date": "2026-10-17"
+    },
+    {
+      "title": "Home Affairs competent English",
+      "url": "https://immi.homeaffairs.gov.au/help-support/meeting-our-requirements/english-language/competent-english",
+      "observation": "Test date and component requirements; validates removing universal PTE shortcut.",
+      "checked_date": "2026-10-17"
+    },
+    {
+      "title": "Home Affairs proficient English",
+      "url": "https://immi.homeaffairs.gov.au/help-support/meeting-our-requirements/english-language/proficient-english",
+      "observation": "Separate pre/post 7 August 2025 test tables.",
+      "checked_date": "2026-10-17"
+    },
+    {
+      "title": "Home Affairs superior English",
+      "url": "https://immi.homeaffairs.gov.au/help-support/meeting-our-requirements/english-language/superior-english",
+      "observation": "Separate pre/post 7 August 2025 test tables.",
+      "checked_date": "2026-10-17"
+    },
+    {
+      "title": "William Angliss FAQ",
+      "url": "https://www.angliss.edu.au/industry/tra-tss-osap-skills-assessment/faqs/",
+      "observation": "Provider distinguishes Chef and Cook occupations/qualifications.",
+      "checked_date": "2026-10-17"
+    },
+    {
+      "title": "WIDEN Chef",
+      "url": "https://www.widen.com.au/skills-assessment/chef/",
+      "observation": "Commercial agency result with occupation-specific assessment content. Claims are not adopted as official facts.",
+      "checked_date": "2026-10-17"
+    },
+    {
+      "title": "WIDEN Civil Engineer",
+      "url": "https://www.widen.com.au/skills-assessment/civil-engineer/",
+      "observation": "Commercial agency result; qualification pathway intent.",
+      "checked_date": "2026-10-17"
+    },
+    {
+      "title": "OneU Carpenter",
+      "url": "https://www.oneuedu.com/en-US/australian-skill-assessment/carpenter-331212",
+      "observation": "Education/database result connects occupation, assessment and visa research.",
+      "checked_date": "2026-10-17"
+    },
+    {
+      "title": "ANZSCO database Carpenter",
+      "url": "https://www.anzsco.com.au/anzsco/331212-carpenter",
+      "observation": "Database result; factual text must be verified against original sources.",
+      "checked_date": "2026-10-17"
+    },
+    {
+      "title": "ANZSCO database Chef",
+      "url": "https://www.anzsco.com.au/anzsco/351311-chef",
+      "observation": "Database result observed for code query.",
+      "checked_date": "2026-10-17"
+    },
+    {
+      "title": "EOI Insights Carpenter",
+      "url": "https://www.eoi-insights.com/cyclopedia/occupations/331212-carpenter",
+      "observation": "Interactive/published EOI research competitor; not a personal invitation forecast.",
+      "checked_date": "2026-10-17"
+    },
+    {
+      "title": "Nestway Electrician",
+      "url": "https://nestwayimmigration.com.au/electrician-general-341111.html",
+      "observation": "Agency occupation page result.",
+      "checked_date": "2026-10-17"
+    },
+    {
+      "title": "EOI Insights Electrician",
+      "url": "https://www.eoi-insights.com/cyclopedia/occupations/341111-electrician-general",
+      "observation": "Database/tool result for trade research.",
+      "checked_date": "2026-10-17"
+    },
+    {
+      "title": "VJ Consulting Software Engineer",
+      "url": "https://vjconsulting.com.au/en/software-engineer-acs-skills-assessment-guide/",
+      "observation": "Agency assessment guide result.",
+      "checked_date": "2026-10-17"
+    },
+    {
+      "title": "Commercial ACSskillsassessment Developer Programmer",
+      "url": "https://www.acsskillsassessment.com/blogs/anzsco-261312-developer-programmer-acs-skills-assessment",
+      "observation": "Commercial assessment-content result; not official ACS.",
+      "checked_date": "2026-10-17"
+    },
+    {
+      "title": "Commercial ACSskillsassessment code comparison",
+      "url": "https://www.acsskillsassessment.com/blogs/choose-the-right-anzsco-code",
+      "observation": "Competes on role distinction intent.",
+      "checked_date": "2026-10-17"
+    },
+    {
+      "title": "SkillX",
+      "url": "https://skillx.com.au/",
+      "observation": "General assessment/tool result in combined ICT query sample. Product assertions not independently validated.",
+      "checked_date": "2026-10-17"
+    },
+    {
+      "title": "EMC Civil Engineer",
+      "url": "https://www.emcaustralia.com.au/occupations/civil-engineer-233211",
+      "observation": "Agency/database occupation result.",
+      "checked_date": "2026-10-17"
+    },
+    {
+      "title": "EOITrack Civil Engineer",
+      "url": "https://eoitrack.com.au/occupation/190/233211/",
+      "observation": "EOI tool result with forecasts; no forecast claims adopted.",
+      "checked_date": "2026-10-17"
+    },
+    {
+      "title": "TILSAVV consultation preparation",
+      "url": "https://www.tilsavv.com.au/prepare-first-migration-consultation/",
+      "observation": "Practice article verified live; footer publishes manu@tilsav.com.au. Exact address uses tilsav rather than the website hostname tilsavv.",
+      "checked_date": "2026-10-17"
+    },
+    {
+      "title": "Blue Ocean consultation preparation",
+      "url": "https://www.blueoceanimmigration.com.au/resources/migration-consultation-preparation",
+      "observation": "Practice preparation guide verified live; supports specific critique context.",
+      "checked_date": "2026-10-17"
+    }
+  ],
+  "public_pages": [
+    {
+      "id": "P01",
+      "url": "https://www.jrmigration.com.au/about",
+      "http_status": 200,
+      "title": "About Us | MARA Agent Bella Tian | J&R Migration",
+      "checked_at": "2026-10-17T01:39:30.711Z",
+      "error": null
+    },
+    {
+      "id": "P01",
+      "url": "https://www.jrmigration.com.au/",
+      "http_status": 200,
+      "title": "J&R Migration | Employer Sponsored Visa Specialists Brisbane",
+      "checked_at": "2026-10-17T01:39:30.762Z",
+      "error": null
+    },
+    {
+      "id": "P02",
+      "url": "https://www.tilsavv.com.au/",
+      "http_status": 200,
+      "title": "Migration Agent Geelong | TILSAVV Migration & Education",
+      "checked_at": "2026-10-17T01:39:31.103Z",
+      "error": null
+    },
+    {
+      "id": "P02",
+      "url": "https://www.tilsavv.com.au/contact-us/",
+      "http_status": 200,
+      "title": "Contact TILSAVV | Migration & Education Advice in Geelong",
+      "checked_at": "2026-10-17T01:39:31.119Z",
+      "error": null
+    },
+    {
+      "id": "P03",
+      "url": "https://www.blueoceanimmigration.com.au/",
+      "http_status": 200,
+      "title": "Blue Ocean Immigration",
+      "checked_at": "2026-10-17T01:39:31.221Z",
+      "error": null
+    },
+    {
+      "id": "P03",
+      "url": "https://www.blueoceanimmigration.com.au/about",
+      "http_status": 200,
+      "title": "About Sunil Rampal and Blue Ocean | Blue Ocean Immigration",
+      "checked_at": "2026-10-17T01:39:31.236Z",
+      "error": null
+    },
+    {
+      "id": "P05",
+      "url": "https://www.mcamigration.com.au/",
+      "http_status": 200,
+      "title": "Migration Consultants Australia | Australian Migration Agents",
+      "checked_at": "2026-10-17T01:39:31.256Z",
+      "error": null
+    },
+    {
+      "id": "P05",
+      "url": "https://www.mcamigration.com.au/about-us/",
+      "http_status": 200,
+      "title": "Migration Consultants Australia | Australia Work Visa Consultants | Immigration Agents Australia",
+      "checked_at": "2026-10-17T01:39:31.277Z",
+      "error": null
+    },
+    {
+      "id": "P04",
+      "url": "https://fairgovisa.com.au/about/",
+      "http_status": 200,
+      "title": "About - Fair Go Visa Consultants",
+      "checked_at": "2026-10-17T01:39:31.376Z",
+      "error": null
+    },
+    {
+      "id": "P04",
+      "url": "https://fairgovisa.com.au/",
+      "http_status": 200,
+      "title": "Home - Fair Go Visa Consultants",
+      "checked_at": "2026-10-17T01:39:31.414Z",
+      "error": null
+    },
+    {
+      "id": "P06",
+      "url": "https://steppingstonevisas.com/",
+      "http_status": 200,
+      "title": "Stepping Stone Visas: Your Pathway to Australia",
+      "checked_at": "2026-10-17T01:39:32.216Z",
+      "error": null
+    },
+    {
+      "id": "P07",
+      "url": "https://www.widen.com.au/consultation/",
+      "http_status": 200,
+      "title": "Book a Consultation — 30 Minutes with Keshab Chapagain, Registered Migration Agent (MARN 1576536) | WIDEN",
+      "checked_at": "2026-10-17T01:39:32.825Z",
+      "error": null
+    },
+    {
+      "id": "P10",
+      "url": "https://positivemigration.com/",
+      "http_status": 200,
+      "title": "Positive Education & Migration | Australia's Trusted Migration Agency",
+      "checked_at": "2026-10-17T01:39:32.833Z",
+      "error": null
+    },
+    {
+      "id": "P07",
+      "url": "https://www.widen.com.au/",
+      "http_status": 200,
+      "title": "WIDEN Migration Experts — Keshab Chapagain, Registered Migration Agent Sydney (MARN 1576536)",
+      "checked_at": "2026-10-17T01:39:32.862Z",
+      "error": null
+    },
+    {
+      "id": "P11",
+      "url": "https://visaaffairs.com.au/about/",
+      "http_status": 200,
+      "title": "About — VisaAffairs",
+      "checked_at": "2026-10-17T01:39:33.163Z",
+      "error": null
+    },
+    {
+      "id": "P11",
+      "url": "https://visaaffairs.com.au/",
+      "http_status": 200,
+      "title": "VisaAffairs — Australian visas, handled with care",
+      "checked_at": "2026-10-17T01:39:33.169Z",
+      "error": null
+    },
+    {
+      "id": "P10",
+      "url": "https://positivemigration.com/about.html",
+      "http_status": 200,
+      "title": "About Prabin Pathak | Positive Education & Migration",
+      "checked_at": "2026-10-17T01:39:33.302Z",
+      "error": null
+    },
+    {
+      "id": "P12",
+      "url": "https://migrationvision.com.au/about.html",
+      "http_status": 200,
+      "title": "About Migration Vision | Migration Vision",
+      "checked_at": "2026-10-17T01:39:33.781Z",
+      "error": null
+    },
+    {
+      "id": "P08",
+      "url": "https://www.anzscosearch.com/about/",
+      "http_status": 200,
+      "title": "About | Anzscosearch",
+      "checked_at": "2026-10-17T01:39:33.855Z",
+      "error": null
+    },
+    {
+      "id": "P12",
+      "url": "https://migrationvision.com.au/",
+      "http_status": 200,
+      "title": "Migration Vision — OMARA Migration Advice Brisbane",
+      "checked_at": "2026-10-17T01:39:33.867Z",
+      "error": null
+    },
+    {
+      "id": "P13",
+      "url": "https://www.nanakmigration.com.au/",
+      "http_status": 200,
+      "title": "Registered Migration Agents Melbourne | Nanak Migration",
+      "checked_at": "2026-10-17T01:39:34.069Z",
+      "error": null
+    },
+    {
+      "id": "P08",
+      "url": "https://www.anzscosearch.com/",
+      "http_status": 200,
+      "title": "Australia Migration & Visa Services",
+      "checked_at": "2026-10-17T01:39:34.088Z",
+      "error": null
+    },
+    {
+      "id": "P13",
+      "url": "https://www.nanakmigration.com.au/about",
+      "http_status": 200,
+      "title": "About Nanak Migration Group | MARA Registered Agents",
+      "checked_at": "2026-10-17T01:39:34.190Z",
+      "error": null
+    },
+    {
+      "id": "P14",
+      "url": "https://kandelconsultancy.com.au/about/team/",
+      "http_status": 200,
+      "title": "Meet the Team — Kandel Consultancy",
+      "checked_at": "2026-10-17T01:39:34.237Z",
+      "error": null
+    },
+    {
+      "id": "P14",
+      "url": "https://kandelconsultancy.com.au/",
+      "http_status": 200,
+      "title": "Kandel Consultancy — Education & Migration, Melbourne",
+      "checked_at": "2026-10-17T01:39:34.263Z",
+      "error": null
+    },
+    {
+      "id": "P17",
+      "url": "https://www.workvisalawyers.com.au/",
+      "http_status": 200,
+      "title": "Immigration Lawyers & Migration Agents | Work Visa Lawyers",
+      "checked_at": "2026-10-17T01:39:34.754Z",
+      "error": null
+    },
+    {
+      "id": "P17",
+      "url": "https://www.workvisalawyers.com.au/team-members/",
+      "http_status": 200,
+      "title": "Immigration Lawyers & Agents | Work Visa Lawyers",
+      "checked_at": "2026-10-17T01:39:34.839Z",
+      "error": null
+    },
+    {
+      "id": "P09",
+      "url": "https://www.nomos.com.au/initial-consultation/",
+      "http_status": 200,
+      "title": "Initial Consultation - Nomos",
+      "checked_at": "2026-10-17T01:39:34.869Z",
+      "error": null
+    },
+    {
+      "id": "P09",
+      "url": "https://www.nomos.com.au/",
+      "http_status": 200,
+      "title": "Nomos - Accredited Specialists in Australian Immigration Law",
+      "checked_at": "2026-10-17T01:39:34.880Z",
+      "error": null
+    },
+    {
+      "id": "P15",
+      "url": "https://risemigration.com.au/",
+      "http_status": 200,
+      "title": "Rise Migration Lawyers | Melbourne Migration & Visa Lawyers",
+      "checked_at": "2026-10-17T01:39:34.896Z",
+      "error": null
+    },
+    {
+      "id": "P15",
+      "url": "https://risemigration.com.au/about/",
+      "http_status": 200,
+      "title": "About Our Immigration Law Firm | Rise Migration Lawyers",
+      "checked_at": "2026-10-17T01:39:34.923Z",
+      "error": null
+    },
+    {
+      "id": "P16",
+      "url": "https://truebluemigration.com/",
+      "http_status": 200,
+      "title": "Australian Migration Agents in Melbourne & Perth | True Blue Migration",
+      "checked_at": "2026-10-17T01:39:35.244Z",
+      "error": null
+    },
+    {
+      "id": "P16",
+      "url": "https://truebluemigration.com/about-us/the-team/",
+      "http_status": 200,
+      "title": "Meet the Team | Migration Agents & Experts | True Blue Migration",
+      "checked_at": "2026-10-17T01:39:35.338Z",
+      "error": null
+    },
+    {
+      "id": "P19",
+      "url": "https://hellomigration.com.au/book-a-consultation/",
+      "http_status": 200,
+      "title": "Book A Consultation – Hello Migration | Your Trusted Partner in Australian Migration",
+      "checked_at": "2026-10-17T01:39:35.609Z",
+      "error": null
+    },
+    {
+      "id": "P18",
+      "url": "https://visaenvoy.com/our-team/",
+      "http_status": 200,
+      "title": "Our Team",
+      "checked_at": "2026-10-17T01:39:35.798Z",
+      "error": null
+    },
+    {
+      "id": "P19",
+      "url": "https://hellomigration.com.au/",
+      "http_status": 200,
+      "title": "Hello Migration | Your Trusted Partner in Australian Migration",
+      "checked_at": "2026-10-17T01:39:35.815Z",
+      "error": null
+    },
+    {
+      "id": "P18",
+      "url": "https://visaenvoy.com/",
+      "http_status": 200,
+      "title": "Australian Migration Agents and Immigration Lawyers | VisaEnvoy",
+      "checked_at": "2026-10-17T01:39:35.867Z",
+      "error": null
+    },
+    {
+      "id": "P21",
+      "url": "https://migrationagentsperth.com.au/",
+      "http_status": 200,
+      "title": "Best Migration Agent Perth | Best Immigration Agent Perth ",
+      "checked_at": "2026-10-17T01:39:36.827Z",
+      "error": null
+    },
+    {
+      "id": "P21",
+      "url": "https://migrationagentsperth.com.au/our-team/",
+      "http_status": 200,
+      "title": "Our Team | Ultimate Migration Perth | OMARA Agents",
+      "checked_at": "2026-10-17T01:39:37.173Z",
+      "error": null
+    },
+    {
+      "id": "P20",
+      "url": "https://www.emergico.com.au/about/team/",
+      "http_status": 200,
+      "title": "Emergico Team | Registered Migration Agents Australia",
+      "checked_at": "2026-10-17T01:39:37.788Z",
+      "error": null
+    },
+    {
+      "id": "P25",
+      "url": "https://au-educate.com/",
+      "http_status": 200,
+      "title": "澳学教育 AU Educate | 澳洲留学一站式服务：学生签证 · 择校申请 · 学业辅导 · 转学疑难",
+      "checked_at": "2026-10-17T01:39:37.875Z",
+      "error": null
+    },
+    {
+      "id": "P20",
+      "url": "https://www.emergico.com.au/",
+      "http_status": 200,
+      "title": "Migration Agents Brisbane Australia - Emergico",
+      "checked_at": "2026-10-17T01:39:37.956Z",
+      "error": null
+    },
+    {
+      "id": "P25",
+      "url": "https://au-educate.com/en/about",
+      "http_status": 200,
+      "title": "About AU Educate · Our Consultants and Offices",
+      "checked_at": "2026-10-17T01:39:38.104Z",
+      "error": null
+    },
+    {
+      "id": "P27",
+      "url": "https://estrinsaul.com.au/",
+      "http_status": 200,
+      "title": "Lawyers & Migration Specialists | Estrin Saul",
+      "checked_at": "2026-10-17T01:39:38.309Z",
+      "error": null
+    },
+    {
+      "id": "P27",
+      "url": "https://estrinsaul.com.au/team/",
+      "http_status": 200,
+      "title": "Team | Estrin Saul",
+      "checked_at": "2026-10-17T01:39:38.414Z",
+      "error": null
+    },
+    {
+      "id": "P28",
+      "url": "https://www.seekmigration.com.au/",
+      "http_status": 403,
+      "title": "Just a moment...",
+      "checked_at": "2026-10-17T01:39:38.611Z",
+      "error": null
+    },
+    {
+      "id": "P24",
+      "url": "https://www.globalselect.com.au/",
+      "http_status": 200,
+      "title": "Registered Migration Agents Australia | Global Select",
+      "checked_at": "2026-10-17T01:39:38.746Z",
+      "error": null
+    },
+    {
+      "id": "P30",
+      "url": "https://strattonmigration.com.au/",
+      "http_status": 200,
+      "title": "Stratton Migration Australia | Employer-Sponsored Migration Specialists",
+      "checked_at": "2026-10-17T01:39:39.023Z",
+      "error": null
+    },
+    {
+      "id": "P24",
+      "url": "https://www.globalselect.com.au/about-us",
+      "http_status": 200,
+      "title": "About Global Select — OMARA Registered Migration Agents",
+      "checked_at": "2026-10-17T01:39:39.036Z",
+      "error": null
+    },
+    {
+      "id": "P22",
+      "url": "https://visagroup.com.au/",
+      "http_status": 200,
+      "title": "Visa Agent Perth 25 yrs exp Australian Visa Group",
+      "checked_at": "2026-10-17T01:39:39.106Z",
+      "error": null
+    },
+    {
+      "id": "C03",
+      "url": "https://www.languageacademy.com.au/",
+      "http_status": 200,
+      "title": "Top PTE Training Institute In Parramatta | Best NAATI CCL Coaching Centre In Sydney",
+      "checked_at": "2026-10-17T01:39:39.323Z",
+      "error": null
+    },
+    {
+      "id": "P29",
+      "url": "https://www.masterkeymigration.com.au/",
+      "http_status": 200,
+      "title": "Masterkey Migration — Registered Australian Migration Agents",
+      "checked_at": "2026-10-17T01:39:39.548Z",
+      "error": null
+    },
+    {
+      "id": "P23",
+      "url": "https://migrationguide.com.au/",
+      "http_status": 200,
+      "title": "AMG Visas",
+      "checked_at": "2026-10-17T01:39:39.586Z",
+      "error": null
+    },
+    {
+      "id": "P26",
+      "url": "https://www.thinkvisa.com.au/",
+      "http_status": 200,
+      "title": "Australia's #1 Immigration Lawyers & Immigration Agents | Think VisaSticky CTA Footer",
+      "checked_at": "2026-10-17T01:39:39.695Z",
+      "error": null
+    },
+    {
+      "id": "C01",
+      "url": "https://www.e2language.com/",
+      "http_status": 200,
+      "title": "Free Online IELTS, OET, PTE & CELPIP Test Prep Courses- Master English Proficiency | E2Language",
+      "checked_at": "2026-10-17T01:39:39.789Z",
+      "error": null
+    },
+    {
+      "id": "C07",
+      "url": "https://www.konnecting.com/",
+      "http_status": 200,
+      "title": "Top Recruitment Agency | Konnecting Recruitment Australia · Konnecting",
+      "checked_at": "2026-10-17T01:39:40.303Z",
+      "error": null
+    },
+    {
+      "id": "C09",
+      "url": "https://www.hays.com.au/",
+      "http_status": 200,
+      "title": "Hays Specialist Recruitment job employment agency",
+      "checked_at": "2026-10-17T01:39:40.312Z",
+      "error": null
+    },
+    {
+      "id": "C07",
+      "url": "https://www.engineeringpersonnel.com.au/",
+      "http_status": 200,
+      "title": "Hire Skilled Engineers in Australia | Engineering · Konnecting",
+      "checked_at": "2026-10-17T01:39:40.383Z",
+      "error": null,
+      "note": "Affiliated brand of Konnecting, not separately counted; original candidate replaced by Titan Recruitment C08"
+    },
+    {
+      "id": "C10",
+      "url": "https://www.randstad.com.au/",
+      "http_status": 200,
+      "title": "Randstad Australia | Leading Specialist Recruitment Agency",
+      "checked_at": "2026-10-17T01:39:40.659Z",
+      "error": null
+    },
+    {
+      "id": "C12",
+      "url": "https://attc.org.au/",
+      "http_status": 403,
+      "title": "Just a moment...",
+      "checked_at": "2026-10-17T01:39:40.663Z",
+      "error": null
+    },
+    {
+      "id": "C02",
+      "url": "https://ptemagic.com.au/",
+      "http_status": 200,
+      "title": "PTE Magic – Online PTE Coaching Since 2016 | Trusted by 30,000+ Students",
+      "checked_at": "2026-10-17T01:39:40.736Z",
+      "error": null
+    },
+    {
+      "id": "C04",
+      "url": "https://www.ieltsadvantage.com/",
+      "http_status": 200,
+      "title": "IELTS Preparation, Practice and Courses | IELTS AdvantageIELTS Advantage — Homepage Mockup",
+      "checked_at": "2026-10-17T01:39:40.755Z",
+      "error": null
+    },
+    {
+      "id": "C06",
+      "url": "https://www.downundertradies.com/",
+      "http_status": 200,
+      "title": "",
+      "checked_at": "2026-10-17T01:39:40.768Z",
+      "error": null
+    },
+    {
+      "id": "C11",
+      "url": "https://www.angliss.edu.au/industry/tra-tss-osap-skills-assessment/faqs/",
+      "http_status": 200,
+      "title": "FAQs | William Angliss TRA TSS & OSAP Skills Assessment",
+      "checked_at": "2026-10-17T01:39:41.099Z",
+      "error": null
+    },
+    {
+      "id": "C15",
+      "url": "https://www.engineersaustralia.org.au/migrants/migration-skills-assessment",
+      "http_status": 200,
+      "title": "Migration skills assessment | Engineers Australia",
+      "checked_at": "2026-10-17T01:39:41.260Z",
+      "error": null
+    },
+    {
+      "id": "C14",
+      "url": "https://www.ssi.org.au/",
+      "http_status": 200,
+      "title": "Settlement Services International - SSI",
+      "checked_at": "2026-10-17T01:39:41.352Z",
+      "error": null
+    },
+    {
+      "id": "C13",
+      "url": "https://www.ames.net.au/",
+      "http_status": 200,
+      "title": "Education Employment Settlement - Refugees Migrants | AMES Australia",
+      "checked_at": "2026-10-17T01:39:41.831Z",
+      "error": null
+    },
+    {
+      "id": "C05",
+      "url": "https://englishwise.com.au/",
+      "http_status": 200,
+      "title": "EnglishWise: PTE, IELTS, NAATI & OET Course in Australia",
+      "checked_at": "2026-10-17T01:39:42.152Z",
+      "error": null
+    },
+    {
+      "id": "P01",
+      "url": "https://www.jrmigration.com.au/services/skilled-migration",
+      "http_status": 200,
+      "title": "Skilled Migration | 189, 190 & 491 Visas | J&R Migration",
+      "checked_at": "2026-10-17T01:41:28.587Z",
+      "error": null
+    },
+    {
+      "id": "P01",
+      "url": "https://www.jrmigration.com.au/contact",
+      "http_status": 200,
+      "title": "Contact a MARA Migration Agent | Brisbane | J&R Migration",
+      "checked_at": "2026-10-17T01:41:28.629Z",
+      "error": null
+    },
+    {
+      "id": "P04",
+      "url": "https://fairgovisa.com.au/general-skilled-visas/",
+      "http_status": 200,
+      "title": "General Skilled Visas - Fair Go Visa Consultants",
+      "checked_at": "2026-10-17T01:41:28.642Z",
+      "error": null
+    },
+    {
+      "id": "P03",
+      "url": "https://www.blueoceanimmigration.com.au/skilled-migration",
+      "http_status": 200,
+      "title": "Skilled migration consultations | Blue Ocean Immigration",
+      "checked_at": "2026-10-17T01:41:28.651Z",
+      "error": null
+    },
+    {
+      "id": "P05",
+      "url": "https://www.mcamigration.com.au/contact/",
+      "http_status": 200,
+      "title": "Contact Migration Consultants Australia | Migration Experts",
+      "checked_at": "2026-10-17T01:41:28.690Z",
+      "error": null
+    },
+    {
+      "id": "P05",
+      "url": "https://www.mcamigration.com.au/skilled-migration/",
+      "http_status": 200,
+      "title": "Skilled Migration Australia | Skilled Visas & PR Pathways",
+      "checked_at": "2026-10-17T01:41:28.700Z",
+      "error": null
+    },
+    {
+      "id": "P09",
+      "url": "https://www.nomos.com.au/contact/",
+      "http_status": 200,
+      "title": "Contact - Nomos",
+      "checked_at": "2026-10-17T01:41:28.889Z",
+      "error": null
+    },
+    {
+      "id": "P09",
+      "url": "https://www.nomos.com.au/services/legal/",
+      "http_status": 200,
+      "title": "Legal - Nomos",
+      "checked_at": "2026-10-17T01:41:28.918Z",
+      "error": null
+    },
+    {
+      "id": "P22",
+      "url": "https://visagroup.com.au/contact/",
+      "http_status": 200,
+      "title": "Australian Visa Group - Office Locations",
+      "checked_at": "2026-10-17T01:41:29.191Z",
+      "error": null
+    },
+    {
+      "id": "P30",
+      "url": "https://strattonmigration.com.au/contact-us",
+      "http_status": 200,
+      "title": "Contact Us",
+      "checked_at": "2026-10-17T01:41:29.195Z",
+      "error": null
+    },
+    {
+      "id": "P06",
+      "url": "https://steppingstonevisas.com/#121cf69a-dd6f-426b-8ee7-8a9971732912",
+      "http_status": 200,
+      "title": "Stepping Stone Visas: Your Pathway to Australia",
+      "checked_at": "2026-10-17T01:41:29.384Z",
+      "error": null
+    },
+    {
+      "id": "P06",
+      "url": "https://steppingstonevisas.com/#our-migration-expertise",
+      "http_status": 200,
+      "title": "Stepping Stone Visas: Your Pathway to Australia",
+      "checked_at": "2026-10-17T01:41:29.426Z",
+      "error": null
+    },
+    {
+      "id": "P30",
+      "url": "https://strattonmigration.com.au/general-skilled-migration-visas",
+      "http_status": 200,
+      "title": "General Skilled Migration Visa",
+      "checked_at": "2026-10-17T01:41:29.440Z",
+      "error": null
+    },
+    {
+      "id": "C13",
+      "url": "https://www.ames.net.au/study/short-courses/skilled-professional-migrants-program-spmp",
+      "http_status": 200,
+      "title": "Skilled Professional Migrants Program (SPMP) | AMES",
+      "checked_at": "2026-10-17T01:41:29.563Z",
+      "error": null
+    },
+    {
+      "id": "P22",
+      "url": "https://visagroup.com.au/skilled-migration/",
+      "http_status": 200,
+      "title": "Skilled Migration - Visa Agent Perth 25 yrs exp Australian Visa Group",
+      "checked_at": "2026-10-17T01:41:29.640Z",
+      "error": null
+    },
+    {
+      "id": "C08",
+      "url": "https://www.titanrecruitment.com.au/",
+      "http_status": 200,
+      "title": "Engineering & Technology Jobs in Perth, Brisbane | Titan Recruitment",
+      "checked_at": "2026-10-17T01:41:29.745Z",
+      "error": null
+    },
+    {
+      "id": "C08",
+      "url": "https://www.titanrecruitment.com.au/contact-us",
+      "http_status": 200,
+      "title": "Contact Us - Titan Recruitment | Titan Recruitment",
+      "checked_at": "2026-10-17T01:41:29.806Z",
+      "error": null
+    },
+    {
+      "id": "P28",
+      "url": "https://seekmigration.com.au/",
+      "http_status": 403,
+      "title": "Just a moment...",
+      "checked_at": "2026-10-17T01:41:29.829Z",
+      "error": null
+    },
+    {
+      "id": "P21",
+      "url": "https://migrationagentsperth.com.au/contact-us/",
+      "http_status": 200,
+      "title": "Contact Us | Migration Agent Perth | Ultimate Migration",
+      "checked_at": "2026-10-17T01:41:30.145Z",
+      "error": null
+    },
+    {
+      "id": "P04",
+      "url": "https://fairgovisa.com.au/contact/",
+      "http_status": 200,
+      "title": "Contact - Fair Go Visa Consultants",
+      "checked_at": "2026-10-17T01:41:32.131Z",
+      "error": null
+    }
+  ],
+  "registration_checks": [
+    {
+      "id": "P02",
+      "source": "https://portal.mara.gov.au/search-the-register-of-migration-agents/register-of-migration-agent-details/?ContactID=e0dc7b00-0cfb-ef11-bae2-002248987fee",
+      "result": "Official record matched Registered on this access; source update/renewal dates apply"
+    },
+    {
+      "id": "P03",
+      "source": "https://portal.mara.gov.au/search-the-register-of-migration-agents/register-of-migration-agent-details/?ContactID=7303d363-a252-e311-9402-005056ab0eca",
+      "result": "Official record matched Registered on this access; source update/renewal dates apply"
+    },
+    {
+      "id": "P04",
+      "source": "https://portal.mara.gov.au/search-the-register-of-migration-agents/register-of-migration-agent-details/?ContactID=502f3b43-7168-e811-9418-000d3ad152db",
+      "result": "Official record matched Registered on this access; source update/renewal dates apply"
+    },
+    {
+      "id": "P05",
+      "source": "https://portal.mara.gov.au/search-the-register-of-migration-agents/register-of-migration-agent-details/?ContactID=c91c0d4a-a052-e311-9402-005056ab0eca",
+      "result": "Official record matched Registered on this access; source update/renewal dates apply"
+    },
+    {
+      "id": "P06",
+      "source": "https://portal.mara.gov.au/search-the-register-of-migration-agents/register-of-migration-agent-details/?ContactID=7d89029f-a052-e311-9402-005056ab0eca",
+      "result": "Official record matched Registered on this access; source update/renewal dates apply"
+    },
+    {
+      "id": "P07",
+      "source": "https://portal.mara.gov.au/search-the-register-of-migration-agents/register-of-migration-agent-details/?ContactID=817b2025-4863-e511-9403-005056ab0eca",
+      "result": "Official record matched Registered on this access; source update/renewal dates apply"
+    },
+    {
+      "id": "P29",
+      "source": "https://portal.mara.gov.au/search-the-register-of-migration-agents/register-of-migration-agent-details/?ContactID=5279fc9f-e0fe-ef11-bae3-002248105184",
+      "result": "Official indexed register result matched; dated update, not a guarantee of future status"
+    }
+  ]
+}

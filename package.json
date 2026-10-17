@@ -32,6 +32,7 @@
     "test:partner-ai-removal": "tsx scripts/test-partner-and-ai-removal.ts",
     "test:agent-lead-notice": "tsx scripts/test-agent-lead-notice.ts",
     "test:marketing-readiness": "tsx scripts/test-marketing-readiness.tsx",
+    "test:acquisition-pilot": "tsx scripts/test-acquisition-pilot.ts",
     "test:seo-occupation": "tsx scripts/test-seo-occupation.ts",
     "test:visa-comparison": "tsx scripts/test-visa-comparison.ts",
     "test:tra-block": "tsx scripts/test-tra-block.ts",

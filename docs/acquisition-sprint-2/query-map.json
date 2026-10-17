@@ -1,0 +1,145 @@
+{
+  "date": "2026-10-17",
+  "status": "EXECUTED",
+  "queries_are_not_volume_data": true,
+  "cohort": [
+    {
+      "name": "Carpenter",
+      "code": "331212",
+      "authority": "TRA",
+      "url": "https://www.logivisa.com/occupations/331212-carpenter",
+      "owner": "https://www.logivisa.com/occupations/331212-carpenter",
+      "queries": [
+        "carpenter ANZSCO 331212",
+        "carpenter skills assessment Australia",
+        "carpenter TRA assessment",
+        "carpenter state nomination",
+        "carpenter Australia visa",
+        "carpenter OSAP"
+      ],
+      "shared_owners": {
+        "assessment_finder": "https://www.logivisa.com/tools/skills-assessment",
+        "code_lookup": "https://www.logivisa.com/tools/anzsco-finder",
+        "points": "https://www.logivisa.com/tools/points-calculator/australia",
+        "state_references": "https://www.logivisa.com/tools/state-nomination",
+        "visa_comparison": "https://www.logivisa.com/tools/visa-comparison"
+      },
+      "evidence_status": "Core assessment/code query families observed in live search; remaining related families are intent hypotheses, not GSC queries or measured volumes."
+    },
+    {
+      "name": "Chef",
+      "code": "351311",
+      "authority": "TRA",
+      "url": "https://www.logivisa.com/occupations/351311-chef",
+      "owner": "https://www.logivisa.com/occupations/351311-chef",
+      "queries": [
+        "chef ANZSCO 351311",
+        "chef skills assessment Australia",
+        "chef TRA assessment",
+        "chef state nomination",
+        "chef Australia visa",
+        "chef vs cook Australia"
+      ],
+      "shared_owners": {
+        "assessment_finder": "https://www.logivisa.com/tools/skills-assessment",
+        "code_lookup": "https://www.logivisa.com/tools/anzsco-finder",
+        "points": "https://www.logivisa.com/tools/points-calculator/australia",
+        "state_references": "https://www.logivisa.com/tools/state-nomination",
+        "visa_comparison": "https://www.logivisa.com/tools/visa-comparison"
+      },
+      "evidence_status": "Core assessment/code query families observed in live search; remaining related families are intent hypotheses, not GSC queries or measured volumes."
+    },
+    {
+      "name": "Electrician General",
+      "code": "341111",
+      "authority": "TRA",
+      "url": "https://www.logivisa.com/occupations/341111-electrician-general",
+      "owner": "https://www.logivisa.com/occupations/341111-electrician-general",
+      "queries": [
+        "electrician general ANZSCO 341111",
+        "electrician general skills assessment Australia",
+        "electrician general TRA assessment",
+        "electrician general state nomination",
+        "electrician general Australia visa",
+        "electrician OSAP licensing Australia"
+      ],
+      "shared_owners": {
+        "assessment_finder": "https://www.logivisa.com/tools/skills-assessment",
+        "code_lookup": "https://www.logivisa.com/tools/anzsco-finder",
+        "points": "https://www.logivisa.com/tools/points-calculator/australia",
+        "state_references": "https://www.logivisa.com/tools/state-nomination",
+        "visa_comparison": "https://www.logivisa.com/tools/visa-comparison"
+      },
+      "evidence_status": "Core assessment/code query families observed in live search; remaining related families are intent hypotheses, not GSC queries or measured volumes."
+    },
+    {
+      "name": "Software Engineer",
+      "code": "261313",
+      "authority": "ACS",
+      "url": "https://www.logivisa.com/occupations/261313-software-engineer",
+      "owner": "https://www.logivisa.com/occupations/261313-software-engineer",
+      "queries": [
+        "software engineer ANZSCO 261313",
+        "software engineer skills assessment Australia",
+        "software engineer ACS assessment",
+        "software engineer state nomination",
+        "software engineer Australia visa",
+        "developer programmer vs software engineer ACS"
+      ],
+      "shared_owners": {
+        "assessment_finder": "https://www.logivisa.com/tools/skills-assessment",
+        "code_lookup": "https://www.logivisa.com/tools/anzsco-finder",
+        "points": "https://www.logivisa.com/tools/points-calculator/australia",
+        "state_references": "https://www.logivisa.com/tools/state-nomination",
+        "visa_comparison": "https://www.logivisa.com/tools/visa-comparison"
+      },
+      "evidence_status": "Core assessment/code query families observed in live search; remaining related families are intent hypotheses, not GSC queries or measured volumes."
+    },
+    {
+      "name": "Developer Programmer",
+      "code": "261312",
+      "authority": "ACS",
+      "url": "https://www.logivisa.com/occupations/261312-developer-programmer",
+      "owner": "https://www.logivisa.com/occupations/261312-developer-programmer",
+      "queries": [
+        "developer programmer ANZSCO 261312",
+        "developer programmer skills assessment Australia",
+        "developer programmer ACS assessment",
+        "developer programmer state nomination",
+        "developer programmer Australia visa",
+        "developer programmer vs software engineer ACS"
+      ],
+      "shared_owners": {
+        "assessment_finder": "https://www.logivisa.com/tools/skills-assessment",
+        "code_lookup": "https://www.logivisa.com/tools/anzsco-finder",
+        "points": "https://www.logivisa.com/tools/points-calculator/australia",
+        "state_references": "https://www.logivisa.com/tools/state-nomination",
+        "visa_comparison": "https://www.logivisa.com/tools/visa-comparison"
+      },
+      "evidence_status": "Core assessment/code query families observed in live search; remaining related families are intent hypotheses, not GSC queries or measured volumes."
+    },
+    {
+      "name": "Civil Engineer",
+      "code": "233211",
+      "authority": "Engineers Australia",
+      "url": "https://www.logivisa.com/occupations/233211-civil-engineer",
+      "owner": "https://www.logivisa.com/occupations/233211-civil-engineer",
+      "queries": [
+        "civil engineer ANZSCO 233211",
+        "civil engineer skills assessment Australia",
+        "civil engineer Engineers Australia assessment",
+        "civil engineer state nomination",
+        "civil engineer Australia visa",
+        "civil engineer accredited qualification CDR"
+      ],
+      "shared_owners": {
+        "assessment_finder": "https://www.logivisa.com/tools/skills-assessment",
+        "code_lookup": "https://www.logivisa.com/tools/anzsco-finder",
+        "points": "https://www.logivisa.com/tools/points-calculator/australia",
+        "state_references": "https://www.logivisa.com/tools/state-nomination",
+        "visa_comparison": "https://www.logivisa.com/tools/visa-comparison"
+      },
+      "evidence_status": "Core assessment/code query families observed in live search; remaining related families are intent hypotheses, not GSC queries or measured volumes."
+    }
+  ]
+}

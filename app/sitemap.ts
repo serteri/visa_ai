@@ -31,6 +31,8 @@ export function buildSitemap(): MetadataRoute.Sitemap {
 
   for (const path of ["", "/full-check", "/guide", "/tools/points-calculator", "/tools/anzsco-finder", "/tools/points-calculator/australia", "/tools/skills-assessment", "/tools/visa-comparison", "/tools/state-nomination", "/tools/document-checklist-2026"]) add(path || "/");
 
+  entries.push({ url: publicUrl("en", "/resources/for-migration-professionals") });
+
   const activeVisaSubclasses = Array.from(new Set(mockVisaTypes.filter((visa) => visa.reviewed_status !== "outdated").map((visa) => visa.subclass)));
   for (const subclass of activeVisaSubclasses) add(`/visas/${subclass}`);
 

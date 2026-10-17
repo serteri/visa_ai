@@ -1,0 +1,456 @@
+{
+  "date": "2026-10-17",
+  "status": "DATA NOT AVAILABLE",
+  "reason": "Both available browser destinations required Google sign-in; no authenticated GSC or GA connector/session/export. User instructed continuation with unavailable metrics marked.",
+  "requested_windows": [
+    {
+      "label": "28 days",
+      "requested_start": "2026-09-19",
+      "requested_end": "2026-10-16"
+    },
+    {
+      "label": "3 calendar months",
+      "requested_start": "2026-07-17",
+      "requested_end": "2026-10-16"
+    }
+  ],
+  "window_note": "These are requested closed-day windows, not retrieved data. Use latest available GSC complete date on export and record the actual range/lag. URL Inspection is a current snapshot, separate from performance windows.",
+  "pages": [
+    {
+      "name": "Carpenter",
+      "code": "331212",
+      "authority": "TRA",
+      "url": "https://www.logivisa.com/occupations/331212-carpenter",
+      "status": "DATA NOT AVAILABLE",
+      "url_inspection": {
+        "indexed_status": null,
+        "last_crawl": null,
+        "google_selected_canonical": null
+      },
+      "performance_windows": [
+        {
+          "window": "28 days",
+          "indexed_status": null,
+          "last_crawl": null,
+          "google_selected_canonical": null,
+          "impressions": null,
+          "clicks": null,
+          "ctr": null,
+          "average_position": null,
+          "queries": null,
+          "country": null,
+          "device": null
+        },
+        {
+          "window": "3 calendar months",
+          "indexed_status": null,
+          "last_crawl": null,
+          "google_selected_canonical": null,
+          "impressions": null,
+          "clicks": null,
+          "ctr": null,
+          "average_position": null,
+          "queries": null,
+          "country": null,
+          "device": null
+        }
+      ]
+    },
+    {
+      "name": "Chef",
+      "code": "351311",
+      "authority": "TRA",
+      "url": "https://www.logivisa.com/occupations/351311-chef",
+      "status": "DATA NOT AVAILABLE",
+      "url_inspection": {
+        "indexed_status": null,
+        "last_crawl": null,
+        "google_selected_canonical": null
+      },
+      "performance_windows": [
+        {
+          "window": "28 days",
+          "indexed_status": null,
+          "last_crawl": null,
+          "google_selected_canonical": null,
+          "impressions": null,
+          "clicks": null,
+          "ctr": null,
+          "average_position": null,
+          "queries": null,
+          "country": null,
+          "device": null
+        },
+        {
+          "window": "3 calendar months",
+          "indexed_status": null,
+          "last_crawl": null,
+          "google_selected_canonical": null,
+          "impressions": null,
+          "clicks": null,
+          "ctr": null,
+          "average_position": null,
+          "queries": null,
+          "country": null,
+          "device": null
+        }
+      ]
+    },
+    {
+      "name": "Electrician General",
+      "code": "341111",
+      "authority": "TRA",
+      "url": "https://www.logivisa.com/occupations/341111-electrician-general",
+      "status": "DATA NOT AVAILABLE",
+      "url_inspection": {
+        "indexed_status": null,
+        "last_crawl": null,
+        "google_selected_canonical": null
+      },
+      "performance_windows": [
+        {
+          "window": "28 days",
+          "indexed_status": null,
+          "last_crawl": null,
+          "google_selected_canonical": null,
+          "impressions": null,
+          "clicks": null,
+          "ctr": null,
+          "average_position": null,
+          "queries": null,
+          "country": null,
+          "device": null
+        },
+        {
+          "window": "3 calendar months",
+          "indexed_status": null,
+          "last_crawl": null,
+          "google_selected_canonical": null,
+          "impressions": null,
+          "clicks": null,
+          "ctr": null,
+          "average_position": null,
+          "queries": null,
+          "country": null,
+          "device": null
+        }
+      ]
+    },
+    {
+      "name": "Software Engineer",
+      "code": "261313",
+      "authority": "ACS",
+      "url": "https://www.logivisa.com/occupations/261313-software-engineer",
+      "status": "DATA NOT AVAILABLE",
+      "url_inspection": {
+        "indexed_status": null,
+        "last_crawl": null,
+        "google_selected_canonical": null
+      },
+      "performance_windows": [
+        {
+          "window": "28 days",
+          "indexed_status": null,
+          "last_crawl": null,
+          "google_selected_canonical": null,
+          "impressions": null,
+          "clicks": null,
+          "ctr": null,
+          "average_position": null,
+          "queries": null,
+          "country": null,
+          "device": null
+        },
+        {
+          "window": "3 calendar months",
+          "indexed_status": null,
+          "last_crawl": null,
+          "google_selected_canonical": null,
+          "impressions": null,
+          "clicks": null,
+          "ctr": null,
+          "average_position": null,
+          "queries": null,
+          "country": null,
+          "device": null
+        }
+      ]
+    },
+    {
+      "name": "Developer Programmer",
+      "code": "261312",
+      "authority": "ACS",
+      "url": "https://www.logivisa.com/occupations/261312-developer-programmer",
+      "status": "DATA NOT AVAILABLE",
+      "url_inspection": {
+        "indexed_status": null,
+        "last_crawl": null,
+        "google_selected_canonical": null
+      },
+      "performance_windows": [
+        {
+          "window": "28 days",
+          "indexed_status": null,
+          "last_crawl": null,
+          "google_selected_canonical": null,
+          "impressions": null,
+          "clicks": null,
+          "ctr": null,
+          "average_position": null,
+          "queries": null,
+          "country": null,
+          "device": null
+        },
+        {
+          "window": "3 calendar months",
+          "indexed_status": null,
+          "last_crawl": null,
+          "google_selected_canonical": null,
+          "impressions": null,
+          "clicks": null,
+          "ctr": null,
+          "average_position": null,
+          "queries": null,
+          "country": null,
+          "device": null
+        }
+      ]
+    },
+    {
+      "name": "Civil Engineer",
+      "code": "233211",
+      "authority": "Engineers Australia",
+      "url": "https://www.logivisa.com/occupations/233211-civil-engineer",
+      "status": "DATA NOT AVAILABLE",
+      "url_inspection": {
+        "indexed_status": null,
+        "last_crawl": null,
+        "google_selected_canonical": null
+      },
+      "performance_windows": [
+        {
+          "window": "28 days",
+          "indexed_status": null,
+          "last_crawl": null,
+          "google_selected_canonical": null,
+          "impressions": null,
+          "clicks": null,
+          "ctr": null,
+          "average_position": null,
+          "queries": null,
+          "country": null,
+          "device": null
+        },
+        {
+          "window": "3 calendar months",
+          "indexed_status": null,
+          "last_crawl": null,
+          "google_selected_canonical": null,
+          "impressions": null,
+          "clicks": null,
+          "ctr": null,
+          "average_position": null,
+          "queries": null,
+          "country": null,
+          "device": null
+        }
+      ]
+    },
+    {
+      "name": "Australia points calculator",
+      "url": "https://www.logivisa.com/tools/points-calculator/australia",
+      "status": "DATA NOT AVAILABLE",
+      "url_inspection": {
+        "indexed_status": null,
+        "last_crawl": null,
+        "google_selected_canonical": null
+      },
+      "performance_windows": [
+        {
+          "window": "28 days",
+          "indexed_status": null,
+          "last_crawl": null,
+          "google_selected_canonical": null,
+          "impressions": null,
+          "clicks": null,
+          "ctr": null,
+          "average_position": null,
+          "queries": null,
+          "country": null,
+          "device": null
+        },
+        {
+          "window": "3 calendar months",
+          "indexed_status": null,
+          "last_crawl": null,
+          "google_selected_canonical": null,
+          "impressions": null,
+          "clicks": null,
+          "ctr": null,
+          "average_position": null,
+          "queries": null,
+          "country": null,
+          "device": null
+        }
+      ]
+    },
+    {
+      "name": "ANZSCO finder",
+      "url": "https://www.logivisa.com/tools/anzsco-finder",
+      "status": "DATA NOT AVAILABLE",
+      "url_inspection": {
+        "indexed_status": null,
+        "last_crawl": null,
+        "google_selected_canonical": null
+      },
+      "performance_windows": [
+        {
+          "window": "28 days",
+          "indexed_status": null,
+          "last_crawl": null,
+          "google_selected_canonical": null,
+          "impressions": null,
+          "clicks": null,
+          "ctr": null,
+          "average_position": null,
+          "queries": null,
+          "country": null,
+          "device": null
+        },
+        {
+          "window": "3 calendar months",
+          "indexed_status": null,
+          "last_crawl": null,
+          "google_selected_canonical": null,
+          "impressions": null,
+          "clicks": null,
+          "ctr": null,
+          "average_position": null,
+          "queries": null,
+          "country": null,
+          "device": null
+        }
+      ]
+    },
+    {
+      "name": "Skills Assessment finder",
+      "url": "https://www.logivisa.com/tools/skills-assessment",
+      "status": "DATA NOT AVAILABLE",
+      "url_inspection": {
+        "indexed_status": null,
+        "last_crawl": null,
+        "google_selected_canonical": null
+      },
+      "performance_windows": [
+        {
+          "window": "28 days",
+          "indexed_status": null,
+          "last_crawl": null,
+          "google_selected_canonical": null,
+          "impressions": null,
+          "clicks": null,
+          "ctr": null,
+          "average_position": null,
+          "queries": null,
+          "country": null,
+          "device": null
+        },
+        {
+          "window": "3 calendar months",
+          "indexed_status": null,
+          "last_crawl": null,
+          "google_selected_canonical": null,
+          "impressions": null,
+          "clicks": null,
+          "ctr": null,
+          "average_position": null,
+          "queries": null,
+          "country": null,
+          "device": null
+        }
+      ]
+    },
+    {
+      "name": "Visa comparison",
+      "url": "https://www.logivisa.com/tools/visa-comparison",
+      "status": "DATA NOT AVAILABLE",
+      "url_inspection": {
+        "indexed_status": null,
+        "last_crawl": null,
+        "google_selected_canonical": null
+      },
+      "performance_windows": [
+        {
+          "window": "28 days",
+          "indexed_status": null,
+          "last_crawl": null,
+          "google_selected_canonical": null,
+          "impressions": null,
+          "clicks": null,
+          "ctr": null,
+          "average_position": null,
+          "queries": null,
+          "country": null,
+          "device": null
+        },
+        {
+          "window": "3 calendar months",
+          "indexed_status": null,
+          "last_crawl": null,
+          "google_selected_canonical": null,
+          "impressions": null,
+          "clicks": null,
+          "ctr": null,
+          "average_position": null,
+          "queries": null,
+          "country": null,
+          "device": null
+        }
+      ]
+    }
+  ],
+  "analytics_channels": [
+    {
+      "channel": "organic_google",
+      "qualified_sessions": null,
+      "activated_sessions": null,
+      "activation_rate": null,
+      "status": "DATA NOT AVAILABLE"
+    },
+    {
+      "channel": "agent_partner",
+      "qualified_sessions": null,
+      "activated_sessions": null,
+      "activation_rate": null,
+      "status": "DATA NOT AVAILABLE"
+    },
+    {
+      "channel": "complementary_partner",
+      "qualified_sessions": null,
+      "activated_sessions": null,
+      "activation_rate": null,
+      "status": "DATA NOT AVAILABLE"
+    },
+    {
+      "channel": "linkedin",
+      "qualified_sessions": null,
+      "activated_sessions": null,
+      "activation_rate": null,
+      "status": "DATA NOT AVAILABLE"
+    },
+    {
+      "channel": "direct",
+      "qualified_sessions": null,
+      "activated_sessions": null,
+      "activation_rate": null,
+      "status": "DATA NOT AVAILABLE"
+    },
+    {
+      "channel": "unknown",
+      "qualified_sessions": null,
+      "activated_sessions": null,
+      "activation_rate": null,
+      "status": "DATA NOT AVAILABLE"
+    }
+  ]
+}

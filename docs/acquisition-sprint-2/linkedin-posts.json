@@ -1,0 +1,33 @@
+{
+  "date": "2026-10-17",
+  "status": "PREPARED — NOT EXECUTED",
+  "posts": [
+    {
+      "id": "post1",
+      "theme": "Occupation research insight",
+      "path": "/occupations/351311-chef",
+      "body": "A useful migration research page should help someone ask a better next question.\n\nFor Chef 351311, finding the code is only the start. The next step is understanding the assessment references and which questions need professional advice. A points estimate does not answer those questions.\n\nI’m building LogiVisa around that research sequence: occupation → source-linked assessment references → further research.\n\nHere is the Chef page:",
+      "url": "https://www.logivisa.com/occupations/351311-chef?utm_source=linkedin&utm_medium=social&utm_campaign=resource_pilot&utm_content=post1",
+      "status": "PREPARED — NOT EXECUTED",
+      "sending_label": "PREPARED — NOT SENT"
+    },
+    {
+      "id": "post2",
+      "theme": "A code is not enough",
+      "path": "/occupations/261312-developer-programmer",
+      "body": "A job title and an occupation code do not establish a migration outcome.\n\nFor IT roles, ACS publishes descriptions for Developer Programmer 261312 and Software Engineer 261313. The useful research question is how the published descriptions relate to the work someone actually does—not which label sounds closest.\n\nLogiVisa links occupation research to the original assessment guidance, then to tools for the next questions. It provides information, not a personal assessment.\n\nExplore the Developer Programmer reference:",
+      "url": "https://www.logivisa.com/occupations/261312-developer-programmer?utm_source=linkedin&utm_medium=social&utm_campaign=resource_pilot&utm_content=post2",
+      "status": "PREPARED — NOT EXECUTED",
+      "sending_label": "PREPARED — NOT SENT"
+    },
+    {
+      "id": "post3",
+      "theme": "Invite professional critique",
+      "path": "/resources/for-migration-professionals",
+      "body": "I’m looking for a small number of Australian migration professionals to critique LogiVisa’s research flow.\n\nThe aim is simple: help people understand occupation references, find the original assessment guidance and arrive at professional advice with clearer questions.\n\nI’d value one concrete criticism: where is the information inaccurate, the boundary unclear or the next step unhelpful?\n\nReview the research tools:",
+      "url": "https://www.logivisa.com/resources/for-migration-professionals?utm_source=linkedin&utm_medium=social&utm_campaign=resource_pilot&utm_content=post3",
+      "status": "PREPARED — NOT EXECUTED",
+      "sending_label": "PREPARED — NOT SENT"
+    }
+  ]
+}

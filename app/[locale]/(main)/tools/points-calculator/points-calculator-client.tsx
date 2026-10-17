@@ -8,6 +8,8 @@ import { useSession } from "next-auth/react";
 import type { Occupation } from "@/lib/occupations";
 import { useTranslation } from "@/contexts/language-context";
 import { trackEvent } from "@/lib/analytics/events";
+import { ResearchLinks } from "@/components/research-links";
+import { researchLinks } from "@/lib/marketing/research-journey";
 import { saveCalculation } from "@/app/[locale]/(main)/dashboard/actions";
 
 // ─── DHA point tables (values + points only — labels come from translations) ──
@@ -558,6 +560,13 @@ export function PointsCalculatorClient({ locale, hideHeader, occupation }: { loc
                 value={form.english}
                 onChange={str("english")}
               />
+              <p className="mt-3 text-sm leading-relaxed text-slate-600">
+                {t("pc.english.sourceNote")} {(["competent", "proficient", "superior"] as const).map((level) => (
+                  <a key={level} data-official-source href={`https://immi.homeaffairs.gov.au/help-support/meeting-our-requirements/english-language/${level}-english`} target="_blank" rel="noopener noreferrer" className="mr-3 inline-block py-1 font-medium text-cyan-900 underline underline-offset-4" aria-label={`${t("pc.english.officialLink")}: ${t(`pc.english.${level}`)}`}>
+                    {t(`pc.english.${level}`)} ↗
+                  </a>
+                ))}
+              </p>
             </Section>
 
             {/* Step 4: Overseas experience */}
@@ -853,6 +862,12 @@ export function PointsCalculatorClient({ locale, hideHeader, occupation }: { loc
                     {t("pc.insights.maraDisclaimer")}
                   </p>
                 </div>
+              </div>
+            )}
+
+            {!!form.age && !!form.english && !!form.education && (!!form.overseasExp || !!form.ausExp) && (
+              <div data-calculator-complete="true">
+                <ResearchLinks locale={locale} links={researchLinks(locale).filter(link => link.destination !== "points_calculator")} />
               </div>
             )}
 

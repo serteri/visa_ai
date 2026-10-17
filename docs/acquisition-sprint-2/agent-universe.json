@@ -1,0 +1,1353 @@
+{
+  "date": "2026-10-17",
+  "status": "EXECUTED",
+  "scope": "30 manually selected/reviewed public practices; classification is desk research, not willingness or consent. No external contact sent.",
+  "segment_counts": {
+    "A": 9,
+    "B": 9,
+    "C": 8,
+    "D": 4
+  },
+  "first_wave_ids": [
+    "P01",
+    "P02",
+    "P03",
+    "P04",
+    "P05",
+    "P06",
+    "P09",
+    "P21",
+    "P22",
+    "P29"
+  ],
+  "practices": [
+    {
+      "id": "P01",
+      "practice": "J&R Migration",
+      "website": "https://www.jrmigration.com.au/",
+      "principal": "Bella Tian",
+      "role": "Principal / practice contact as described on linked source; exact title where unknown not inferred",
+      "marn": "1791631 — website; independent match UNKNOWN",
+      "location": "Brisbane / Gold Coast service area",
+      "skilled": "Employer-sponsored core; skills assessment; skilled; visitor",
+      "relevant": "https://www.jrmigration.com.au/services/skilled-migration",
+      "tools": "482 checker; sponsor checker; cost and points tools",
+      "fit": "Existing assessment and points tools plus skilled service make a precise source-boundary critique relevant; employer core is a limitation.",
+      "prior_sources": [
+        "https://www.jrmigration.com.au/",
+        "https://www.jrmigration.com.au/about",
+        "https://www.jrmigration.com.au/assessment",
+        "https://www.jrmigration.com.au/book"
+      ],
+      "segment": "A",
+      "priority": "First wave 1",
+      "contact": "bella@jrmigration.com.au",
+      "contact_source": "https://www.jrmigration.com.au/contact",
+      "no_solicitation_signal": "No explicit signal found in inspected public pages; this does not establish permission or consent",
+      "marn_source": "https://www.jrmigration.com.au/",
+      "registration_recheck": "Website-only or legal-practitioner route; current independent verification UNKNOWN",
+      "checked_date": "2026-10-17",
+      "evidence": [
+        {
+          "url": "https://www.jrmigration.com.au/about",
+          "http_status": 200,
+          "checked_at": "2026-10-17T01:39:30.711Z",
+          "title": "About Us | MARA Agent Bella Tian | J&R Migration",
+          "error": null
+        },
+        {
+          "url": "https://www.jrmigration.com.au/",
+          "http_status": 200,
+          "checked_at": "2026-10-17T01:39:30.762Z",
+          "title": "J&R Migration | Employer Sponsored Visa Specialists Brisbane",
+          "error": null
+        },
+        {
+          "url": "https://www.jrmigration.com.au/services/skilled-migration",
+          "http_status": 200,
+          "checked_at": "2026-10-17T01:41:28.587Z",
+          "title": "Skilled Migration | 189, 190 & 491 Visas | J&R Migration",
+          "error": null
+        },
+        {
+          "url": "https://www.jrmigration.com.au/contact",
+          "http_status": 200,
+          "checked_at": "2026-10-17T01:41:28.629Z",
+          "title": "Contact a MARA Migration Agent | Brisbane | J&R Migration",
+          "error": null
+        }
+      ],
+      "send_status": "PREPARED — NOT EXECUTED"
+    },
+    {
+      "id": "P02",
+      "practice": "TILSAVV Migration & Education",
+      "website": "https://www.tilsavv.com.au/",
+      "principal": "Manu Bhardwaj (website: Mmanu)",
+      "role": "Principal / practice contact as described on linked source; exact title where unknown not inferred",
+      "marn": "2518871 — OMARA record matched; Registered",
+      "location": "North Geelong, VIC",
+      "skilled": "Skilled; employer; student; graduate; family",
+      "relevant": "https://www.tilsavv.com.au/general-skilled-migration/",
+      "tools": "189 points calculator",
+      "fit": "First-consultation preparation article and skilled service provide a concrete research-before-advice fit; one deliberate education-hybrid comparison.",
+      "prior_sources": [
+        "https://www.tilsavv.com.au/",
+        "https://www.tilsavv.com.au/contact-us/",
+        "https://www.tilsavv.com.au/prepare-first-migration-consultation/",
+        "https://portal.mara.gov.au/search-the-register-of-migration-agents/register-of-migration-agent-details/?ContactID=e0dc7b00-0cfb-ef11-bae2-002248987fee",
+        "https://tilsav.trimsy.au/quote"
+      ],
+      "segment": "C",
+      "priority": "First wave 2",
+      "contact": "manu@tilsav.com.au",
+      "contact_source": "https://www.tilsavv.com.au/prepare-first-migration-consultation/",
+      "no_solicitation_signal": "No explicit signal found in inspected public pages; this does not establish permission or consent",
+      "marn_source": "https://portal.mara.gov.au/search-the-register-of-migration-agents/register-of-migration-agent-details/?ContactID=e0dc7b00-0cfb-ef11-bae2-002248987fee",
+      "registration_recheck": "Official record matched Registered on this access; source update/renewal dates apply",
+      "checked_date": "2026-10-17",
+      "evidence": [
+        {
+          "url": "https://www.tilsavv.com.au/",
+          "http_status": 200,
+          "checked_at": "2026-10-17T01:39:31.103Z",
+          "title": "Migration Agent Geelong | TILSAVV Migration & Education",
+          "error": null
+        },
+        {
+          "url": "https://www.tilsavv.com.au/contact-us/",
+          "http_status": 200,
+          "checked_at": "2026-10-17T01:39:31.119Z",
+          "title": "Contact TILSAVV | Migration & Education Advice in Geelong",
+          "error": null
+        }
+      ],
+      "send_status": "PREPARED — NOT EXECUTED"
+    },
+    {
+      "id": "P03",
+      "practice": "Blue Ocean Immigration",
+      "website": "https://www.blueoceanimmigration.com.au/",
+      "principal": "Sunil Kumar Rampal",
+      "role": "Principal / practice contact as described on linked source; exact title where unknown not inferred",
+      "marn": "0848771 — OMARA record matched; Registered",
+      "location": "Liverpool, Sydney, NSW",
+      "skilled": "Skilled; employer/business; family; other individual matters",
+      "relevant": "https://www.blueoceanimmigration.com.au/skilled-migration",
+      "tools": "UNKNOWN",
+      "fit": "Existing consultation-preparation resource and skilled page provide a clear professional-critique context.",
+      "prior_sources": [
+        "https://www.blueoceanimmigration.com.au/",
+        "https://www.blueoceanimmigration.com.au/about",
+        "https://www.blueoceanimmigration.com.au/book",
+        "https://www.blueoceanimmigration.com.au/resources/migration-consultation-preparation",
+        "https://portal.mara.gov.au/search-the-register-of-migration-agents/register-of-migration-agent-details/?ContactID=7303d363-a252-e311-9402-005056ab0eca"
+      ],
+      "segment": "A",
+      "priority": "First wave 3",
+      "contact": "info@blueoceanimmigration.com.au",
+      "contact_source": "https://www.blueoceanimmigration.com.au/",
+      "no_solicitation_signal": "No explicit signal found in inspected public pages; this does not establish permission or consent",
+      "marn_source": "https://portal.mara.gov.au/search-the-register-of-migration-agents/register-of-migration-agent-details/?ContactID=7303d363-a252-e311-9402-005056ab0eca",
+      "registration_recheck": "Official record matched Registered on this access; source update/renewal dates apply",
+      "checked_date": "2026-10-17",
+      "evidence": [
+        {
+          "url": "https://www.blueoceanimmigration.com.au/",
+          "http_status": 200,
+          "checked_at": "2026-10-17T01:39:31.221Z",
+          "title": "Blue Ocean Immigration",
+          "error": null
+        },
+        {
+          "url": "https://www.blueoceanimmigration.com.au/about",
+          "http_status": 200,
+          "checked_at": "2026-10-17T01:39:31.236Z",
+          "title": "About Sunil Rampal and Blue Ocean | Blue Ocean Immigration",
+          "error": null
+        },
+        {
+          "url": "https://www.blueoceanimmigration.com.au/skilled-migration",
+          "http_status": 200,
+          "checked_at": "2026-10-17T01:41:28.651Z",
+          "title": "Skilled migration consultations | Blue Ocean Immigration",
+          "error": null
+        }
+      ],
+      "send_status": "PREPARED — NOT EXECUTED"
+    },
+    {
+      "id": "P04",
+      "practice": "Fair Go Visa Consultants",
+      "website": "https://fairgovisa.com.au/",
+      "principal": "Directors Joshua Sharman-Selvidge; Marcus De Witt Ryall",
+      "role": "Directors / RMAs",
+      "marn": "1910938 website; 1910034 Marcus independently OMARA-matched Registered",
+      "location": "East Brisbane, QLD",
+      "skilled": "Skilled; employer; partner/family; student; review",
+      "relevant": "https://fairgovisa.com.au/general-skilled-visas/",
+      "tools": "UNKNOWN",
+      "fit": "General skilled service explicitly discusses assessment and migration requirements; small named director group.",
+      "prior_sources": [
+        "https://fairgovisa.com.au/",
+        "https://fairgovisa.com.au/about/",
+        "https://fairgovisa.com.au/eligibility-consultation/",
+        "https://portal.mara.gov.au/search-the-register-of-migration-agents/register-of-migration-agent-details/?ContactID=502f3b43-7168-e811-9418-000d3ad152db"
+      ],
+      "segment": "A",
+      "priority": "First wave 4",
+      "contact": "info@fairgovisa.com.au",
+      "contact_source": "https://fairgovisa.com.au/about/",
+      "no_solicitation_signal": "No explicit signal found in inspected public pages; this does not establish permission or consent",
+      "marn_source": "https://portal.mara.gov.au/search-the-register-of-migration-agents/register-of-migration-agent-details/?ContactID=502f3b43-7168-e811-9418-000d3ad152db",
+      "registration_recheck": "Official record matched Registered on this access; source update/renewal dates apply",
+      "checked_date": "2026-10-17",
+      "evidence": [
+        {
+          "url": "https://fairgovisa.com.au/about/",
+          "http_status": 200,
+          "checked_at": "2026-10-17T01:39:31.376Z",
+          "title": "About - Fair Go Visa Consultants",
+          "error": null
+        },
+        {
+          "url": "https://fairgovisa.com.au/",
+          "http_status": 200,
+          "checked_at": "2026-10-17T01:39:31.414Z",
+          "title": "Home - Fair Go Visa Consultants",
+          "error": null
+        },
+        {
+          "url": "https://fairgovisa.com.au/general-skilled-visas/",
+          "http_status": 200,
+          "checked_at": "2026-10-17T01:41:28.642Z",
+          "title": "General Skilled Visas - Fair Go Visa Consultants",
+          "error": null
+        },
+        {
+          "url": "https://fairgovisa.com.au/contact/",
+          "http_status": 200,
+          "checked_at": "2026-10-17T01:41:32.131Z",
+          "title": "Contact - Fair Go Visa Consultants",
+          "error": null
+        }
+      ],
+      "send_status": "PREPARED — NOT EXECUTED"
+    },
+    {
+      "id": "P05",
+      "practice": "Migration Consultants Australia",
+      "website": "https://www.mcamigration.com.au/",
+      "principal": "Farrel Avron Savitz",
+      "role": "Principal / practice contact as described on linked source; exact title where unknown not inferred",
+      "marn": "0211550 — OMARA record matched; Registered",
+      "location": "Caulfield North, Melbourne, VIC",
+      "skilled": "Skilled; employer; partner/family; student",
+      "relevant": "https://www.mcamigration.com.au/skilled-migration/",
+      "tools": "Points calculator",
+      "fit": "Points tool and 189 / 190 / 491 services support critique of what occupation context adds before a calculation.",
+      "prior_sources": [
+        "https://www.mcamigration.com.au/",
+        "https://www.mcamigration.com.au/about-us/",
+        "https://www.mcamigration.com.au/book-a-consultation/",
+        "https://www.mcamigration.com.au/online-assessment/",
+        "https://www.mcamigration.com.au/wp-content/uploads/2021/07/assessment-questionnaire.pdf",
+        "https://portal.mara.gov.au/search-the-register-of-migration-agents/register-of-migration-agent-details/?ContactID=c91c0d4a-a052-e311-9402-005056ab0eca"
+      ],
+      "segment": "A",
+      "priority": "First wave 5",
+      "contact": "info@mcamigration.com.au",
+      "contact_source": "https://www.mcamigration.com.au/contact/",
+      "no_solicitation_signal": "No explicit signal found in inspected public pages; this does not establish permission or consent",
+      "marn_source": "https://portal.mara.gov.au/search-the-register-of-migration-agents/register-of-migration-agent-details/?ContactID=c91c0d4a-a052-e311-9402-005056ab0eca",
+      "registration_recheck": "Official record matched Registered on this access; source update/renewal dates apply",
+      "checked_date": "2026-10-17",
+      "evidence": [
+        {
+          "url": "https://www.mcamigration.com.au/",
+          "http_status": 200,
+          "checked_at": "2026-10-17T01:39:31.256Z",
+          "title": "Migration Consultants Australia | Australian Migration Agents",
+          "error": null
+        },
+        {
+          "url": "https://www.mcamigration.com.au/about-us/",
+          "http_status": 200,
+          "checked_at": "2026-10-17T01:39:31.277Z",
+          "title": "Migration Consultants Australia | Australia Work Visa Consultants | Immigration Agents Australia",
+          "error": null
+        },
+        {
+          "url": "https://www.mcamigration.com.au/contact/",
+          "http_status": 200,
+          "checked_at": "2026-10-17T01:41:28.690Z",
+          "title": "Contact Migration Consultants Australia | Migration Experts",
+          "error": null
+        },
+        {
+          "url": "https://www.mcamigration.com.au/skilled-migration/",
+          "http_status": 200,
+          "checked_at": "2026-10-17T01:41:28.700Z",
+          "title": "Skilled Migration Australia | Skilled Visas & PR Pathways",
+          "error": null
+        }
+      ],
+      "send_status": "PREPARED — NOT EXECUTED"
+    },
+    {
+      "id": "P06",
+      "practice": "Stepping Stone Visas",
+      "website": "https://steppingstonevisas.com/",
+      "principal": "Julie Angela Todaro",
+      "role": "Principal / practice contact as described on linked source; exact title where unknown not inferred",
+      "marn": "0317820 — OMARA record matched; Registered",
+      "location": "Melbourne, VIC",
+      "skilled": "Skilled/employer; family; other visa matters",
+      "relevant": "https://steppingstonevisas.com/#our-migration-expertise",
+      "tools": "UNKNOWN",
+      "fit": "Skilled and regional service descriptions plus named principal suit a review of independent / nominated / regional comparison.",
+      "prior_sources": [
+        "https://steppingstonevisas.com/",
+        "https://portal.mara.gov.au/search-the-register-of-migration-agents/register-of-migration-agent-details/?ContactID=7d89029f-a052-e311-9402-005056ab0eca"
+      ],
+      "segment": "A",
+      "priority": "First wave 6",
+      "contact": "General contact form, attention Julie Todaro",
+      "contact_source": "https://steppingstonevisas.com/#121cf69a-dd6f-426b-8ee7-8a9971732912",
+      "no_solicitation_signal": "No explicit signal found in inspected public pages; this does not establish permission or consent",
+      "marn_source": "https://portal.mara.gov.au/search-the-register-of-migration-agents/register-of-migration-agent-details/?ContactID=7d89029f-a052-e311-9402-005056ab0eca",
+      "registration_recheck": "Official record matched Registered on this access; source update/renewal dates apply",
+      "checked_date": "2026-10-17",
+      "evidence": [
+        {
+          "url": "https://steppingstonevisas.com/",
+          "http_status": 200,
+          "checked_at": "2026-10-17T01:39:32.216Z",
+          "title": "Stepping Stone Visas: Your Pathway to Australia",
+          "error": null
+        },
+        {
+          "url": "https://steppingstonevisas.com/#121cf69a-dd6f-426b-8ee7-8a9971732912",
+          "http_status": 200,
+          "checked_at": "2026-10-17T01:41:29.384Z",
+          "title": "Stepping Stone Visas: Your Pathway to Australia",
+          "error": null
+        },
+        {
+          "url": "https://steppingstonevisas.com/#our-migration-expertise",
+          "http_status": 200,
+          "checked_at": "2026-10-17T01:41:29.426Z",
+          "title": "Stepping Stone Visas: Your Pathway to Australia",
+          "error": null
+        }
+      ],
+      "send_status": "PREPARED — NOT EXECUTED"
+    },
+    {
+      "id": "P07",
+      "practice": "WIDEN Migration Experts",
+      "website": "https://www.widen.com.au/",
+      "principal": "Keshab Chapagain",
+      "role": "Principal / practice contact as described on linked source; exact title where unknown not inferred",
+      "marn": "1576536 — OMARA record matched; Registered",
+      "location": "Campsie, Sydney, NSW",
+      "skilled": "Skilled/assessment; employer; partner/family; review",
+      "relevant": "https://www.widen.com.au/skills-assessment/",
+      "tools": "Points; sponsorship cost and eligibility tools",
+      "fit": "HOLD: direct competing occupation/assessment and AI products; no first-wave contact.",
+      "prior_sources": [
+        "https://www.widen.com.au/",
+        "https://www.widen.com.au/consultation/",
+        "https://www.widen.com.au/privacy/",
+        "https://www.widen.com.au/terms/",
+        "https://portal.mara.gov.au/search-the-register-of-migration-agents/register-of-migration-agent-details/?ContactID=817b2025-4863-e511-9403-005056ab0eca",
+        "https://ai.widen.com.au/blog/client-management-migration-agents"
+      ],
+      "segment": "D",
+      "priority": "Do not contact",
+      "contact": "Practice general contact route; no personal email inferred",
+      "contact_source": "https://www.widen.com.au/",
+      "no_solicitation_signal": "No explicit signal found in inspected public pages; this does not establish permission or consent",
+      "marn_source": "https://portal.mara.gov.au/search-the-register-of-migration-agents/register-of-migration-agent-details/?ContactID=817b2025-4863-e511-9403-005056ab0eca",
+      "registration_recheck": "Official record matched Registered on this access; source update/renewal dates apply",
+      "checked_date": "2026-10-17",
+      "evidence": [
+        {
+          "url": "https://www.widen.com.au/consultation/",
+          "http_status": 200,
+          "checked_at": "2026-10-17T01:39:32.825Z",
+          "title": "Book a Consultation — 30 Minutes with Keshab Chapagain, Registered Migration Agent (MARN 1576536) | WIDEN",
+          "error": null
+        },
+        {
+          "url": "https://www.widen.com.au/",
+          "http_status": 200,
+          "checked_at": "2026-10-17T01:39:32.862Z",
+          "title": "WIDEN Migration Experts — Keshab Chapagain, Registered Migration Agent Sydney (MARN 1576536)",
+          "error": null
+        }
+      ],
+      "send_status": "PREPARED — NOT EXECUTED"
+    },
+    {
+      "id": "P08",
+      "practice": "Anzscosearch",
+      "website": "https://www.anzscosearch.com/",
+      "principal": "Noemi Gonzalez, principal/director; Raul Gonzalez, co-founder",
+      "role": "Principal / practice contact as described on linked source; exact title where unknown not inferred",
+      "marn": "1911128 — website; independent current match UNKNOWN",
+      "location": "Fortitude Valley, Brisbane, QLD",
+      "skilled": "Skilled; employer; training; family; review",
+      "relevant": "https://www.anzscosearch.com/skilled-independent-189-visa/",
+      "tools": "Occupation/state search; points; branded occupation reports",
+      "fit": "HOLD: direct competing occupation database/tools business; no first-wave contact.",
+      "prior_sources": [
+        "https://www.anzscosearch.com/",
+        "https://www.anzscosearch.com/about/",
+        "https://www.anzscosearch.com/consultation-initial-assessment/"
+      ],
+      "segment": "D",
+      "priority": "Do not contact",
+      "contact": "Practice general contact route; no personal email inferred",
+      "contact_source": "https://www.anzscosearch.com/",
+      "no_solicitation_signal": "No explicit signal found in inspected public pages; this does not establish permission or consent",
+      "marn_source": "https://www.anzscosearch.com/",
+      "registration_recheck": "Website-only or legal-practitioner route; current independent verification UNKNOWN",
+      "checked_date": "2026-10-17",
+      "evidence": [
+        {
+          "url": "https://www.anzscosearch.com/about/",
+          "http_status": 200,
+          "checked_at": "2026-10-17T01:39:33.855Z",
+          "title": "About | Anzscosearch",
+          "error": null
+        },
+        {
+          "url": "https://www.anzscosearch.com/",
+          "http_status": 200,
+          "checked_at": "2026-10-17T01:39:34.088Z",
+          "title": "Australia Migration & Visa Services",
+          "error": null
+        }
+      ],
+      "send_status": "PREPARED — NOT EXECUTED"
+    },
+    {
+      "id": "P09",
+      "practice": "Nomos",
+      "website": "https://www.nomos.com.au/",
+      "principal": "Kathryn Viegas; Victoria Stevenson (named lawyers)",
+      "role": "Named lawyers",
+      "marn": "N/A for Australian legal practitioner route; practising status not independently checked",
+      "location": "Sydney, NSW",
+      "skilled": "Migration law including skilled and complex cases",
+      "relevant": "https://www.nomos.com.au/services/legal/",
+      "tools": "UNKNOWN",
+      "fit": "Legal service explicitly includes skills assessment and EOIs; useful review of information/advice boundary.",
+      "prior_sources": [
+        "https://www.nomos.com.au/",
+        "https://www.nomos.com.au/initial-consultation/",
+        "https://www.nomos.com.au/initial-consultation/our-consultation-policy/",
+        "https://www.nomos.com.au/services/legal/"
+      ],
+      "segment": "A",
+      "priority": "First wave 7",
+      "contact": "admin@nomos.com.au",
+      "contact_source": "https://www.nomos.com.au/contact/",
+      "no_solicitation_signal": "No explicit signal found in inspected public pages; this does not establish permission or consent",
+      "marn_source": "https://www.nomos.com.au/",
+      "registration_recheck": "Website-only or legal-practitioner route; current independent verification UNKNOWN",
+      "checked_date": "2026-10-17",
+      "evidence": [
+        {
+          "url": "https://www.nomos.com.au/initial-consultation/",
+          "http_status": 200,
+          "checked_at": "2026-10-17T01:39:34.869Z",
+          "title": "Initial Consultation - Nomos",
+          "error": null
+        },
+        {
+          "url": "https://www.nomos.com.au/",
+          "http_status": 200,
+          "checked_at": "2026-10-17T01:39:34.880Z",
+          "title": "Nomos - Accredited Specialists in Australian Immigration Law",
+          "error": null
+        },
+        {
+          "url": "https://www.nomos.com.au/contact/",
+          "http_status": 200,
+          "checked_at": "2026-10-17T01:41:28.889Z",
+          "title": "Contact - Nomos",
+          "error": null
+        },
+        {
+          "url": "https://www.nomos.com.au/services/legal/",
+          "http_status": 200,
+          "checked_at": "2026-10-17T01:41:28.918Z",
+          "title": "Legal - Nomos",
+          "error": null
+        }
+      ],
+      "send_status": "PREPARED — NOT EXECUTED"
+    },
+    {
+      "id": "P10",
+      "practice": "Positive Education & Migration",
+      "website": "https://positivemigration.com/",
+      "principal": "Prabin Pathak",
+      "role": "Principal / practice contact as described on linked source; exact title where unknown not inferred",
+      "marn": "2318046 — website; independent current match UNKNOWN",
+      "location": "Craigieburn, Melbourne, VIC",
+      "skilled": "Education; skilled 189/190/491 and assessments; family; employer",
+      "relevant": "https://positivemigration.com/visas.html",
+      "tools": "Points calculator link",
+      "fit": "Education hybrid with skilled services; current registration and exact audience need checking.",
+      "prior_sources": [
+        "https://positivemigration.com/",
+        "https://positivemigration.com/about.html",
+        "https://positivemigration.com/contact.html",
+        "https://positivemigration.com/resources.html",
+        "https://positivemigration.com/visas.html"
+      ],
+      "segment": "C",
+      "priority": "Reserve",
+      "contact": "Practice general contact route; no personal email inferred",
+      "contact_source": "https://positivemigration.com/",
+      "no_solicitation_signal": "No explicit signal found in inspected public pages; this does not establish permission or consent",
+      "marn_source": "https://positivemigration.com/",
+      "registration_recheck": "Website-only or legal-practitioner route; current independent verification UNKNOWN",
+      "checked_date": "2026-10-17",
+      "evidence": [
+        {
+          "url": "https://positivemigration.com/",
+          "http_status": 200,
+          "checked_at": "2026-10-17T01:39:32.833Z",
+          "title": "Positive Education & Migration | Australia's Trusted Migration Agency",
+          "error": null
+        },
+        {
+          "url": "https://positivemigration.com/about.html",
+          "http_status": 200,
+          "checked_at": "2026-10-17T01:39:33.302Z",
+          "title": "About Prabin Pathak | Positive Education & Migration",
+          "error": null
+        }
+      ],
+      "send_status": "PREPARED — NOT EXECUTED"
+    },
+    {
+      "id": "P11",
+      "practice": "VisaAffairs",
+      "website": "https://visaaffairs.com.au/",
+      "principal": "UNKNOWN",
+      "role": "Principal / practice contact as described on linked source; exact title where unknown not inferred",
+      "marn": "UNKNOWN — no number in inspected footer despite about-page reference to it",
+      "location": "Carnegie, Melbourne; Ho Chi Minh City office advertised",
+      "skilled": "Skilled; employer; student; family",
+      "relevant": "https://visaaffairs.com.au/",
+      "tools": "Eligibility quiz",
+      "fit": "HOLD: professional identity/registration unresolved in inspected pages.",
+      "prior_sources": [
+        "https://visaaffairs.com.au/",
+        "https://visaaffairs.com.au/about/"
+      ],
+      "segment": "D",
+      "priority": "Do not contact",
+      "contact": "Practice general contact route; no personal email inferred",
+      "contact_source": "https://visaaffairs.com.au/",
+      "no_solicitation_signal": "No explicit signal found in inspected public pages; this does not establish permission or consent",
+      "marn_source": "https://visaaffairs.com.au/",
+      "registration_recheck": "Website-only or legal-practitioner route; current independent verification UNKNOWN",
+      "checked_date": "2026-10-17",
+      "evidence": [
+        {
+          "url": "https://visaaffairs.com.au/about/",
+          "http_status": 200,
+          "checked_at": "2026-10-17T01:39:33.163Z",
+          "title": "About — VisaAffairs",
+          "error": null
+        },
+        {
+          "url": "https://visaaffairs.com.au/",
+          "http_status": 200,
+          "checked_at": "2026-10-17T01:39:33.169Z",
+          "title": "VisaAffairs — Australian visas, handled with care",
+          "error": null
+        }
+      ],
+      "send_status": "PREPARED — NOT EXECUTED"
+    },
+    {
+      "id": "P12",
+      "practice": "Migration Vision",
+      "website": "https://migrationvision.com.au/",
+      "principal": "Dr Asad Muhammad Khan",
+      "role": "Principal / practice contact as described on linked source; exact title where unknown not inferred",
+      "marn": "2619525 — website; independent OMARA match UNKNOWN",
+      "location": "Slacks Creek, Brisbane/Logan, QLD",
+      "skilled": "Skilled; employer; student; family; review",
+      "relevant": "https://migrationvision.com.au/visas/skilled-independent-189.html",
+      "tools": "Points and EOI tools",
+      "fit": "Education hybrid with 189 service and named RMA; website-only registration remains unverified.",
+      "prior_sources": [
+        "https://migrationvision.com.au/",
+        "https://migrationvision.com.au/about.html",
+        "https://migrationvision.com.au/booking.html",
+        "https://migrationvision.com.au/privacy.html"
+      ],
+      "segment": "C",
+      "priority": "Reserve",
+      "contact": "Practice general contact route; no personal email inferred",
+      "contact_source": "https://migrationvision.com.au/",
+      "no_solicitation_signal": "No explicit signal found in inspected public pages; this does not establish permission or consent",
+      "marn_source": "https://migrationvision.com.au/",
+      "registration_recheck": "Website-only or legal-practitioner route; current independent verification UNKNOWN",
+      "checked_date": "2026-10-17",
+      "evidence": [
+        {
+          "url": "https://migrationvision.com.au/about.html",
+          "http_status": 200,
+          "checked_at": "2026-10-17T01:39:33.781Z",
+          "title": "About Migration Vision | Migration Vision",
+          "error": null
+        },
+        {
+          "url": "https://migrationvision.com.au/",
+          "http_status": 200,
+          "checked_at": "2026-10-17T01:39:33.867Z",
+          "title": "Migration Vision — OMARA Migration Advice Brisbane",
+          "error": null
+        }
+      ],
+      "send_status": "PREPARED — NOT EXECUTED"
+    },
+    {
+      "id": "P13",
+      "practice": "Nanak Migration",
+      "website": "https://www.nanakmigration.com.au/",
+      "principal": "Navpreet Aulakh, founder",
+      "role": "Principal / practice contact as described on linked source; exact title where unknown not inferred",
+      "marn": "2619467 — website; independent current match UNKNOWN",
+      "location": "Truganina and other Melbourne/Geelong offices; Canning Vale, Perth",
+      "skilled": "Skilled; employer; education; family",
+      "relevant": "https://www.nanakmigration.com.au/skilled-migration",
+      "tools": "Points calculator",
+      "fit": "Hybrid/multiple offices; already has points/checklists; not a small-practice first wave.",
+      "prior_sources": [
+        "https://www.nanakmigration.com.au/",
+        "https://www.nanakmigration.com.au/about",
+        "https://www.nanakmigration.com.au/book-consultation"
+      ],
+      "segment": "C",
+      "priority": "Reserve",
+      "contact": "Practice general contact route; no personal email inferred",
+      "contact_source": "https://www.nanakmigration.com.au/",
+      "no_solicitation_signal": "No explicit signal found in inspected public pages; this does not establish permission or consent",
+      "marn_source": "https://www.nanakmigration.com.au/",
+      "registration_recheck": "Website-only or legal-practitioner route; current independent verification UNKNOWN",
+      "checked_date": "2026-10-17",
+      "evidence": [
+        {
+          "url": "https://www.nanakmigration.com.au/",
+          "http_status": 200,
+          "checked_at": "2026-10-17T01:39:34.069Z",
+          "title": "Registered Migration Agents Melbourne | Nanak Migration",
+          "error": null
+        },
+        {
+          "url": "https://www.nanakmigration.com.au/about",
+          "http_status": 200,
+          "checked_at": "2026-10-17T01:39:34.190Z",
+          "title": "About Nanak Migration Group | MARA Registered Agents",
+          "error": null
+        }
+      ],
+      "send_status": "PREPARED — NOT EXECUTED"
+    },
+    {
+      "id": "P14",
+      "practice": "Kandel Consultancy",
+      "website": "https://kandelconsultancy.com.au/",
+      "principal": "Raj Kandel, founder/director; Muna Kandel, RMA",
+      "role": "Principal / practice contact as described on linked source; exact title where unknown not inferred",
+      "marn": "Muna 1577233; Tony Nguyen 1805265 — website; current register checks UNKNOWN",
+      "location": "Melbourne/Sydney; overseas offices",
+      "skilled": "Education; skilled/graduate pathways; family; employer",
+      "relevant": "https://kandelconsultancy.com.au/",
+      "tools": "UNKNOWN",
+      "fit": "Education network with RMAs and support team; larger hybrid rather than boutique skilled-first.",
+      "prior_sources": [
+        "https://kandelconsultancy.com.au/",
+        "https://kandelconsultancy.com.au/about/team/",
+        "https://kandelconsultancy.com.au/privacy-policy/"
+      ],
+      "segment": "C",
+      "priority": "Reserve",
+      "contact": "Practice general contact route; no personal email inferred",
+      "contact_source": "https://kandelconsultancy.com.au/",
+      "no_solicitation_signal": "No explicit signal found in inspected public pages; this does not establish permission or consent",
+      "marn_source": "https://kandelconsultancy.com.au/",
+      "registration_recheck": "Website-only or legal-practitioner route; current independent verification UNKNOWN",
+      "checked_date": "2026-10-17",
+      "evidence": [
+        {
+          "url": "https://kandelconsultancy.com.au/about/team/",
+          "http_status": 200,
+          "checked_at": "2026-10-17T01:39:34.237Z",
+          "title": "Meet the Team — Kandel Consultancy",
+          "error": null
+        },
+        {
+          "url": "https://kandelconsultancy.com.au/",
+          "http_status": 200,
+          "checked_at": "2026-10-17T01:39:34.263Z",
+          "title": "Kandel Consultancy — Education & Migration, Melbourne",
+          "error": null
+        }
+      ],
+      "send_status": "PREPARED — NOT EXECUTED"
+    },
+    {
+      "id": "P15",
+      "practice": "Rise Migration Lawyers",
+      "website": "https://risemigration.com.au/",
+      "principal": "UNKNOWN — principal lawyer role described, no name established in inspected pages",
+      "role": "Principal / practice contact as described on linked source; exact title where unknown not inferred",
+      "marn": "N/A if Australian legal practitioner; independent practising-status check UNKNOWN",
+      "location": "Yarraville, Melbourne, VIC",
+      "skilled": "Skilled; assessment; employer; partner/family; review",
+      "relevant": "https://risemigration.com.au/services/skilled-migration/",
+      "tools": "Points; fee; partner and 482 eligibility tools",
+      "fit": "Skilled service and client portal observed; principal identity remains unresolved; reserve pending identity check.",
+      "prior_sources": [
+        "https://risemigration.com.au/",
+        "https://risemigration.com.au/about/",
+        "https://risemigration.com.au/bookings/",
+        "https://risemigration.com.au/privacy/"
+      ],
+      "segment": "B",
+      "priority": "Reserve",
+      "contact": "Practice general contact route; no personal email inferred",
+      "contact_source": "https://risemigration.com.au/",
+      "no_solicitation_signal": "No explicit signal found in inspected public pages; this does not establish permission or consent",
+      "marn_source": "https://risemigration.com.au/",
+      "registration_recheck": "Website-only or legal-practitioner route; current independent verification UNKNOWN",
+      "checked_date": "2026-10-17",
+      "evidence": [
+        {
+          "url": "https://risemigration.com.au/",
+          "http_status": 200,
+          "checked_at": "2026-10-17T01:39:34.896Z",
+          "title": "Rise Migration Lawyers | Melbourne Migration & Visa Lawyers",
+          "error": null
+        },
+        {
+          "url": "https://risemigration.com.au/about/",
+          "http_status": 200,
+          "checked_at": "2026-10-17T01:39:34.923Z",
+          "title": "About Our Immigration Law Firm | Rise Migration Lawyers",
+          "error": null
+        }
+      ],
+      "send_status": "PREPARED — NOT EXECUTED"
+    },
+    {
+      "id": "P16",
+      "practice": "True Blue Migration Services",
+      "website": "https://truebluemigration.com/",
+      "principal": "Directors Maryanne Gruar and Joy Hay",
+      "role": "Principal / practice contact as described on linked source; exact title where unknown not inferred",
+      "marn": "0636733; 1465325 — website; current independent match UNKNOWN",
+      "location": "Perth, Melbourne and NSW service offices",
+      "skilled": "Skilled; assessment; employer; family",
+      "relevant": "https://truebluemigration.com/visa-services/skilled-visa/",
+      "tools": "UNKNOWN",
+      "fit": "Skilled service and multiple RMAs; larger comparator rather than first-wave owner-led candidate.",
+      "prior_sources": [
+        "https://truebluemigration.com/",
+        "https://truebluemigration.com/about-us/the-team/",
+        "https://truebluemigration.com/assessment/inside-australia/"
+      ],
+      "segment": "B",
+      "priority": "Reserve",
+      "contact": "Practice general contact route; no personal email inferred",
+      "contact_source": "https://truebluemigration.com/",
+      "no_solicitation_signal": "No explicit signal found in inspected public pages; this does not establish permission or consent",
+      "marn_source": "https://truebluemigration.com/",
+      "registration_recheck": "Website-only or legal-practitioner route; current independent verification UNKNOWN",
+      "checked_date": "2026-10-17",
+      "evidence": [
+        {
+          "url": "https://truebluemigration.com/",
+          "http_status": 200,
+          "checked_at": "2026-10-17T01:39:35.244Z",
+          "title": "Australian Migration Agents in Melbourne & Perth | True Blue Migration",
+          "error": null
+        },
+        {
+          "url": "https://truebluemigration.com/about-us/the-team/",
+          "http_status": 200,
+          "checked_at": "2026-10-17T01:39:35.338Z",
+          "title": "Meet the Team | Migration Agents & Experts | True Blue Migration",
+          "error": null
+        }
+      ],
+      "send_status": "PREPARED — NOT EXECUTED"
+    },
+    {
+      "id": "P17",
+      "practice": "Work Visa Lawyers",
+      "website": "https://www.workvisalawyers.com.au/",
+      "principal": "Chris Johnston, principal lawyer/founder",
+      "role": "Principal / practice contact as described on linked source; exact title where unknown not inferred",
+      "marn": "N/A for principal legal practitioner route; multiple RMAs also named; current credentials UNKNOWN",
+      "location": "Adelaide, SA",
+      "skilled": "Skilled; employer; assessment; family; review",
+      "relevant": "https://www.workvisalawyers.com.au/services/skilled-migration-189-190-489/",
+      "tools": "Occupation-list resources; other tools UNKNOWN",
+      "fit": "Skilled service and lawyer founder; larger team and existing guidance make lower-priority reviewer.",
+      "prior_sources": [
+        "https://www.workvisalawyers.com.au/",
+        "https://www.workvisalawyers.com.au/team-members/",
+        "https://www.workvisalawyers.com.au/book-appointment/"
+      ],
+      "segment": "B",
+      "priority": "Reserve",
+      "contact": "Practice general contact route; no personal email inferred",
+      "contact_source": "https://www.workvisalawyers.com.au/",
+      "no_solicitation_signal": "No explicit signal found in inspected public pages; this does not establish permission or consent",
+      "marn_source": "https://www.workvisalawyers.com.au/",
+      "registration_recheck": "Website-only or legal-practitioner route; current independent verification UNKNOWN",
+      "checked_date": "2026-10-17",
+      "evidence": [
+        {
+          "url": "https://www.workvisalawyers.com.au/",
+          "http_status": 200,
+          "checked_at": "2026-10-17T01:39:34.754Z",
+          "title": "Immigration Lawyers & Migration Agents | Work Visa Lawyers",
+          "error": null
+        },
+        {
+          "url": "https://www.workvisalawyers.com.au/team-members/",
+          "http_status": 200,
+          "checked_at": "2026-10-17T01:39:34.839Z",
+          "title": "Immigration Lawyers & Agents | Work Visa Lawyers",
+          "error": null
+        }
+      ],
+      "send_status": "PREPARED — NOT EXECUTED"
+    },
+    {
+      "id": "P18",
+      "practice": "VisaEnvoy",
+      "website": "https://visaenvoy.com/",
+      "principal": "Principal UNKNOWN; Simon Long and Voya Kablar among named advisers",
+      "role": "Principal / practice contact as described on linked source; exact title where unknown not inferred",
+      "marn": "1574118; 1575120 and others — website; current register checks UNKNOWN",
+      "location": "Melbourne headquarters; multiple cities",
+      "skilled": "Skilled; assessment; employer; family; student; review",
+      "relevant": "https://visaenvoy.com/skilled-visas/",
+      "tools": "Points; occupation lists; eligibility and fee tools",
+      "fit": "Existing research tools and larger multi-office practice; low marginal novelty.",
+      "prior_sources": [
+        "https://visaenvoy.com/",
+        "https://visaenvoy.com/our-team/",
+        "https://visaenvoy.com/book-a-consultation/",
+        "https://visaenvoy.com/client-portal/"
+      ],
+      "segment": "B",
+      "priority": "Reserve",
+      "contact": "Practice general contact route; no personal email inferred",
+      "contact_source": "https://visaenvoy.com/",
+      "no_solicitation_signal": "No explicit signal found in inspected public pages; this does not establish permission or consent",
+      "marn_source": "https://visaenvoy.com/",
+      "registration_recheck": "Website-only or legal-practitioner route; current independent verification UNKNOWN",
+      "checked_date": "2026-10-17",
+      "evidence": [
+        {
+          "url": "https://visaenvoy.com/our-team/",
+          "http_status": 200,
+          "checked_at": "2026-10-17T01:39:35.798Z",
+          "title": "Our Team",
+          "error": null
+        },
+        {
+          "url": "https://visaenvoy.com/",
+          "http_status": 200,
+          "checked_at": "2026-10-17T01:39:35.867Z",
+          "title": "Australian Migration Agents and Immigration Lawyers | VisaEnvoy",
+          "error": null
+        }
+      ],
+      "send_status": "PREPARED — NOT EXECUTED"
+    },
+    {
+      "id": "P19",
+      "practice": "Hello Migration",
+      "website": "https://hellomigration.com.au/",
+      "principal": "José de Andrade, CEO; Tiago Vieira Martins, national manager (parent team page)",
+      "role": "Principal / practice contact as described on linked source; exact title where unknown not inferred",
+      "marn": "2418488; 2418376 — parent team page; independent current checks UNKNOWN",
+      "location": "Brisbane, QLD / broader network",
+      "skilled": "Skilled; employer; skills assessment; graduate; family",
+      "relevant": "https://hellomigration.com.au/",
+      "tools": "UNKNOWN",
+      "fit": "Education-network practice with skilled/graduate context; avoid conflating education demand with skilled research.",
+      "prior_sources": [
+        "https://hellomigration.com.au/",
+        "https://hellomigration.com.au/book-a-consultation/",
+        "https://www.helloinaustralia.com/quem-somos-who",
+        "https://au.linkedin.com/jobs/view/experienced-case-manager-at-hello-australia-hello-migration-4465490825"
+      ],
+      "segment": "C",
+      "priority": "Reserve",
+      "contact": "Practice general contact route; no personal email inferred",
+      "contact_source": "https://hellomigration.com.au/",
+      "no_solicitation_signal": "No explicit signal found in inspected public pages; this does not establish permission or consent",
+      "marn_source": "https://hellomigration.com.au/",
+      "registration_recheck": "Website-only or legal-practitioner route; current independent verification UNKNOWN",
+      "checked_date": "2026-10-17",
+      "evidence": [
+        {
+          "url": "https://hellomigration.com.au/book-a-consultation/",
+          "http_status": 200,
+          "checked_at": "2026-10-17T01:39:35.609Z",
+          "title": "Book A Consultation – Hello Migration | Your Trusted Partner in Australian Migration",
+          "error": null
+        },
+        {
+          "url": "https://hellomigration.com.au/",
+          "http_status": 200,
+          "checked_at": "2026-10-17T01:39:35.815Z",
+          "title": "Hello Migration | Your Trusted Partner in Australian Migration",
+          "error": null
+        }
+      ],
+      "send_status": "PREPARED — NOT EXECUTED"
+    },
+    {
+      "id": "P20",
+      "practice": "Emergico",
+      "website": "https://www.emergico.com.au/",
+      "principal": "Leanne Stevens, CEO/RMA",
+      "role": "Principal / practice contact as described on linked source; exact title where unknown not inferred",
+      "marn": "1171279 — website; additional three RMAs named; independent current checks UNKNOWN",
+      "location": "Wilston, Brisbane, QLD",
+      "skilled": "Skilled; nomination; employer; family; student",
+      "relevant": "https://www.emergico.com.au/services/visas/skilled/",
+      "tools": "Eligibility checks",
+      "fit": "Skilled service and named team; useful reserve but larger systems-supported operation.",
+      "prior_sources": [
+        "https://www.emergico.com.au/",
+        "https://www.emergico.com.au/about/team/",
+        "https://www.emergico.com.au/services/consultations/",
+        "https://www.emergico.com.au/client-portal/"
+      ],
+      "segment": "B",
+      "priority": "Reserve",
+      "contact": "Practice general contact route; no personal email inferred",
+      "contact_source": "https://www.emergico.com.au/",
+      "no_solicitation_signal": "No explicit signal found in inspected public pages; this does not establish permission or consent",
+      "marn_source": "https://www.emergico.com.au/",
+      "registration_recheck": "Website-only or legal-practitioner route; current independent verification UNKNOWN",
+      "checked_date": "2026-10-17",
+      "evidence": [
+        {
+          "url": "https://www.emergico.com.au/about/team/",
+          "http_status": 200,
+          "checked_at": "2026-10-17T01:39:37.788Z",
+          "title": "Emergico Team | Registered Migration Agents Australia",
+          "error": null
+        },
+        {
+          "url": "https://www.emergico.com.au/",
+          "http_status": 200,
+          "checked_at": "2026-10-17T01:39:37.956Z",
+          "title": "Migration Agents Brisbane Australia - Emergico",
+          "error": null
+        }
+      ],
+      "send_status": "PREPARED — NOT EXECUTED"
+    },
+    {
+      "id": "P21",
+      "practice": "Ultimate Migration",
+      "website": "https://migrationagentsperth.com.au/",
+      "principal": "Harry Sidhu",
+      "role": "Co-founder and principal RMA",
+      "marn": "1790054; Deepok Kar 2418658 — website only; independent current match UNKNOWN",
+      "location": "East Perth, WA",
+      "skilled": "189 / 190 / 491 service navigation and skilled expertise",
+      "relevant": "https://migrationagentsperth.com.au/our-team/",
+      "tools": "UNKNOWN",
+      "fit": "Skilled-service audience can critique a trade occupation → assessment flow. Named support team means do not describe as a two-person firm.",
+      "segment": "A",
+      "priority": "First wave 8",
+      "contact": "info@ultimatemigration.com",
+      "contact_source": "https://migrationagentsperth.com.au/contact-us/",
+      "no_solicitation_signal": "No explicit signal found in inspected public pages; this does not establish permission or consent",
+      "marn_source": "https://migrationagentsperth.com.au/",
+      "registration_recheck": "Website-only or legal-practitioner route; current independent verification UNKNOWN",
+      "checked_date": "2026-10-17",
+      "evidence": [
+        {
+          "url": "https://migrationagentsperth.com.au/",
+          "http_status": 200,
+          "checked_at": "2026-10-17T01:39:36.827Z",
+          "title": "Best Migration Agent Perth | Best Immigration Agent Perth ",
+          "error": null
+        },
+        {
+          "url": "https://migrationagentsperth.com.au/our-team/",
+          "http_status": 200,
+          "checked_at": "2026-10-17T01:39:37.173Z",
+          "title": "Our Team | Ultimate Migration Perth | OMARA Agents",
+          "error": null
+        },
+        {
+          "url": "https://migrationagentsperth.com.au/contact-us/",
+          "http_status": 200,
+          "checked_at": "2026-10-17T01:41:30.145Z",
+          "title": "Contact Us | Migration Agent Perth | Ultimate Migration",
+          "error": null
+        }
+      ],
+      "send_status": "PREPARED — NOT EXECUTED"
+    },
+    {
+      "id": "P22",
+      "practice": "Australian Visa Group",
+      "website": "https://visagroup.com.au/",
+      "principal": "Michelle Firth",
+      "role": "Founder / principal migration agent",
+      "marn": "0636086 & 0006808 displayed together — website only; exact current number match UNKNOWN",
+      "location": "Perth, WA",
+      "skilled": "Dedicated skilled-migration page",
+      "relevant": "https://visagroup.com.au/skilled-migration/",
+      "tools": "UNKNOWN",
+      "fit": "Principal-led review of code → assessment → visa comparison; employer-sponsored work is also prominent.",
+      "segment": "A",
+      "priority": "First wave 9",
+      "contact": "admin@visagroup.com.au",
+      "contact_source": "https://visagroup.com.au/",
+      "no_solicitation_signal": "No explicit signal found in inspected public pages; this does not establish permission or consent",
+      "marn_source": "https://visagroup.com.au/",
+      "registration_recheck": "Website-only or legal-practitioner route; current independent verification UNKNOWN",
+      "checked_date": "2026-10-17",
+      "evidence": [
+        {
+          "url": "https://visagroup.com.au/",
+          "http_status": 200,
+          "checked_at": "2026-10-17T01:39:39.106Z",
+          "title": "Visa Agent Perth 25 yrs exp Australian Visa Group",
+          "error": null
+        },
+        {
+          "url": "https://visagroup.com.au/contact/",
+          "http_status": 200,
+          "checked_at": "2026-10-17T01:41:29.191Z",
+          "title": "Australian Visa Group - Office Locations",
+          "error": null
+        },
+        {
+          "url": "https://visagroup.com.au/skilled-migration/",
+          "http_status": 200,
+          "checked_at": "2026-10-17T01:41:29.640Z",
+          "title": "Skilled Migration - Visa Agent Perth 25 yrs exp Australian Visa Group",
+          "error": null
+        }
+      ],
+      "send_status": "PREPARED — NOT EXECUTED"
+    },
+    {
+      "id": "P23",
+      "practice": "AMG Visas",
+      "website": "https://migrationguide.com.au/",
+      "principal": "Anthony Takchi",
+      "role": "Director / principal RMA",
+      "marn": "UNKNOWN — no number established in captured homepage",
+      "location": "Australia; precise office location UNKNOWN in captured evidence",
+      "skilled": "Skilled migration service in homepage navigation",
+      "relevant": "https://migrationguide.com.au/#!/ourteam",
+      "tools": "UNKNOWN",
+      "fit": "Potential general-skilled reviewer; needs named-number verification and clearer current service evidence.",
+      "segment": "B",
+      "priority": "Reserve",
+      "contact": "Practice general contact route; no personal email inferred",
+      "contact_source": "https://migrationguide.com.au/",
+      "no_solicitation_signal": "No explicit signal found in inspected public pages; this does not establish permission or consent",
+      "marn_source": "https://migrationguide.com.au/",
+      "registration_recheck": "Website-only or legal-practitioner route; current independent verification UNKNOWN",
+      "checked_date": "2026-10-17",
+      "evidence": [
+        {
+          "url": "https://migrationguide.com.au/",
+          "http_status": 200,
+          "checked_at": "2026-10-17T01:39:39.586Z",
+          "title": "AMG Visas",
+          "error": null
+        }
+      ],
+      "send_status": "PREPARED — NOT EXECUTED"
+    },
+    {
+      "id": "P24",
+      "practice": "Global Select",
+      "website": "https://www.globalselect.com.au/",
+      "principal": "Santosh Gupta / Satish Gupta",
+      "role": "CEO / managing director; not established as the named RMAs",
+      "marn": "2217810 & 2418520 — website; name-to-number mapping UNKNOWN",
+      "location": "Adelaide / Melbourne / Nepal",
+      "skilled": "189 / 190 / 491 page; education pathways",
+      "relevant": "https://www.globalselect.com.au/migration/skilled",
+      "tools": "Visa finder and skilled occupation list",
+      "fit": "Research resource may support graduate-to-skilled questions; overseas education network makes this a hybrid.",
+      "segment": "C",
+      "priority": "Reserve",
+      "contact": "Practice general contact route; no personal email inferred",
+      "contact_source": "https://www.globalselect.com.au/",
+      "no_solicitation_signal": "No explicit signal found in inspected public pages; this does not establish permission or consent",
+      "marn_source": "https://www.globalselect.com.au/",
+      "registration_recheck": "Website-only or legal-practitioner route; current independent verification UNKNOWN",
+      "checked_date": "2026-10-17",
+      "evidence": [
+        {
+          "url": "https://www.globalselect.com.au/",
+          "http_status": 200,
+          "checked_at": "2026-10-17T01:39:38.746Z",
+          "title": "Registered Migration Agents Australia | Global Select",
+          "error": null
+        },
+        {
+          "url": "https://www.globalselect.com.au/about-us",
+          "http_status": 200,
+          "checked_at": "2026-10-17T01:39:39.036Z",
+          "title": "About Global Select — OMARA Registered Migration Agents",
+          "error": null
+        }
+      ],
+      "send_status": "PREPARED — NOT EXECUTED"
+    },
+    {
+      "id": "P25",
+      "practice": "AU Educate",
+      "website": "https://au-educate.com/",
+      "principal": "Michelle Chen",
+      "role": "Founder; website describes RMA",
+      "marn": "UNKNOWN — website role alone is not independent verification",
+      "location": "Sydney, NSW; other offices not independently confirmed",
+      "skilled": "Education/student core; skilled-service fit not established",
+      "relevant": "https://au-educate.com/en/about",
+      "tools": "UNKNOWN",
+      "fit": "Only a later education comparison candidate; do not imply student resources cover skilled migration or select for first wave.",
+      "segment": "C",
+      "priority": "Reserve",
+      "contact": "Practice general contact route; no personal email inferred",
+      "contact_source": "https://au-educate.com/",
+      "no_solicitation_signal": "No explicit signal found in inspected public pages; this does not establish permission or consent",
+      "marn_source": "https://au-educate.com/",
+      "registration_recheck": "Website-only or legal-practitioner route; current independent verification UNKNOWN",
+      "checked_date": "2026-10-17",
+      "evidence": [
+        {
+          "url": "https://au-educate.com/",
+          "http_status": 200,
+          "checked_at": "2026-10-17T01:39:37.875Z",
+          "title": "澳学教育 AU Educate | 澳洲留学一站式服务：学生签证 · 择校申请 · 学业辅导 · 转学疑难",
+          "error": null
+        },
+        {
+          "url": "https://au-educate.com/en/about",
+          "http_status": 200,
+          "checked_at": "2026-10-17T01:39:38.104Z",
+          "title": "About AU Educate · Our Consultants and Offices",
+          "error": null
+        }
+      ],
+      "send_status": "PREPARED — NOT EXECUTED"
+    },
+    {
+      "id": "P26",
+      "practice": "Think Visa",
+      "website": "https://www.thinkvisa.com.au/",
+      "principal": "Practice contact team; principal UNKNOWN in captured page",
+      "role": "Migration/legal practice team",
+      "marn": "UNKNOWN — legal/RMA roles require individual verification",
+      "location": "Australia; precise location UNKNOWN in captured homepage",
+      "skilled": "Dedicated 189 / 190 / 491 pages",
+      "relevant": "https://www.thinkvisa.com.au/general-skilled-migration-australia/skilled-independent-visa",
+      "tools": "UNKNOWN",
+      "fit": "Skilled-service relevance but larger practice and no principal established; reserve.",
+      "segment": "B",
+      "priority": "Reserve",
+      "contact": "Practice general contact route; no personal email inferred",
+      "contact_source": "https://www.thinkvisa.com.au/",
+      "no_solicitation_signal": "No explicit signal found in inspected public pages; this does not establish permission or consent",
+      "marn_source": "https://www.thinkvisa.com.au/",
+      "registration_recheck": "Website-only or legal-practitioner route; current independent verification UNKNOWN",
+      "checked_date": "2026-10-17",
+      "evidence": [
+        {
+          "url": "https://www.thinkvisa.com.au/",
+          "http_status": 200,
+          "checked_at": "2026-10-17T01:39:39.695Z",
+          "title": "Australia's #1 Immigration Lawyers & Immigration Agents | Think VisaSticky CTA Footer",
+          "error": null
+        }
+      ],
+      "send_status": "PREPARED — NOT EXECUTED"
+    },
+    {
+      "id": "P27",
+      "practice": "Estrin Saul Lawyers",
+      "website": "https://estrinsaul.com.au/",
+      "principal": "Reuben Saul / Daniel Estrin",
+      "role": "Managing partner / partner lawyer",
+      "marn": "Legal practitioner route; current practising status not independently verified",
+      "location": "Perth / Adelaide; Manila support office on team page",
+      "skilled": "Dedicated skilled visas and skills assessments service",
+      "relevant": "https://estrinsaul.com.au/skilled-visas-skills-assessments/",
+      "tools": "UNKNOWN",
+      "fit": "Assessment-content reviewer, but large specialist firm is outside the preferred small first wave.",
+      "segment": "B",
+      "priority": "Reserve",
+      "contact": "Practice general contact route; no personal email inferred",
+      "contact_source": "https://estrinsaul.com.au/",
+      "no_solicitation_signal": "No explicit signal found in inspected public pages; this does not establish permission or consent",
+      "marn_source": "https://estrinsaul.com.au/",
+      "registration_recheck": "Website-only or legal-practitioner route; current independent verification UNKNOWN",
+      "checked_date": "2026-10-17",
+      "evidence": [
+        {
+          "url": "https://estrinsaul.com.au/",
+          "http_status": 200,
+          "checked_at": "2026-10-17T01:39:38.309Z",
+          "title": "Lawyers & Migration Specialists | Estrin Saul",
+          "error": null
+        },
+        {
+          "url": "https://estrinsaul.com.au/team/",
+          "http_status": 200,
+          "checked_at": "2026-10-17T01:39:38.414Z",
+          "title": "Team | Estrin Saul",
+          "error": null
+        }
+      ],
+      "send_status": "PREPARED — NOT EXECUTED"
+    },
+    {
+      "id": "P28",
+      "practice": "Seek Migration",
+      "website": "https://seekmigration.com.au/",
+      "principal": "Elaine Nunez",
+      "role": "Website search result names migration agent",
+      "marn": "1172914 — search result from practice site; live page inaccessible (403); current match UNKNOWN",
+      "location": "Australia; precise location UNKNOWN in current capture",
+      "skilled": "Skilled migration named in indexed homepage result",
+      "relevant": "https://seekmigration.com.au/",
+      "tools": "UNKNOWN",
+      "fit": "Hold: direct site verification and contact/no-solicitation check blocked; no first-wave draft.",
+      "segment": "D",
+      "priority": "Do not contact",
+      "contact": "Practice general contact route; no personal email inferred",
+      "contact_source": "https://seekmigration.com.au/",
+      "no_solicitation_signal": "UNKNOWN — direct inspection blocked",
+      "marn_source": "https://seekmigration.com.au/",
+      "registration_recheck": "Website-only or legal-practitioner route; current independent verification UNKNOWN",
+      "checked_date": "2026-10-17",
+      "evidence": [
+        {
+          "url": "https://www.seekmigration.com.au/",
+          "http_status": 403,
+          "checked_at": "2026-10-17T01:39:38.611Z",
+          "title": "Just a moment...",
+          "error": null
+        },
+        {
+          "url": "https://seekmigration.com.au/",
+          "http_status": 403,
+          "checked_at": "2026-10-17T01:41:29.829Z",
+          "title": "Just a moment...",
+          "error": null
+        }
+      ],
+      "send_status": "PREPARED — NOT EXECUTED"
+    },
+    {
+      "id": "P29",
+      "practice": "Masterkey Migration",
+      "website": "https://www.masterkeymigration.com.au/",
+      "principal": "Karan Jalan",
+      "role": "Principal RMA",
+      "marn": "2518882 — official OMARA result matched Registered; register update 2026-09-16, checked 2026-10-17",
+      "location": "Adelaide, SA",
+      "skilled": "189 / 190 / 491, skills-assessment service and points form",
+      "relevant": "https://www.masterkeymigration.com.au/",
+      "tools": "Own points calculator",
+      "fit": "Ask for critique of occupation-to-assessment context alongside an existing points tool, not replacement.",
+      "segment": "A",
+      "priority": "First wave 10",
+      "contact": "info@masterkeymigration.com.au",
+      "contact_source": "https://www.masterkeymigration.com.au/",
+      "no_solicitation_signal": "No explicit signal found in inspected public pages; this does not establish permission or consent",
+      "marn_source": "https://portal.mara.gov.au/search-the-register-of-migration-agents/register-of-migration-agent-details/?ContactID=5279fc9f-e0fe-ef11-bae3-002248105184",
+      "registration_recheck": "Official indexed register result matched; dated update, not a guarantee of future status",
+      "checked_date": "2026-10-17",
+      "evidence": [
+        {
+          "url": "https://www.masterkeymigration.com.au/",
+          "http_status": 200,
+          "checked_at": "2026-10-17T01:39:39.548Z",
+          "title": "Masterkey Migration — Registered Australian Migration Agents",
+          "error": null
+        }
+      ],
+      "send_status": "PREPARED — NOT EXECUTED"
+    },
+    {
+      "id": "P30",
+      "practice": "Stratton Migration Australia",
+      "website": "https://strattonmigration.com.au/",
+      "principal": "Fiona Carre",
+      "role": "Director / responsible migration agent",
+      "marn": "0638808 — website only; independent current match UNKNOWN",
+      "location": "Queensland; office location not established in captured evidence",
+      "skilled": "General skilled page plus construction, hospitality and trade sectors",
+      "relevant": "https://strattonmigration.com.au/general-skilled-migration-visas",
+      "tools": "UNKNOWN; affiliate English provider observed",
+      "fit": "Trade research fit, but employer-sponsored core and advice-oriented contact form make this reserve rather than an immediate business approach.",
+      "segment": "B",
+      "priority": "Reserve",
+      "contact": "Practice general contact route; no personal email inferred",
+      "contact_source": "https://strattonmigration.com.au/",
+      "no_solicitation_signal": "No explicit signal found in inspected public pages; this does not establish permission or consent",
+      "marn_source": "https://strattonmigration.com.au/",
+      "registration_recheck": "Website-only or legal-practitioner route; current independent verification UNKNOWN",
+      "checked_date": "2026-10-17",
+      "evidence": [
+        {
+          "url": "https://strattonmigration.com.au/",
+          "http_status": 200,
+          "checked_at": "2026-10-17T01:39:39.023Z",
+          "title": "Stratton Migration Australia | Employer-Sponsored Migration Specialists",
+          "error": null
+        },
+        {
+          "url": "https://strattonmigration.com.au/contact-us",
+          "http_status": 200,
+          "checked_at": "2026-10-17T01:41:29.195Z",
+          "title": "Contact Us",
+          "error": null
+        },
+        {
+          "url": "https://strattonmigration.com.au/general-skilled-migration-visas",
+          "http_status": 200,
+          "checked_at": "2026-10-17T01:41:29.440Z",
+          "title": "General Skilled Migration Visa",
+          "error": null
+        }
+      ],
+      "send_status": "PREPARED — NOT EXECUTED"
+    }
+  ]
+}

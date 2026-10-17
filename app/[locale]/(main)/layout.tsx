@@ -7,6 +7,7 @@ import { LanguageProvider } from "@/contexts/language-context";
 import { ShellHeaderGate, ShellFooterGate } from "@/components/shell-gates";
 import { RefCapture } from "@/components/ref-capture";
 import { OutboundLinkTracker } from "@/components/analytics/outbound-link-tracker";
+import { ResearchContinuationTracker } from "@/components/analytics/research-continuation-tracker";
 import { Toaster } from "@/components/ui/sonner";
 import { isValidLocale, type Locale } from "@/lib/i18n/config";
 import { getTranslations } from "@/lib/i18n/get-translations";
@@ -157,6 +158,7 @@ export default async function LocaleLayout({
       <Toaster />
       {gaId ? <GoogleAnalytics gaId={gaId} /> : null}
       {gaId ? <OutboundLinkTracker locale={locale} /> : null}
+      {gaId ? <ResearchContinuationTracker locale={locale} /> : null}
     </LanguageProvider>
   );
 }
