@@ -3,7 +3,7 @@
 import { useActionState, useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import { CheckCircle2, Lock, Mail, Phone, ShieldCheck, Sparkles, Zap } from "lucide-react";
-import { sendGAEvent } from "@next/third-parties/google";
+import { trackEvent } from "@/lib/analytics/events";
 
 import { type PremiumUnlockState, unlockPremiumReport } from "@/app/[locale]/(main)/full-check/actions";
 import type { ReportHeader } from "@/lib/reports/report-header";
@@ -15,15 +15,6 @@ import { Label } from "@/components/ui/label";
 import { TermsGate, TermsGateLink } from "@/components/terms-gate";
 
 const initialUnlockState: PremiumUnlockState = { status: "idle" };
-
-function trackGaEvent(name: string, params?: Record<string, string | number | boolean | null | undefined>) {
-  if (typeof window === "undefined") return;
-  const gaId = process.env.NEXT_PUBLIC_GA_ID?.trim();
-  if (!gaId) return;
-  if (!Array.isArray((window as { dataLayer?: Object[] }).dataLayer)) return;
-
-  sendGAEvent("event", name, params ?? {});
-}
 
 export function PremiumFeatureGate({
   locale,
@@ -85,22 +76,22 @@ export function PremiumFeatureGate({
   );
 
   useEffect(() => {
-    if (unlockState.status === "success" && unlockState.unlocked) {
+    if (unlockState.status === "success" && unlockState.unlocked && trackedUnlockReportIdRef.current !== reportId) {
       if (trackedUnlockReportIdRef.current !== reportId) {
-        trackGaEvent("report_unlocked", {
-          report_id: reportId,
+        trackEvent("report_unlocked", {
           locale,
-          source: "unlock_success",
         });
         trackedUnlockReportIdRef.current = reportId;
       }
 
-      setShowModal(false);
-      onUnlocked({
+      queueMicrotask(() => {
+        setShowModal(false);
+        onUnlocked({
         email: unlockState.userInput?.email,
         name: unlockState.userInput?.name,
         isUnlocked: true,
         accessToken: unlockState.accessToken,
+        });
       });
     }
 
@@ -130,9 +121,9 @@ export function PremiumFeatureGate({
     // user has actually committed to checkout, as opposed to just opening
     // the modal (setShowModal(true) above, which many visitors abandon).
     if (paidCheckoutEnabled) {
-      trackGaEvent("checkout_initiated", {
-        report_id: reportId,
+      trackEvent("checkout_initiated", {
         product_type: "premium",
+        locale,
       });
     }
   }

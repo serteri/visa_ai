@@ -8,6 +8,8 @@ import { ShellHeaderGate, ShellFooterGate } from "@/components/shell-gates";
 import { RefCapture } from "@/components/ref-capture";
 import { OutboundLinkTracker } from "@/components/analytics/outbound-link-tracker";
 import { ResearchContinuationTracker } from "@/components/analytics/research-continuation-tracker";
+import { AssessmentEntryTracker } from "@/components/analytics/assessment-entry-tracker";
+import { AssessmentPrivacyBoundary } from "@/components/analytics/assessment-privacy-boundary";
 import { Toaster } from "@/components/ui/sonner";
 import { isValidLocale, type Locale } from "@/lib/i18n/config";
 import { getTranslations } from "@/lib/i18n/get-translations";
@@ -156,9 +158,12 @@ export default async function LocaleLayout({
       <main className="overflow-x-hidden pt-28 sm:pt-32">{children}</main>
       <ShellFooterGate locale={locale} />
       <Toaster />
-      {gaId ? <GoogleAnalytics gaId={gaId} /> : null}
-      {gaId ? <OutboundLinkTracker locale={locale} /> : null}
-      {gaId ? <ResearchContinuationTracker locale={locale} /> : null}
+      {gaId ? <Suspense fallback={null}><AssessmentPrivacyBoundary gaId={gaId}>
+        <GoogleAnalytics gaId={gaId} />
+        <OutboundLinkTracker locale={locale} />
+        <ResearchContinuationTracker locale={locale} />
+        <AssessmentEntryTracker locale={locale} />
+      </AssessmentPrivacyBoundary></Suspense> : null}
     </LanguageProvider>
   );
 }

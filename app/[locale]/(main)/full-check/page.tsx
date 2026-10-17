@@ -1,11 +1,9 @@
 import { isCanadaReportEnabled } from "@/lib/readiness/report-mode";
 import type { Metadata } from "next";
-import Link from "next/link";
-
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { AssessmentOverview } from "@/components/assessment-overview";
+import { ProfessionalHelp, ResearchLinks } from "@/components/research-links";
+import { pageAlternates } from "@/lib/seo/urls";
 import { FullCheckInteractiveSection } from "./full-check-interactive-section";
-import { ShareLogivisaCard } from "@/components/share-logivisa-card";
 import { getFreePromoStatus } from "@/lib/services/free-promo";
 import { isSupportedCountry } from "@/lib/countries";
 import { destinationFromParam } from "@/lib/intake/passport";
@@ -51,15 +49,7 @@ export async function generateMetadata({ params }: FullCheckPageProps): Promise<
     metadataBase: new URL(BASE_URL),
     title,
     description,
-    alternates: {
-      canonical: `/${locale}/full-check`,
-      languages: {
-        en: "/en/full-check",
-        tr: "/tr/full-check",
-        "zh-Hans": "/zh-Hans/full-check",
-        "x-default": "/en/full-check",
-      },
-    },
+    alternates: pageAlternates(locale, "/full-check"),
   };
 }
 
@@ -108,14 +98,14 @@ export default async function FullCheckPage({ params, searchParams }: FullCheckP
   // "spots remaining" banner after the real quota was already exhausted. No
   // artificial display floor either: when the real quota is 0, this is 0 and
   // the banner/free-unlock UI hide entirely (see PremiumFeatureGate).
-  let remainingSpots = 14;
-  let isFreeActive = true;
+  let remainingSpots = 0;
+  let isFreeActive = false;
   try {
     const status = await getFreePromoStatus();
     remainingSpots = status.remaining;
     isFreeActive = status.isFreeActive;
   } catch {
-    // Keep defaults when DB is temporarily unavailable
+    // An unavailable count must not become a claim that free spots remain.
   }
 
   // Paid unless the server-side flag is explicitly "false" (lib/readiness/paid-checkout.ts): with it off, no price is shown.
@@ -125,6 +115,7 @@ export default async function FullCheckPage({ params, searchParams }: FullCheckP
   return (
     <main className="flex-1 pb-12">
       <section className="section-shell space-y-6">
+        <AssessmentOverview locale={locale} />
         <FullCheckInteractiveSection
           locale={locale}
           initialValues={initialValues}
@@ -166,38 +157,10 @@ export default async function FullCheckPage({ params, searchParams }: FullCheckP
           }
         />
 
-        <Card>
-          <CardHeader>
-            <CardTitle>{tx("Not ready yet?", "Henüz hazır değil misiniz?", "还没准备好？")}</CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <p className="text-sm text-muted-foreground">
-              {tx(
-                "The free pathway check remains available, and registered migration agent input may be relevant.",
-                "Ücretsiz yol kontrolü hâlâ kullanılabilir ve kayıtlı göç danışmanı görüşmesi ilgili olabilir.",
-                "免费路径评估仍可使用，如需也可和注册移民顾问面谈。"
-              )}
-            </p>
-            <div className="flex flex-col gap-3 sm:flex-row">
-              <Button asChild>
-                <Link href={`/${locale}/checker`}>
-                  {isTr ? "Kontrole geri dön" : isZh ? "返回评估" : "Back to checker"}
-                </Link>
-              </Button>
-              <Button asChild variant="outline">
-                <Link href={`/${locale}/full-check`}>
-                  {isTr
-                    ? "Ücretsiz değerlendirmeyi deneyin"
-                    : isZh
-                    ? "尝试免费评估"
-                    : "Try the free assessment"}
-                </Link>
-              </Button>
-            </div>
-          </CardContent>
-        </Card>
-
-        <ShareLogivisaCard />
+        <div className="mx-auto grid max-w-6xl gap-6 lg:grid-cols-2">
+          <ResearchLinks locale={locale} />
+          <ProfessionalHelp locale={locale} />
+        </div>
 
         <p className="text-sm text-muted-foreground">
           {tx(

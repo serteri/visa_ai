@@ -11,6 +11,7 @@ import { ReportAccessRequired } from "./report-access-required";
 import { ResultView } from "./result-view";
 
 export const dynamic = "force-dynamic";
+export const metadata = { robots: { index: false, follow: false }, referrer: "no-referrer" as const };
 
 type FullCheckResultPageProps = {
   params: Promise<{ locale: string }>;
@@ -64,6 +65,7 @@ export default async function FullCheckResultPage({
       fullName={record.fullName ?? undefined}
       email={record.email}
       paidCheckoutEnabled={isPaidReportCheckoutEnabled()}
+      country={record.input.country}
     />
   );
 }

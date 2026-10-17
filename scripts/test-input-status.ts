@@ -44,7 +44,7 @@ async function main() {
   check(skillsAssessmentAnswerOf({}) === "unknown" && skillsAssessmentAnswerOf({ occupationConfirmed: "" }) === "unknown" && skillsAssessmentAnswerOf({ occupationConfirmed: "no" }) === "no" && skillsAssessmentAnswerOf({ occupationConfirmed: "YES" }) === "yes", "the engine's answer: yes / no / unknown");
   const form = readFileSync("app/[locale]/(main)/full-check/full-check-waitlist-form.tsx", "utf8");
   const step2 = readFileSync("app/[locale]/(main)/full-check/step-2-career.tsx", "utf8");
-  check(/useState\(""\);\s*\n\s*const \[occupationConfirmedSel/.test(form) && !/useState\("no"\)/.test(form.slice(form.indexOf("const [skillsAssessment"), form.indexOf("const [skillsAssessment") + 200)), "the form's skills-assessment state starts empty (no default selection)");
+  check(/const \[skillsAssessment, setSkillsAssessment\] = useState\(""\)/.test(form) && !/useState\("no"\)/.test(form.slice(form.indexOf("const [skillsAssessment"), form.indexOf("const [skillsAssessment") + 200)), "the form's skills-assessment state starts empty (no default selection)");
   check(/value="no" checked=\{props\.skillsAssessment === "no"\}/.test(step2) && /value="yes" checked=\{props\.skillsAssessment === "yes"\}/.test(step2) && !/type="hidden" name="skillsAssessment"/.test(step2), "each radio is checked only by its own explicit answer; no hidden \"no\" is posted");
   const actions = readFileSync("app/[locale]/(main)/full-check/actions.ts", "utf8");
   check(/resolveSkillsAssessmentAnswer\(formData\.get\("skillsAssessment"\), formData\.get\("occupationConfirmed"\)\)/.test(actions) && !/occupationConfirmedRaw = skillsAssessmentDone \? "yes" : "no"/.test(actions), "the server stores only an explicit answer");

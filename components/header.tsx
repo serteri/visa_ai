@@ -98,7 +98,7 @@ function UserMenu({ locale }: { locale: string }) {
 }
 
 // ── Main Header ──────────────────────────────────────────────────────────────
-export function Header({ locale, showAdmin = false }: { locale: string; showAdmin?: boolean }) {
+export function Header({ locale }: { locale: string; showAdmin?: boolean }) {
   const [mobileOpen, setMobileOpen] = useState(false);
   const { t } = useTranslation();
   const { data: session } = useSession();
@@ -128,7 +128,7 @@ export function Header({ locale, showAdmin = false }: { locale: string; showAdmi
             <DropdownMenu label={tx("Araçlar", "Tools", "工具")}>
               <DropdownLink href={`/${locale}/tools/anzsco-finder`}>{tx("Meslek Ara", "Occupation Search", "职业搜索")}</DropdownLink>
               <DropdownLink href={`/${locale}/tools/points-calculator`}>{tx("Puan Hesapla (AUS)", "Points Calculator", "积分计算器")}</DropdownLink>
-              <DropdownLink href={`/${locale}/tools/skills-assessment`}>{tx("Beceri Değerlendirme", "Skills Assessment", "技能评估")}</DropdownLink>
+              <DropdownLink href={`/${locale}/tools/skills-assessment`}>{tx("Beceri Değerlendirme Bulucu", "Skills Assessment Finder", "技能评估查询")}</DropdownLink>
               <DropdownLink href={`/${locale}/rounds`}>
                 <span className="inline-flex items-center">
                   {t("nav.invitationRounds", "Invitation Rounds")}
@@ -180,7 +180,7 @@ export function Header({ locale, showAdmin = false }: { locale: string; showAdmi
             {isSignedIn ? (
               <UserMenu locale={locale} />
             ) : (
-              <Link href={`/${locale}/full-check`} className="hidden whitespace-nowrap rounded-full bg-[var(--cf-accent)] px-4 py-2 text-sm font-semibold text-white shadow-sm transition-all hover:opacity-90 hover:shadow-md sm:inline-flex">
+              <Link href={`/${locale}/full-check`} data-assessment-entry="navbar" title={tx("LogiVisa araştırma soruları ve Vize Bilgi Raporu", "LogiVisa research questions and Visa Information Report", "LogiVisa 研究问题与签证信息报告")} className="hidden whitespace-nowrap rounded-full bg-[var(--cf-accent)] px-4 py-2 text-sm font-semibold text-white shadow-sm transition-all hover:opacity-90 hover:shadow-md sm:inline-flex">
                 {tx("Değerlendirme Başlat", "Start Assessment", "开始评估")}
               </Link>
             )}
@@ -203,7 +203,7 @@ export function Header({ locale, showAdmin = false }: { locale: string; showAdmi
               <div className="my-1 h-px bg-[var(--cf-line)]" />
               <Link href={`/${locale}/tools/anzsco-finder`} onClick={() => setMobileOpen(false)} className="rounded-lg px-3 py-2.5 text-sm font-medium text-[var(--cf-muted)] hover:bg-[var(--cf-accent-dim)] hover:text-[var(--cf-accent)]">{tx("Meslek Ara", "Occupation Search", "职业搜索")}</Link>
               <Link href={`/${locale}/tools/points-calculator`} onClick={() => setMobileOpen(false)} className="rounded-lg px-3 py-2.5 text-sm font-medium text-[var(--cf-muted)] hover:bg-[var(--cf-accent-dim)] hover:text-[var(--cf-accent)]">{tx("Puan Hesapla", "Points Calculator", "积分计算器")}</Link>
-              <Link href={`/${locale}/tools/skills-assessment`} onClick={() => setMobileOpen(false)} className="rounded-lg px-3 py-2.5 text-sm font-medium text-[var(--cf-muted)] hover:bg-[var(--cf-accent-dim)] hover:text-[var(--cf-accent)]">{tx("Beceri Değerlendirme", "Skills Assessment", "技能评估")}</Link>
+              <Link href={`/${locale}/tools/skills-assessment`} onClick={() => setMobileOpen(false)} className="rounded-lg px-3 py-2.5 text-sm font-medium text-[var(--cf-muted)] hover:bg-[var(--cf-accent-dim)] hover:text-[var(--cf-accent)]">{tx("Beceri Değerlendirme Bulucu", "Skills Assessment Finder", "技能评估查询")}</Link>
               <Link href={`/${locale}/rounds`} onClick={() => setMobileOpen(false)} className="flex items-center rounded-lg px-3 py-2.5 text-sm font-medium text-[var(--cf-muted)] hover:bg-[var(--cf-accent-dim)] hover:text-[var(--cf-accent)]">
                 {t("nav.invitationRounds", "Invitation Rounds")}
                 <BetaPill />
@@ -220,7 +220,7 @@ export function Header({ locale, showAdmin = false }: { locale: string; showAdmi
                   {tx("Ücretsiz", "Free", "免费")}
                 </span>
               </Link>
-              <Link href={`/${locale}/full-check`} onClick={() => setMobileOpen(false)} className="mt-1 rounded-full bg-[var(--cf-accent)] px-4 py-2.5 text-center text-sm font-semibold text-white">
+              <Link href={`/${locale}/full-check`} data-assessment-entry="navbar" title={tx("LogiVisa araştırma soruları ve Vize Bilgi Raporu", "LogiVisa research questions and Visa Information Report", "LogiVisa 研究问题与签证信息报告")} onClick={() => setMobileOpen(false)} className="mt-1 rounded-full bg-[var(--cf-accent)] px-4 py-2.5 text-center text-sm font-semibold text-white">
                 {tx("Değerlendirme Başlat", "Start Assessment", "开始评估")}
               </Link>
             </div>

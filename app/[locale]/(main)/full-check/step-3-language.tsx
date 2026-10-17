@@ -11,7 +11,6 @@ function ErrorText({ message }: { message?: string }) {
   return <p className="text-xs text-red-600">{message}</p>;
 }
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { useTranslation } from "@/contexts/language-context";
 
 interface Step3Props {
   locale: string;
@@ -25,15 +24,14 @@ interface Step3Props {
   qualificationRegionalAustralia: string; setQualificationRegionalAustralia: (v: string) => void;
   specialistEducationStemResponse: string; setSpecialistEducationStemResponse: (v: string) => void;
   isResearchOrDoctorateQualification: boolean;
-  /** The skills assessment answer is Yes (step 2 radio, or the "occupation confirmed" select). */
+  /** The visitor explicitly answered Yes to the skills-assessment question in step 2. */
   skillsAssessmentYes: boolean;
-  occupationConfirmedSel: string; setOccupationConfirmedSel: (v: string) => void;
   isQualificationRecognized: string; setIsQualificationRecognized: (v: string) => void;
   annualSalaryAud: string; setAnnualSalaryAud: (v: string) => void;
   sponsorFamilyStatus: string; setSponsorFamilyStatus: (v: string) => void;
   sponsorFamilyOptions: { value: string; label: string }[];
   experienceHelpText: string;
-  budgetCurrency: string;
+  visaInterest: string;
   state: { errors?: Record<string, string>; status?: string; message?: string };
   fieldClassName: string; selectClassName: string;
   noAutofill: (name: string) => Record<string, string>;
@@ -50,11 +48,11 @@ export function Step3Language(props: Step3Props) {
     qualificationRegionalAustralia, setQualificationRegionalAustralia,
     specialistEducationStemResponse, setSpecialistEducationStemResponse,
     isResearchOrDoctorateQualification,
-    skillsAssessmentYes, occupationConfirmedSel, setOccupationConfirmedSel,
+    skillsAssessmentYes,
     isQualificationRecognized, setIsQualificationRecognized,
     annualSalaryAud, setAnnualSalaryAud,
     sponsorFamilyStatus, setSponsorFamilyStatus, sponsorFamilyOptions,
-    experienceHelpText, budgetCurrency,
+    experienceHelpText,
   } = props;
 
   const selectedCountryIsAU = selectedCountry === "AU";
@@ -67,10 +65,10 @@ export function Step3Language(props: Step3Props) {
           <div className="space-y-2">
             <Label htmlFor="waitlist-english">{txt("İngilizce seviyesi", "English level", "英语水平")}<RequiredMark /></Label>
             <Select value={englishLevel} onValueChange={setEnglishLevel}>
-              <SelectTrigger id="waitlist-english" className={fieldClassName}>
+              <SelectTrigger id="waitlist-english" className={`${fieldClassName} h-auto min-h-11 whitespace-normal [&>span]:text-left`}>
                 <SelectValue placeholder={txt("Seçin", "Select", "请选择")} />
               </SelectTrigger>
-              <SelectContent>{englishLevelOptions.map((o) => <SelectItem key={o.value} value={o.value}>{o.label}</SelectItem>)}</SelectContent>
+              <SelectContent className="w-[var(--radix-select-trigger-width)] max-w-[calc(100vw-2rem)]">{englishLevelOptions.map((o) => <SelectItem key={o.value} value={o.value}>{o.label}</SelectItem>)}</SelectContent>
             </Select>
             <input type="hidden" name="englishLevel" value={englishLevel} />
             <ErrorText message={state.errors?.englishLevel} />
@@ -79,10 +77,10 @@ export function Step3Language(props: Step3Props) {
           <div className="space-y-2">
             <Label htmlFor="waitlist-education">{txt("En yüksek eğitim seviyesi", "Highest Education Level", "最高学历")}<RequiredMark /></Label>
             <Select value={qualificationLevel} onValueChange={setQualificationLevel}>
-              <SelectTrigger id="waitlist-education" className={fieldClassName}>
+              <SelectTrigger id="waitlist-education" className={`${fieldClassName} h-auto min-h-11 whitespace-normal [&>span]:text-left`}>
                 <SelectValue placeholder={txt("Seçin", "Select", "请选择")} />
               </SelectTrigger>
-              <SelectContent>{educationOptions.map((o) => <SelectItem key={o.value} value={o.value}>{o.label}</SelectItem>)}</SelectContent>
+              <SelectContent className="w-[var(--radix-select-trigger-width)] max-w-[calc(100vw-2rem)]">{educationOptions.map((o) => <SelectItem key={o.value} value={o.value}>{o.label}</SelectItem>)}</SelectContent>
             </Select>
             <input type="hidden" name="qualificationLevel" value={qualificationLevel} />
             <ErrorText message={state.errors?.qualificationLevel} />
@@ -158,9 +156,9 @@ export function Step3Language(props: Step3Props) {
             </div>
           )}
 
-          {selectedCountryIsAU && (
+          {selectedCountryIsAU && ["482", "186", "494", "not_sure"].includes(props.visaInterest) && (
             <div className="space-y-2">
-              <Label htmlFor="waitlist-salary-aud">{txt("Yıllık Maaş (AUD)", "Annual Salary (AUD)", "年薪（AUD）")}<RequiredMark /></Label>
+              <Label htmlFor="waitlist-salary-aud">{txt("Yıllık maaş (AUD, isteğe bağlı)", "Annual salary (AUD, optional)", "年薪（AUD，可选）")}</Label>
               <Input id="waitlist-salary-aud" name="annualSalaryAud" type="number" min={0} step={1} inputMode="numeric" value={annualSalaryAud} onChange={(e) => setAnnualSalaryAud(e.target.value)} {...noAutofill("annualSalaryAud")} className={fieldClassName} placeholder={txt("Örn: 85000", "E.g., 85000", "例如：85000")} autoComplete="off" />
               <ErrorText message={state.errors?.annualSalaryAud} />
             </div>
@@ -180,33 +178,20 @@ export function Step3Language(props: Step3Props) {
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="waitlist-sponsor">{selectedCountryIsCA ? txt("Medeni durum", "Marital status", "婚姻状况") : txt("Sponsor veya aile durumu", "Sponsor or family status", "担保或家庭情况")}<RequiredMark /></Label>
+            <Label htmlFor="waitlist-sponsor">{selectedCountryIsCA ? txt("Medeni durum", "Marital status", "婚姻状况") : txt("Partner puanı için ilişki durumu", "Relationship information for partner points", "伴侣积分相关情况")}<RequiredMark /></Label>
             <Select value={sponsorFamilyStatus} onValueChange={setSponsorFamilyStatus}>
-              <SelectTrigger id="waitlist-sponsor" className={fieldClassName}>
+              <SelectTrigger id="waitlist-sponsor" className={`${fieldClassName} h-auto min-h-11 whitespace-normal [&>span]:text-left`}>
                 <SelectValue placeholder={txt("Seçin", "Select", "请选择")} />
               </SelectTrigger>
-              <SelectContent>{sponsorFamilyOptions.map((o) => <SelectItem key={o.value} value={o.value}>{o.label}</SelectItem>)}</SelectContent>
+              <SelectContent className="w-[var(--radix-select-trigger-width)] max-w-[calc(100vw-2rem)]">{sponsorFamilyOptions.map((o) => <SelectItem key={o.value} value={o.value}>{o.label}</SelectItem>)}</SelectContent>
             </Select>
             <input type="hidden" name="sponsorOrFamily" value={sponsorFamilyStatus} />
           </div>
         </>
       )}
 
-      <div className="space-y-2">
-        <Label htmlFor="waitlist-concern">{txt("En büyük endişe", "Biggest concern", "最大担忧")}</Label>
-        <Input id="waitlist-concern" name="biggestConcern" {...noAutofill("biggestConcern")} className={fieldClassName} placeholder={txt("Belgeler, Puan, Dil testi", "Documents, Points, English test", "材料、分数、英语考试")} />
-      </div>
-
       {!isPartner && (
         <>
-          <div className="space-y-2">
-            <Label htmlFor="waitlist-occupation-confirmed">{txt("Meslek net mi?", "Occupation confirmed?", "职业已确认？")}</Label>
-            <select id="waitlist-occupation-confirmed" name="occupationConfirmed" value={occupationConfirmedSel} onChange={(e) => setOccupationConfirmedSel(e.target.value)} className={selectClassName}>
-              <option className="bg-gray-900 text-white" value="">{txt("Belirtmek istemiyorum", "Prefer not to say", "不愿意说明")}</option>
-              <option className="bg-gray-900 text-white" value="yes">{txt("Evet", "Yes", "是")}</option>
-              <option className="bg-gray-900 text-white" value="no">{txt("Hayır", "No", "否")}</option>
-            </select>
-          </div>
           <div className="space-y-2">
             <Label htmlFor="waitlist-graduate-visa-intent">{txt("Mezun vizesi hedefliyor musunuz?", "Graduate visa intent?", "毕业生签证意向？")}</Label>
             <select id="waitlist-graduate-visa-intent" name="hasGraduateVisaPathwayIntent" defaultValue="" className={selectClassName}>
@@ -217,22 +202,6 @@ export function Step3Language(props: Step3Props) {
           </div>
         </>
       )}
-
-      <div className="grid gap-4 sm:grid-cols-2">
-        <div className="space-y-2">
-          <Label htmlFor="waitlist-budget-range">{txt("Bütçe aralığı", "Budget range", "预算范围")}</Label>
-          <Input id="waitlist-budget-range" name="estimatedBudgetRange" {...noAutofill("estimatedBudgetRange")} className={fieldClassName} placeholder={txt(`Örn: 10k-20k ${budgetCurrency}`, `E.g., 10k-20k ${budgetCurrency}`, `例如：10k-20k ${budgetCurrency}`)} />
-        </div>
-        <div className="space-y-2">
-          <Label htmlFor="waitlist-timeline">{txt("Zamanlama", "Timeline", "时间规划")}</Label>
-          <select id="waitlist-timeline" name="timeline" defaultValue="" className={selectClassName}>
-            <option className="bg-gray-900 text-white" value="">{txt("Belirtmek istemiyorum", "Prefer not to say", "不愿意说明")}</option>
-            <option className="bg-gray-900 text-white" value="0-6">{txt("0-6 ay", "0-6 months", "0-6 个月")}</option>
-            <option className="bg-gray-900 text-white" value="6-12">{txt("6-12 ay", "6-12 months", "6-12 个月")}</option>
-            <option className="bg-gray-900 text-white" value="12+">{txt("12+ ay", "12+ months", "12 个月以上")}</option>
-          </select>
-        </div>
-      </div>
 
       {state.status === "success" && state.message && <p className="rounded-md border border-emerald-200 bg-emerald-50 px-3 py-2 text-sm text-emerald-800">{state.message}</p>}
       {state.status === "error" && state.message && <p className="rounded-md border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-700">{state.message}</p>}

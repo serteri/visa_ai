@@ -24,6 +24,7 @@ import { notoSansSCRegularBase64 } from "./pdf-font-sc";
 import { appendNominationStreamSuffix, buildCaRankedPathways, calculateRankedPathways } from "./ranked-pathways";
 import { renderReportV2 } from "./pdf-report-v2";
 import { buildReportView, type ReportView } from "@/lib/reports/report-view";
+import { reportDisclaimer } from "@/lib/reports/report-disclaimer";
 import { renderPersonalizedContent } from "./pdf-personalized-content";
 import { frictionLegendLines } from "./friction-legend";
 import { getCommonPitfalls } from "./pdf-content/common-pitfalls";
@@ -1120,7 +1121,7 @@ export async function generateReadinessPDF(input: PDFGeneratorInput): Promise<Ui
     // report.disclaimer is country-aware (MARA for AU, RCIC for CA per
     // src/data/countries/ca/express-entry.json); GLOBAL_FOOTER_TEXTS remains
     // only as a fallback for the (should-not-happen) case where it's missing.
-    const footerText = report.disclaimer || GLOBAL_FOOTER_TEXTS[effectiveLocale];
+    const footerText = report.country === "AU" ? reportDisclaimer(effectiveLocale) : report.disclaimer || GLOBAL_FOOTER_TEXTS[effectiveLocale];
 
     // Starts at page 2 -- the cover page (page 1) already draws its own
     // credit line in addCoverPage(); looping from
@@ -1158,7 +1159,7 @@ export async function generateReadinessPDF(input: PDFGeneratorInput): Promise<Ui
       }
     }
 
-    if (useRestructuredReport) {
+    if (useInformationCover) {
       // The information report prints its one disclaimer on every page (cover included, see addCoverPage), above the footer rule.
       for (let page = 2; page <= totalPages; page += 1) {
         doc.setPage(page);
@@ -1817,6 +1818,7 @@ export async function generateReadinessPDF(input: PDFGeneratorInput): Promise<Ui
   // The restructured customer report (lib/reports/report-view.ts): the AU skilled / employer report. Canada and the
   // partner (820 / 801) report keep their own flows.
   const useRestructuredReport = !report.partnerSponsorshipAssessment && report.country !== "CA";
+  const useInformationCover = useRestructuredReport || report.country === "AU";
   let cachedReportView: ReportView | null = null;
   /** The date on the cover: "Last updated <date>" when the content was recomputed, else the generation date. */
   function coverDateText(): string {
@@ -1873,7 +1875,7 @@ export async function generateReadinessPDF(input: PDFGeneratorInput): Promise<Ui
     setBoldFont();
     doc.setFontSize(9);
     doc.setTextColor(COLORS.accent.r, COLORS.accent.g, COLORS.accent.b);
-    doc.text(safeText(useRestructuredReport ? getReportView().cover.label : text.confidentialAssessment), margin, 16, { charSpace: 0.6 });
+    doc.text(safeText(useInformationCover ? getReportView().cover.label : text.confidentialAssessment), margin, 16, { charSpace: 0.6 });
 
     // Wordmark "logo" (gold circle mark + LogiVisa wordmark) in header
     const logoY = 34;
@@ -1896,7 +1898,7 @@ export async function generateReadinessPDF(input: PDFGeneratorInput): Promise<Ui
     setBoldFont();
     doc.setFontSize(28);
     doc.setTextColor(255, 255, 255);
-    const titleText = safeText(useRestructuredReport ? getReportView().cover.title : text.coverTitle);
+    const titleText = safeText(useInformationCover ? getReportView().cover.title : text.coverTitle);
     const titleLines = doc.splitTextToSize(titleText, contentWidth - 20) as string[];
     doc.text(titleLines, margin + 2, 92);
 
@@ -1908,7 +1910,7 @@ export async function generateReadinessPDF(input: PDFGeneratorInput): Promise<Ui
     setBaseFont();
     doc.setFontSize(12);
     doc.setTextColor(COLORS.cream.r, COLORS.cream.g, COLORS.cream.b);
-    doc.text(doc.splitTextToSize(safeText(useRestructuredReport ? getReportView().cover.subtitle : text.coverSubtitle), contentWidth - 30), margin + 2, ruleY + 12);
+    doc.text(doc.splitTextToSize(safeText(useInformationCover ? getReportView().cover.subtitle : text.coverSubtitle), contentWidth - 30), margin + 2, ruleY + 12);
 
     // ── Metadata card ────────────────────────────────────────────────────────
     const cardY = ruleY + 26;
@@ -1964,7 +1966,7 @@ export async function generateReadinessPDF(input: PDFGeneratorInput): Promise<Ui
       stackY += noticeH + 8;
     }
 
-    if (useRestructuredReport) {
+    if (useInformationCover) {
       // Information-first report: name, date and occupation are in the card above; the Target visa and one notice line follow.
       const cv = getReportView().cover;
       setBoldFont();
@@ -4265,26 +4267,27 @@ export async function generateReadinessPDF(input: PDFGeneratorInput): Promise<Ui
     const cohabLabel = isTr ? "Birlikte Yaşama Süresi" : isZh ? "共同居住时间" : "Cohabitation Duration";
     const sponsorStatusLabel = isTr ? "Sponsor Statüsü" : isZh ? "担保人身份" : "Sponsor Status";
     
-    const relVal = intake.relationshipType === "married" 
+    const notProvided = isTr ? "Belirtilmedi" : isZh ? "未提供" : "Not provided";
+    const relVal = !intake.relationshipType ? notProvided : intake.relationshipType === "married"
       ? (isTr ? "Evli" : isZh ? "已婚" : "Married") 
       : intake.relationshipType === "engaged"
         ? (isTr ? "Nişanlı" : isZh ? "订婚" : "Engaged")
         : (isTr ? "Common-law / De facto" : isZh ? "事实婚姻" : "Common-law / De facto");
         
-    const cohabVal = intake.cohabitationDuration === "more_than_2_years"
+    const cohabVal = !intake.cohabitationDuration ? notProvided : intake.cohabitationDuration === "more_than_2_years"
       ? (isTr ? "2 yıldan fazla" : isZh ? "2 年以上" : "More than 2 years")
       : intake.cohabitationDuration === "12_to_24_months"
         ? (isTr ? "12 - 24 ay" : isZh ? "12 - 24 个月" : "12 - 24 months")
         : (isTr ? "12 aydan az" : isZh ? "12 个月以下" : "Less than 12 months");
 
-    const sponVal = intake.sponsorStatus === "citizen"
+    const sponVal = !intake.sponsorStatus ? notProvided : intake.sponsorStatus === "citizen"
       ? (isTr ? "Vatandaş" : isZh ? "公民" : "Citizen")
       : intake.sponsorStatus === "permanent_resident"
         ? (isTr ? "PR (Daimi Oturum)" : isZh ? "永久居民 (PR)" : "Permanent Resident (PR)")
         : (isTr ? "Uygun NZ Vatandaşı" : isZh ? "合格新西兰公民" : "Eligible NZ Citizen");
 
     addPremiumKeyValueContainer(
-      isTr ? "Segment Özet Tablosu" : isZh ? "评估基本信息" : "Assessment Snapshot",
+      isTr ? "Sizin girdiğiniz bilgiler" : isZh ? "您填写的信息" : "User-provided entries",
       [
         [relLabel, relVal],
         [cohabLabel, cohabVal],
@@ -4296,9 +4299,13 @@ export async function generateReadinessPDF(input: PDFGeneratorInput): Promise<Ui
 
     // 3. Sponsor Eligibility Snapshot
     addHeading(isTr ? "Sponsor Bilgisi: Önceki Sponsorluk" : isZh ? "担保人信息：过往担保" : "Sponsor Information: Previous Sponsorship");
-    const sponSigText = pAssessment.sponsorEligibilitySignal === "Eligible"
-      ? (isTr ? "Son 5 yıl içinde sponsorluk bildirilmedi" : isZh ? "未填写过去 5 年内的担保记录" : "No sponsorship in the last 5 years entered")
-      : (isTr ? "Son 5 yıl içinde sponsorluk bildirildi; yayımlanmış kısıtlama kuralları gündeme gelebilir" : isZh ? "已填写过去 5 年内的担保记录；可能涉及已公布的限制规则" : "Sponsorship in the last 5 years entered; published restriction rules may apply");
+    const sponSigText = !intake.previousSponsorship
+      ? (isTr ? "Belirtilmedi" : isZh ? "未提供" : "Not provided")
+      : intake.previousSponsorship === "no"
+        ? (isTr ? "Hayır yanıtını girdiniz" : isZh ? "您填写了“否”" : "You entered No")
+        : intake.previousSponsorship === "yes_within_5_years"
+          ? (isTr ? "Son 5 yıl içinde sponsorluk bildirdiniz" : isZh ? "您填写了过去 5 年内有担保记录" : "You entered sponsorship within the last 5 years")
+          : (isTr ? "5 yıldan önce sponsorluk bildirdiniz" : isZh ? "您填写了 5 年以前有担保记录" : "You entered sponsorship more than 5 years ago");
 
     addPremiumKeyValueContainer(
       isTr ? "Girilen Bilgi" : isZh ? "已填写信息" : "Information Entered",
@@ -4321,10 +4328,10 @@ export async function generateReadinessPDF(input: PDFGeneratorInput): Promise<Ui
     } else {
       addBody(
         isTr
-          ? "Sponsorun son 5 yıl içinde başka birine sponsor olduğu yönünde bir kayıt beyan edilmemiştir. Sponsorluk hak sınırlamaları kapsamında bilinen bir engel görünmemektedir."
+          ? "Yanıtınız yalnızca kullanıcı tarafından sağlanan bilgi olarak kaydedilir. Sponsorluk kısıtlamaları veya istisnaların bireysel durumunuza uygulanıp uygulanmadığı değerlendirilmemiştir."
           : isZh
-            ? "未申报担保人在过去 5 年内有担保他人的记录。目前未发现明显的担保限制风险。"
-            : "No previous sponsorship within the last 5 years was declared. No immediate sponsorship bar is flagged."
+            ? "您的回答仅作为用户提供的信息记录。未评估担保限制或例外是否适用于您的个人情况。"
+            : "Your answer is recorded only as user-provided information. Whether sponsorship restrictions or exceptions apply to your circumstances has not been assessed."
       );
       yPosition += 2;
     }
@@ -4365,7 +4372,11 @@ export async function generateReadinessPDF(input: PDFGeneratorInput): Promise<Ui
       yPosition += 2;
     }
 
-    yPosition += 3;
+    addHeading(isTr ? "Resmî kaynaklar ve profesyonel doğrulama" : isZh ? "官方来源与专业核实" : "Official sources and professional verification");
+    addBody(isTr ? "Hiçbir belge incelenmedi. Bireysel koşulları, güncel şartları ve ücretleri Home Affairs veya yetkili bir göçmenlik uzmanıyla doğrulayın." : isZh ? "未审阅任何文件。请向内政部或获授权移民专业人士核实个人情况、当前要求及费用。" : "No documents were reviewed. Verify individual circumstances, current requirements and charges with Home Affairs or an authorised migration professional.");
+    ensurePageSpace(8);
+    doc.textWithLink("Home Affairs: Partner visa 820", margin + 4, yPosition + 2, { url: "https://immi.homeaffairs.gov.au/visas/getting-a-visa/visa-listing/partner-onshore/temporary-820" });
+    yPosition += 8;
   }
 
   // Cover page
@@ -4930,7 +4941,7 @@ export async function generateReadinessPDF(input: PDFGeneratorInput): Promise<Ui
   drawSparseDataDisclaimer();
   }
 
-  if (report.premiumSections && !useRestructuredReport) {
+  if (report.premiumSections && !useRestructuredReport && !report.partnerSponsorshipAssessment) {
     addSectionHeading("", text.premiumSections);
     addSmallText(text.premiumSectionsIntro, 0);
 

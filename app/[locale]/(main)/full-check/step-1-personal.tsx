@@ -14,8 +14,7 @@ function ErrorText({ message }: { message?: string }) {
   if (!message) return null;
   return <p className="text-xs text-red-600">{message}</p>;
 }
-import { isPartnerFamilySponsorship, activeCountries, countryLabels, countryVisaPathways, migrationGoalOptions, getVisaSubclassesForGoals, getMigrationGoalDescription, type SupportedCountry, type MigrationGoalId } from "@/lib/countries";
-import { useTranslation } from "@/contexts/language-context";
+import { isPartnerFamilySponsorship, activeCountries, countryLabels, countryVisaPathways, migrationGoalOptions, getVisaSubclassesForGoals, type SupportedCountry, type MigrationGoalId } from "@/lib/countries";
 import { TARGET_VISAS, targetVisaOption } from "@/lib/readiness/target-visa";
 import { renderVisaPathwayOptions } from "./full-check-waitlist-form";
 import { SituationFields } from "./situation-fields";
@@ -67,7 +66,7 @@ interface Step1Props {
 }
 
 export function Step1Personal({
-  locale, selectedCountry, onCountryChange, destination, passportNote, initialValues,
+  locale, selectedCountry, onCountryChange, destination, passportNote,
   currentCountry, setCurrentCountry, passportCountry, setPassportCountry,
   migrationGoals, toggleMigrationGoal, visaInterest, setVisaInterest,
   nominationStream, setNominationStream, yearsInSponsoredPosition, setYearsInSponsoredPosition,
@@ -107,12 +106,12 @@ export function Step1Personal({
         {fieldErrors?.["waitlist-full-name"] && <p className="text-xs text-red-600">{fieldErrors["waitlist-full-name"]}</p>}
       </div>
 
-      <div className="space-y-2" data-field-error={fieldErrors?.["waitlist-email"] || undefined}>
+      <div className="space-y-2" data-field-error={fieldErrors?.["waitlist-e"] || undefined}>
         <Label htmlFor="waitlist-e">{txt("E-posta adresi", "Email address", "邮箱地址")}<RequiredMark /></Label>
         {/* Chrome autofill honeypot — redirects Chrome's saved-email dropdown to this invisible field */}
         <input type="email" name="fake_email" autoComplete="email" className="hidden" aria-hidden="true" tabIndex={-1} />
-        <Input id="waitlist-e" name="contactEmail" type="text" inputMode="email" placeholder="you@example.com" autoComplete="nope" autoCorrect="off" autoCapitalize="off" spellCheck="false" data-lpignore="true" className={`${fieldClassName} ${errCls("waitlist-email")}`} required />
-        {fieldErrors?.["waitlist-email"] && <p className="text-xs text-red-600">{fieldErrors["waitlist-email"]}</p>}
+        <Input id="waitlist-e" name="contactEmail" type="email" inputMode="email" placeholder="you@example.com" autoComplete="nope" autoCorrect="off" autoCapitalize="off" spellCheck="false" data-lpignore="true" className={`${fieldClassName} ${errCls("waitlist-e")}`} required />
+        {fieldErrors?.["waitlist-e"] && <p className="text-xs text-red-600">{fieldErrors["waitlist-e"]}</p>}
       </div>
 
       <div className="space-y-2">
@@ -136,14 +135,14 @@ export function Step1Personal({
 
       {selectedCountry === "AU" ? (
         <div className="space-y-2" data-field-error={fieldErrors?.["waitlist-target-visa"] || undefined}>
-          <Label htmlFor="waitlist-target-visa">{txt("Hedef vize", "Target visa", "目标签证")}<RequiredMark /></Label>
+        <Label htmlFor="waitlist-target-visa">{txt("Araştırmak istediğiniz vize konusu", "Visa topic to research", "要研究的签证主题")}<RequiredMark /></Label>
           <select id="waitlist-target-visa" name="visaInterest" value={visaInterest} onChange={(e) => setVisaInterest(e.target.value)} className={`${selectClassName} ${errCls("waitlist-target-visa")}`} required>
             <option className="bg-gray-900 text-white" value="">{txt("Seçin", "Select", "请选择")}</option>
             {TARGET_VISAS.map((t) => (
               <option key={t} className="bg-gray-900 text-white" value={t}>{targetVisaOption(t, isTr ? "tr" : isZh ? "zh-Hans" : "en")}</option>
             ))}
           </select>
-          <p className="text-xs text-slate-500">{txt("Rapor bu vizeyi ele alır; emin değilseniz bir Vize Yolu Genel Bakışı gösterilir. Bu bir tavsiye değildir.", "The report is about this visa; if you are not sure, a Pathway Overview is shown. This is not advice.", "报告围绕所选签证；如不确定，将显示路径概览。这不是建议。")}</p>
+          <p className="text-xs text-slate-500">{txt("Vize numarasını bilmeniz gerekmez. Emin değilseniz bu seçeneği seçin. Seçiminiz yalnızca raporun konusunu ve sırasını belirler; bir öneri değildir.", "You do not need to know a visa number. Choose Not sure if needed. Your choice sets the report topic and order; it is not a recommendation.", "无需知道签证号码；必要时请选择“不确定”。此选择仅设置报告主题与顺序，并非推荐。")}</p>
           {fieldErrors?.["waitlist-target-visa"] && <p className="text-xs text-red-600">{fieldErrors["waitlist-target-visa"]}</p>}
           <input type="hidden" name="migrationGoals" value="[]" />
           <input type="hidden" name="mainGoal" value="" />

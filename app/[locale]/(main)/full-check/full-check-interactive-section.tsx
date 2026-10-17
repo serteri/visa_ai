@@ -58,6 +58,9 @@ export function FullCheckInteractiveSection({
     isSupportedCountry(initialValues.targetCountry) && (initialValues.targetCountry !== "CA" || canadaReportEnabled) ? initialValues.targetCountry : defaultCountry
   );
   const noteIndex = loc === "tr" ? 1 : loc === "zh-Hans" ? 2 : 0;
+  const [selectedVisa, setSelectedVisa] = useState(initialValues.visaInterest ?? "");
+  const partnerReport = selectedVisa === "820_801";
+  const shownSections = partnerReport ? (["details", "costs", "documents", "sources"] as ReportSectionId[]) : REPORT_SECTION_IDS;
 
   return (
     <div className="mx-auto grid max-w-6xl grid-cols-1 items-start gap-12 lg:grid-cols-12">
@@ -72,6 +75,7 @@ export function FullCheckInteractiveSection({
           paidCheckoutEnabled={paidCheckoutEnabled}
           canadaReportEnabled={canadaReportEnabled}
           onCountryChange={setSelectedCountry}
+          onVisaInterestChange={setSelectedVisa}
         />
       </div>
 
@@ -83,10 +87,15 @@ export function FullCheckInteractiveSection({
             <h3 className="text-lg font-bold text-slate-900">{tx("What the Visa Information Report contains", "Vize Bilgi Raporu neler içerir", "签证信息报告包含什么")}</h3>
           </div>
           <ul className="mt-5 space-y-3">
-            {REPORT_SECTION_IDS.map((id) => (
+            {shownSections.map((id) => (
               <li key={id} className="rounded-lg border border-slate-200 bg-white p-3">
                 <p className="text-sm font-medium text-slate-900">{reportSectionTitle(id, loc)}</p>
-                <p className="mt-0.5 text-xs text-slate-700">{SECTION_NOTE[id][noteIndex]}</p>
+                <p className="mt-0.5 text-xs text-slate-700">{partnerReport ? ({
+                  details: tx("Your relationship and sponsor entries; documents are not reviewed", "İlişki ve sponsor girdileriniz; belgeler incelenmez", "您的关系及担保人填写内容；不审阅文件"),
+                  costs: tx("General published charges and labelled cost estimates", "Genel yayımlanmış ücretler ve tahmin olarak etiketlenen maliyetler", "一般公开费用及标明的估算"),
+                  documents: tx("Document types you marked or did not enter, not an evidence decision", "İşaretlediğiniz veya belirtmediğiniz belge türleri; belge kararı değildir", "您勾选或未提供的文件类型，并非材料判定"),
+                  sources: tx("Home Affairs reference and professional-verification boundary", "Home Affairs kaynağı ve profesyonel doğrulama sınırı", "内政部参考与专业核实界限"),
+                } as Partial<Record<ReportSectionId, string>>)[id] : SECTION_NOTE[id][noteIndex]}</p>
               </li>
             ))}
           </ul>
@@ -99,9 +108,9 @@ export function FullCheckInteractiveSection({
           </div>
           <p className="mt-2 text-xs leading-relaxed text-slate-700">
             {tx(
-              "Information from published sources about every visa and every state and territory program, with the source and date of each fact. The visa you select is listed first; everything else is in a fixed order. It does not assess your situation.",
-              "Her vize ile her eyalet ve bölge programı hakkında, her bilginin kaynağı ve tarihiyle, yayımlanmış kaynaklardan bilgi. Seçtiğiniz vize ilk sırada listelenir; diğer her şey sabit bir sıradadır. Durumunuzu değerlendirmez.",
-              "来自公开来源的信息，涵盖每种签证及每个州和领地项目，并标明每项事实的来源和日期。您选择的签证排在最前，其余按固定顺序排列。不评估您的情况。"
+              partnerReport ? "The Partner report records your entries and general cost and document information. It does not decide sponsorship restrictions, relationship evidence or visa eligibility." : "Information from published sources about every visa and every state and territory program, with the source and date of each fact. The visa you select is listed first; everything else is in a fixed order. It does not assess your situation.",
+              partnerReport ? "Partner raporu girdilerinizi, genel maliyet ve belge bilgilerini kaydeder. Sponsorluk kısıtlamaları, ilişki belgeleri veya vize uygunluğu hakkında karar vermez." : "Her vize ile her eyalet ve bölge programı hakkında, her bilginin kaynağı ve tarihiyle, yayımlanmış kaynaklardan bilgi. Seçtiğiniz vize ilk sırada listelenir; diğer her şey sabit bir sıradadır. Durumunuzu değerlendirmez.",
+              partnerReport ? "伴侣报告记录您的填写内容，以及一般费用和文件信息。不判定担保限制、关系材料或签证资格。" : "来自公开来源的信息，涵盖每种签证及每个州和领地项目，并标明每项事实的来源和日期。您选择的签证排在最前，其余按固定顺序排列。不评估您的情况。"
             )}
           </p>
           <p className="mt-3 text-xs leading-relaxed text-slate-700">{reportDisclaimer(loc)}</p>

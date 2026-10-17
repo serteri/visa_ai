@@ -14,10 +14,17 @@ export type AnalyticsEventName =
   | "outbound_official_link_click"
   | "occupation_tool_click"
   | "research_continuation_click"
+  | "assessment_entry_click"
+  | "full_check_start"
+  | "full_check_submit"
+  | "full_check_complete"
+  | "pdf_download"
+  | "report_unlocked"
+  | "checkout_initiated"
   | "professional_help_click";
 
 /** The only parameters that may be sent, and the only value types. */
-const ALLOWED_PARAMS = ["occupation_code", "locale", "subclass", "calculator", "link_host", "page_type", "destination", "source_page_type", "source_page_id", "continuation_stage"] as const;
+const ALLOWED_PARAMS = ["occupation_code", "locale", "subclass", "calculator", "link_host", "page_type", "destination", "source_page_type", "source_page_id", "continuation_stage", "entry_source", "product_type"] as const;
 type ParamKey = (typeof ALLOWED_PARAMS)[number];
 export type AnalyticsParams = Partial<Record<ParamKey, string>>;
 
@@ -34,6 +41,8 @@ export function sanitizeParams(params: Record<string, unknown> = {}): AnalyticsP
     if (key === "link_host" && !/^(?:[a-z0-9-]+\.)+[a-z]{2,}$/i.test(v)) continue;
     if (key === "source_page_type" && !["occupation", "visa", "tool"].includes(v)) continue;
     if (key === "continuation_stage" && !["visa_to_tool", "tool_to_tool", "calculator_complete_to_research"].includes(v)) continue;
+    if (key === "entry_source" && !["homepage", "navbar", "occupation", "visa_page", "tool", "other"].includes(v)) continue;
+    if (key === "product_type" && v !== "premium") continue;
     if (key === "destination" && !["points_calculator", "skills_assessment", "state_nomination", "anzsco_finder", "visa_comparison", "document_checklist"].includes(v)) continue;
     out[key] = v;
   }
@@ -43,6 +52,8 @@ export function sanitizeParams(params: Record<string, unknown> = {}): AnalyticsP
 export function trackEvent(name: AnalyticsEventName, params: Record<string, unknown> = {}): void {
   try {
     if (typeof window === "undefined") return;
+    const gaId = process.env.NEXT_PUBLIC_GA_ID?.trim();
+    if (gaId && (window as unknown as Record<string, unknown>)[`ga-disable-${gaId}`]) return;
     sendGAEvent("event", name, sanitizeParams(params));
   } catch {
     // Analytics must never break a page.

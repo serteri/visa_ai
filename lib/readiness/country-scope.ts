@@ -49,7 +49,7 @@ export function enforceCountryReportScope(report: ReadinessReport, country: "AU"
 
 // ─── Country-specific report schema guards ───────────────────────────────────
 
-const AU_PATHWAY_SUBCLASSES = new Set(["500", "485", "482", "189", "190", "491", "820", "801", "186", "general"]);
+const AU_PATHWAY_SUBCLASSES = new Set(["500", "485", "482", "189", "190", "491", "820", "801", "820_801", "186", "general"]);
 const CA_PATHWAY_SUBCLASSES = new Set(["CEC", "FSW", "FSTP", "AIP", "FAMILY_SPONSORSHIP", "PNP", "general"]);
 
 export function ensureCountrySpecificReportSchema(report: ReadinessReport, country: "AU" | "CA"): ReadinessReport {

@@ -2,30 +2,23 @@
 
 import { useActionState, useEffect, useRef, useState } from "react";
 import { Download } from "lucide-react";
-import { sendGAEvent } from "@next/third-parties/google";
+import { trackEvent } from "@/lib/analytics/events";
+import { assessmentStepErrors, ASSESSMENT_FIELD_IDS } from "@/lib/intake/assessment-validation";
 
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Textarea } from "@/components/ui/textarea";
 import { type FullCheckWaitlistState, submitFullCheckWaitlist } from "./actions";
-import { activeCountries, countryLabels, countryVisaPathways, defaultCountry, isSupportedCountry, isPartnerFamilySponsorship, migrationGoalOptions, getVisaSubclassesForGoals, type SupportedCountry, type VisaPathwayOption, type MigrationGoalId } from "@/lib/countries";
+import { defaultCountry, isSupportedCountry, isPartnerFamilySponsorship, type SupportedCountry, type VisaPathwayOption, type MigrationGoalId } from "@/lib/countries";
 import { PremiumFeatureGate } from "@/components/premium-feature-gate";
 import { TermsGate, TermsGateLink } from "@/components/terms-gate";
 import { ReferralConsentBox } from "./referral-consent-box";
 import { applyDestination, destinationFromParam, isDestination, passportIsDestination, toPassportLocale, type Destination } from "@/lib/intake/passport";
 import { LogiAIAssistant } from "@/components/LogiAIAssistant";
-import { useTranslation } from "@/contexts/language-context";
 import { downloadReportPdf } from "@/lib/client/download-report-pdf";
-import type { AssistantReportData, ReadinessReport } from "@/lib/readiness/types";
-import { findOccupationRecord, getSkilledListMembership } from "@/lib/readiness/occupation-eligibility";
+import type { AssistantReportData } from "@/lib/readiness/types";
 import { LeadMagnetForm } from "@/components/LeadMagnetForm";
 import { RequiredLegend } from "@/components/required-legend";
 import { LEAD_MAGNETS, pick } from "@/lib/lead-magnets";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
-import { Badge } from "@/components/ui/badge";
 import nocListRaw from "@/src/data/countries/ca/noc-list.json";
 import { getLocalizedAnzscoTitle, resolveAnzscoEntry, searchAnzsco, type AnzscoEntry } from "@/lib/intake/anzsco-search";
 import { AU_ENGLISH_LEVEL_OPTIONS, EDUCATION_OPTIONS, optionLabel } from "@/lib/intake/fields";
@@ -94,23 +87,6 @@ function searchNoc(query: string): NocEntry[] {
 
 // ANZSCO occupation search: shared with the in-chat quick profile card (lib/intake/anzsco-search.ts).
 
-function trackGaEvent(name: string, params?: Record<string, string | number | boolean | null | undefined>) {
-  if (typeof window === "undefined") return;
-  const gaId = process.env.NEXT_PUBLIC_GA_ID?.trim();
-  if (!gaId) return;
-  if (!Array.isArray((window as { dataLayer?: Object[] }).dataLayer)) return;
-  sendGAEvent("event", name, params ?? {});
-}
-
-function ErrorText({ message }: { message?: string }) {
-  if (!message) return null;
-  return <p className="text-xs text-red-600">{message}</p>;
-}
-
-function RequiredMark() {
-  return <span className="text-red-700 ml-1" aria-hidden="true">*</span>;
-}
-
 function noAutofill(field: string, override?: string): Record<string, string> {
   return {
     autoComplete: override ?? "nope",
@@ -134,11 +110,10 @@ function renderVisaPathwayOptions(options: VisaPathwayOption[], isTr: boolean, i
 export function FullCheckWaitlistForm({
   locale,
   initialValues = {},
-  isFreeActive = true,
-  remainingSpots = 0,
   paidCheckoutEnabled = true,
   canadaReportEnabled = false,
   onCountryChange,
+  onVisaInterestChange,
 }: {
   locale: string;
   initialValues?: Record<string, string>;
@@ -147,6 +122,7 @@ export function FullCheckWaitlistForm({
   paidCheckoutEnabled?: boolean;
   canadaReportEnabled?: boolean;
   onCountryChange?: (country: SupportedCountry) => void;
+  onVisaInterestChange?: (visa: string) => void;
 }) {
   const isTr = locale === "tr";
   const isZh = locale === "zh-Hans";
@@ -155,45 +131,37 @@ export function FullCheckWaitlistForm({
   const [currentStep, setCurrentStep] = useState(1);
   const [stepErrors, setStepErrors] = useState<Record<string, string> | null>(null);
 
+  const formRef = useRef<HTMLFormElement | null>(null);
   const validateStep = (step: number): boolean => {
-    setStepErrors({});
-    if (step === 1) {
-      const fields: [string, string][] = [
-        ["waitlist-full-name", txt("Ad soyad gerekli", "Full name is required", "姓名为必填项")],
-        ["waitlist-e", txt("E-posta gerekli", "Email is required", "邮箱为必填项")],
-        ["waitlist-target-country", txt("Hedef ülke gerekli", "Destination country is required", "目的国为必填项")],
-        ["waitlist-current-country", txt("Bulunduğunuz ülke gerekli", "Current country is required", "当前国家为必填项")],
-        ["waitlist-passport-country", txt("Pasaport ülkesi gerekli", "Passport country is required", "护照国家为必填项")],
-        ["waitlist-age", txt("Yaş gerekli", "Age is required", "年龄为必填项")],
-      ];
-      // Shown only for Australia reports (residence: only when in Australia) -- checked only while present.
-      const conditional: [string, string][] = [
-        ["waitlist-employer-sponsorship", txt("İşveren sponsorluğu gerekli", "Employer sponsorship is required", "雇主担保为必填项")],
-        ["waitlist-residence-state", txt("Yaşadığınız eyalet gerekli", "State or territory of residence is required", "居住的州或领地为必填项")],
-      ];
-      conditional.push(["waitlist-target-visa", txt("Hedef vize gerekli", "Target visa is required", "目标签证为必填项")]);
-      for (const [id, msg] of conditional) if (document.getElementById(id)) fields.push([id, msg]);
-      const errors: Record<string, string> = {};
-      for (const [id, msg] of fields) {
-        const val = (document.getElementById(id) as HTMLInputElement)?.value?.trim();
-        if (!val) errors[id] = msg;
-      }
-      if (Object.keys(errors).length > 0) { setStepErrors(errors); return false; }
+    if (!formRef.current) return false;
+    const values = Object.fromEntries([...new FormData(formRef.current).entries()].map(([key, value]) => [key, typeof value === "string" ? value : ""]));
+    const found = assessmentStepErrors(step, values, isPartnerFamilySponsorship(values.visaInterest), values.targetCountry === "AU");
+    const errors: Record<string, string> = {};
+    for (const [name, kind] of Object.entries(found)) {
+      const id = ASSESSMENT_FIELD_IDS[name] ?? name;
+      const control = document.getElementById(id) ?? formRef.current.querySelector<HTMLElement>(`[name="${name}"]`);
+      const label = document.querySelector(`label[for="${id}"]`)?.textContent?.replaceAll("*", "").trim() ?? control?.parentElement?.querySelector("label")?.textContent?.replaceAll("*", "").trim();
+      const message = kind === "email" ? txt("Geçerli bir e-posta adresi girin.", "Enter a valid email address.", "请输入有效的邮箱地址。")
+        : kind === "number" ? txt("Geçerli bir sayı girin.", "Enter a valid number.", "请输入有效数字。")
+        : txt("Bu alanı doldurun veya bir seçenek seçin.", "Complete this field or select an option.", "请填写此项或选择一个选项。");
+      errors[id] = label ? `${label}: ${message}` : message;
+    }
+    setStepErrors(errors);
+    if (Object.keys(errors).length) {
+      requestAnimationFrame(() => {
+        const id = Object.keys(errors)[0];
+        const input = document.getElementById(id) ?? formRef.current?.querySelector<HTMLElement>(`[name="${id}"]`);
+        const visible = input?.getAttribute("type") === "hidden" ? input.previousElementSibling : input;
+        visible?.scrollIntoView({ behavior: "smooth", block: "center" });
+        if (visible instanceof HTMLElement) visible.focus();
+      });
+      return false;
     }
     return true;
   };
 
   const nextStep = () => {
     if (!validateStep(currentStep)) {
-      setTimeout(() => {
-        const first = document.querySelector("[data-field-error]");
-        if (first) {
-          first.scrollIntoView({ behavior: "smooth", block: "center" });
-          const input = (first.tagName === "INPUT" || first.tagName === "SELECT" || first.tagName === "TEXTAREA")
-            ? first : first.querySelector("input, select, textarea");
-          if (input) (input as HTMLElement).focus();
-        }
-      }, 100);
       return;
     }
     setCurrentStep((s) => Math.min(s + 1, 3));
@@ -225,8 +193,8 @@ export function FullCheckWaitlistForm({
   const [isTermsAccepted, setIsTermsAccepted] = useState(false);
   const [termsError, setTermsError] = useState(false);
   const [occupationModalOpen, setOccupationModalOpen] = useState(false);
-  const [analysisStepIndex, setAnalysisStepIndex] = useState(0);
-  const [analysisProgressId, setAnalysisProgressId] = useState(() => typeof crypto !== "undefined" && "randomUUID" in crypto ? crypto.randomUUID() : `progress-${Date.now()}`);
+  const startedRef = useRef(false);
+  const [analysisProgressId] = useState(() => typeof crypto !== "undefined" && "randomUUID" in crypto ? crypto.randomUUID() : `progress-${Date.now()}`);
   const wasPendingRef = useRef(false);
   const trackedReportIdRef = useRef<string | null>(null);
   const [unlockedReportState, setUnlockedReportState] = useState<{ reportId?: string; name?: string; email?: string; isUnlocked?: boolean; accessToken?: string } | null>(null);
@@ -237,7 +205,6 @@ export function FullCheckWaitlistForm({
     "The PDF could not be downloaded. Please try again, and contact us if it keeps failing.",
     "无法下载 PDF。请重试；如仍失败，请联系我们。"
   );
-  const budgetCurrency = selectedCountry === "CA" ? "CAD" : "AUD";
 
   // ── Search state ──
   const [nocSearch, setNocSearch] = useState(initialValues.occupation ?? "");
@@ -260,9 +227,9 @@ export function FullCheckWaitlistForm({
   const [specialistEducationStemResponse, setSpecialistEducationStemResponse] = useState("");
   // No default: an unanswered question is stored as unknown, never as "no".
   const [skillsAssessment, setSkillsAssessment] = useState("");
-  const [occupationConfirmedSel, setOccupationConfirmedSel] = useState("");
   const [isQualificationRecognized, setIsQualificationRecognized] = useState("");
-  const [visaInterest, setVisaInterest] = useState(initialValues.visaInterest ?? "");
+  const [visaInterest, updateVisaInterest] = useState(initialValues.visaInterest ?? "");
+  const setVisaInterest = (value: string) => { updateVisaInterest(value); onVisaInterestChange?.(value); };
   const [migrationGoals, setMigrationGoals] = useState<MigrationGoalId[]>([]);
   const [preferredState, setPreferredState] = useState("");
   const [nominationStream, setNominationStream] = useState("");
@@ -321,10 +288,6 @@ export function FullCheckWaitlistForm({
   const fieldClassName = "h-11 w-full rounded-none border-0 border-b border-slate-300 bg-transparent px-1 text-sm text-slate-900 placeholder:text-gray-500 transition-colors outline-none focus-visible:border-[#53917E]";
   const selectClassName = "h-11 w-full rounded-none border-0 border-b border-slate-300 bg-transparent px-1 text-sm text-slate-900 transition-colors outline-none focus-visible:border-[#53917E]";
 
-  const aiAnalysisSteps = selectedCountry === "CA"
-    ? [txt("516 NOC kodu taranıyor...", "Scanning 516 NOC codes...", "扫描516 NOC代码..."), txt("CRS çizimi analiz ediliyor...", "Analysing CRS draw trends...", "分析CRS趋势..."), txt("PNP akışları işleniyor...", "Processing PNP streams...", "处理PNP通道..."), txt("Sonuçlar derleniyor...", "Compiling results...", "编译结果...")]
-    : [txt("Meslek aranıyor...", "Searching occupation...", "搜索职业..."), txt("Değerlendirme kurumları eşleştiriliyor...", "Matching assessing authorities...", "匹配评估机构..."), txt("Puan hesaplanıyor...", "Calculating points...", "计算分数..."), txt("Vize yolları analiz ediliyor...", "Analysing visa pathways...", "分析签证路径...")];
-
   const termsLabel = isTr ? (
     <>
       <TermsGateLink>Kullanım Koşullarını</TermsGateLink> ve veri işleme politikalarını kabul ediyorum.
@@ -350,10 +313,13 @@ export function FullCheckWaitlistForm({
     if (wasPendingRef.current && !isPending) {
       wasPendingRef.current = false;
       if (state.status === "success" && state.reportId) {
-        trackGaEvent("full_check_complete", { reportId: state.reportId, country: selectedCountry });
+        if (trackedReportIdRef.current !== state.reportId) {
+          trackEvent("full_check_complete", { locale });
+          trackedReportIdRef.current = state.reportId;
+        }
       }
     }
-  }, [isPending, state]);
+  }, [isPending, state, locale]);
 
   // ── Auto-scroll to Quick Result when report is generated ──
   useEffect(() => {
@@ -387,18 +353,21 @@ export function FullCheckWaitlistForm({
   const [assistantReportData, setAssistantReportData] = useState<AssistantReportData | null>(null);
 
   const handleIntakeSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    for (const step of [1, 2, 3]) {
+      if (!validateStep(step)) { e.preventDefault(); setCurrentStep(step); return; }
+    }
     if (!isTermsAccepted) { e.preventDefault(); setTermsError(true); return; }
     setTermsError(false);
     // Map contactEmail → email so server-side reads formData.get("email") correctly
     const hidden = e.currentTarget.querySelector<HTMLInputElement>('input[name="email"]');
     const visible = document.getElementById("waitlist-e") as HTMLInputElement | null;
     if (hidden && visible) hidden.value = visible.value;
-    trackGaEvent("full_check_submit", { country: selectedCountry });
+    trackEvent("full_check_submit", { locale });
   };
 
   const handleDownloadPDF = async () => {
     if (!unlockedReportState?.isUnlocked) return;
-    trackGaEvent("pdf_download", { reportId: unlockedReportState.reportId });
+    trackEvent("pdf_download", { locale });
     setPdfError(null);
     try {
       await downloadReportPdf(unlockedReportState.reportId ?? "", `logivisa-readiness-report-${Date.now()}.pdf`, unlockedReportState.accessToken);
@@ -423,7 +392,7 @@ export function FullCheckWaitlistForm({
           setAssistantReportData({
             country: selectedCountry,
             user: { name: name, email: email, occupation: submittedOccupationValue },
-          } as any);
+          } as AssistantReportData);
         }}
       />
     </div>
@@ -469,29 +438,19 @@ export function FullCheckWaitlistForm({
   // ── Render ──
   return (
     <div className="space-y-6 overflow-visible">
-      {/* AI Analysis overlay */}
       {isPending && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-background/80 p-4 backdrop-blur-sm">
-          <div className="w-full max-w-xl rounded-2xl border border-border/70 bg-card/95 p-6 shadow-2xl">
-            <p className="text-xs font-semibold uppercase tracking-[0.2em] text-primary/80">{txt("Yapay Zeka Analizi", "AI Analysis", "AI 分析")}</p>
-            <h3 className="text-xl font-semibold text-foreground">{txt("Profiliniz işleniyor", "Processing your profile", "正在处理你的档案")}</h3>
-            <div className="mt-5 h-2.5 overflow-hidden rounded-full bg-muted">
-              <div className="h-full rounded-full bg-primary transition-all duration-700 ease-out" style={{ width: `${((analysisStepIndex + 1) / aiAnalysisSteps.length) * 100}%` }} />
-            </div>
-            <div className="mt-4 min-h-7 rounded-lg border border-border/60 bg-background/70 px-3 py-2">
-              <p className="text-sm text-muted-foreground" aria-live="polite">{aiAnalysisSteps[analysisStepIndex]}</p>
-            </div>
-            <div className="mt-4 flex gap-1.5">
-              {aiAnalysisSteps.map((step, idx) => (
-                <span key={step} className={`h-1.5 flex-1 rounded-full transition-colors ${idx <= analysisStepIndex ? "bg-primary" : "bg-muted"}`} />
-              ))}
-            </div>
+        <div role="status" aria-live="polite" className="fixed inset-0 z-50 flex items-center justify-center bg-background/80 p-4 backdrop-blur-sm">
+          <div className="w-full max-w-xl rounded-2xl border border-slate-200 bg-white p-6 shadow-xl">
+            <h3 className="text-xl font-semibold text-slate-900">{txt("Raporunuz hazırlanıyor", "Preparing your report", "正在准备您的报告")}</h3>
+            <p className="mt-3 text-sm text-slate-600">{txt("Lütfen bu sayfayı açık tutun ve tekrar göndermeyin. Tamamlandığında rapor erişim seçenekleri gösterilecek.", "Please keep this page open and do not submit again. Report access options will appear when it is ready.", "请保持此页面打开，勿重复提交。完成后将显示报告访问选项。")}</p>
           </div>
         </div>
       )}
 
       {!unlockedReportState?.isUnlocked && (
-        <form action={formAction} onSubmit={handleIntakeSubmit} className="space-y-4 overflow-visible" autoComplete="off" noValidate>
+        <form ref={formRef} action={formAction} onSubmit={handleIntakeSubmit} onChangeCapture={() => {
+          if (!startedRef.current) { startedRef.current = true; trackEvent("full_check_start", { locale }); }
+        }} className="space-y-4 overflow-visible" autoComplete="off" noValidate data-assessment-form>
         <RequiredLegend locale={locale} />
           <input type="hidden" name="routeLocale" value={locale} />
           <input type="hidden" name="locale" value={locale} />
@@ -503,24 +462,25 @@ export function FullCheckWaitlistForm({
 
           {/* Step validation error */}
           {stepErrors && Object.keys(stepErrors).length > 0 && (
-            <div className="rounded-md border border-red-300 bg-red-50 px-4 py-2.5 text-sm font-medium text-red-700">
+            <div role="alert" className="rounded-md border border-red-300 bg-red-50 px-4 py-2.5 text-sm font-medium text-red-700">
               {Object.values(stepErrors).join(" · ")}
             </div>
           )}
 
           {/* Progress bar — clickable for backward navigation */}
-          <div className="flex items-center gap-3 rounded-xl border border-slate-200 bg-white shadow-sm px-4 py-3">
+          <div aria-label={txt("Rapor adımları", "Report steps", "报告步骤")} className="flex items-center gap-3 rounded-xl border border-slate-200 bg-white shadow-sm px-4 py-3">
             {[1, 2, 3].map((step) => (
               <button
                 key={step}
                 type="button"
                 onClick={() => { if (step < currentStep) { setStepErrors(null); setCurrentStep(step); window.scrollTo({ top: 0, behavior: "smooth" }); } }}
+                aria-current={step === currentStep ? "step" : undefined}
                 disabled={step >= currentStep}
                 className={`flex-1 text-left ${step < currentStep ? "cursor-pointer" : "cursor-default"}`}
               >
                 <div className={`h-1.5 rounded-full transition-colors ${currentStep >= step ? "bg-[var(--cf-accent)]" : "bg-[var(--cf-line)]"}`} />
                 <p className={`mt-1 text-center text-[0.65rem] font-semibold uppercase tracking-wide ${step < currentStep ? "text-[var(--cf-accent)]" : "text-[var(--cf-muted)]"}`}>
-                  {step === 1 ? txt("Kişisel", "Personal", "个人") : step === 2 ? txt("Kariyer", "Career", "职业") : txt("Dil & Profil", "Language", "语言")}
+                  {step === 1 ? txt("Kişisel", "Your research", "研究背景") : step === 2 ? txt("İş veya aile", "Work or family", "工作或家庭") : txt("Eğitim & Dil", "Study & English", "学习与英语")}
                   <span className="ml-1 text-[var(--cf-muted)]/60">{`(${step}/3)`}</span>
                 </p>
               </button>
@@ -531,6 +491,10 @@ export function FullCheckWaitlistForm({
             {txt("* ile işaretli alanların doldurulması zorunludur.", "* fields are mandatory.", "* 标记为必填。")}
           </p>
 
+          <p data-step-purpose className="text-sm leading-relaxed text-slate-600" aria-live="polite">
+            {currentStep === 1 ? txt("Bu bilgiler raporun konusunu ve genel bağlamını belirler. Vize numarasını bilmiyorsanız Emin değilim seçin.", "These details set the report topic and general context. Choose Not sure if you do not know a visa number.", "这些信息用于设置报告主题及一般背景。不知道签证号码时可选“不确定”。") : currentStep === 2 ? txt("İş veya aile bilgileri ilgili kaynak başlıklarını düzenlemeye yardımcı olur. Belgeler incelenmez ve uygunluk kararı verilmez.", "Work or family details help organise relevant reference topics. Documents are not reviewed and no eligibility decision is made.", "工作或家庭信息用于整理相关参考主题。不会审核文件或作资格判定。") : txt("Bu girdiler rapordaki bilgi ve puan tablosu için kullanılır. İsteğe bağlı soruları boş bırakabilirsiniz; boşluk sıfır veya Hayır anlamına gelmez.", "These entries support the report information and points table. Optional questions can be left blank; missing information is not zero or No.", "这些填写内容用于报告信息及积分表。可不回答可选问题；未提供不表示零或“否”。")}
+          </p>
+
           {/* Step content — CSS hidden keeps all mounted in DOM */}
           <div className={currentStep === 1 ? "" : "hidden"}>
             <Step1Personal locale={locale} canadaReportEnabled={canadaReportEnabled} selectedCountry={selectedCountry} onCountryChange={changeDestination} destination={destination} passportNote={passportNote} initialValues={initialValues} currentCountry={currentCountry} setCurrentCountry={setCurrentCountry} passportCountry={passportCountry} setPassportCountry={setPassportCountry} migrationGoals={migrationGoals} toggleMigrationGoal={toggleMigrationGoal} visaInterest={visaInterest} setVisaInterest={setVisaInterest} nominationStream={nominationStream} setNominationStream={setNominationStream} yearsInSponsoredPosition={yearsInSponsoredPosition} setYearsInSponsoredPosition={setYearsInSponsoredPosition} courseName={courseName} setCourseName={setCourseName} courseCricosCode={courseCricosCode} setCourseCricosCode={setCourseCricosCode} courseCompletionStatus={courseCompletionStatus} setCourseCompletionStatus={setCourseCompletionStatus} courseCompletionDate={courseCompletionDate} setCourseCompletionDate={setCourseCompletionDate} preferredState={preferredState} setPreferredState={setPreferredState} state={state} fieldClassName={fieldClassName} selectClassName={selectClassName} noAutofill={noAutofill} showsCourseFields={showsCourseFields} fieldErrors={stepErrors} />
@@ -539,7 +503,7 @@ export function FullCheckWaitlistForm({
             <Step2Career skillsAssessment={skillsAssessment} setSkillsAssessment={setSkillsAssessment} locale={locale} selectedCountry={selectedCountry} isPartner={isPartner} nocSearch={nocSearch} setNocSearch={setNocSearch} nocCode={nocCode} setNocCode={setNocCode} nocTeer={nocTeer} setNocTeer={setNocTeer} nocResults={nocResults} setNocResults={setNocResults} nocOpen={nocOpen} setNocOpen={setNocOpen} searchNoc={searchNoc} anzscoSearch={anzscoSearch} setAnzscoSearch={setAnzscoSearch} anzscoCode={anzscoCode} setAnzscoCode={setAnzscoCode} resolvedAnzscoEntry={resolvedAnzscoEntry} anzscoResults={anzscoResults} setAnzscoResults={setAnzscoResults} anzscoOpen={anzscoOpen} setAnzscoOpen={setAnzscoOpen} searchAnzsco={searchAnzsco} getLocalizedAnzscoTitle={getLocalizedAnzscoTitle} submittedOccupationValue={submittedOccupationValue} setOccupationModalOpen={setOccupationModalOpen} relationshipType={relationshipType} setRelationshipType={setRelationshipType} cohabitationDuration={cohabitationDuration} setCohabitationDuration={setCohabitationDuration} sponsorStatus={sponsorStatus} setSponsorStatus={setSponsorStatus} previousSponsorship={previousSponsorship} setPreviousSponsorship={setPreviousSponsorship} applicationLocationPreference={applicationLocationPreference} setApplicationLocationPreference={setApplicationLocationPreference} relationshipEvidence={relationshipEvidence} setRelationshipEvidence={setRelationshipEvidence} state={state} fieldClassName={fieldClassName} selectClassName={selectClassName} noAutofill={noAutofill} />
           </div>
           <div className={currentStep === 3 ? "" : "hidden"}>
-            <Step3Language skillsAssessmentYes={skillsAssessment === "yes" || occupationConfirmedSel === "yes"} occupationConfirmedSel={occupationConfirmedSel} setOccupationConfirmedSel={setOccupationConfirmedSel} isQualificationRecognized={isQualificationRecognized} setIsQualificationRecognized={setIsQualificationRecognized} locale={locale} selectedCountry={selectedCountry} isPartner={isPartner} englishLevel={englishLevel} setEnglishLevel={setEnglishLevel} englishLevelOptions={englishLevelOptions} qualificationLevel={qualificationLevel} setQualificationLevel={setQualificationLevel} educationOptions={educationOptions} qualificationAwardedInAustralia={qualificationAwardedInAustralia} setQualificationAwardedInAustralia={setQualificationAwardedInAustralia} qualificationRegionalAustralia={qualificationRegionalAustralia} setQualificationRegionalAustralia={setQualificationRegionalAustralia} specialistEducationStemResponse={specialistEducationStemResponse} setSpecialistEducationStemResponse={setSpecialistEducationStemResponse} isResearchOrDoctorateQualification={isResearchOrDoctorateQualification} annualSalaryAud={annualSalaryAud} setAnnualSalaryAud={setAnnualSalaryAud} sponsorFamilyStatus={sponsorFamilyStatus} setSponsorFamilyStatus={setSponsorFamilyStatus} sponsorFamilyOptions={sponsorFamilyOptions} experienceHelpText={experienceHelpText} budgetCurrency={budgetCurrency} state={state} fieldClassName={fieldClassName} selectClassName={selectClassName} noAutofill={noAutofill} />
+            <Step3Language visaInterest={visaInterest} skillsAssessmentYes={skillsAssessment === "yes"} isQualificationRecognized={isQualificationRecognized} setIsQualificationRecognized={setIsQualificationRecognized} locale={locale} selectedCountry={selectedCountry} isPartner={isPartner} englishLevel={englishLevel} setEnglishLevel={setEnglishLevel} englishLevelOptions={englishLevelOptions} qualificationLevel={qualificationLevel} setQualificationLevel={setQualificationLevel} educationOptions={educationOptions} qualificationAwardedInAustralia={qualificationAwardedInAustralia} setQualificationAwardedInAustralia={setQualificationAwardedInAustralia} qualificationRegionalAustralia={qualificationRegionalAustralia} setQualificationRegionalAustralia={setQualificationRegionalAustralia} specialistEducationStemResponse={specialistEducationStemResponse} setSpecialistEducationStemResponse={setSpecialistEducationStemResponse} isResearchOrDoctorateQualification={isResearchOrDoctorateQualification} annualSalaryAud={annualSalaryAud} setAnnualSalaryAud={setAnnualSalaryAud} sponsorFamilyStatus={sponsorFamilyStatus} setSponsorFamilyStatus={setSponsorFamilyStatus} sponsorFamilyOptions={sponsorFamilyOptions} experienceHelpText={experienceHelpText} state={state} fieldClassName={fieldClassName} selectClassName={selectClassName} noAutofill={noAutofill} />
           </div>
 
           {/* Navigation */}
@@ -557,7 +521,7 @@ export function FullCheckWaitlistForm({
             <>
               <ReferralConsentBox locale={locale} />
               <TermsGate isTermsAccepted={isTermsAccepted} termsError={termsError} onToggle={(c) => { setIsTermsAccepted(c); if (c) setTermsError(false); }} label={termsLabel} errorText={termsErrorText} />
-              <Button type="submit" className="h-11 w-full rounded-lg text-sm font-semibold" disabled={isPending}>
+              <Button type="submit" className="h-auto min-h-11 w-full whitespace-normal rounded-lg px-4 py-3 text-center text-sm font-semibold leading-snug" disabled={isPending}>
                 {isPending ? txt("Oluşturuluyor...", "Generating...", "生成中...") : txt("Vize Bilgi Raporunuzu oluşturun", "Generate your Visa Information Report", "生成您的签证信息报告")}
               </Button>
             </>

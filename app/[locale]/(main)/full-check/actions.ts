@@ -6,7 +6,6 @@ import { refreshStoredReport } from "@/lib/reports/refresh-report";
 import { fullCheckAdminPayload, sendFullCheckAdminEmail } from "@/lib/email/full-check-admin";
 import { nonAdminUnlockMode } from "@/lib/readiness/paid-checkout";
 import { cookies, headers } from "next/headers";
-import { Resend } from "resend";
 import { z } from "zod";
 
 import { db } from "@/db";
@@ -28,7 +27,7 @@ import { getAdminStateData } from "@/lib/admin-data/loader";
 import { canonicalizeOccupationInput, resolveOccupationDisplayName } from "@/lib/readiness/occupation-eligibility";
 import { computeInternalLeadTier } from "@/lib/readiness/internal-lead-tier";
 import { AU_STATE_CODES, isAuStateCode, isEnglishLevel, isQualificationLevel, parseExperienceYears, resolveSkillsAssessmentAnswer } from "@/lib/intake/fields";
-import type { ReadinessInput, ReadinessReport } from "@/lib/readiness/types";
+import type { ReadinessInput } from "@/lib/readiness/types";
 import { ensureCountrySpecificReportSchema } from "@/lib/readiness/country-scope";
 import {
   createUserReport,
@@ -558,13 +557,8 @@ export async function submitFullCheckWaitlist(
         : "Sponsor/family status is required.";
   }
   if (!isPartner && targetCountry === "AU") {
-    if (!annualSalaryAudRaw) {
-      errors.annualSalaryAud = isTr
-        ? "Yillik maas (AUD) gereklidir."
-        : isZh
-          ? "年薪（AUD）为必填项。"
-          : "Annual salary (AUD) is required.";
-    } else if (!Number.isFinite(annualSalaryAud) || (annualSalaryAud ?? 0) <= 0) {
+    // Optional research context; missing salary stays unknown, never a forced personal financial disclosure.
+    if (annualSalaryAudRaw && (!Number.isFinite(annualSalaryAud) || (annualSalaryAud ?? 0) <= 0)) {
       errors.annualSalaryAud = isTr
         ? "Gecerli bir yillik maas girin."
         : isZh
@@ -1106,9 +1100,8 @@ async function unlockPremiumReportInternal(
       }
     }
     if (sameBrowser) {
-      let shown: ReadinessReport = record.report;
       try {
-        shown = (await refreshStoredReport(record.report, record.input, { generatedAt: record.createdAt })).report;
+        await refreshStoredReport(record.report, record.input, { generatedAt: record.createdAt });
       } catch (err) {
         console.error("unlockPremiumReport (sale off): refresh failed, showing the stored report", err);
       }
