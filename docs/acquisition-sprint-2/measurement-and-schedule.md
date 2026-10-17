@@ -2,7 +2,7 @@
 
 ## Status and evidence boundary
 
-Instrumentation/link preparation: EXECUTED once deployed and verified; collection/results: DATA NOT AVAILABLE until first-party reports are accessible. No outreach/post distribution has been executed. Existing raw Google auto-pageviews may include query strings; do not share sensitive URLs. Custom events send only allowlisted route categories, codes and destinations. No names, emails, visa circumstances, form answers or points totals are added.
+Instrumentation/link preparation: EXECUTED — production commit ab306d3 verified; collection/results: DATA NOT AVAILABLE until first-party reports are accessible. No outreach/post distribution has been executed. Existing raw Google auto-pageviews may include query strings; do not share sensitive URLs. Custom events send only allowlisted route categories, codes and destinations. No names, emails, visa circumstances, form answers or points totals are added.
 
 ## Acquisition classification
 
@@ -26,7 +26,7 @@ activation rate = distinct activated qualified sessions / distinct qualified ses
 
 GSC: URL Inspection for each of the ten URLs (coverage/indexing, last crawl, Google-selected canonical), plus Performance Search type Web, exact Page filter, requested 28-day and three-calendar-month windows in baseline.json. Export totals plus queries, country and device independently; do not sum query rows as page totals because anonymised queries are omitted. Record actual freshest available date. HTTP 200, robots/indexable and declared canonical are technical observations, never proof Google indexed or selected the page. [Google explains omitted/anonymised query data](https://support.google.com/webmasters/answer/17011259).
 
-GA4: same windows, session source/medium, landing page, sessions, the seven named useful events including research_continuation_click, source categories, distinct session segments, country/device where accessible. Do not backfill unsupported event history. “No reporting access” does not mean “new property” or “no traffic.”
+GA4: same windows, session source/medium, landing page, sessions, the relevant existing events and research_continuation_click, source categories, distinct session segments, country/device where accessible. Do not backfill unsupported event history. “No reporting access” does not mean “new property” or “no traffic.”
 
 ## Observation log
 

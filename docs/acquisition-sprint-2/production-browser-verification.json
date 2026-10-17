@@ -1,0 +1,71 @@
+{
+  "origin": "https://www.logivisa.com",
+  "checked_at": "2026-10-17T01:54:21.252Z",
+  "checks": [
+    {
+      "resource": "/resources/for-migration-professionals",
+      "width": 1440,
+      "status": 200,
+      "overflow": false
+    },
+    {
+      "resource": "/resources/for-migration-professionals",
+      "width": 390,
+      "status": 200,
+      "overflow": false
+    },
+    {
+      "path": "/visas/190",
+      "eventName": "research_continuation_click",
+      "payload": {
+        "locale": "en",
+        "subclass": "190",
+        "destination": "visa_comparison",
+        "source_page_type": "visa",
+        "continuation_stage": "visa_to_tool"
+      }
+    },
+    {
+      "path": "/occupations/261313-software-engineer",
+      "eventName": "occupation_tool_click",
+      "payload": {
+        "occupation_code": "261313",
+        "locale": "en",
+        "destination": "visa_comparison"
+      }
+    },
+    {
+      "path": "/tools/skills-assessment?q=351311",
+      "eventName": "research_continuation_click",
+      "payload": {
+        "locale": "en",
+        "destination": "points_calculator",
+        "source_page_type": "tool",
+        "continuation_stage": "tool_to_tool"
+      }
+    },
+    {
+      "path": "/tr/visas/190",
+      "eventName": "research_continuation_click",
+      "payload": {
+        "locale": "tr",
+        "subclass": "190",
+        "destination": "visa_comparison",
+        "source_page_type": "visa",
+        "continuation_stage": "visa_to_tool"
+      }
+    },
+    {
+      "path": "/tools/points-calculator/australia",
+      "eventName": "research_continuation_click",
+      "payload": {
+        "locale": "en",
+        "destination": "skills_assessment",
+        "source_page_type": "tool",
+        "continuation_stage": "calculator_complete_to_research"
+      }
+    }
+  ],
+  "errors": [],
+  "ga_requests_blocked": true
+}

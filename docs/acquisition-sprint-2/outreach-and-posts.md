@@ -34,7 +34,7 @@ Status: **PREPARED — NOT SENT** / **PREPARED — NOT EXECUTED**. Explicit send
 
 Recipient: manu@tilsav.com.au; attention Manu Bhardwaj (website: Mmanu).
 
-Role: Principal / practice contact as described on linked source; exact title where unknown not inferred. [Contact source](https://www.tilsavv.com.au/contact-us/); [Personalisation source](https://www.tilsavv.com.au/prepare-first-migration-consultation/).
+Role: Principal / practice contact as described on linked source; exact title where unknown not inferred. [Contact source](https://www.tilsavv.com.au/prepare-first-migration-consultation/); [Personalisation source](https://www.tilsavv.com.au/prepare-first-migration-consultation/).
 
 Tracking: agent_partner / referral / resource_pilot / P02.
 
@@ -250,7 +250,7 @@ Status: **PREPARED — NOT SENT** / **PREPARED — NOT EXECUTED**. Explicit send
 
 ### C01 — E2Language
 
-Recipient/route: Resource/editorial team via https://support.e2language.com/; request appropriate business routing, not a student booking.
+Recipient/route: Growth team via https://e2platform.io/contact-us/, linked from E2Language’s partnerships page; choose new partnership/content collaboration, without an affiliate or paid-voucher proposal.
 
 Personalisation source: [https://www.e2language.com/](https://www.e2language.com/).
 

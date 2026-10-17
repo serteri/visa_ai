@@ -57,7 +57,7 @@ Segments: A high fit 9; B medium fit 9; C education/migration hybrid 8; D do not
 - Relevant practice resource: [https://www.tilsavv.com.au/general-skilled-migration/](https://www.tilsavv.com.au/general-skilled-migration/).
 - Existing tool: 189 points calculator.
 - Why LogiVisa fits / hold reason: First-consultation preparation article and skilled service provide a concrete research-before-advice fit; one deliberate education-hybrid comparison.
-- Contact: manu@tilsav.com.au. Source: [https://www.tilsavv.com.au/contact-us/](https://www.tilsavv.com.au/contact-us/).
+- Contact: manu@tilsav.com.au. Source: [published preparation article footer](https://www.tilsavv.com.au/prepare-first-migration-consultation/).
 - No-solicitation signal: No explicit signal found in inspected public pages; this does not establish permission or consent.
 - Checked 2026-10-17; segment C; First wave 2.
 

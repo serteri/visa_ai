@@ -26,7 +26,7 @@ Audience evidence: IELTS General/Academic and PTE course navigation. [Source](ht
 
 Fit / rejection: Relevant research for migration-focused test takers; do not imply a test score alone determines points.
 
-Contact: Resource/editorial team via https://support.e2language.com/; request appropriate business routing, not a student booking. No-solicitation: No explicit signal found in inspected relevant page; permission/consent not established.
+Contact: Growth team via https://e2platform.io/contact-us/, linked from E2Language’s partnerships page; choose new partnership/content collaboration, without an affiliate or paid-voucher proposal. No-solicitation: No explicit signal found in inspected relevant page; permission/consent not established.
 
 Selected: Top five. Status: **PREPARED — NOT EXECUTED**.
 

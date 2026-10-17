@@ -1,0 +1,144 @@
+{
+  "origin": "https://www.logivisa.com",
+  "version": {
+    "commit": "ab306d3eed0c5fd8403e3b37d2e5f490afd8549d",
+    "branch": "main",
+    "deployment": "production",
+    "reportStructure": "information-first"
+  },
+  "records": [
+    {
+      "name": "Carpenter",
+      "path": "/occupations/331212-carpenter",
+      "status": 200,
+      "declared_canonical": "https://www.logivisa.com/occupations/331212-carpenter",
+      "robots": "index, follow",
+      "h1": "Carpenter (331212): Australian visa occupation information",
+      "ga_tag_present": true,
+      "checked_at": "2026-10-17T01:53:47.955Z",
+      "google_indexed_status": "DATA NOT AVAILABLE",
+      "google_selected_canonical": "DATA NOT AVAILABLE"
+    },
+    {
+      "name": "Chef",
+      "path": "/occupations/351311-chef",
+      "status": 200,
+      "declared_canonical": "https://www.logivisa.com/occupations/351311-chef",
+      "robots": "index, follow",
+      "h1": "Chef (351311): Australian visa occupation information",
+      "ga_tag_present": true,
+      "checked_at": "2026-10-17T01:53:49.127Z",
+      "google_indexed_status": "DATA NOT AVAILABLE",
+      "google_selected_canonical": "DATA NOT AVAILABLE"
+    },
+    {
+      "name": "Electrician General",
+      "path": "/occupations/341111-electrician-general",
+      "status": 200,
+      "declared_canonical": "https://www.logivisa.com/occupations/341111-electrician-general",
+      "robots": "index, follow",
+      "h1": "Electrician (General) (341111): Australian visa occupation information",
+      "ga_tag_present": true,
+      "checked_at": "2026-10-17T01:53:49.972Z",
+      "google_indexed_status": "DATA NOT AVAILABLE",
+      "google_selected_canonical": "DATA NOT AVAILABLE"
+    },
+    {
+      "name": "Software Engineer",
+      "path": "/occupations/261313-software-engineer",
+      "status": 200,
+      "declared_canonical": "https://www.logivisa.com/occupations/261313-software-engineer",
+      "robots": "index, follow",
+      "h1": "Software Engineer (261313): Australian visa occupation information",
+      "ga_tag_present": true,
+      "checked_at": "2026-10-17T01:53:51.232Z",
+      "google_indexed_status": "DATA NOT AVAILABLE",
+      "google_selected_canonical": "DATA NOT AVAILABLE"
+    },
+    {
+      "name": "Developer Programmer",
+      "path": "/occupations/261312-developer-programmer",
+      "status": 200,
+      "declared_canonical": "https://www.logivisa.com/occupations/261312-developer-programmer",
+      "robots": "index, follow",
+      "h1": "Developer Programmer (261312): Australian visa occupation information",
+      "ga_tag_present": true,
+      "checked_at": "2026-10-17T01:53:52.417Z",
+      "google_indexed_status": "DATA NOT AVAILABLE",
+      "google_selected_canonical": "DATA NOT AVAILABLE"
+    },
+    {
+      "name": "Civil Engineer",
+      "path": "/occupations/233211-civil-engineer",
+      "status": 200,
+      "declared_canonical": "https://www.logivisa.com/occupations/233211-civil-engineer",
+      "robots": "index, follow",
+      "h1": "Civil Engineer (233211): Australian visa occupation information",
+      "ga_tag_present": true,
+      "checked_at": "2026-10-17T01:53:53.842Z",
+      "google_indexed_status": "DATA NOT AVAILABLE",
+      "google_selected_canonical": "DATA NOT AVAILABLE"
+    },
+    {
+      "name": "Australia points calculator",
+      "path": "/tools/points-calculator/australia",
+      "status": 200,
+      "declared_canonical": "https://www.logivisa.com/tools/points-calculator/australia",
+      "robots": "index, follow",
+      "h1": "Australia Visa Points Test Calculator",
+      "ga_tag_present": true,
+      "checked_at": "2026-10-17T01:53:56.097Z",
+      "google_indexed_status": "DATA NOT AVAILABLE",
+      "google_selected_canonical": "DATA NOT AVAILABLE"
+    },
+    {
+      "name": "ANZSCO finder",
+      "path": "/tools/anzsco-finder",
+      "status": 200,
+      "declared_canonical": "https://www.logivisa.com/tools/anzsco-finder",
+      "robots": "index, follow",
+      "h1": "ANZSCO Code & Duty Finder",
+      "ga_tag_present": true,
+      "checked_at": "2026-10-17T01:53:57.545Z",
+      "google_indexed_status": "DATA NOT AVAILABLE",
+      "google_selected_canonical": "DATA NOT AVAILABLE"
+    },
+    {
+      "name": "Skills Assessment finder",
+      "path": "/tools/skills-assessment",
+      "status": 200,
+      "declared_canonical": "https://www.logivisa.com/tools/skills-assessment",
+      "robots": "index, follow",
+      "h1": "Explore assessing authorities",
+      "ga_tag_present": true,
+      "checked_at": "2026-10-17T01:53:58.419Z",
+      "google_indexed_status": "DATA NOT AVAILABLE",
+      "google_selected_canonical": "DATA NOT AVAILABLE"
+    },
+    {
+      "name": "Visa comparison",
+      "path": "/tools/visa-comparison",
+      "status": 200,
+      "declared_canonical": "https://www.logivisa.com/tools/visa-comparison",
+      "robots": "index, follow",
+      "h1": "189 vs 190 vs 491 Visa Comparison",
+      "ga_tag_present": true,
+      "checked_at": "2026-10-17T01:53:59.227Z",
+      "google_indexed_status": "DATA NOT AVAILABLE",
+      "google_selected_canonical": "DATA NOT AVAILABLE"
+    },
+    {
+      "name": "Professional resource context",
+      "path": "/resources/for-migration-professionals",
+      "status": 200,
+      "declared_canonical": "https://www.logivisa.com/resources/for-migration-professionals",
+      "robots": "index, follow",
+      "h1": "Better questions before professional advice.",
+      "ga_tag_present": true,
+      "checked_at": "2026-10-17T01:53:59.757Z",
+      "google_indexed_status": "DATA NOT AVAILABLE",
+      "google_selected_canonical": "DATA NOT AVAILABLE"
+    }
+  ],
+  "note": "Public HTTP/canonical/robots observations are not Google indexing, traffic or Google-selected canonical evidence."
+}
