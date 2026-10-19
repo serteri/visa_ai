@@ -6,14 +6,16 @@ import { OccupationToolClickTracker } from "@/components/analytics/occupation-to
 import { OccupationViewTracker } from "@/components/analytics/occupation-view-tracker";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
-import { Breadcrumbs } from "@/components/seo/breadcrumbs";
+import { Breadcrumbs, jsonLd } from "@/components/seo/breadcrumbs";
+import { FactTables } from "@/components/occupations/fact-tables";
+import { getAdminStateData } from "@/lib/admin-data/loader";
+import { buildFactRows, ABS_ANZSCO_URL } from "@/lib/occupations/facts";
 import { majorGroupName, majorGroupOf } from "@/lib/occupations/index-data";
 import { OccupationDistinction } from "@/components/occupations/occupation-distinction";
 import { TraSkillsAssessment } from "@/components/occupations/tra-skills-assessment";
 import { ResearchLinks, ProfessionalHelp } from "@/components/research-links";
 import {
   researchText,
-  STATE_RESEARCH_SOURCES,
 } from "@/lib/marketing/research-journey";
 import { resolveAssessingAuthority } from "@/lib/skills-assessment/resolve-authority";
 import assessingBodies from "@/src/data/assessing-bodies.json";
@@ -43,6 +45,9 @@ export function generateStaticParams() {
     })),
   );
 }
+
+// Static pages that re-render hourly (and when the admin saves, through the cache tag): the state rows come from the admin state data.
+export const revalidate = 3600;
 
 type PageProps = { params: Promise<{ locale: string; id: string }> };
 
@@ -101,6 +106,16 @@ export default async function OccupationDetailsPage({ params }: PageProps) {
   const c = occupationPageContent(occupation, locale as Locale);
   const text = (en: string, tr: string, zh: string) =>
     researchText(locale, en, tr, zh);
+  const snapshot = await getAdminStateData();
+  const facts = buildFactRows(occupation, c, snapshot);
+  const dataVerified = facts.map((f) => f.verified).sort().at(-1) ?? c.lastModified;
+  const schema = {
+    "@context": "https://schema.org",
+    "@graph": [
+      { "@type": "Occupation", "@id": `${publicUrl(locale, `/occupations/${c.slug}`)}#occupation`, name: c.displayName, occupationalCategory: c.code, description: c.duties[0] ?? c.intro },
+      { "@type": "WebPage", url: publicUrl(locale, `/occupations/${c.slug}`), name: c.title, inLanguage: locale, dateModified: dataVerified, about: { "@id": `${publicUrl(locale, `/occupations/${c.slug}`)}#occupation` } },
+    ],
+  };
   const resolved = resolveAssessingAuthority(c.code);
   const authority = c.richness.authority ? resolved.authority : undefined;
   const authorityKey =
@@ -240,111 +255,7 @@ export default async function OccupationDetailsPage({ params }: PageProps) {
 
         <OccupationDistinction code={c.code} locale={locale} />
 
-        <Card className="border-slate-200/80 bg-white/95 shadow-lg shadow-slate-900/5">
-          <CardHeader>
-            <h2 className="text-lg font-semibold leading-none tracking-tight">
-              {c.headings.details}
-            </h2>
-          </CardHeader>
-          <CardContent>
-            <dl>
-              <div className={row}>
-                <dt className={rowLabel}>{c.labels.code}</dt>
-                <dd className={rowValue}>{c.code}</dd>
-              </div>
-              <div className={row}>
-                <dt className={rowLabel}>{c.labels.authority}</dt>
-                <dd className={rowValue}>
-                  {c.details.authority ?? c.labels.authorityNone}
-                </dd>
-              </div>
-              <div className={row}>
-                <dt className={rowLabel}>{c.labels.lists}</dt>
-                <dd className={rowValue}>
-                  {c.details.lists ?? c.labels.listsNone}
-                </dd>
-              </div>
-              {c.details.subclasses.length > 0 && (
-                <div className={row}>
-                  <dt className={rowLabel}>{c.labels.subclasses}</dt>
-                  <dd className={rowValue}>
-                    {c.details.subclasses.join(", ")}
-                  </dd>
-                </div>
-              )}
-            </dl>
-          </CardContent>
-        </Card>
-
-        <Card className="border-slate-200/80 bg-white/95 shadow-lg shadow-slate-900/5">
-          <CardHeader>
-            <h2 className="text-lg font-semibold leading-none tracking-tight">
-              {c.headings.states}
-            </h2>
-          </CardHeader>
-          <CardContent className="space-y-3">
-            {c.stateRows.length > 0 ? (
-              <div className="overflow-x-auto">
-                <table className="w-full text-left text-sm">
-                  <thead>
-                    <tr className="border-b border-slate-200 text-slate-700">
-                      <th className="py-2 pr-4 font-semibold">
-                        {c.labels.stateColumn}
-                      </th>
-                      <th className="py-2 pr-4 font-semibold">
-                        {c.labels.stateSubclasses}
-                      </th>
-                      <th className="py-2 pr-4 font-semibold">
-                        {c.labels.stateLevel}
-                      </th>
-                      <th className="py-2 font-semibold">{c.labels.checked}</th>
-                    </tr>
-                  </thead>
-                  <tbody className="text-slate-600">
-                    {c.stateRows.map((r) => (
-                      <tr key={r.state} className="border-b border-slate-100">
-                        <td className="py-2 pr-4 font-medium">{r.state}</td>
-                        <td className="py-2 pr-4">{r.subclasses.join(", ")}</td>
-                        <td className="py-2 pr-4">{r.levelLabel}</td>
-                        <td className="py-2">{r.checked}</td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-            ) : (
-              <p className="text-sm text-slate-600">{c.stateNoData}</p>
-            )}
-            <p className="text-xs text-slate-500">{c.stateNote}</p>
-            <p className="text-xs leading-relaxed text-slate-500">
-              {text(
-                "Held list data includes 2025–26 sources. These check dates do not establish current nomination availability.",
-                "Kayıtlı listeler 2025–26 kaynaklarını içerir. Kontrol tarihleri güncel adaylık durumunu göstermez.",
-                "保存的清单含 2025–26 年来源。核对日期并非当前提名开放状态。",
-              )}
-            </p>
-            <div className="flex flex-wrap gap-4 text-xs">
-              {c.stateRows.map((row) => {
-                const source = STATE_RESEARCH_SOURCES.find(
-                  (state) => state.code === row.state,
-                );
-                return source ? (
-                  <a
-                    key={row.state}
-                    data-official-source
-                    href={source.url}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="text-cyan-900 underline"
-                  >
-                    {row.state} ·{" "}
-                    {text("Official criteria", "Resmî kriterler", "官方标准")}
-                  </a>
-                ) : null;
-              })}
-            </div>
-          </CardContent>
-        </Card>
+        <FactTables locale={locale} facts={facts} stateNote={`${c.stateNote} ${text("State information is read from LogiVisa's admin state data (the same data the reports use); the date in each row is when that state's data was last verified.", "Eyalet bilgileri LogiVisa'nın yönetim paneli eyalet verisinden okunur (raporların kullandığı aynı veri); her satırdaki tarih, o eyalet verisinin son doğrulandığı tarihtir.", "州信息读取自 LogiVisa 管理后台的州数据（与报告使用的数据相同）；每行日期为该州数据最近一次核对的日期。")}`} />
 
         <ResearchLinks locale={locale} code={c.code} />
 
@@ -445,9 +356,15 @@ export default async function OccupationDetailsPage({ params }: PageProps) {
           </nav>
         )}
 
+        <p className="text-xs text-slate-500" data-abs-attribution>
+          {text("Occupation titles and task descriptions are based on the Australian Bureau of Statistics (ABS) ANZSCO, 2013, Version 1.3.", "Meslek adları ve görev tanımları, Avustralya İstatistik Bürosu (ABS) ANZSCO, 2013, Sürüm 1.3'e dayanır.", "职业名称和任务描述依据澳大利亚统计局（ABS）ANZSCO 2013 第 1.3 版。")}{" "}
+          <a data-official-source href={ABS_ANZSCO_URL} target="_blank" rel="noopener noreferrer" className="underline">ABS ANZSCO</a>
+        </p>
+
         <ProfessionalHelp locale={locale} />
 
         <p className="text-xs text-slate-500">{c.notice}</p>
+        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: jsonLd(schema) }} />
       </section>
     </main>
   );

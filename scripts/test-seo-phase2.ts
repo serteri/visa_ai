@@ -11,6 +11,9 @@ import { occupationPageContent } from "../lib/occupations/page-content";
 import { occupationRedirectFor } from "../lib/occupations/redirects";
 import { entriesByGroup, entriesByLetter, groupCounts, indexableEntries, LETTERS, MAJOR_GROUP_IDS, majorGroupName, richEntries } from "../lib/occupations/index-data";
 import { getUniqueOccupations } from "../lib/occupations/seo";
+import { buildFactRows } from "../lib/occupations/facts";
+import { seedStateData, withPrograms } from "../lib/admin-data/snapshot";
+import { resolveAssessingAuthority } from "../lib/skills-assessment/resolve-authority";
 import redirectData from "../src/data/occupation-slug-redirects.json";
 import { activeLocales } from "../lib/i18n/config";
 import { languageAlternates, pageAlternates, publicUrl } from "../lib/seo/urls";
@@ -100,9 +103,55 @@ section("Step 3. crawlable occupation index, breadcrumbs, internal links");
   t("the occupation page renders breadcrumbs (Home > Occupations > group > occupation) and the research links with the comparison page", /<Breadcrumbs /.test(occPage) && /\/occupations\/group\//.test(occPage) && /<ResearchLinks /.test(occPage));
   for (const f of ["app/[locale]/(main)/visas/australia/page.tsx", "app/[locale]/(main)/tools/anzsco-finder/page.tsx"]) t(`hub page links rich-tier occupations: ${f}`, /<RichOccupationLinks /.test(readFileSync(f, "utf8")));
   const newFiles = ["lib/occupations/index-data.ts", "components/occupations/occupation-index-list.tsx", "components/seo/breadcrumbs.tsx", "components/occupations/rich-occupation-links.tsx", "components/occupations/calculator-occupation-note.tsx", "app/[locale]/(main)/occupations/page.tsx", "app/[locale]/(main)/occupations/group/[major]/page.tsx", "app/[locale]/(main)/occupations/letter/[letter]/page.tsx"];
-  const banned = /(you should|we recommend|recommended|you qualify|you are eligible|your chances|best option|apply now|guarantee)/i;
+  const banned = /\b(you should|we recommend|recommended|you qualify|you are eligible|your chances|best option|apply now|guarantee)\b/i;
   t("no directive, recommending or eligibility wording on the new index files", newFiles.every((f) => !banned.test(readFileSync(f, "utf8"))), newFiles.filter((f) => banned.test(readFileSync(f, "utf8"))).join(", "));
   function all0() { return indexableEntries("en"); }
+}
+
+section("Step 4. fact rows (value | source + link | verified date), registration rows, ABS attribution, JSON-LD, state data from the snapshot");
+{
+  const snap = seedStateData();
+  const unique = getUniqueOccupations();
+  const iso = /^\d{4}-\d{2}-\d{2}$/;
+  const bannedFact = /\b(you should|we recommend|recommended|you qualify|you are eligible|your chances|best option|apply now|guarantee)\b/i;
+  for (const locale of activeLocales) {
+    let rows = 0, badProv = 0, badWording = 0, pages = 0;
+    for (const o of unique) {
+      const c = occupationPageContent(o, locale);
+      const facts = buildFactRows(o, c, snap);
+      pages++;
+      for (const f of facts) {
+        rows++;
+        if (!f.value.trim() || !f.sourceName.trim() || !iso.test(f.verified) || (f.sourceUrl !== undefined && !/^https:\/\//.test(f.sourceUrl))) badProv++;
+        if (bannedFact.test(f.value) || bannedFact.test(f.label)) badWording++;
+      }
+    }
+    t(`${locale}: ${rows} fact rows on ${pages} pages, every row has a value, a source name (linked https where a link exists) and a verified date`, badProv === 0, `${badProv} incomplete`);
+    t(`${locale}: no directive or eligibility wording in any fact row`, badWording === 0, `${badWording}`);
+    const sw = unique.find((o) => o.anzsco_code === "261313")!;
+    const f = buildFactRows(sw, occupationPageContent(sw, locale), snap);
+    t(`${locale}: identity, authority and list rows exist for 261313`, ["code", "title", "authority"].every((id) => f.some((r) => r.id === id)));
+  }
+  // State rows follow the admin snapshot (the data the reports use): changing a state's verified date changes the row.
+  const withState = unique.find((o) => buildFactRows(o, occupationPageContent(o, "en"), snap).some((r) => r.group === "states"))!;
+  const baseRow = buildFactRows(withState, occupationPageContent(withState, "en"), snap).find((r) => r.group === "states")!;
+  const stateCode = baseRow.id.replace("state-", "");
+  const patched = withPrograms(snap, { [stateCode]: { lastVerifiedAt: "2031-01-02T00:00:00.000Z", status: "Closed (test)" } });
+  const changed = buildFactRows(withState, occupationPageContent(withState, "en"), patched).find((r) => r.id === baseRow.id)!;
+  t("a state row takes its verified date and status from the snapshot, not from a constant", changed.verified === "2031-01-02" && /Closed \(test\)/.test(changed.value) && baseRow.verified !== "2031-01-02");
+  // Registration rows (8.4).
+  const byAuthority = (id: string) => unique.filter((o) => resolveAssessingAuthority(o.anzsco_code).authorityId === id);
+  const med = byAuthority("AHPRA"), nur = byAuthority("ANMAC");
+  t(`medical (AHPRA) occupations (${med.length}) have separate Medical Board registration rows with a source and date`, med.length > 0 && med.every((o) => buildFactRows(o, occupationPageContent(o, "en"), snap).filter((r) => r.group === "registration").length === 2));
+  t(`nursing (ANMAC) occupations (${nur.length}) have a separate NMBA registration row that states no invented amount`, nur.length > 0 && nur.every((o) => { const r = buildFactRows(o, occupationPageContent(o, "en"), snap).filter((x) => x.group === "registration"); return r.length === 1 && !/\d/.test(r[0].value); }));
+  const acs = byAuthority("ACS");
+  t("an ACS occupation has no registration row", acs.length > 0 && acs.every((o) => !buildFactRows(o, occupationPageContent(o, "en"), snap).some((r) => r.group === "registration")));
+  const page = readFileSync("app/[locale]/(main)/occupations/[id]/page.tsx", "utf8");
+  t("the page shows ABS attribution for the ANZSCO descriptions, and the Occupation + WebPage JSON-LD with dateModified", /data-abs-attribution/.test(page) && /"@type": "Occupation"/.test(page) && /dateModified: dataVerified/.test(page) && /<Breadcrumbs /.test(page));
+  t("the page reads the state data from the admin snapshot and re-renders hourly", /getAdminStateData\(\)/.test(page) && /export const revalidate = 3600/.test(page));
+  const layout2 = readFileSync("app/[locale]/(main)/layout.tsx", "utf8");
+  t("the locale layout no longer emits a WebApplication or an Offer / price", !/WebApplication/.test(layout2) && !/"Offer"/.test(layout2) && !/priceCurrency/.test(layout2));
+  t("the old hard-coded state table is gone from the page (no direct stateRows rendering)", !/c\.stateRows\.map/.test(page));
 }
 
 console.log(failures === 0 ? "\n✅ ALL CHECKS PASSED" : `\n❌ ${failures} CHECK(S) FAILED`);

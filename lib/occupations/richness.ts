@@ -12,7 +12,7 @@
 import cutoffRows from "@/src/data/occupation-points-cutoff.json";
 import trendRows from "@/src/data/visa-trends.json";
 import { resolveAssessingAuthority } from "@/lib/skills-assessment/resolve-authority";
-import { matchOccupationToState, type StateOccupationSubclass } from "@/lib/state-nomination/occupation-match";
+import { matchOccupationToState, type OccupationListOverrides, type StateOccupationSubclass } from "@/lib/state-nomination/occupation-match";
 import type { OccupationRecord } from "./seo";
 
 export type RichnessTier = "rich" | "medium" | "thin";
@@ -41,11 +41,11 @@ const SUBCLASSES: StateOccupationSubclass[] = ["190", "491"];
 export type StateListRow = { state: string; level: "occupation" | "unit-group"; subclasses: StateOccupationSubclass[]; checked: string };
 
 /** Published state/territory list entries for the occupation (ACT, NSW unit group, NT, QLD, WA) -- only where it is listed. */
-export function stateListRows(record: OccupationRecord): StateListRow[] {
+export function stateListRows(record: OccupationRecord, overrides?: OccupationListOverrides): StateListRow[] {
   const rows: StateListRow[] = [];
   for (const state of STATES) {
     const subclasses = SUBCLASSES.filter((subclass) => {
-      const r = matchOccupationToState(record.anzsco_code, state, subclass);
+      const r = matchOccupationToState(record.anzsco_code, state, subclass, overrides);
       return r.type === "MATCH" || (r.type === "UNIT_GROUP_ONLY" && r.onUnitGroupList);
     });
     if (subclasses.length) rows.push({ state, level: state === "NSW" ? "unit-group" : "occupation", subclasses, checked: STATE_LIST_VERIFIED[state] });

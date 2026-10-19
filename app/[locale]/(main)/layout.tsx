@@ -128,28 +128,21 @@ export default async function LocaleLayout({
   const translations = await getTranslations(locale as Locale);
   const showAdmin = process.env.SHOW_ADMIN === "true";
   const gaId = process.env.NEXT_PUBLIC_GA_ID?.trim();
-  const webAppSchema = {
+  // A WebSite node only: no Offer / price (the earlier site-wide application schema asserted a price of 0 AUD on every page; the points calculator page keeps its own).
+  const siteSchema = {
     "@context": "https://schema.org",
-    "@type": "WebApplication",
+    "@type": "WebSite",
     name: SITE_NAME,
-    applicationCategory: "BusinessApplication",
-    operatingSystem: "Web",
     inLanguage: ["en", "tr", "zh-Hans"],
     url: BASE_URL,
     description: getLocaleDescription(locale),
-    offers: {
-      "@type": "Offer",
-      price: "0",
-      priceCurrency: "AUD",
-      availability: "https://schema.org/InStock",
-    },
   };
 
   return (
     <LanguageProvider initialLocale={locale as Locale} initialTranslations={translations}>
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(webAppSchema) }}
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(siteSchema) }}
       />
       <Suspense fallback={null}>
         <RefCapture />
