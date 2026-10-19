@@ -98,6 +98,10 @@ jobs:
         run: npm run test:seo-occupation
       - name: SEO Phase 2 (html lang, hub canonicals, 301s, index, comparison pages)
         run: npm run test:seo-phase2
+      - name: Analytics queue (page-load events are not dropped before gtag exists)
+        run: npm run test:analytics-queue
+      - name: Assessment result continuation (research links, no dead end)
+        run: npm run test:assessment-continuation
       - name: Marketing research journeys, canonical URLs and analytics safety
         run: npm run test:marketing-readiness
       - name: Visa comparison table (sourced charges, no unsourced estimates, official links; en / tr / zh-Hans)
