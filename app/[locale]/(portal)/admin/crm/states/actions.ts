@@ -7,7 +7,7 @@ import { markStateVerified, restoreAuditField, saveStateProgram } from "@/lib/ad
 import { prismaStateProgramStore } from "@/lib/admin-data/store-prisma";
 const MAX_UPLOAD_BYTES = 10 * 1024 * 1024; // same as lib/admin-data/source-update/extract.ts, which is loaded only when a file arrives
 import { prismaKnowledgeIndex } from "@/lib/admin-data/source-update/knowledge";
-import { approveSourceUpdate, createSourceUpdate, discardSourceUpdate, type SourceInput } from "@/lib/admin-data/source-update/update";
+import { approveSourceUpdate, createSourceUpdate, discardSourceUpdate, markVerifiedFromUpdate, updateKnowledgeOnly, type SourceInput } from "@/lib/admin-data/source-update/update";
 import { isAdminTranslationLocale } from "@/lib/admin-data/locales";
 import { draftTranslation, type DraftResult } from "@/lib/admin-data/translate";
 import type { Actor } from "@/lib/admin-data/audit";
@@ -97,7 +97,7 @@ export type ProposeResponse =
       id: string;
       proposals: Array<{ id: string; label: string; current: string | null; proposed: string; quote: string }>;
       rejected: Array<{ field: string; reason: string; quote?: string; value?: string }>;
-      knowledgeRemove: Array<{ source: string; category: string; chunks: number }>;
+      knowledgeCandidates: Array<{ source: string; category: string; chunks: number; sameSource: boolean; occupationList: boolean; preselected: boolean }>;
       knowledgeError?: string;
       truncated: boolean;
       textChars: number;
@@ -158,7 +158,7 @@ ${extracted.text}` : extracted.text;
     id: created.id,
     proposals: r.proposals.map((p) => ({ id: p.id, label: p.label, current: p.current, proposed: p.proposed, quote: p.quote })),
     rejected: r.rejected,
-    knowledgeRemove: r.knowledge.remove,
+    knowledgeCandidates: (r.knowledge.candidates ?? []).map((c) => ({ source: c.source, category: c.category, chunks: c.chunks, sameSource: c.sameSource, occupationList: c.occupationList, preselected: c.preselected })),
     knowledgeError: r.knowledge.error,
     truncated: r.truncated,
     textChars: r.textChars,
@@ -177,9 +177,24 @@ ${extracted.text}` : extracted.text;
   };
 }
 
-export async function approveSourceUpdateAction(updateId: string, proposalIds: string[], occupationIds: string[], locale?: string) {
+/** `removeDocs`: the chat documents the admin ticked for removal (the server refuses any that the review did not list). */
+export async function approveSourceUpdateAction(updateId: string, proposalIds: string[], occupationIds: string[], removeDocs: string[], locale?: string) {
   const actor = await requireAdminActor();
-  const result = await approveSourceUpdate({ store: prismaStateProgramStore, knowledge: prismaKnowledgeIndex }, actor, { updateId, proposalIds, occupationIds });
+  const result = await approveSourceUpdate({ store: prismaStateProgramStore, knowledge: prismaKnowledgeIndex }, actor, { updateId, proposalIds, occupationIds, removeDocs });
+  if (result.ok) refresh(locale);
+  return result;
+}
+
+/** "Update chat knowledge for this page only": no row field is saved. */
+export async function updateKnowledgeOnlyAction(updateId: string, removeDocs: string[]) {
+  const actor = await requireAdminActor();
+  return updateKnowledgeOnly({ store: prismaStateProgramStore, knowledge: prismaKnowledgeIndex }, actor, { updateId, removeDocs });
+}
+
+/** "Mark verified": only the verification date moves, to the date the source was checked. */
+export async function markVerifiedFromUpdateAction(updateId: string, locale?: string) {
+  const actor = await requireAdminActor();
+  const result = await markVerifiedFromUpdate({ store: prismaStateProgramStore }, actor, updateId);
   if (result.ok) refresh(locale);
   return result;
 }

@@ -7,7 +7,7 @@ import type { LocalizedField, StateProgramData } from "./types";
 
 export type Actor = { id: string | null; email: string | null; /** What the history shows: the e-mail, else the name or id. */ label: string };
 
-export type AuditAction = "edit" | "seed" | "mark_verified" | "restore" | "translate_draft" | "translate_review" | "source_update_proposed" | "source_update" | "occupation_list_update";
+export type AuditAction = "edit" | "seed" | "mark_verified" | "restore" | "translate_draft" | "translate_review" | "source_update_proposed" | "source_update" | "source_update_knowledge" | "source_update_verified" | "occupation_list_update";
 
 export type AuditEntry = {
   /** "state_program": the history of a state; "state_source_update": a pasted/uploaded source and its proposals; "state_occupation_list": a state occupation list. */

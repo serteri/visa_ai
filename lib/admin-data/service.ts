@@ -81,6 +81,17 @@ export async function markStateVerified(store: StateProgramStore, actor: Actor, 
   return { ok: true, program: next, changed: ["lastVerified"] };
 }
 
+/** "Update from official source" found no change: only the verification stamp moves, to the day the source was checked. */
+export async function markStateVerifiedOn(store: StateProgramStore, actor: Actor, stateCode: string, checkedOn: string, note: string, at: Date = new Date()): Promise<SaveResult> {
+  const previous = await store.get(stateCode);
+  if (!previous) return { ok: false, issues: [{ path: "stateCode", message: `no program for ${stateCode}` }] };
+  const stamp = at.toISOString();
+  const verified = `${checkedOn}T00:00:00.000Z`;
+  const next = { ...structuredClone(previous), lastVerifiedAt: verified, lastVerifiedBy: actor.label, updatedAt: stamp, updatedBy: actor.label };
+  await store.save(next, [{ entityType: "state_program", entityKey: stateCode, fieldPath: "lastVerified", oldValue: previous.lastVerifiedAt, newValue: verified, action: "mark_verified", note }], actor, at);
+  return { ok: true, program: next, changed: ["lastVerified"] };
+}
+
 /** Put one logged field back to the value it had before that entry (as a new, logged edit). */
 export async function restoreAuditField(store: StateProgramStore, actor: Actor, auditId: string, at: Date = new Date()): Promise<SaveResult> {
   const entry = await store.auditEntry(auditId);

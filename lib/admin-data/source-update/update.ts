@@ -1,9 +1,9 @@
 import type { Actor } from "../audit";
-import { saveStateProgram } from "../service";
+import { markStateVerifiedOn, saveStateProgram } from "../service";
 import type { StateProgramStore } from "../store";
 import type { OccupationRow } from "../types";
 import { applyProposals, auditFieldOf } from "./apply";
-import type { KnowledgeDoc, KnowledgeIndex } from "./knowledge";
+import { classifyCandidates, docKey, isOccupationListDoc, type KnowledgeCandidate, type KnowledgeDoc, type KnowledgeIndex } from "./knowledge";
 import { applyOccupationChanges, bundledOccupationList, diffOccupationLists, OCCUPATION_LIST_STATES, parseOccupationSheets, type OccupationDiff } from "./occupations";
 import { proposalCurrentText, proposeFromSource, quoteInSource, type Proposal, type Proposer, type Rejection } from "./propose";
 import type { SheetRows } from "./extract";
@@ -27,7 +27,8 @@ export type SourceUpdateRecord = {
   truncated: boolean;
   proposals: Proposal[];
   rejected: Rejection[];
-  knowledge: { remove: KnowledgeDoc[]; error?: string };
+  /** `candidates`: the state's documents the review lists; nothing is removed unless ticked. (`remove`: records made before this change.) */
+  knowledge: { candidates?: KnowledgeCandidate[]; remove?: KnowledgeDoc[]; error?: string };
   occupation: OccupationProposal | null;
 };
 
@@ -86,10 +87,10 @@ export async function createSourceUpdate(deps: Deps, actor: Actor, input: Source
     }
   }
 
-  let remove: KnowledgeDoc[] = [];
+  let candidates: KnowledgeCandidate[] = [];
   let knowledgeError: string | undefined;
   try {
-    remove = await deps.knowledge.preview(input.stateCode);
+    candidates = classifyCandidates(await deps.knowledge.preview(input.stateCode), { sourceUrl: input.sourceUrl, fileName: input.fileName });
   } catch (e) {
     knowledgeError = e instanceof Error ? e.message.slice(0, 160) : "the chat knowledge base could not be read";
   }
@@ -104,7 +105,7 @@ export async function createSourceUpdate(deps: Deps, actor: Actor, input: Source
     truncated: input.truncated,
     proposals: accepted,
     rejected,
-    knowledge: { remove, ...(knowledgeError ? { error: knowledgeError } : {}) },
+    knowledge: { candidates, ...(knowledgeError ? { error: knowledgeError } : {}) },
     occupation,
   };
   const id = await deps.store.log({ entityType: "state_source_update", entityKey: input.stateCode, fieldPath: "proposed", oldValue: null, newValue: record, action: "source_update_proposed", note: `${input.sourceUrl ?? input.fileName ?? "pasted text"}, checked ${input.checkedOn}: ${accepted.length} proposed, ${rejected.length} rejected` }, actor, at);
@@ -120,10 +121,45 @@ async function loadRecord(store: StateProgramStore, id: string): Promise<{ rec: 
   return { rec: entry.newValue as SourceUpdateRecord };
 }
 
-export type ApproveInput = { updateId: string; proposalIds: string[]; occupationIds?: string[] };
+/** The candidates of a record (older records stored a plain removal list: none of those was from a known source, so none is preselected). */
+export function candidatesOf(rec: SourceUpdateRecord): KnowledgeCandidate[] {
+  return rec.knowledge.candidates ?? (rec.knowledge.remove ?? []).map((d) => ({ ...d, sameSource: false, occupationList: isOccupationListDoc(d), preselected: false }));
+}
+
+/** The documents to remove: exactly the ticked ones (default: the preselected ones, i.e. the same source). A key that is not a listed candidate is refused. */
+function resolveRemoval(rec: SourceUpdateRecord, keys: string[] | undefined): { docs: KnowledgeDoc[] } | { error: string } {
+  const all = candidatesOf(rec);
+  const wanted = keys ?? all.filter((c) => c.preselected).map(docKey);
+  const docs: KnowledgeDoc[] = [];
+  for (const k of new Set(wanted)) {
+    const c = all.find((x) => docKey(x) === k);
+    if (!c) return { error: `"${k}" is not one of the documents listed for removal.` };
+    docs.push(c);
+  }
+  return { docs };
+}
+
+async function indexSource(deps: Deps, rec: SourceUpdateRecord, stateName: string, remove: KnowledgeDoc[]): Promise<KnowledgeOutcome> {
+  try {
+    const r = await deps.knowledge.replace({ stateCode: rec.stateCode, stateName, sourceUrl: rec.sourceUrl, fileName: rec.fileName, checkedOn: rec.checkedOn, text: rec.text, remove });
+    return { ok: true, ...r };
+  } catch (e) {
+    return { ok: false, error: e instanceof Error ? e.message.slice(0, 200) : "indexing failed" };
+  }
+}
+
+export type ApproveInput = {
+  updateId: string;
+  proposalIds: string[];
+  occupationIds?: string[];
+  /** docKey()s of the chat documents to remove; omitted = only the document from the same source. */
+  removeDocs?: string[];
+};
 export type ApproveResult =
-  | { ok: true; changed: string[]; occupationChanged: number; droppedTranslations: string[]; knowledge: { ok: true; removedChunks: number; addedChunks: number; docName: string } | { ok: false; error: string } | { ok: false; error: string; skipped: true } }
+  | { ok: true; changed: string[]; occupationChanged: number; droppedTranslations: string[]; knowledge: KnowledgeOutcome }
   | { ok: false; issues: string[] };
+
+type KnowledgeOutcome = { ok: true; removedChunks: number; addedChunks: number; docName: string } | { ok: false; error: string };
 
 export async function approveSourceUpdate(deps: Deps, actor: Actor, input: ApproveInput, at: Date = new Date()): Promise<ApproveResult> {
   const loaded = await loadRecord(deps.store, input.updateId);
@@ -138,6 +174,8 @@ export async function approveSourceUpdate(deps: Deps, actor: Actor, input: Appro
 
   const program = await deps.store.get(rec.stateCode);
   if (!program) return { ok: false, issues: [`There is no row for ${rec.stateCode}.`] };
+  const removal = resolveRemoval(rec, input.removeDocs);
+  if ("error" in removal) return { ok: false, issues: [removal.error] };
 
   let changed: string[] = [];
   let dropped: string[] = [];
@@ -180,17 +218,38 @@ export async function approveSourceUpdate(deps: Deps, actor: Actor, input: Appro
     );
   }
 
-  let knowledge: Extract<ApproveResult, { ok: true }>["knowledge"];
-  try {
-    const stateName = program.stateName;
-    const r = await deps.knowledge.replace({ stateCode: rec.stateCode, stateName, sourceUrl: rec.sourceUrl, checkedOn: rec.checkedOn, text: rec.text, remove: rec.knowledge.remove });
-    knowledge = { ok: true, ...r };
-  } catch (e) {
-    knowledge = { ok: false, error: e instanceof Error ? e.message.slice(0, 200) : "indexing failed" };
-  }
+  const knowledge = await indexSource(deps, rec, program.stateName, removal.docs);
 
   await deps.store.log({ entityType: "state_source_update", entityKey: rec.stateCode, fieldPath: input.updateId, oldValue: null, newValue: { approved: input.proposalIds, occupation: [...occIds].length, changed, knowledge }, action: "source_update", note: `approved by ${actor.label}` }, actor, at);
   return { ok: true, changed, occupationChanged, droppedTranslations: dropped, knowledge };
+}
+
+/**
+ * "Update chat knowledge for this page only": indexes the pasted page and removes only the ticked documents (default: the same source). No row field is
+ * touched and the update stays open, so fields can still be approved or the row marked verified afterwards.
+ */
+export async function updateKnowledgeOnly(deps: Deps, actor: Actor, input: { updateId: string; removeDocs?: string[] }, at: Date = new Date()): Promise<{ ok: true; knowledge: KnowledgeOutcome } | { ok: false; issues: string[] }> {
+  const loaded = await loadRecord(deps.store, input.updateId);
+  if ("error" in loaded) return { ok: false, issues: [loaded.error] };
+  const { rec } = loaded;
+  const program = await deps.store.get(rec.stateCode);
+  if (!program) return { ok: false, issues: [`There is no row for ${rec.stateCode}.`] };
+  const removal = resolveRemoval(rec, input.removeDocs);
+  if ("error" in removal) return { ok: false, issues: [removal.error] };
+  const knowledge = await indexSource(deps, rec, program.stateName, removal.docs);
+  await deps.store.log({ entityType: "state_source_update", entityKey: rec.stateCode, fieldPath: input.updateId, oldValue: null, newValue: { knowledge, removed: removal.docs.map(docKey) }, action: "source_update_knowledge", note: `chat knowledge updated for ${rec.sourceUrl ?? rec.fileName ?? "pasted text"} by ${actor.label}` }, actor, at);
+  return { ok: true, knowledge };
+}
+
+/** "Mark verified": the source was read and states no change, so only the verification date moves to the date entered. No field and no chat document is touched. */
+export async function markVerifiedFromUpdate(deps: Pick<Deps, "store">, actor: Actor, updateId: string, at: Date = new Date()): Promise<{ ok: true } | { ok: false; error: string }> {
+  const loaded = await loadRecord(deps.store, updateId);
+  if ("error" in loaded) return { ok: false, error: loaded.error };
+  const { rec } = loaded;
+  const r = await markStateVerifiedOn(deps.store, actor, rec.stateCode, rec.checkedOn, `Source ${rec.sourceUrl ?? rec.fileName ?? "pasted text"}, checked ${rec.checkedOn} (update ${updateId}): no change to the row`, at);
+  if (!r.ok) return { ok: false, error: r.issues.map((i) => i.message).join(" ") };
+  await deps.store.log({ entityType: "state_source_update", entityKey: rec.stateCode, fieldPath: updateId, oldValue: null, newValue: { verifiedOn: rec.checkedOn }, action: "source_update_verified", note: `marked verified by ${actor.label}` }, actor, at);
+  return { ok: true };
 }
 
 export async function discardSourceUpdate(deps: Pick<Deps, "store">, actor: Actor, updateId: string, at: Date = new Date()): Promise<{ ok: boolean; error?: string }> {

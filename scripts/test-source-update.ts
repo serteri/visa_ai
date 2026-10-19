@@ -15,10 +15,10 @@ import * as XLSX from "xlsx";
 import { seedStatePrograms } from "../lib/admin-data/service";
 import { memoryStore } from "../lib/admin-data/store";
 import { extractUpload, MAX_UPLOAD_BYTES } from "../lib/admin-data/source-update/extract";
-import { ADMIN_SOURCE_ORIGIN, memoryKnowledgeIndex, stateSourcePattern } from "../lib/admin-data/source-update/knowledge";
+import { ADMIN_SOURCE_ORIGIN, classifyCandidates, docKey, memoryKnowledgeIndex, stateSourcePattern } from "../lib/admin-data/source-update/knowledge";
 import { bundledOccupationList, diffOccupationLists, parseOccupationSheets } from "../lib/admin-data/source-update/occupations";
 import { quoteInSource, verifyProposals, type RawProposal } from "../lib/admin-data/source-update/propose";
-import { approveSourceUpdate, createSourceUpdate, discardSourceUpdate } from "../lib/admin-data/source-update/update";
+import { approveSourceUpdate, createSourceUpdate, discardSourceUpdate, markVerifiedFromUpdate, updateKnowledgeOnly } from "../lib/admin-data/source-update/update";
 import { matchOccupationToState } from "../lib/state-nomination/occupation-match";
 import { translationOf } from "../lib/admin-data/types";
 import { buildSeedPrograms } from "../lib/admin-data/seed";
@@ -98,7 +98,7 @@ async function main() {
   const created = await createSourceUpdate({ store, knowledge, proposer }, ADMIN, { stateCode: "TAS", sourceUrl: "https://www.migration.tas.gov.au/skilled_migration", checkedOn: "2026-10-15", fileName: null, kind: "text", text: SOURCE, truncated: false }, NOW);
   t("the update is created with 3 verified proposals and 2 rejected", created.ok && created.record.proposals.length === 3 && created.record.rejected.length === 2, JSON.stringify(created.ok ? created.record.rejected : created));
   if (!created.ok) throw new Error("cannot continue");
-  t("the review lists the documents that approval would remove, and only this state's sources (not a skills assessment, not another state)", (() => { const names = created.record.knowledge.remove.map((d) => d.source); return names.length === 2 && names.every((n) => n.startsWith("TAS ") && !/Skills Assessment/.test(n)); })());
+  t("the review LISTS this state's source documents as candidates (not a skills assessment, not another state), none from the same source, so none preselected", (() => { const c = created.record.knowledge.candidates ?? []; return c.length === 2 && c.every((d) => d.source.startsWith("TAS ") && !/Skills Assessment/.test(d.source) && !d.sameSource && !d.preselected); })());
   t("the extracted source text is kept with the update record", (store.audits.find((a) => a.id === created.id)?.newValue as { text: string }).text === SOURCE);
   const before = (await store.get("TAS"))!;
   const ids = created.record.proposals.map((p) => p.id);
@@ -114,15 +114,15 @@ async function main() {
   t("an update that was decided cannot be approved again", !again.ok && /already decided/.test(again.issues.join()));
 
   section("4. the chat knowledge is replaced, never mixed");
-  t("the approval removed the state's old source chunks and added the new source", part.ok && part.knowledge.ok === true && part.knowledge.removedChunks === 2 && part.knowledge.addedChunks >= 1);
+  t("the approval added the new source and removed NOTHING (no document was ticked and none is from the same source)", part.ok && part.knowledge.ok === true && part.knowledge.removedChunks === 0 && part.knowledge.addedChunks >= 1);
   const names = knowledge.chunks.map((c) => c.source);
-  t("TAS old sources are gone; NSW, the skills assessment documents and the visa document are untouched", !names.includes("TAS user-confirmed program settings (checked 2026-10-13).md") && names.includes("NSW Skilled Nominated visa (subclass 190).md") && names.includes("TAS Skills Assessment note.pdf") && names.includes("ACS Skills assessment fees.pdf") && names.includes("Subclass 190 skilled nominated visa.pdf"));
+  t("TAS old sources are still there (not ticked); NSW, the skills assessment documents and the visa document are untouched", names.includes("TAS user-confirmed program settings (checked 2026-10-13).md") && names.includes("NSW Skilled Nominated visa (subclass 190).md") && names.includes("TAS Skills Assessment note.pdf") && names.includes("ACS Skills assessment fees.pdf") && names.includes("Subclass 190 skilled nominated visa.pdf"));
   t("the new source is tagged with the state, the origin and the date", knowledge.chunks.some((c) => c.state === "TAS" && c.origin === ADMIN_SOURCE_ORIGIN && /2026-10-15/.test(c.source)));
   const second = await createSourceUpdate({ store, knowledge, proposer: async () => [raw({ value: "1400", quote: "The 2026-27 allocation for subclass 190 is 1,400 places" })] }, ADMIN, { stateCode: "TAS", sourceUrl: null, checkedOn: "2026-10-16", fileName: "tas.docx", kind: "docx", text: "The 2026-27 allocation for subclass 190 is 1,400 places. Updated 16 October 2026 by Migration Tasmania.", truncated: false }, NOW);
   if (!second.ok) throw new Error("second update failed");
-  t("a second update lists the first update's chunks for removal", second.record.knowledge.remove.some((d) => /admin source update 2026-10-15/.test(d.source)));
-  const secondApproved = await approveSourceUpdate({ store, knowledge }, ADMIN, { updateId: second.id, proposalIds: ["p1"] }, NOW);
-  t("approving it leaves only the newest admin source of the state in the index", secondApproved.ok && knowledge.chunks.filter((c) => c.state === "TAS" && c.origin === ADMIN_SOURCE_ORIGIN).every((c) => /2026-10-16/.test(c.source)) && !knowledge.chunks.some((c) => /2026-10-15\.txt/.test(c.source)));
+  t("a second update lists the first update's document as a candidate", (second.record.knowledge.candidates ?? []).some((d) => /admin source update 2026-10-15/.test(d.source)));
+  const secondApproved = await approveSourceUpdate({ store, knowledge }, ADMIN, { updateId: second.id, proposalIds: ["p1"], removeDocs: (second.record.knowledge.candidates ?? []).filter((d) => /admin source update 2026-10-15/.test(d.source)).map(docKey) }, NOW);
+  t("approving it with the first update's document ticked leaves only the newest admin source of the state", secondApproved.ok && knowledge.chunks.filter((c) => c.state === "TAS" && c.origin === ADMIN_SOURCE_ORIGIN).every((c) => /2026-10-16/.test(c.source)) && !knowledge.chunks.some((c) => /2026-10-15\.txt/.test(c.source)));
   const failing = { ...knowledge, async replace() { throw new Error("embedding service down"); } };
   const third = await createSourceUpdate({ store, knowledge: failing, proposer: async () => [raw({ value: "1500", quote: "The 2026-27 allocation for subclass 190 is 1,500 places" })] }, ADMIN, { stateCode: "TAS", sourceUrl: null, checkedOn: "2026-10-16", fileName: null, kind: "text", text: "The 2026-27 allocation for subclass 190 is 1,500 places. A fresh update from Migration Tasmania.", truncated: false }, NOW);
   if (!third.ok) throw new Error("third update failed");
@@ -224,6 +224,56 @@ async function main() {
   t("the page shows the panel above the editor", /SourceUpdatePanel[\s\S]*<StateEditor/.test(readFileSync("app/[locale]/(portal)/admin/crm/states/[code]/page.tsx", "utf8")));
   t("the upload limit is 10 MB in the server action configuration", /bodySizeLimit: "10mb"/.test(readFileSync("next.config.ts", "utf8")));
   t("the state file-name pattern never matches a skills-assessment authority", (() => { const re = new RegExp(stateSourcePattern("SA")!, "i"); return re.test("SA Skilled Migration.md") && !re.test("ACS Skills assessment.pdf") && !re.test("SAMPLE.pdf"); })());
+
+  section("9. pasting one page replaces only that page's document (QLD regression)");
+  const QLD_URL = "https://www.migration.qld.gov.au/visa-options/skilled-visas/skilled-workers-living-in-queensland";
+  const qldText = "Queensland skilled workers living in Queensland: the page describes the pathway for people already living in Queensland. Updated October 2026.";
+  const qldIndex = () =>
+    memoryKnowledgeIndex([
+      { source: "QLD admin source update 2026-10-10 aaaa1111.txt", category: "State Immigrations", state: "QLD", origin: ADMIN_SOURCE_ORIGIN, sourceUrl: QLD_URL, content: "old page" },
+      { source: "QLD admin source update 2026-10-10 bbbb2222.txt", category: "State Immigrations", state: "QLD", origin: ADMIN_SOURCE_ORIGIN, sourceUrl: "https://www.migration.qld.gov.au/other-page", content: "other page" },
+      { source: "QLD Skilled Occupation List 190.xlsx", category: "State Immigrations", content: "occ 190" },
+      { source: "QLD Skilled Occupation List 491.xlsx", category: "State Immigrations", content: "occ 491" },
+      { source: "QLD application fees.pdf", category: "State Immigrations", content: "fees" },
+      { source: "QLD registration of interest.pdf", category: "State Immigrations", content: "roi" },
+      { source: "NSW Skilled Nominated visa (subclass 190).md", category: "2026-27", content: "nsw" },
+    ]);
+  const qStore = await fresh();
+  const qk = qldIndex();
+  const qc = await createSourceUpdate({ store: qStore, knowledge: qk, proposer: async () => [] }, ADMIN, { stateCode: "QLD", sourceUrl: QLD_URL, checkedOn: "2026-10-16", fileName: null, kind: "text", text: qldText, truncated: false }, NOW);
+  if (!qc.ok) throw new Error("QLD update failed: " + qc.error);
+  const qcands = qc.record.knowledge.candidates ?? [];
+  t("the review lists the QLD documents, including both occupation lists, fees and registration of interest", qcands.length === 6);
+  t("only the document with the same source URL is preselected", qcands.filter((d) => d.preselected).map((d) => d.source).join() === "QLD admin source update 2026-10-10 aaaa1111.txt");
+  t("occupation-list files are flagged and never preselected", qcands.filter((d) => d.occupationList).length === 2 && qcands.filter((d) => d.occupationList).every((d) => !d.preselected));
+  const qBefore = qk.chunks.map((c) => c.source).sort();
+  const ko = await updateKnowledgeOnly({ store: qStore, knowledge: qk }, ADMIN, { updateId: qc.id }, NOW);
+  t("'update chat knowledge for this page only' works with no field approved", ko.ok && ko.knowledge.ok === true);
+  const qAfter = qk.chunks.map((c) => c.source);
+  t("it replaced only the same-source document", !qAfter.includes("QLD admin source update 2026-10-10 aaaa1111.txt") && ko.ok && ko.knowledge.ok && ko.knowledge.removedChunks === 1);
+  t("both occupation lists, fees, registration of interest, the other page and NSW are all still there", qBefore.filter((s) => !s.includes("aaaa1111")).every((s) => qAfter.includes(s)));
+  const rerun = await updateKnowledgeOnly({ store: qStore, knowledge: qk }, ADMIN, { updateId: qc.id }, NOW);
+  t("running the same page rerun replaces its own document instead of duplicating it", rerun.ok && qk.chunks.filter((c) => c.sourceUrl === QLD_URL).every((c) => /2026-10-16/.test(c.source)) && qk.chunks.filter((c) => c.source.startsWith("QLD admin source update 2026-10-16")).length === (rerun.ok && rerun.knowledge.ok ? rerun.knowledge.addedChunks : -1));
+  t("the update stays open after the knowledge-only step (it is not 'decided')", rerun.ok);
+  const refused = await updateKnowledgeOnly({ store: qStore, knowledge: qk }, ADMIN, { updateId: qc.id, removeDocs: ["State Immigrations|QLD something never listed.pdf"] }, NOW);
+  t("a document the review did not list cannot be removed", !refused.ok);
+  const ticked = await updateKnowledgeOnly({ store: qStore, knowledge: qk }, ADMIN, { updateId: qc.id, removeDocs: ["State Immigrations|QLD application fees.pdf"] }, NOW);
+  t("a document the admin explicitly ticks IS removed (and only that one)", ticked.ok && !qk.chunks.some((c) => c.source === "QLD application fees.pdf") && qk.chunks.some((c) => c.source === "QLD Skilled Occupation List 190.xlsx") && qk.chunks.some((c) => c.source === "QLD Skilled Occupation List 491.xlsx"));
+  const emptyTick = await updateKnowledgeOnly({ store: qStore, knowledge: qk }, ADMIN, { updateId: qc.id, removeDocs: [] }, NOW);
+  t("ticking nothing removes no other document (only the page's own earlier version is replaced)", emptyTick.ok && qk.chunks.some((c) => c.source === "QLD registration of interest.pdf") && qk.chunks.some((c) => c.source === "QLD Skilled Occupation List 491.xlsx") && qk.chunks.some((c) => c.source === "QLD Skilled Occupation List 190.xlsx"));
+  const lvBefore = (await qStore.get("QLD"))!.lastVerifiedAt;
+  const chunksBeforeVerify = qk.chunks.length;
+  const mv = await markVerifiedFromUpdate({ store: qStore }, ADMIN, qc.id, NOW);
+  const qNow = (await qStore.get("QLD"))!;
+  t("'Mark verified' moves only last verified to the date entered, and touches no chat document", mv.ok && qNow.lastVerifiedAt === "2026-10-16T00:00:00.000Z" && qNow.lastVerifiedAt !== lvBefore && qk.chunks.length === chunksBeforeVerify);
+  t("it is logged as mark_verified with the source", qStore.audits.some((a) => a.entityKey === "QLD" && a.action === "mark_verified" && /migration\.qld\.gov\.au/.test(a.note ?? "")));
+  const qDup = await createSourceUpdate({ store: qStore, knowledge: qk, proposer: async () => [] }, ADMIN, { stateCode: "QLD", sourceUrl: "https://www.migration.qld.gov.au/fees", checkedOn: "2026-10-16", fileName: null, kind: "text", text: qldText.replace("pathway", "fees"), truncated: false }, NOW);
+  t("two different pages checked on the same day get different document names", qDup.ok && (await updateKnowledgeOnly({ store: qStore, knowledge: qk }, ADMIN, { updateId: qDup.id, removeDocs: [] }, NOW)).ok && new Set(qk.chunks.filter((c) => c.source.startsWith("QLD admin source update 2026-10-16")).map((c) => c.source)).size === 2);
+  const upload = classifyCandidates([{ source: "QLD list.xlsx", category: "State Immigrations", chunks: 3, fileName: "QLD list.xlsx" }], { sourceUrl: null, fileName: "QLD list.xlsx" });
+  t("the same uploaded file counts as the same source, but an occupation-list file is still not preselected", upload[0].sameSource && upload[0].occupationList && !upload[0].preselected);
+  const panel = readFileSync("app/[locale]/(portal)/admin/crm/states/[code]/SourceUpdatePanel.tsx", "utf8");
+  t("the panel shows a checkbox per candidate document and the two separate buttons", /doc-\$\{d\.sameSource/.test(panel) && /Update chat knowledge for this page only/.test(panel) && /Mark verified/.test(panel));
+  t("the server actions for both buttons check for an ADMIN user first", ["updateKnowledgeOnlyAction", "markVerifiedFromUpdateAction"].every((n) => new RegExp(`export async function ${n}[\\s\\S]{0,200}await requireAdminActor\\(\\)`).test(actions)));
 
   console.log(failures === 0 ? "\n✅ ALL CHECKS PASSED" : `\n❌ ${failures} CHECK(S) FAILED`);
   process.exitCode = failures === 0 ? 0 : 1;

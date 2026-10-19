@@ -6,7 +6,7 @@ import { useState, useTransition } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { approveSourceUpdateAction, discardSourceUpdateAction, proposeSourceUpdateAction, type ProposeResponse } from "../actions";
+import { approveSourceUpdateAction, discardSourceUpdateAction, markVerifiedFromUpdateAction, proposeSourceUpdateAction, updateKnowledgeOnlyAction, type ProposeResponse } from "../actions";
 
 type Proposed = Extract<ProposeResponse, { ok: true }>;
 
@@ -25,6 +25,9 @@ export function SourceUpdatePanel({ stateCode, stateName, locale }: { stateCode:
   const [result, setResult] = useState<Proposed | null>(null);
   const [picked, setPicked] = useState<Set<string>>(new Set());
   const [occPicked, setOccPicked] = useState<Set<string>>(new Set());
+  // Chat documents ticked for removal. Only the document from the same source starts ticked; occupation lists never do.
+  const [docPicked, setDocPicked] = useState<Set<string>>(new Set());
+  const docKey = (d: { source: string; category: string }) => `${d.category}|${d.source}`;
 
   const find = (form: HTMLFormElement) => {
     setError(null);
@@ -38,6 +41,7 @@ export function SourceUpdatePanel({ stateCode, stateName, locale }: { stateCode:
       setResult(res);
       setPicked(new Set());
       setOccPicked(new Set());
+      setDocPicked(new Set(res.knowledgeCandidates.filter((d) => d.preselected).map(docKey)));
     });
   };
 
@@ -52,13 +56,35 @@ export function SourceUpdatePanel({ stateCode, stateName, locale }: { stateCode:
     if (!result) return;
     setError(null);
     startTransition(async () => {
-      const res = await approveSourceUpdateAction(result.id, [...picked], [...occPicked], locale);
+      const res = await approveSourceUpdateAction(result.id, [...picked], [...occPicked], [...docPicked], locale);
       if (!res.ok) return setError(res.issues.join(" "));
       const lines = [`Saved: ${res.changed.length ? res.changed.join(", ") : "no row field"}${res.occupationChanged ? `; ${res.occupationChanged} occupation-list change(s)` : ""}. Last verified is the date you entered.`];
       if (res.droppedTranslations.length) lines.push(`The English of ${res.droppedTranslations.join(", ")} changed, so its translations were removed: customers see English until you translate and review them again.`);
       lines.push(res.knowledge.ok ? `Chat knowledge: indexed ${res.knowledge.addedChunks} chunk(s) for ${stateName}, removed ${res.knowledge.removedChunks} old one(s).` : `The data is saved, but the chat knowledge was NOT updated: ${res.knowledge.error}`);
       setDone(lines);
       setResult(null);
+      router.refresh();
+    });
+  };
+
+  // The update stays open after these two, so fields can still be approved (or the update discarded) afterwards.
+  const knowledgeOnly = () => {
+    if (!result) return;
+    setError(null);
+    startTransition(async () => {
+      const res = await updateKnowledgeOnlyAction(result.id, [...docPicked]);
+      if (!res.ok) return setError(res.issues.join(" "));
+      setDone([res.knowledge.ok ? `Chat knowledge: indexed ${res.knowledge.addedChunks} chunk(s) of this page for ${stateName}, removed ${res.knowledge.removedChunks} chunk(s) of the ${docPicked.size} document(s) you ticked. No row field was changed.` : `The chat knowledge was NOT updated: ${res.knowledge.error}`]);
+    });
+  };
+
+  const markVerified = () => {
+    if (!result) return;
+    setError(null);
+    startTransition(async () => {
+      const res = await markVerifiedFromUpdateAction(result.id, locale);
+      if (!res.ok) return setError(res.error);
+      setDone(["Marked verified with the date you entered. No row field and no chat document was changed."]);
       router.refresh();
     });
   };
@@ -215,29 +241,46 @@ export function SourceUpdatePanel({ stateCode, stateName, locale }: { stateCode:
 
           <div className="rounded-md border border-slate-200 bg-white p-3 text-sm" data-testid="knowledge-preview">
             <p className={labelCls}>Chat knowledge</p>
+            <p>
+              On approval (or &ldquo;Update chat knowledge for this page only&rdquo;) the text of this page is added to the chat knowledge for {stateName}. Only the documents ticked below are removed. A document is ticked for you only when it comes from the same source URL or file; nothing else, and never an occupation list, unless you tick it.
+            </p>
             {result.knowledgeError ? (
-              <p className="text-amber-800">The existing chat documents of this state could not be listed ({result.knowledgeError}). Approving would add the new source without removing anything.</p>
-            ) : result.knowledgeRemove.length === 0 ? (
-              <p>On approval the source text is added to the chat knowledge for {stateName}. No earlier source of this state is in the index.</p>
+              <p className="mt-1 text-amber-800">The existing chat documents of this state could not be listed ({result.knowledgeError}). Nothing will be removed.</p>
+            ) : result.knowledgeCandidates.length === 0 ? (
+              <p className="mt-1">No other {stateName} source document is in the index.</p>
             ) : (
-              <>
-                <p>
-                  On approval the source text is added to the chat knowledge for {stateName} and these earlier source documents are removed from it ({result.knowledgeRemove.reduce((n, d) => n + d.chunks, 0)} chunks), so the chat never mixes old and new:
-                </p>
-                <ul className="mt-1 list-disc pl-5 text-xs">
-                  {result.knowledgeRemove.map((d) => (
-                    <li key={`${d.category}|${d.source}`}>
-                      {d.source} ({d.chunks})
-                    </li>
-                  ))}
-                </ul>
-              </>
+              <ul className="mt-2 space-y-1 text-xs">
+                {result.knowledgeCandidates.map((d) => (
+                  <li key={docKey(d)}>
+                    <label className="flex cursor-pointer items-start gap-2">
+                      <input
+                        type="checkbox"
+                        className="mt-0.5"
+                        checked={docPicked.has(docKey(d))}
+                        onChange={() => toggle(docPicked, setDocPicked, docKey(d))}
+                        data-testid={`doc-${d.sameSource ? "same" : "other"}${d.occupationList ? "-occupation-list" : ""}`}
+                      />
+                      <span>
+                        {d.source} ({d.chunks} chunks)
+                        {d.sameSource ? <span className="ml-1 font-semibold text-emerald-800">· same source</span> : <span className="ml-1 text-slate-500">· different source</span>}
+                        {d.occupationList ? <span className="ml-1 font-semibold text-amber-800">· occupation list: removing it takes that list out of the chat</span> : null}
+                      </span>
+                    </label>
+                  </li>
+                ))}
+              </ul>
             )}
           </div>
 
           <div className="flex flex-wrap gap-2">
             <Button type="button" onClick={approve} disabled={pending || (picked.size === 0 && occPicked.size === 0)} data-testid="source-approve">
               Approve selected ({picked.size + occPicked.size})
+            </Button>
+            <Button type="button" variant="outline" onClick={knowledgeOnly} disabled={pending} data-testid="source-knowledge-only">
+              Update chat knowledge for this page only
+            </Button>
+            <Button type="button" variant="outline" onClick={markVerified} disabled={pending} data-testid="source-mark-verified">
+              Mark verified
             </Button>
             <Button type="button" variant="outline" onClick={discard} disabled={pending} data-testid="source-discard">
               Discard
