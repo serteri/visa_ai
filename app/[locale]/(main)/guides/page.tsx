@@ -4,8 +4,10 @@ import { ArrowRight, BookOpen } from "lucide-react";
 
 import { Card, CardContent } from "@/components/ui/card";
 import guides from "@/src/data/guides.json";
+import { pageAlternates, publicUrl } from "@/lib/seo/urls";
 
-const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL?.trim() || "http://localhost:3000";
+// The production origin, not an environment variable: a missing or malformed NEXT_PUBLIC_BASE_URL must not break metadata or point canonicals at localhost.
+const BASE_URL = "https://www.logivisa.com";
 
 type PageProps = {
   params: Promise<{ locale: string }>;
@@ -33,14 +35,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
     metadataBase: siteUrl,
     title,
     description,
-    alternates: {
-      canonical: `/${locale}/guides`,
-      languages: {
-        en: "/en/guides",
-        tr: "/tr/guides",
-        "zh-Hans": "/zh-Hans/guides",
-      },
-    },
+    alternates: pageAlternates(locale, `/guides`),
     openGraph: {
       title,
       description: tx(
@@ -49,7 +44,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
         "为澳洲技术移民规划提供专家洞察、签证策略和PR路径。"
       ),
       type: "website",
-      url: `/${locale}/guides`,
+      url: publicUrl(locale, `/guides`),
       images: [{ url: "/og/default-og.png", width: 1200, height: 630 }],
     },
   };

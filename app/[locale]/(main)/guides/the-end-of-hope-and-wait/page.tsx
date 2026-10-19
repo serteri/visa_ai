@@ -4,8 +4,10 @@ import { ArrowLeft, ArrowRight, Sparkles, AlertTriangle, CheckCircle, Info } fro
 
 import { LeadMagnetForm } from "@/components/LeadMagnetForm";
 import { Button } from "@/components/ui/button";
+import { pageAlternates, publicUrl } from "@/lib/seo/urls";
 
-const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL?.trim() || "http://localhost:3000";
+// The production origin, not an environment variable: a missing or malformed NEXT_PUBLIC_BASE_URL must not break metadata or point canonicals at localhost.
+const BASE_URL = "https://www.logivisa.com";
 
 type PageProps = {
   params: Promise<{ locale: string }>;
@@ -37,19 +39,12 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
     metadataBase: siteUrl,
     title: meta.title,
     description: meta.description,
-    alternates: {
-      canonical: `/${locale}/guides/the-end-of-hope-and-wait`,
-      languages: {
-        en: `/en/guides/the-end-of-hope-and-wait`,
-        tr: `/tr/guides/the-end-of-hope-and-wait`,
-        "zh-Hans": `/zh-Hans/guides/the-end-of-hope-and-wait`,
-      },
-    },
+    alternates: pageAlternates(locale, `/guides/the-end-of-hope-and-wait`),
     openGraph: {
       title: meta.title,
       description: meta.description,
       type: "article",
-      url: `/${locale}/guides/the-end-of-hope-and-wait`,
+      url: publicUrl(locale, `/guides/the-end-of-hope-and-wait`),
       publishedTime: "2026-07-26T00:00:00.000Z",
       images: [{ url: "/og/default-og.png", width: 1200, height: 630 }],
     },

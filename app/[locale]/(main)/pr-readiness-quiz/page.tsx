@@ -3,8 +3,10 @@ import type { Metadata } from "next";
 import { getTranslations, t as getT } from "@/lib/i18n/get-translations";
 import type { Locale } from "@/lib/i18n/config";
 import { InteractiveQuiz } from "./InteractiveQuiz";
+import { pageAlternates, publicUrl } from "@/lib/seo/urls";
 
-const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL?.trim() || "http://localhost:3000";
+// The production origin, not an environment variable: a missing or malformed NEXT_PUBLIC_BASE_URL must not break metadata or point canonicals at localhost.
+const BASE_URL = "https://www.logivisa.com";
 
 type PageProps = {
   params: Promise<{ locale: string }>;
@@ -26,14 +28,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
       "quiz.meta.description",
       "Take our 8-question AI quiz to find your Australian PR readiness score, uncover hidden points, and see exactly which visa pathway is most likely to get you invited in 2026.",
     ),
-    alternates: {
-      canonical: `/${locale}/pr-readiness-quiz`,
-      languages: {
-        en: "/en/pr-readiness-quiz",
-        tr: "/tr/pr-readiness-quiz",
-        "zh-Hans": "/zh-Hans/pr-readiness-quiz",
-      },
-    },
+    alternates: pageAlternates(locale, `/pr-readiness-quiz`),
     openGraph: {
       title: tx(
         "quiz.meta.ogTitle",
@@ -44,7 +39,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
         "8 questions. Instant AI analysis. Discover your hidden PR points and the exact visa pathway that fits your profile.",
       ),
       type: "website",
-      url: `/${locale}/pr-readiness-quiz`,
+      url: publicUrl(locale, `/pr-readiness-quiz`),
       images: [{ url: "/og/default-og.png", width: 1200, height: 630 }],
     },
   };

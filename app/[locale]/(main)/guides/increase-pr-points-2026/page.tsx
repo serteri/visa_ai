@@ -3,8 +3,10 @@ import Link from "next/link";
 import { ArrowLeft, ArrowRight, Info, Sparkles } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
+import { pageAlternates, publicUrl } from "@/lib/seo/urls";
 
-const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL?.trim() || "http://localhost:3000";
+// The production origin, not an environment variable: a missing or malformed NEXT_PUBLIC_BASE_URL must not break metadata or point canonicals at localhost.
+const BASE_URL = "https://www.logivisa.com";
 
 const tx = (locale: string, zh: string, tr: string, en: string) =>
   locale === "tr" ? tr : locale === "zh-Hans" ? zh : en;
@@ -43,19 +45,12 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
     metadataBase: siteUrl,
     title: meta.title,
     description: meta.description,
-    alternates: {
-      canonical: `/${locale}/guides/increase-pr-points-2026`,
-      languages: {
-        en: `/en/guides/increase-pr-points-2026`,
-        tr: `/tr/guides/increase-pr-points-2026`,
-        "zh-Hans": `/zh-Hans/guides/increase-pr-points-2026`,
-      },
-    },
+    alternates: pageAlternates(locale, `/guides/increase-pr-points-2026`),
     openGraph: {
       title: meta.title,
       description: meta.description,
       type: "article",
-      url: `/${locale}/guides/increase-pr-points-2026`,
+      url: publicUrl(locale, `/guides/increase-pr-points-2026`),
       publishedTime: "2026-08-28T00:00:00.000Z",
       images: [{ url: "/og/default-og.png", width: 1200, height: 630 }],
     },

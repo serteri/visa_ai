@@ -20,8 +20,10 @@ import { VisaPdfDownloadCard } from "@/components/visa-pdf-download-card";
 import { getTranslations } from "@/lib/i18n/get-translations";
 import type { Locale } from "@/lib/i18n/config";
 import visaDetails from "@/src/data/visa-details.json";
+import { pageAlternates } from "@/lib/seo/urls";
 
-const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL?.trim() || "http://localhost:3000";
+// The production origin, not an environment variable: a missing or malformed NEXT_PUBLIC_BASE_URL must not break metadata or point canonicals at localhost.
+const BASE_URL = "https://www.logivisa.com";
 
 type PageProps = {
   params: Promise<{ locale: string }>;
@@ -83,14 +85,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
     metadataBase: new URL(BASE_URL),
     title,
     description,
-    alternates: {
-      canonical: `/${locale}/visas/canada-caregivers`,
-      languages: {
-        en: `/en/visas/canada-caregivers`,
-        tr: `/tr/visas/canada-caregivers`,
-        "zh-Hans": `/zh-Hans/visas/canada-caregivers`,
-      },
-    },
+    alternates: pageAlternates(locale, `/visas/canada-caregivers`),
   };
 }
 

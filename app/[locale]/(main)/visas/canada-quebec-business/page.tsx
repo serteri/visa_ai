@@ -7,8 +7,10 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { VisaPdfDownloadCard } from "@/components/visa-pdf-download-card";
 import businessData from "@/src/data/countries/ca/quebec-investors-entrepreneurs-self-employed.json";
+import { pageAlternates } from "@/lib/seo/urls";
 
-const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL?.trim() || "http://localhost:3000";
+// The production origin, not an environment variable: a missing or malformed NEXT_PUBLIC_BASE_URL must not break metadata or point canonicals at localhost.
+const BASE_URL = "https://www.logivisa.com";
 
 type PageProps = {
   params: Promise<{ locale: string }>;
@@ -80,14 +82,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
     title: "Quebec investors, entrepreneurs and self-employed persons | LogiVisa",
     description:
       "Quebec business pathways with investor, entrepreneur, and self-employed sections, plus federal PR stage requirements.",
-    alternates: {
-      canonical: `/${locale}/visas/canada-quebec-business`,
-      languages: {
-        en: "/en/visas/canada-quebec-business",
-        tr: "/tr/visas/canada-quebec-business",
-        "zh-Hans": "/zh-Hans/visas/canada-quebec-business",
-      },
-    },
+    alternates: pageAlternates(locale, `/visas/canada-quebec-business`),
   };
 }
 

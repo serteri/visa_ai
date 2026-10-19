@@ -3,8 +3,9 @@ import { Fraunces, IBM_Plex_Mono, Inter, Manrope, Noto_Sans } from "next/font/go
 import Script from "next/script";
 import { SessionProviderWrapper } from "@/components/SessionProviderWrapper";
 import { ThemeProviderWrapper } from "@/components/ThemeProviderWrapper";
+import { isValidLocale } from "@/lib/i18n/config";
 import { searchConsoleVerification } from "@/lib/seo/search-console";
-import "./globals.css";
+import "../globals.css";
 
 const manrope = Manrope({
   variable: "--font-manrope",
@@ -41,7 +42,7 @@ const BASE_URL = "https://www.logivisa.com";
 const SITE_DESCRIPTION =
   "Australia Skilled Migration (Subclass 189/190/491) points calculator, ANZSCO finder, and Visa Information Reports — plus complete PDF migration guides from A$10.99 inc. GST.";
 
-// This root layout wraps every locale. It sets the site-wide English default;
+// This root layout (app/[locale]) renders <html lang> for the route's locale and wraps every page. It sets the site-wide English default;
 // per-locale title/description/OpenGraph is generated in
 // app/[locale]/(main)/layout.tsx, which is what Google actually indexes.
 //
@@ -112,14 +113,19 @@ export const viewport: Viewport = {
   themeColor: "#132844",
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
+  params,
 }: Readonly<{
   children: React.ReactNode;
+  params: Promise<{ locale: string }>;
 }>) {
+  const { locale } = await params;
+  // <html lang> follows the route: en, tr or zh-Hans (an unknown segment falls back to English; the pages below it 404).
+  const lang = isValidLocale(locale) ? locale : "en";
   return (
     <html
-      lang="en"
+      lang={lang}
       // next-themes sets/removes the "dark"/"light" class on this element
       // client-side after hydration; suppressHydrationWarning stops React
       // from flagging that as a server/client mismatch (the documented

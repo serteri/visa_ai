@@ -135,10 +135,10 @@ async function main() {
   check(searchConsoleVerification("") === undefined, "variable empty -> no verification meta tag");
   check(searchConsoleVerification("   \t ") === undefined, "variable whitespace-only -> no verification meta tag");
   check(JSON.stringify(searchConsoleVerification("  abc123  ")) === JSON.stringify({ google: "abc123" }), "\"  abc123  \" -> rendered value is \"abc123\"");
-  const root = readFileSync("app/layout.tsx", "utf8").replace(/^\s*\/\/.*$/gm, "");
-  check(/verification:\s*searchConsoleVerification\(process\.env\.SEARCH_CONSOLE_VERIFICATION\)/.test(root), "app/layout.tsx builds the tag only through searchConsoleVerification(process.env.SEARCH_CONSOLE_VERIFICATION)");
-  check(!/verification:[^\n]*\|\|/.test(root) && !/google:\s*["'`]/.test(root), "app/layout.tsx has no fallback expression and no literal verification value");
-  check(!/["'`][A-Za-z0-9_-]{40,}["'`]/.test(root), "app/layout.tsx holds no token-shaped string literal");
+  const root = readFileSync("app/[locale]/layout.tsx", "utf8").replace(/^\s*\/\/.*$/gm, "");
+  check(/verification:\s*searchConsoleVerification\(process\.env\.SEARCH_CONSOLE_VERIFICATION\)/.test(root), "app/[locale]/layout.tsx builds the tag only through searchConsoleVerification(process.env.SEARCH_CONSOLE_VERIFICATION)");
+  check(!/verification:[^\n]*\|\|/.test(root) && !/google:\s*["'`]/.test(root), "app/[locale]/layout.tsx has no fallback expression and no literal verification value");
+  check(!/["'`][A-Za-z0-9_-]{40,}["'`]/.test(root), "app/[locale]/layout.tsx holds no token-shaped string literal");
   // The retired token is split here so this file never contains it whole. No tracked source file may contain it.
   const retired = ["foOddNGs8xqNCNQ7", "4vzcc0AheCIMssYqDONHUOkWgCk"].join("");
   const tracked = execSync("git ls-files", { encoding: "utf8", maxBuffer: 64 * 1024 * 1024 })

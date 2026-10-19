@@ -9,8 +9,10 @@ import quebecBusinessData from "@/src/data/countries/ca/quebec-investors-entrepr
 import quebecSelectedFederalData from "@/src/data/countries/ca/quebec-selected-skilled-workers.json";
 import ruralFrancophonePilotsData from "@/src/data/countries/ca/rural-francophone-pilots.json";
 import visaDetails from "@/src/data/visa-details.json";
+import { pageAlternates } from "@/lib/seo/urls";
 
-const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL?.trim() || "http://localhost:3000";
+// The production origin, not an environment variable: a missing or malformed NEXT_PUBLIC_BASE_URL must not break metadata or point canonicals at localhost.
+const BASE_URL = "https://www.logivisa.com";
 
 type PageProps = {
   params: Promise<{ locale: string }>;
@@ -43,14 +45,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
     metadataBase: new URL(BASE_URL),
     title,
     description,
-    alternates: {
-      canonical: `/${locale}/visas/canada`,
-      languages: {
-        en: `/en/visas/canada`,
-        tr: `/tr/visas/canada`,
-        "zh-Hans": `/zh-Hans/visas/canada`,
-      },
-    },
+    alternates: pageAlternates(locale, `/visas/canada`),
   };
 }
 

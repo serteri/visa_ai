@@ -3,8 +3,10 @@ import { redirect } from "next/navigation";
 
 import { auth } from "@/auth";
 import { JourneyDashboard } from "./JourneyDashboard";
+import { pageAlternates } from "@/lib/seo/urls";
 
-const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL?.trim() || "http://localhost:3000";
+// The production origin, not an environment variable: a missing or malformed NEXT_PUBLIC_BASE_URL must not break metadata or point canonicals at localhost.
+const BASE_URL = "https://www.logivisa.com";
 
 type PageProps = {
   params: Promise<{ locale: string }>;
@@ -38,14 +40,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
     metadataBase: siteUrl,
     title: meta.title,
     description: meta.description,
-    alternates: {
-      canonical: `/${locale}/journey`,
-      languages: {
-        en: "/en/journey",
-        tr: "/tr/journey",
-        "zh-Hans": "/zh-Hans/journey",
-      },
-    },
+    alternates: pageAlternates(locale, `/journey`),
   };
 }
 

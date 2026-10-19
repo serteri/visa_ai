@@ -96,6 +96,8 @@ jobs:
         run: npm run test:agent-lead-notice
       - name: SEO occupation pages (canonical, hreflang, sitemap, noindex, wording; en / tr / zh-Hans)
         run: npm run test:seo-occupation
+      - name: SEO Phase 2 (html lang, hub canonicals, 301s, index, comparison pages)
+        run: npm run test:seo-phase2
       - name: Marketing research journeys, canonical URLs and analytics safety
         run: npm run test:marketing-readiness
       - name: Visa comparison table (sourced charges, no unsourced estimates, official links; en / tr / zh-Hans)

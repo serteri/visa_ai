@@ -6,8 +6,10 @@ import { ArrowLeft } from "lucide-react";
 import guides from "@/src/data/guides.json";
 import { InlineLeadCta } from "../InlineLeadCta";
 import { FinalGuideCta } from "../FinalGuideCta";
+import { pageAlternates, publicUrl } from "@/lib/seo/urls";
 
-const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL?.trim() || "http://localhost:3000";
+// The production origin, not an environment variable: a missing or malformed NEXT_PUBLIC_BASE_URL must not break metadata or point canonicals at localhost.
+const BASE_URL = "https://www.logivisa.com";
 
 type Guide = (typeof guides)[number];
 
@@ -125,19 +127,12 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
     metadataBase: siteUrl,
     title: `${localTitle} | LogiVisa Hub`,
     description: localExcerpt,
-    alternates: {
-      canonical: `/${locale}/guides/${guide.slug}`,
-      languages: {
-        en: `/en/guides/${guide.slug}`,
-        tr: `/tr/guides/${guide.slug}`,
-        "zh-Hans": `/zh-Hans/guides/${guide.slug}`,
-      },
-    },
+    alternates: pageAlternates(locale, `/guides/${guide.slug}`),
     openGraph: {
       title: `${localTitle} | LogiVisa Hub`,
       description: localExcerpt,
       type: "article",
-      url: `/${locale}/guides/${guide.slug}`,
+      url: publicUrl(locale, `/guides/${guide.slug}`),
       publishedTime: guide.date,
       images: [{ url: "/og/default-og.png", width: 1200, height: 630 }],
     },

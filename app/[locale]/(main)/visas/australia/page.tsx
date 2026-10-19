@@ -3,8 +3,10 @@ import Link from "next/link";
 import { ArrowRight, Clock } from "lucide-react";
 import visaDetails from "@/src/data/visa-details.json";
 import subclass186 from "@/src/data/visas/subclass-186.json";
+import { pageAlternates } from "@/lib/seo/urls";
 
-const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL?.trim() || "http://localhost:3000";
+// The production origin, not an environment variable: a missing or malformed NEXT_PUBLIC_BASE_URL must not break metadata or point canonicals at localhost.
+const BASE_URL = "https://www.logivisa.com";
 
 type PageProps = {
   params: Promise<{ locale: string }>;
@@ -50,14 +52,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
     metadataBase: new URL(BASE_URL),
     title,
     description,
-    alternates: {
-      canonical: `/${locale}/visas/australia`,
-      languages: {
-        en: `/en/visas/australia`,
-        tr: `/tr/visas/australia`,
-        "zh-Hans": `/zh-Hans/visas/australia`,
-      },
-    },
+    alternates: pageAlternates(locale, `/visas/australia`),
   };
 }
 

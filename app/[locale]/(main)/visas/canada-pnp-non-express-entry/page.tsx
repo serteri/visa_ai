@@ -9,8 +9,10 @@ import { VisaPdfDownloadCard } from "@/components/visa-pdf-download-card";
 import { getTranslations } from "@/lib/i18n/get-translations";
 import type { Locale } from "@/lib/i18n/config";
 import pnpProcessData from "@/src/data/countries/ca/pnp-non-express-process.json";
+import { pageAlternates } from "@/lib/seo/urls";
 
-const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL?.trim() || "http://localhost:3000";
+// The production origin, not an environment variable: a missing or malformed NEXT_PUBLIC_BASE_URL must not break metadata or point canonicals at localhost.
+const BASE_URL = "https://www.logivisa.com";
 
 type PageProps = {
   params: Promise<{ locale: string }>;
@@ -62,14 +64,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
     metadataBase: new URL(BASE_URL),
     title,
     description: pnp.pathwayCovered ?? "Provincial Nominee Program - Non-Express Entry process",
-    alternates: {
-      canonical: `/${locale}/visas/canada-pnp-non-express-entry`,
-      languages: {
-        en: `/en/visas/canada-pnp-non-express-entry`,
-        tr: `/tr/visas/canada-pnp-non-express-entry`,
-        "zh-Hans": `/zh-Hans/visas/canada-pnp-non-express-entry`,
-      },
-    },
+    alternates: pageAlternates(locale, `/visas/canada-pnp-non-express-entry`),
   };
 }
 
