@@ -5,7 +5,6 @@ import { Info, Save, Check } from "lucide-react";
 import { useEffect, useMemo, useReducer, useRef, useState, useTransition } from "react";
 import type { ReactNode } from "react";
 import { useSession } from "next-auth/react";
-import type { Occupation } from "@/lib/occupations";
 import { useTranslation } from "@/contexts/language-context";
 import { trackEvent } from "@/lib/analytics/events";
 import { ResearchLinks } from "@/components/research-links";
@@ -384,7 +383,7 @@ function ScoreRow({
 
 // ─── Main component ────────────────────────────────────────────────────────────
 
-export function PointsCalculatorClient({ locale, hideHeader, occupation }: { locale: string; hideHeader?: boolean; occupation?: Occupation }) {
+export function PointsCalculatorClient({ locale, hideHeader }: { locale: string; hideHeader?: boolean }) {
   const { t } = useTranslation();
   const { data: session } = useSession();
   const isSignedIn = !!session?.user;
@@ -454,18 +453,8 @@ export function PointsCalculatorClient({ locale, hideHeader, occupation }: { loc
   };
 
   const activeRisks: string[] = [];
-  if (occupation && calc.total < occupation.recentCutoff) {
-    activeRisks.push(
-      t("pc.insights.marketReality")
-        .replace("{title}", occupation.title)
-        .replace("{cutoff}", String(occupation.recentCutoff))
-    );
-  }
   if (form.age === "25-32") {
     activeRisks.push(t("pc.insights.ageCliff"));
-  }
-  if (occupation?.experienceRisk && (calc.rawOverseas > 0 || calc.rawAus > 0)) {
-    activeRisks.push(t("pc.insights.experienceDeduction"));
   }
   if (showNomination && form.nomination) {
     activeRisks.push(t("pc.insights.stateNomination"));

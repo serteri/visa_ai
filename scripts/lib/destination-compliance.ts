@@ -18,7 +18,6 @@ export const DESTINATION_CODE_FILES = [
   "lib/visas/comparison-content.ts",
   "app/[locale]/(main)/tools/points-calculator/page.tsx",
   "app/[locale]/(main)/tools/points-calculator/australia/page.tsx",
-  "app/[locale]/(main)/tools/points-calculator/[slug]/page.tsx",
   "app/[locale]/(main)/tools/anzsco-finder/page.tsx",
   "app/[locale]/(main)/tools/anzsco-finder/AnzscoSearchTool.tsx",
   "app/[locale]/(main)/visas/[subclass]/page.tsx",

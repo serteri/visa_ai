@@ -14,9 +14,26 @@ const INDEX_PATH = (data as { indexPath: string }).indexPath;
 
 const OCCUPATION_URL = /^\/(?:(tr|zh-Hans)\/)?occupations\/([^/]+)\/?$/;
 
-export type OccupationRedirect = { status: 301; to: string; reason: "canonical_slug" | "code_without_page" };
+/**
+ * The three hand-written calculator pages (/tools/points-calculator/<slug>) held hard-coded invitation cutoffs and were retired: each answers a real 301
+ * to the occupation page for the same code. (Slug in the old URL -> current canonical occupation slug.)
+ */
+export const RETIRED_CALCULATOR_PAGES: Record<string, string> = {
+  "software-engineer": "261313",
+  "registered-nurse": "254412",
+  "civil-engineer": "233211",
+};
+const CALCULATOR_URL = /^\/(?:(tr|zh-Hans)\/)?tools\/points-calculator\/([^/]+)\/?$/;
+
+export type OccupationRedirect = { status: 301; to: string; reason: "canonical_slug" | "code_without_page" | "retired_calculator_page" };
 
 export function occupationRedirectFor(pathname: string): OccupationRedirect | null {
+  const calc = pathname.match(CALCULATOR_URL);
+  if (calc) {
+    const code = RETIRED_CALCULATOR_PAGES[calc[2]];
+    const slug = code ? SLUGS[code] : undefined;
+    return slug ? { status: 301, to: `${calc[1] ? `/${calc[1]}` : ""}/occupations/${slug}`, reason: "retired_calculator_page" } : null;
+  }
   const m = pathname.match(OCCUPATION_URL);
   if (!m) return null;
   const prefix = m[1] ? `/${m[1]}` : "";

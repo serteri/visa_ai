@@ -8,7 +8,7 @@ import { join } from "node:path";
 import robots from "../app/robots";
 import { buildSitemap } from "../app/sitemap";
 import { occupationPageContent } from "../lib/occupations/page-content";
-import { occupationRedirectFor } from "../lib/occupations/redirects";
+import { occupationRedirectFor, RETIRED_CALCULATOR_PAGES } from "../lib/occupations/redirects";
 import { entriesByGroup, entriesByLetter, groupCounts, indexableEntries, LETTERS, MAJOR_GROUP_IDS, majorGroupName, richEntries } from "../lib/occupations/index-data";
 import { getUniqueOccupations } from "../lib/occupations/seo";
 import { buildFactRows } from "../lib/occupations/facts";
@@ -152,6 +152,39 @@ section("Step 4. fact rows (value | source + link | verified date), registration
   const layout2 = readFileSync("app/[locale]/(main)/layout.tsx", "utf8");
   t("the locale layout no longer emits a WebApplication or an Offer / price", !/WebApplication/.test(layout2) && !/"Offer"/.test(layout2) && !/priceCurrency/.test(layout2));
   t("the old hard-coded state table is gone from the page (no direct stateRows rendering)", !/c\.stateRows\.map/.test(page));
+}
+
+section("Step 5. points calculator: information-only wording, retired hand-written pages -> 301");
+{
+  const { existsSync } = require("node:fs") as typeof import("node:fs");
+  const slugs = (redirectData as { slugs: Record<string, string> }).slugs;
+  for (const [slug, code] of Object.entries(RETIRED_CALCULATOR_PAGES)) {
+    for (const prefix of ["", "/tr", "/zh-Hans"]) {
+      const r = occupationRedirectFor(`${prefix}/tools/points-calculator/${slug}`);
+      t(`${prefix || "/en"}/tools/points-calculator/${slug} -> 301 ${prefix}/occupations/${slugs[code]}`, r?.status === 301 && r.to === `${prefix}/occupations/${slugs[code]}`);
+    }
+    t(`the target occupation page ${slugs[code]} is a real page`, getUniqueOccupations().some((o) => o.anzsco_code === code));
+  }
+  t("the live calculator pages (australia, canada) and unknown slugs are not redirected", occupationRedirectFor("/tools/points-calculator/australia") === null && occupationRedirectFor("/tools/points-calculator/canada") === null && occupationRedirectFor("/tools/points-calculator/nope") === null);
+  t("the hand-written page and its data file (hard-coded cutoffs) are deleted", !existsSync("app/[locale]/(main)/tools/points-calculator/[slug]/page.tsx") && !existsSync("lib/occupations.ts"));
+  const client = readFileSync("app/[locale]/(main)/tools/points-calculator/points-calculator-client.tsx", "utf8");
+  t("the calculator no longer takes an occupation, a cutoff or an experience-deduction claim", !/recentCutoff|experienceRisk|occupation\?:/.test(client) && !/marketReality|experienceDeduction/.test(client));
+  const sourcesWithCutoff = walk("app").concat(walk("lib")).filter((f) => /\.(ts|tsx)$/.test(f) && /recentCutoff/.test(readFileSync(f, "utf8")));
+  t("no hard-coded invitation cutoff (recentCutoff) remains in app/ or lib/", sourcesWithCutoff.length === 0, sourcesWithCutoff.join(", "));
+  const { findBannedPhrases } = require("../lib/seo/banned-phrases") as typeof import("../lib/seo/banned-phrases");
+  const { getPointsCalcSeoContent } = require("../lib/seo/points-calculator-content") as typeof import("../lib/seo/points-calculator-content");
+  // Keys allowed to carry a flagged word, with the reason: an official visa-term label, a negated "not advice" disclaimer, and "qualification" (zh 资格).
+  const ALLOW = new Set(["pc.relative.label", "pc.insights.maraDisclaimer", "pc.education.diploma-trade"]);
+  for (const locale of activeLocales) {
+    const guide = JSON.stringify(getPointsCalcSeoContent(locale));
+    t(`${locale}: the guide under the calculator carries no banned wording`, findBannedPhrases(guide).length === 0, findBannedPhrases(guide).join(", "));
+    const strings = JSON.parse(readFileSync(`public/locales/${locale}.json`, "utf8")) as Record<string, string>;
+    const hits = Object.entries(strings).filter(([k, v]) => k.startsWith("pc.") && typeof v === "string" && findBannedPhrases(v).length > 0 && !ALLOW.has(k) && !/eligible relative/i.test(v));
+    t(`${locale}: pc.* calculator strings carry no banned wording (allow-listed: official term / disclaimer)`, hits.length === 0, hits.map(([k]) => k).join(", "));
+    t(`${locale}: the points-table notes are present and the removed claims are gone`, Boolean(strings["pc.insights.title"] && strings["pc.insights.ageCliff"] && strings["pc.insights.stateNomination"]) && !("pc.insights.marketReality" in strings) && !("pc.insights.experienceDeduction" in strings));
+  }
+  const keys = (l: string) => Object.keys(JSON.parse(readFileSync(`public/locales/${l}.json`, "utf8"))).filter((k) => k.startsWith("pc.insights")).sort().join();
+  t("en / tr / zh-Hans have the same pc.insights keys", keys("en") === keys("tr") && keys("en") === keys("zh-Hans"));
 }
 
 console.log(failures === 0 ? "\n✅ ALL CHECKS PASSED" : `\n❌ ${failures} CHECK(S) FAILED`);

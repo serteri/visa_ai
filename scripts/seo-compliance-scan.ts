@@ -18,7 +18,6 @@ for (const f of [
   "app/[locale]/(main)/occupations/[id]/page.tsx",
   "components/StateDemandRadar.tsx",
   "components/MiniCvTeaser.tsx",
-  "app/[locale]/(main)/tools/points-calculator/[slug]/page.tsx",
   "app/[locale]/(main)/tools/points-calculator/page.tsx",
   "app/[locale]/(main)/tools/points-calculator/australia/page.tsx",
   "app/[locale]/(main)/tools/visa-comparison/page.tsx",
