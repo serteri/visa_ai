@@ -4,7 +4,7 @@ import data from "@/src/data/occupation-slug-redirects.json";
  * Every occupation URL that was ever published, answered correctly (data: scripts/build-occupation-redirects.ts):
  *   - a slug whose code has a page now, but with other words (a renamed occupation, an old slug) -> 301 to the canonical slug;
  *   - a code that was in the dataset (a code with no page now: "nec", not mapped to a skilled visa, removed / renumbered) -> 301 to
- *     the ANZSCO finder, the occupation index;
+ *     the ANZSCO major-group index page for its first digit (/occupations/group/<1-8>), else the ANZSCO finder;
  *   - a code that never existed -> no redirect (the page returns 404).
  * Used by proxy.ts (a real 301 before rendering) and by the occupation page (the same answer if the proxy was bypassed).
  */
@@ -30,6 +30,7 @@ export function occupationRedirectFor(pathname: string): OccupationRedirect | nu
   if (!code) return null;
   const slug = SLUGS[code];
   if (slug) return id === slug ? null : { status: 301, to: `${prefix}/occupations/${slug}`, reason: "canonical_slug" };
-  if (KNOWN.has(code)) return { status: 301, to: `${prefix}${INDEX_PATH}`, reason: "code_without_page" };
+  // The ANZSCO major-group index page (first digit 1-8) is the closest page that exists; any other code goes to the finder.
+  if (KNOWN.has(code)) return { status: 301, to: /^[1-8]/.test(code) ? `${prefix}/occupations/group/${code[0]}` : `${prefix}${INDEX_PATH}`, reason: "code_without_page" };
   return null;
 }

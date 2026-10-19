@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { RichOccupationLinks } from "@/components/occupations/rich-occupation-links";
 import Link from "next/link";
 import { ArrowRight, Clock } from "lucide-react";
 import visaDetails from "@/src/data/visa-details.json";
@@ -192,8 +193,10 @@ export default async function AustraliaVisasPage({ params }: PageProps) {
             );
           })}
         </div>
+        <div className="mt-10">
+          <RichOccupationLinks locale={locale} />
+        </div>
       </div>
     </main>
   );
 }
-

@@ -6,6 +6,8 @@ import { OccupationToolClickTracker } from "@/components/analytics/occupation-to
 import { OccupationViewTracker } from "@/components/analytics/occupation-view-tracker";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
+import { Breadcrumbs } from "@/components/seo/breadcrumbs";
+import { majorGroupName, majorGroupOf } from "@/lib/occupations/index-data";
 import { OccupationDistinction } from "@/components/occupations/occupation-distinction";
 import { TraSkillsAssessment } from "@/components/occupations/tra-skills-assessment";
 import { ResearchLinks, ProfessionalHelp } from "@/components/research-links";
@@ -126,6 +128,14 @@ export default async function OccupationDetailsPage({ params }: PageProps) {
   if (id !== c.slug)
     permanentRedirect(publicPath(locale, `/occupations/${c.slug}`));
 
+  const group = majorGroupOf(c.code);
+  const crumbs = [
+    { label: text("Home", "Ana sayfa", "首页"), path: "/" },
+    { label: text("Occupations", "Meslekler", "职业"), path: "/occupations" },
+    ...(group ? [{ label: majorGroupName(group, locale), path: `/occupations/group/${group}` }] : []),
+    { label: c.displayName, path: `/occupations/${c.slug}` },
+  ];
+
   const row =
     "flex flex-col gap-1 border-b border-slate-100 py-3 sm:flex-row sm:gap-6";
   const rowLabel =
@@ -137,6 +147,8 @@ export default async function OccupationDetailsPage({ params }: PageProps) {
       <OccupationViewTracker occupationCode={c.code} locale={locale} />
       <OccupationToolClickTracker occupationCode={c.code} locale={locale} />
       <section className="relative mx-auto w-full max-w-4xl space-y-8 px-4 sm:px-6 lg:px-8">
+        <Breadcrumbs locale={locale} crumbs={crumbs} />
+
         <header className="rounded-3xl border border-slate-200/80 bg-white/95 p-8 shadow-xl shadow-slate-900/5 sm:p-10">
           <Badge
             variant="outline"

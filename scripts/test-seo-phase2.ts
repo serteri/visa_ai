@@ -6,6 +6,12 @@ import { readFileSync, readdirSync, statSync } from "node:fs";
 import { join } from "node:path";
 
 import robots from "../app/robots";
+import { buildSitemap } from "../app/sitemap";
+import { occupationPageContent } from "../lib/occupations/page-content";
+import { occupationRedirectFor } from "../lib/occupations/redirects";
+import { entriesByGroup, entriesByLetter, groupCounts, indexableEntries, LETTERS, MAJOR_GROUP_IDS, majorGroupName, richEntries } from "../lib/occupations/index-data";
+import { getUniqueOccupations } from "../lib/occupations/seo";
+import redirectData from "../src/data/occupation-slug-redirects.json";
 import { activeLocales } from "../lib/i18n/config";
 import { languageAlternates, pageAlternates, publicUrl } from "../lib/seo/urls";
 
@@ -51,6 +57,52 @@ for (const path of ["/guides", "/journey", "/visas", "/visas/australia", "/repor
     const self = publicUrl(locale, path);
     t(`${locale} ${path}: canonical is itself, hreflang has ${activeLocales.length} locales + x-default, none via /en/`, a.canonical === self && Object.keys(a.languages).length === activeLocales.length + 1 && a.languages["x-default"] === publicUrl("en", path) && !Object.values(a.languages).some((u) => u.includes("/en/")) && JSON.stringify(a.languages) === JSON.stringify(languageAlternates(path)));
   }
+}
+
+section("Step 2. stale occupation URLs (already shipped in 7efd71a; here: the index page is now the target)");
+{
+  const known = (redirectData as { known: string[] }).known;
+  let bad = 0;
+  for (const code of known) for (const prefix of ["", "/tr", "/zh-Hans"]) {
+    const r = occupationRedirectFor(`${prefix}/occupations/${code}-whatever`);
+    if (!r || r.status !== 301 || r.to !== `${prefix}/occupations/group/${code[0]}`) bad++;
+  }
+  t(`all ${known.length} published codes without a page x 3 locales -> 301 to their ANZSCO major-group index page`, bad === 0, `${bad} wrong`);
+  t("599999 (nec) -> /occupations/group/5", occupationRedirectFor("/occupations/599999-clerical-and-administrative-workers-nec")?.to === "/occupations/group/5");
+  t("a code that never existed is not redirected (404)", occupationRedirectFor("/occupations/123457-never-existed") === null);
+  t("a current occupation with another slug -> 301 to its canonical slug", occupationRedirectFor("/occupations/261313-old-name")?.to === "/occupations/261313-software-engineer");
+}
+
+section("Step 3. crawlable occupation index, breadcrumbs, internal links");
+{
+  const sm = buildSitemap().map((e) => e.url);
+  const hasAll = (path: string) => activeLocales.every((l) => sm.includes(publicUrl(l, path)));
+  const unique = getUniqueOccupations();
+  for (const locale of activeLocales) {
+    const all = indexableEntries(locale);
+    t(`${locale}: the index lists ${all.length} indexable occupations, none from the noindex thin tier`, all.length > 500 && all.every((e) => e.tier !== "thin"));
+    t(`${locale}: every indexable occupation is on exactly one group page (or has no major group) and one letter page`, (() => {
+      const byGroup = MAJOR_GROUP_IDS.flatMap((g) => entriesByGroup(locale, g).map((e) => e.code));
+      const byLetter = LETTERS.flatMap((l) => entriesByLetter(locale, l).map((e) => e.code));
+      return new Set(byGroup).size === byGroup.length && byGroup.length === all.filter((e) => e.group).length && new Set(byLetter).size === byLetter.length && byLetter.length === all.filter((e) => e.letter !== "#").length;
+    })());
+    t(`${locale}: group names are non-empty for all 8 groups`, MAJOR_GROUP_IDS.every((g) => majorGroupName(g, locale).length >= 2));
+    t(`${locale}: rich-tier entries are all rich`, richEntries(locale, 24).length === 24 && richEntries(locale, 24).every((e) => e.tier === "rich"));
+  }
+  t("the sitemap lists the index, every non-empty group and every non-empty letter page in all locales, with hreflang", hasAll("/occupations") && MAJOR_GROUP_IDS.filter((g) => groupCounts("en")[g]).every((g) => hasAll(`/occupations/group/${g}`)) && LETTERS.filter((l) => entriesByLetter("en", l).length).every((l) => hasAll(`/occupations/letter/${l}`)) && buildSitemap().filter((e) => /\/occupations(\/group|\/letter)?(\/|$)/.test(new URL(e.url).pathname) && !/occupations\/\d/.test(e.url)).every((e) => Object.keys(e.alternates?.languages ?? {}).length === 4));
+  t("the sitemap still excludes the thin tier", unique.length > all0().length);
+  for (const locale of activeLocales) {
+    const c = occupationPageContent(unique.find((o) => o.anzsco_code === "261313")!, locale);
+    t(`${locale}: the occupation page links the points calculator with ?occupation=<code>`, c.related.some((r) => r.destination === "points_calculator" && r.path.endsWith("?occupation=261313")));
+    t(`${locale}: the occupation page links 189 / 190 / 491, the skills assessment finder, state data and the ANZSCO finder`, ["/visas/189", "/visas/190", "/visas/491", "/tools/skills-assessment", "/tools/state-nomination", "/tools/anzsco-finder"].every((p) => c.related.some((r) => r.path === p)));
+  }
+  const occPage = readFileSync("app/[locale]/(main)/occupations/[id]/page.tsx", "utf8");
+  t("the occupation page renders breadcrumbs (Home > Occupations > group > occupation) and the research links with the comparison page", /<Breadcrumbs /.test(occPage) && /\/occupations\/group\//.test(occPage) && /<ResearchLinks /.test(occPage));
+  for (const f of ["app/[locale]/(main)/visas/australia/page.tsx", "app/[locale]/(main)/tools/anzsco-finder/page.tsx"]) t(`hub page links rich-tier occupations: ${f}`, /<RichOccupationLinks /.test(readFileSync(f, "utf8")));
+  const newFiles = ["lib/occupations/index-data.ts", "components/occupations/occupation-index-list.tsx", "components/seo/breadcrumbs.tsx", "components/occupations/rich-occupation-links.tsx", "components/occupations/calculator-occupation-note.tsx", "app/[locale]/(main)/occupations/page.tsx", "app/[locale]/(main)/occupations/group/[major]/page.tsx", "app/[locale]/(main)/occupations/letter/[letter]/page.tsx"];
+  const banned = /(you should|we recommend|recommended|you qualify|you are eligible|your chances|best option|apply now|guarantee)/i;
+  t("no directive, recommending or eligibility wording on the new index files", newFiles.every((f) => !banned.test(readFileSync(f, "utf8"))), newFiles.filter((f) => banned.test(readFileSync(f, "utf8"))).join(", "));
+  function all0() { return indexableEntries("en"); }
 }
 
 console.log(failures === 0 ? "\n✅ ALL CHECKS PASSED" : `\n❌ ${failures} CHECK(S) FAILED`);

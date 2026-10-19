@@ -67,13 +67,14 @@ console.log("a code that was published and has no page now -> 301 to the ANZSCO 
   for (const code of known) {
     for (const prefix of PREFIXES) {
       const r = occupationRedirectFor(`${prefix}/occupations/${code}-whatever-it-was-called`);
-      if (!r || r.status !== 301 || r.to !== `${prefix}${INDEX}`) bad++;
+      const want = /^[1-8]/.test(code) ? `${prefix}/occupations/group/${code[0]}` : `${prefix}${INDEX}`;
+      if (!r || r.status !== 301 || r.to !== want) bad++;
     }
   }
-  t(`all ${known.length} codes without a page x 3 locales -> 301 ${INDEX}`, bad === 0, `${bad} wrong`);
+  t(`all ${known.length} codes without a page x 3 locales -> 301 major-group index page (else ${INDEX})`, bad === 0, `${bad} wrong`);
   const example = occupationRedirectFor("/occupations/599999-clerical-and-administrative-workers-nec");
-  t("the reported URL (599999 nec) -> 301 to the ANZSCO finder", example?.status === 301 && example.to === INDEX, JSON.stringify(example));
-  t("the Turkish and Chinese versions keep their locale", occupationRedirectFor("/tr/occupations/599999-x")?.to === `/tr${INDEX}` && occupationRedirectFor("/zh-Hans/occupations/599999-x")?.to === `/zh-Hans${INDEX}`);
+  t("the reported URL (599999 nec) -> 301 to its ANZSCO major-group index page (group 5)", example?.status === 301 && example.to === "/occupations/group/5", JSON.stringify(example));
+  t("the Turkish and Chinese versions keep their locale", occupationRedirectFor("/tr/occupations/599999-x")?.to === "/tr/occupations/group/5" && occupationRedirectFor("/zh-Hans/occupations/599999-x")?.to === "/zh-Hans/occupations/group/5");
 }
 
 console.log("only a slug that never existed stays a 404");

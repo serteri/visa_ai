@@ -17,7 +17,7 @@ export function researchLinks(locale: string, code?: string): ResearchLink[] {
         "Puan hesapla",
         "计算积分",
       ),
-      path: "/tools/points-calculator/australia",
+      path: code ? `/tools/points-calculator/australia?occupation=${encodeURIComponent(code)}` : "/tools/points-calculator/australia",
       destination: "points_calculator",
     },
     {

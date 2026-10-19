@@ -1,6 +1,7 @@
 import { pageAlternates, publicUrl, SITE_ORIGIN } from "@/lib/seo/urls";
 import type { Metadata } from "next";
 
+import { RichOccupationLinks } from "@/components/occupations/rich-occupation-links";
 import { AnzscoSearchTool } from "./AnzscoSearchTool";
 import { SeoContentSection } from "@/components/SeoContentSection";
 import { getAnzscoSeoContent, buildAnzscoSchema } from "@/lib/seo/anzsco-content";
@@ -41,6 +42,9 @@ export default async function AnzscoFinderPage({ params, searchParams }: PagePro
   return (
     <>
       <AnzscoSearchTool locale={locale} initialQuery={q} />
+      <div className="px-4 pb-8">
+        <RichOccupationLinks locale={locale} />
+      </div>
       <SeoContentSection {...seoContent} schemaJson={schemaJson} />
     </>
   );

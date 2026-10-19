@@ -1,6 +1,7 @@
 import { pageAlternates, publicUrl, SITE_ORIGIN } from "@/lib/seo/urls";
 import type { Metadata } from "next";
 import { PointsCalculatorClient } from "../points-calculator-client";
+import { CalculatorOccupationNote } from "@/components/occupations/calculator-occupation-note";
 import { SeoContentSection } from "@/components/SeoContentSection";
 import { getPointsCalcSeoContent, buildPointsCalcSchema } from "@/lib/seo/points-calculator-content";
 
@@ -37,6 +38,7 @@ export default async function AustraliaPointsCalculatorPage({ params }: PageProp
   const schemaJson = buildPointsCalcSchema(locale);
   return (
     <>
+      <CalculatorOccupationNote locale={locale} />
       <PointsCalculatorClient locale={locale} />
       <SeoContentSection {...seoContent} schemaJson={schemaJson} />
     </>

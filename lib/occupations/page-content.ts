@@ -203,7 +203,7 @@ export function occupationPageContent(record: OccupationRecord, locale: Locale):
     officialLabel: s.sources.official,
     officialUrl: HOME_AFFAIRS_SOL_URL,
     related: [
-      { label: s.related.calculator, path: "/tools/points-calculator/australia", destination: "points_calculator" },
+      { label: s.related.calculator, path: `/tools/points-calculator/australia?occupation=${code}`, destination: "points_calculator" },
       { label: s.related.skillsAssessment, path: "/tools/skills-assessment", destination: "skills_assessment" },
       { label: s.related.stateNomination, path: "/tools/state-nomination", destination: "state_nomination" },
       { label: s.related.finder, path: "/tools/anzsco-finder", destination: "anzsco_finder" },

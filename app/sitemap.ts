@@ -4,6 +4,7 @@ import { activeLocales } from "@/lib/i18n/config";
 import { mockVisaTypes } from "@/lib/mock-visa-data";
 import { OCCUPATION_DATASET_DATE } from "@/lib/occupations/page-content";
 import { latestVerifiedDate, occupationRichness } from "@/lib/occupations/richness";
+import { groupCounts, letterCounts, MAJOR_GROUP_IDS, LETTERS } from "@/lib/occupations/index-data";
 import { buildOccupationSlug, getUniqueOccupations } from "@/lib/occupations/seo";
 import { languageAlternates, publicUrl } from "@/lib/seo/urls";
 
@@ -30,6 +31,11 @@ export function buildSitemap(): MetadataRoute.Sitemap {
   };
 
   for (const path of ["", "/full-check", "/guide", "/tools/points-calculator", "/tools/anzsco-finder", "/tools/points-calculator/australia", "/tools/skills-assessment", "/tools/visa-comparison", "/tools/state-nomination", "/tools/document-checklist-2026"]) add(path || "/");
+
+  // The occupation index: overview, one page per ANZSCO major group and per starting letter (only groups / letters that list a page).
+  add("/occupations");
+  for (const g of MAJOR_GROUP_IDS) if (groupCounts("en")[g]) add(`/occupations/group/${g}`);
+  for (const l of LETTERS) if (letterCounts("en")[l]) add(`/occupations/letter/${l}`);
 
   entries.push({ url: publicUrl("en", "/resources/for-migration-professionals") });
 
