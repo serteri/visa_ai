@@ -37,7 +37,7 @@ type Strings = {
   stateNote: string;
   stateNoData: string;
   sources: { dataset: (d: string) => string; authority: (d: string) => string; states: (d: string) => string; official: string };
-  related: { calculator: string; finder: string; visa: (s: string) => string; skillsAssessment: string; stateNomination: string };
+  related: { calculator: string; finder: string; visa: (s: string) => string; skillsAssessment: string; stateNomination: string; cost: string };
   notice: string;
 };
 
@@ -63,7 +63,7 @@ const STRINGS: Record<Locale, Strings> = {
       states: (d) => `State and territory lists last verified ${d}.`,
       official: "Official list: Department of Home Affairs, Skilled Occupation List",
     },
-    related: { calculator: "Points calculator", finder: "ANZSCO finder", visa: (s) => `Subclass ${s} information`, skillsAssessment: "Skills assessment information", stateNomination: "State nomination data" },
+    related: { calculator: "Points calculator", finder: "ANZSCO finder", visa: (s) => `Subclass ${s} information`, skillsAssessment: "Skills assessment information", stateNomination: "State nomination data", cost: "Visa application charges" },
     notice: "General information compiled from published sources. It is not migration advice and is not reviewed by a migration agent.",
   },
   tr: {
@@ -87,7 +87,7 @@ const STRINGS: Record<Locale, Strings> = {
       states: (d) => `Eyalet ve bölge listeleri en son ${d} tarihinde doğrulandı.`,
       official: "Resmî liste: İçişleri Bakanlığı (Department of Home Affairs), Skilled Occupation List",
     },
-    related: { calculator: "Puan hesaplayıcı", finder: "ANZSCO bulucu", visa: (s) => `Subclass ${s} bilgileri`, skillsAssessment: "Beceri değerlendirmesi bilgileri", stateNomination: "Eyalet adaylık verileri" },
+    related: { calculator: "Puan hesaplayıcı", finder: "ANZSCO bulucu", visa: (s) => `Subclass ${s} bilgileri`, skillsAssessment: "Beceri değerlendirmesi bilgileri", stateNomination: "Eyalet adaylık verileri", cost: "Vize başvuru ücretleri" },
     notice: "Yayımlanmış kaynaklardan derlenen genel bilgidir. Göçmenlik danışmanlığı değildir ve bir göçmenlik danışmanı tarafından incelenmemiştir.",
   },
   "zh-Hans": {
@@ -111,7 +111,7 @@ const STRINGS: Record<Locale, Strings> = {
       states: (d) => `州和领地清单最近核对于 ${d}。`,
       official: "官方清单：澳大利亚内政部（Department of Home Affairs）技术职业清单",
     },
-    related: { calculator: "积分计算器", finder: "ANZSCO 职业查找", visa: (s) => `${s} 子类信息`, skillsAssessment: "技能评估信息", stateNomination: "州提名数据" },
+    related: { calculator: "积分计算器", finder: "ANZSCO 职业查找", visa: (s) => `${s} 子类信息`, skillsAssessment: "技能评估信息", stateNomination: "州提名数据", cost: "签证申请费" },
     notice: "本页为根据公开来源整理的一般信息，不属于移民咨询意见，也未经移民代理审阅。",
   },
 };
@@ -206,6 +206,7 @@ export function occupationPageContent(record: OccupationRecord, locale: Locale):
       { label: s.related.calculator, path: `/tools/points-calculator/australia?occupation=${code}`, destination: "points_calculator" },
       { label: s.related.skillsAssessment, path: "/tools/skills-assessment", destination: "skills_assessment" },
       { label: s.related.stateNomination, path: "/tools/state-nomination", destination: "state_nomination" },
+      { label: s.related.cost, path: "/tools/cost-calculator", destination: "cost_calculator" },
       { label: s.related.finder, path: "/tools/anzsco-finder", destination: "anzsco_finder" },
       ...["189", "190", "491"].map((v) => ({ label: s.related.visa(v), path: `/visas/${v}` })),
     ],

@@ -248,5 +248,42 @@ section("Step 7. subclass 189 / 190 / 491 information pages: sourced facts, stat
   t("state facts come only from getAdminStateData (no hard-coded state table)", /getAdminStateData\(\)/.test(visaPage));
 }
 
+section("Step 8. cost calculator: published visa application charges, each with source and verified date");
+{
+  const { CHARGE_SUBCLASSES, chargesFor, computeCharges, EXCLUDED_SUBCLASSES } = require("../lib/costs/visa-charges") as typeof import("../lib/costs/visa-charges");
+  const { findBannedPhrases } = require("../lib/seo/banned-phrases") as typeof import("../lib/seo/banned-phrases");
+  const fees = require("../src/data/visa-fees.json") as { visas: Record<string, { vac: { main: number; partner_18_plus: number; child_under_18: number; secondInstalmentEnglish?: number } }> };
+  const iso = /^\d{4}-\d{2}-\d{2}$/;
+  for (const s of CHARGE_SUBCLASSES) {
+    const c = chargesFor(s);
+    const v = fees.visas[s].vac;
+    t(`${s}: main / adult / child charges equal visa-fees.json`, c.main.amount === v.main && c.additionalAdult.amount === v.partner_18_plus && c.child.amount === v.child_under_18);
+    const figs = [c.main, c.additionalAdult, c.child, ...(c.secondInstalment ? [c.secondInstalment] : [])];
+    t(`${s}: every figure has an https Home Affairs source and an ISO verified date`, figs.every((f) => /^https:\/\/immi\.homeaffairs\.gov\.au\//.test(f.source.url) && iso.test(f.source.verified) && f.source.name.length > 0));
+    t(`${s}: the second instalment ${s === "482" ? "is absent (the visa has none)" : "equals the fee data"}`, s === "482" ? c.secondInstalment === null : c.secondInstalment?.amount === v.secondInstalmentEnglish);
+  }
+  t("subclasses without a verified main charge (485, 500, 186) are not offered", ["485", "500", "186"].every((s) => !(CHARGE_SUBCLASSES as string[]).includes(s) && s in EXCLUDED_SUBCLASSES));
+  const r = computeCharges("190", { additionalAdults: 1, children: 2, secondInstalments: 1 });
+  t("190 with 1 adult, 2 children and 1 second instalment adds up to 6140 + 3070 + 2 x 1535 + 4885 = 17165", r.total === 17165 && r.lines.length === 4);
+  t("a visa with no second instalment ignores that input (482)", computeCharges("482", { additionalAdults: 1, children: 1, secondInstalments: 5 }).total === 4015 + 4015 + 1005);
+  t("no extras = the main charge only; negative, fractional and absurd inputs are clamped", computeCharges("189", { additionalAdults: 0, children: 0, secondInstalments: 0 }).total === 6135 && computeCharges("189", { additionalAdults: -3, children: 2.9, secondInstalments: 1000 }).total === 6135 + 2 * 1540 + 20 * 4885);
+  const mod = readFileSync("lib/costs/visa-charges.ts", "utf8") + readFileSync("lib/costs/charge-math.ts", "utf8");
+  t("the calculator never reads the unsourced estimate tables (mandatory_estimates / optional_estimates)", !/mandatory_estimates|optional_estimates/.test(mod));
+  const sm = buildSitemap().map((e) => e.url);
+  const clientSrc = readFileSync("components/tools/cost-calculator-client.tsx", "utf8");
+  t("the client bundle does not import the fee files (arithmetic comes from charge-math.ts)", !/fee-provenance|visa-fees/.test(clientSrc) && /charge-math/.test(clientSrc));
+  for (const locale of activeLocales) {
+    const alt = pageAlternates(locale, "/tools/cost-calculator");
+    t(`${locale}: cost calculator in the sitemap with self canonical + hreflang x3 + x-default`, sm.includes(publicUrl(locale, "/tools/cost-calculator")) && alt.canonical === publicUrl(locale, "/tools/cost-calculator") && Object.keys(alt.languages).length === 4);
+    const c = occupationPageContent(getUniqueOccupations().find((o) => o.anzsco_code === "261313")!, locale);
+    t(`${locale}: the occupation page links the cost calculator`, c.related.some((x) => x.path === "/tools/cost-calculator" && x.destination === "cost_calculator"));
+  }
+  const text = readFileSync("app/[locale]/(main)/tools/cost-calculator/page.tsx", "utf8") + clientSrc;
+  const strings = [...text.matchAll(/"([^"\n]{12,})"/g)].map((m) => m[1]).filter((x) => / /.test(x) && !/^[a-z-]+ [a-z-]+ /.test(x) || true);
+  const hits = findBannedPhrases(strings.join("\n"));
+  t("no banned (eligibility / recommendation / strategy) wording in the page and the client strings", hits.length === 0, hits.join(", "));
+  t("no estimate / typical / average / budget wording", !/\b(estimate|estimated|typical|average|budget|approximately)\b/i.test(strings.join("\n")));
+}
+
 console.log(failures === 0 ? "\n✅ ALL CHECKS PASSED" : `\n❌ ${failures} CHECK(S) FAILED`);
 process.exitCode = failures === 0 ? 0 : 1;

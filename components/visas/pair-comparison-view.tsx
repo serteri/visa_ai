@@ -91,6 +91,11 @@ export function PairComparisonView({ slug, locale }: { slug: PairSlug; locale: s
                 {t("189 vs 190 vs 491", "189 / 190 / 491", "189 / 190 / 491")}
               </Link>
             </li>
+            <li>
+              <Link className="font-medium text-cyan-800 underline" href={publicPath(locale, "/tools/cost-calculator")}>
+                {t("Visa application charges", "Vize başvuru ücretleri", "签证申请费")}
+              </Link>
+            </li>
             {c.columns.map((col) => (
               <li key={`info-${col.subclass}`}>
                 <Link className="font-medium text-cyan-800 underline" href={publicPath(locale, `/visas/${col.subclass}`)}>
