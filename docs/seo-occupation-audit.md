@@ -270,3 +270,22 @@ Also fix `<html lang>` by passing the locale from the root layout (`lang` per ro
 - Replace `crawlDelay` (ignored) with nothing; consider disallowing `/api/`-adjacent and portal paths already `noindex`.
 - Decide whether the three hand-written `/tools/points-calculator/<slug>` pages are kept (they hold hard-coded cutoffs) or redirected to the occupation pages.
 - Instrument the Canada calculator and the remaining tool pages.
+
+---
+
+## 9. Phase 2: what was implemented (18-20 Oct 2026)
+
+One commit per step, each deployed (CI and Vercel green) before the next. Page counts are per locale (en / tr / zh-Hans each have the same set).
+
+| Step | Commit | What | Notes |
+|---|---|---|---|
+| 1 | `71fbd70` | `<html lang>` per route (root layout moved to `app/[locale]`, pages stay static); 19 hub, guide and visa pages use `pageAlternates` (self canonical, hreflang + x-default, absolute OpenGraph url) and the production origin for `metadataBase`; `crawlDelay` removed | `app/page.tsx` removed (the proxy rewrites `/`) |
+| 2 | `7efd71a` (earlier) + `5fc4e8c` | 301s for stale occupation URLs already existed (693 current slugs, 772 published codes without a page); the target for a code without a page is now its ANZSCO major-group index page (`/occupations/group/<1-8>`), else the finder | 404 only for codes that never existed; tested over the full list x 3 locales |
+| 3 | `5fc4e8c`, `d9e5945` | `/occupations`, `/occupations/group/<1-8>`, `/occupations/letter/<a-z>` with breadcrumbs; 585 indexable occupations per locale (thin tier not listed); calculator link with `?occupation=<code>` (a context line; no arithmetic change); hub links to rich-tier occupations | no separate assessing-authority page exists; the skills assessment finder is linked |
+| 4 | `c88bedd` | fact tables (value / source + link / data verified), registration rows (Medical Board fees; NMBA with no invented amount), ABS attribution, `Occupation` + `WebPage` JSON-LD, state rows from the admin snapshot (page re-renders hourly), site-wide WebApplication offer removed | |
+| 5 | `a3a078c` | "Insights & Risks" replaced by "Notes on the points table"; hard-coded cutoffs deleted; the three hand-written calculator pages answer 301 | points arithmetic unchanged |
+| 6 | `0a55c2d` | pair pages 189/190, 189/491, 190/491, 482/186, 500/485 | 15 URLs |
+| 7 | `c31a98d` | 189 / 190 / 491 pages open with fact tables; 190 / 491 add the state program table from the snapshot | |
+| 8 | see git log | cost calculator for 189, 190, 491, 482 (485, 500, 186 not offered: no verified main charge in `fee-provenance.json`) | |
+
+Assumptions: thin-tier pages stay out of the index and the sitemap; state information is read from the same snapshot the reports use, so the sitemap and richness tier (computed from the bundled lists) can differ from an admin-edited list until the next build; requirement text on the 482 / 186 / 485 / 500 rows is shown in English in every locale; ABS attribution wording (CC BY) should be confirmed against the ABS copyright statement. The tr / zh-Hans strings are machine-assisted drafts listed in `docs/compliance-review-pack.md` section R.

@@ -402,3 +402,17 @@ Drafts written for the paid flow and the rename, not yet reviewed by a native sp
 - Assessing-authority fee columns ("Fee excl. GST", "Fee incl. GST", "GST not stated by the authority") and its introduction.
 - State data flag: "Data checked <date>: data may have changed since."
 - Feedback line at the end of the PDF (the Beta wording was removed).
+
+## R. SEO Phase 2 (18-20 Oct 2026): machine-assisted tr / zh-Hans drafts to review
+
+One set of template strings per page type, written for Turkish and Simplified Chinese by a machine-assisted first draft; **none has been reviewed by a native speaker or the compliance reviewer**. The facts (codes, figures, dates, sources) are identical in every locale; only labels and short explanatory sentences are drafted. No search volumes were used or invented for these titles and headings.
+
+- Occupation index (`lib/occupations/index-data.ts`, `app/[locale]/(main)/occupations/**`): the eight ANZSCO major-group names, the overview and group / letter page headings and introductions.
+- Occupation fact tables (`lib/occupations/facts.ts`, `components/occupations/fact-tables.tsx`): row labels, column headers ("Fact / Value / Source / Data verified"), the registration-row sentences (Medical Board, Nursing and Midwifery Board), the state-data note. State condition text is shown in a translation only when the admin marked it reviewed; otherwise English.
+- Occupation "do not confuse" cards (`lib/occupations/distinctions.ts`): Chef / Cook, Developer Programmer / Software Engineer, accredited qualification / CDR (Sprint 2C).
+- Visa pair comparison pages (`lib/visas/pair-comparison.ts`, `components/visas/pair-comparison-view.tsx`): titles, descriptions, row labels, notes, and the "Not stated in the held data" wording. The requirement text on the 482 / 186 / 485 / 500 rows is the held English text in every locale (labelled "(English)").
+- Subclass 189 / 190 / 491 fact tables (`lib/visas/facts.ts`, `app/[locale]/(main)/visas/[subclass]/page.tsx`): headings, notes, state row labels.
+- Points calculator notes (`public/locales/*.json`, `pc.insights.title`, `pc.insights.ageCliff`, `pc.insights.stateNomination`): replaced the former risk statements; the market-reality and experience-deduction strings were deleted.
+- Visa application charge calculator (`app/[locale]/(main)/tools/cost-calculator/page.tsx`, `components/tools/cost-calculator-client.tsx`): all labels, notes and the second-instalment rule sentences.
+
+Wording left in place on purpose (quoted from official text, not LogiVisa's): "eligible Australian degree" and "eligible Hong Kong / BNO passport holders" (subclass 485 conditions, shown as held), and the visa term "eligible relative" in the calculator question.
