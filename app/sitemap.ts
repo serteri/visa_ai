@@ -7,6 +7,7 @@ import { latestVerifiedDate, occupationRichness } from "@/lib/occupations/richne
 import { groupCounts, letterCounts, MAJOR_GROUP_IDS, LETTERS } from "@/lib/occupations/index-data";
 import { buildOccupationSlug, getUniqueOccupations } from "@/lib/occupations/seo";
 import { languageAlternates, publicUrl } from "@/lib/seo/urls";
+import { PAIRS } from "@/lib/visas/pair-comparison";
 
 // URLs are the ones that answer 200 (English prefixless -- "/en/..." 308-redirects), each with its hreflang alternates
 // (en, tr, zh-Hans, x-default). A redirecting URL in a sitemap is a Search Console "Page with redirect" issue.
@@ -36,6 +37,9 @@ export function buildSitemap(): MetadataRoute.Sitemap {
   add("/occupations");
   for (const g of MAJOR_GROUP_IDS) if (groupCounts("en")[g]) add(`/occupations/group/${g}`);
   for (const l of LETTERS) if (letterCounts("en")[l]) add(`/occupations/letter/${l}`);
+
+  // Pairwise visa comparisons (189/190/491 pairs, 482 vs 186, 500 vs 485).
+  for (const p of PAIRS) add(`/tools/visa-comparison/${p.slug}`);
 
   entries.push({ url: publicUrl("en", "/resources/for-migration-professionals") });
 

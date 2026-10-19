@@ -2,6 +2,9 @@ import Link from "next/link";
 
 import { Button } from "@/components/ui/button";
 import { comparisonContent } from "@/lib/visas/comparison-content";
+import { researchText } from "@/lib/marketing/research-journey";
+import { PAIRS } from "@/lib/visas/pair-comparison";
+import { publicPath } from "@/lib/seo/urls";
 
 /** The 189 / 190 / 491 table. All content, figures and sources come from lib/visas/comparison-content.ts. */
 export function VisaComparisonClient({ locale }: { locale: string }) {
@@ -61,6 +64,21 @@ export function VisaComparisonClient({ locale }: { locale: string }) {
             </ul>
           </div>
         </div>
+      </section>
+
+      <section className="mx-auto mt-8 max-w-6xl px-4 sm:px-6">
+        <nav aria-label={researchText(locale, "Pairwise comparisons", "İkili karşılaştırmalar", "两两对比")} className="rounded-2xl border border-slate-200 bg-white p-6">
+          <h2 className="text-base font-semibold text-slate-900">{researchText(locale, "Compare two visas", "İki vizeyi karşılaştırın", "两种签证对比")}</h2>
+          <ul className="mt-3 flex flex-wrap gap-x-6 gap-y-2 text-sm">
+            {PAIRS.map((p) => (
+              <li key={p.slug}>
+                <Link className="font-medium text-cyan-800 underline" href={publicPath(locale, `/tools/visa-comparison/${p.slug}`)}>
+                  {p.a} vs {p.b}
+                </Link>
+              </li>
+            ))}
+          </ul>
+        </nav>
       </section>
 
       <section className="mx-auto mt-8 max-w-6xl px-4 sm:px-6">

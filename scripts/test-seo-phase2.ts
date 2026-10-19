@@ -16,6 +16,7 @@ import { seedStateData, withPrograms } from "../lib/admin-data/snapshot";
 import { resolveAssessingAuthority } from "../lib/skills-assessment/resolve-authority";
 import redirectData from "../src/data/occupation-slug-redirects.json";
 import { activeLocales } from "../lib/i18n/config";
+import { PAIRS, pairContent, pairText, type PairSlug } from "../lib/visas/pair-comparison";
 import { languageAlternates, pageAlternates, publicUrl } from "../lib/seo/urls";
 
 let failures = 0;
@@ -185,6 +186,38 @@ section("Step 5. points calculator: information-only wording, retired hand-writt
   }
   const keys = (l: string) => Object.keys(JSON.parse(readFileSync(`public/locales/${l}.json`, "utf8"))).filter((k) => k.startsWith("pc.insights")).sort().join();
   t("en / tr / zh-Hans have the same pc.insights keys", keys("en") === keys("tr") && keys("en") === keys("zh-Hans"));
+}
+
+section("Step 6. pairwise visa comparison pages (neutral, same rows, sourced)");
+{
+  const { findBannedPhrases } = require("../lib/seo/banned-phrases") as typeof import("../lib/seo/banned-phrases");
+  const feesJson = require("../src/data/visa-fees.json") as { visas: Record<string, { vac: { main: number } }> };
+  const s186 = (require("../src/data/visas/subclass-186.json") as Array<{ fee: number }>)[0];
+  const iso = /^\d{4}-\d{2}-\d{2}$/;
+  const labelsOf = (slug: PairSlug, locale: string) => pairContent(slug, locale).rows.map((r) => r.label).join("|");
+  for (const locale of activeLocales) {
+    for (const p of PAIRS) {
+      const c = pairContent(p.slug, locale);
+      t(`${locale} ${p.slug}: two columns, ${c.rows.length} rows, every cell has a value, every column an https source and a verified date`, c.columns.length === 2 && c.rows.length >= 7 && c.rows.every((r) => r.values.every((v) => v.trim().length > 0)) && c.columns.every((x) => /^https:\/\//.test(x.sourceUrl) && iso.test(x.verified) && x.sourceName.length > 0));
+      // The "requirements listed in the held data" row quotes the Department's own condition text (e.g. "eligible Hong Kong / BNO passport holders", "eligible Australian degree"); it is not LogiVisa wording, so that row's values are not scanned.
+      const scanned = [c.title, c.description, c.subtitle, c.feature, ...c.columns.flatMap((x) => [x.label, x.sourceName]), ...c.rows.filter((r) => !/held data \(English\)|Elimizdeki veride listelenen|所存数据列出的条件/.test(r.label) || ["189-vs-190", "189-vs-491", "190-vs-491"].includes(p.slug)).flatMap((r) => [r.label, ...r.values]), ...c.notes].join("\n");
+      const hits = findBannedPhrases(scanned);
+      t(`${locale} ${p.slug}: no banned (eligibility / recommendation / strategy) wording`, hits.length === 0, hits.join(", "));
+      const alt = pageAlternates(locale, `/tools/visa-comparison/${p.slug}`);
+      t(`${locale} ${p.slug}: self canonical + hreflang x3 + x-default`, alt.canonical === publicUrl(locale, `/tools/visa-comparison/${p.slug}`) && Object.keys(alt.languages).length === 4);
+    }
+    t(`${locale}: the three 189/190/491 pairs share their rows, 482 vs 186 and 500 vs 485 share theirs`, labelsOf("189-vs-190", locale) === labelsOf("189-vs-491", locale) && labelsOf("189-vs-190", locale) === labelsOf("190-vs-491", locale) && labelsOf("482-vs-186", locale) === labelsOf("500-vs-485", locale));
+  }
+  const chargeRow = (slug: PairSlug) => pairContent(slug, "en").rows.find((r) => /charge/i.test(r.label))!.values;
+  const A = (n: number) => `AUD ${n.toLocaleString("en-US")}`;
+  t("fees equal the fee data: 189 / 190 / 491", chargeRow("189-vs-190").join() === [A(feesJson.visas["189"].vac.main), A(feesJson.visas["190"].vac.main)].join() && chargeRow("190-vs-491").join() === [A(feesJson.visas["190"].vac.main), A(feesJson.visas["491"].vac.main)].join());
+  t("fees equal the fee data: 482, 186, 500, 485", chargeRow("482-vs-186").join() === [A(feesJson.visas["482"].vac.main), A(s186.fee)].join() && chargeRow("500-vs-485").join() === [A(feesJson.visas["500"].vac.main), A(feesJson.visas["485"].vac.main)].join());
+  const sm = buildSitemap().map((e) => e.url);
+  t("the sitemap lists all 5 pair pages in all locales", PAIRS.every((p) => activeLocales.every((l) => sm.includes(publicUrl(l, `/tools/visa-comparison/${p.slug}`)))));
+  const view = readFileSync("components/visas/pair-comparison-view.tsx", "utf8") + readFileSync("app/[locale]/(main)/tools/visa-comparison/[pair]/page.tsx", "utf8");
+  t("no quiz, result, score or ranking in the pair page code", !/quiz|recommended|Recommended|bestFit|winner|score/i.test(view));
+  t("the pair page has breadcrumbs, a dated source row and links to the subclass information pages", /<Breadcrumbs /.test(view) && /data-pair-sources/.test(view) && /\/visas\/\$\{col\.subclass\}/.test(view));
+  t("the existing 189/190/491 page links to the pairs", /PAIRS\.map/.test(readFileSync("app/[locale]/(main)/tools/visa-comparison/VisaComparisonClient.tsx", "utf8")));
 }
 
 console.log(failures === 0 ? "\n✅ ALL CHECKS PASSED" : `\n❌ ${failures} CHECK(S) FAILED`);
