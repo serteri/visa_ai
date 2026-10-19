@@ -12,6 +12,10 @@ import type { Locale } from "@/lib/i18n/config";
 import visaDetails from "@/src/data/visa-details.json";
 import subclass186Raw from "@/src/data/visas/subclass-186.json";
 import { ResearchLinks } from "@/components/research-links";
+import { Breadcrumbs, jsonLd } from "@/components/seo/breadcrumbs";
+import { FactTable } from "@/components/occupations/fact-tables";
+import { getAdminStateData } from "@/lib/admin-data/loader";
+import { buildVisaFactRows, isFactSubclass } from "@/lib/visas/facts";
 import { researchLinks, researchText, type ResearchLink } from "@/lib/marketing/research-journey";
 
 type PageProps = {
@@ -114,7 +118,8 @@ const VISA_DETAILS: VisaDetail[] = [
 const BASE_URL = SITE_ORIGIN;
 
 export const dynamic = "force-static";
-export const revalidate = false;
+// Static, re-rendered hourly (and when the admin saves, through the cache tag): the 190 and 491 pages read the state data from the admin snapshot.
+export const revalidate = 3600;
 
 const VISA_SUBCLASSES = ["189", "190", "491", "482", "485", "500", "820", "801", "canada-express-entry", "186_direct_entry", "186_labour_agreement", "186_trt"] as const;
 
@@ -364,12 +369,25 @@ export default async function VisaSubclassPage({ params }: PageProps) {
   const testLabel = t(translations, "visas.testLabel", "Test");
   const minimumScoreLabel = t(translations, "visas.minimumScoreLabel", "Minimum Score");
 
+  const factSubclass = isFactSubclass(normalizedSubclass) ? normalizedSubclass : null;
+  const snapshot = factSubclass ? await getAdminStateData() : null;
+  const allFacts = factSubclass && snapshot ? buildVisaFactRows(factSubclass, locale, snapshot) : [];
+  const visaFacts = allFacts.filter((r) => r.group === "visa");
+  const stateFacts = allFacts.filter((r) => r.group === "states");
+  const factPath = `/visas/${normalizedSubclass}`;
+  const factCrumbs = [
+    { label: researchText(locale, "Home", "Ana sayfa", "首页"), path: "/" },
+    { label: researchText(locale, "Visas", "Vizeler", "签证"), path: "/visas" },
+    { label: `${researchText(locale, "Subclass", "Alt sınıf", "子类")} ${normalizedSubclass}`, path: factPath },
+  ];
+  const factSchema = factSubclass ? { "@context": "https://schema.org", "@type": "WebPage", name: `${visaName} (${normalizedSubclass})`, url: publicUrl(locale, factPath), inLanguage: locale, dateModified: allFacts.map((r) => r.verified).sort().at(-1) } : null;
   const isCanada = subclass === "canada-express-entry";
   const officialBtnLabel = isCanada ? visitIRCCLabel : visitOfficialWebsiteLabel;
 
   return (
     <main className="min-h-screen bg-gradient-to-b from-slate-50 to-white dark:from-slate-950 dark:to-slate-900">
       <section className="mx-auto max-w-6xl px-4 pb-12 sm:px-6 lg:px-8">
+        {factSubclass ? <div className="mb-4"><Breadcrumbs locale={locale} crumbs={factCrumbs} /></div> : null}
         <div className="mb-6 flex flex-wrap items-center gap-3">
           <Link
             href={`/${locale}/visas`}
@@ -382,6 +400,13 @@ export default async function VisaSubclassPage({ params }: PageProps) {
             {officialInfoLabel}
           </div>
         </div>
+
+        {factSubclass ? (
+          <div className="mb-6 space-y-6" data-visa-facts={factSubclass}>
+            <FactTable locale={locale} group="visa" heading={researchText(locale, "Published facts", "Yayımlanmış bilgiler", "已公布的信息")} rows={visaFacts} note={researchText(locale, "Each row names its source and the date LogiVisa's data was last verified against it.", "Her satır kaynağını ve LogiVisa verisinin ona göre son doğrulandığı tarihi belirtir.", "每一行均注明来源以及 LogiVisa 数据最近一次对照该来源核对的日期。")} />
+            <FactTable locale={locale} group="states" heading={researchText(locale, "State and territory program information", "Eyalet ve bölge program bilgileri", "州和领地项目信息")} rows={stateFacts} note={researchText(locale, "Read from LogiVisa's admin state data (the same data the reports use); the date in each row is when that state's data was last verified. Check the state's page for current criteria.", "LogiVisa'nın yönetim paneli eyalet verisinden okunur (raporların kullandığı aynı veri); her satırdaki tarih o eyalet verisinin son doğrulandığı tarihtir. Güncel ölçütler için eyaletin sayfasına bakın.", "读取自 LogiVisa 管理后台的州数据（与报告使用的数据相同）；每行日期为该州数据最近一次核对的日期。现行标准请查看该州页面。")} />
+          </div>
+        ) : null}
 
         <div className="grid gap-6 lg:grid-cols-[1.4fr_0.9fr]">
           <Card className="overflow-hidden border-slate-200 bg-white shadow-sm dark:border-slate-800 dark:bg-slate-900">
@@ -736,6 +761,7 @@ export default async function VisaSubclassPage({ params }: PageProps) {
           </Card>
         </div>
       </section>
+      {factSchema ? <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: jsonLd(factSchema) }} /> : null}
     </main>
   );
 }

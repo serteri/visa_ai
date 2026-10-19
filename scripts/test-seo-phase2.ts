@@ -17,6 +17,7 @@ import { resolveAssessingAuthority } from "../lib/skills-assessment/resolve-auth
 import redirectData from "../src/data/occupation-slug-redirects.json";
 import { activeLocales } from "../lib/i18n/config";
 import { PAIRS, pairContent, pairText, type PairSlug } from "../lib/visas/pair-comparison";
+import { buildVisaFactRows, FACT_SUBCLASSES } from "../lib/visas/facts";
 import { languageAlternates, pageAlternates, publicUrl } from "../lib/seo/urls";
 
 let failures = 0;
@@ -218,6 +219,33 @@ section("Step 6. pairwise visa comparison pages (neutral, same rows, sourced)");
   t("no quiz, result, score or ranking in the pair page code", !/quiz|recommended|Recommended|bestFit|winner|score/i.test(view));
   t("the pair page has breadcrumbs, a dated source row and links to the subclass information pages", /<Breadcrumbs /.test(view) && /data-pair-sources/.test(view) && /\/visas\/\$\{col\.subclass\}/.test(view));
   t("the existing 189/190/491 page links to the pairs", /PAIRS\.map/.test(readFileSync("app/[locale]/(main)/tools/visa-comparison/VisaComparisonClient.tsx", "utf8")));
+}
+
+section("Step 7. subclass 189 / 190 / 491 information pages: sourced facts, state data from the snapshot");
+{
+  const { findBannedPhrases } = require("../lib/seo/banned-phrases") as typeof import("../lib/seo/banned-phrases");
+  const snap = seedStateData();
+  const iso = /^\d{4}-\d{2}-\d{2}$/;
+  const feesJson = require("../src/data/visa-fees.json") as { visas: Record<string, { vac: { main: number } }> };
+  for (const locale of activeLocales) {
+    for (const sub of FACT_SUBCLASSES) {
+      const rows = buildVisaFactRows(sub, locale, snap);
+      const states = rows.filter((r) => r.group === "states");
+      t(`${locale} ${sub}: ${rows.length} fact rows, each with a value, a source name, an https link and a verified date`, rows.length >= 7 && rows.every((r) => r.value.trim() && r.sourceName.trim() && iso.test(r.verified) && (r.sourceUrl === undefined || /^https:\/\//.test(r.sourceUrl))));
+      t(`${locale} ${sub}: state rows ${sub === "189" ? "absent (no state program)" : `cover all ${Object.keys(snap.programs).length} states and territories`}`, sub === "189" ? states.length === 0 : states.length === Object.keys(snap.programs).length);
+      const hits = findBannedPhrases(rows.map((r) => `${r.label}\n${r.value}`).join("\n"));
+      t(`${locale} ${sub}: no banned wording in any fact row`, hits.length === 0, hits.join(", "));
+      const fee = rows.find((r) => r.id === "charge")!;
+      t(`${locale} ${sub}: the charge row equals the fee data`, fee.value.replace(/\D/g, "") === String(feesJson.visas[sub].vac.main));
+    }
+  }
+  const base = buildVisaFactRows("190", "en", snap).find((r) => r.group === "states")!;
+  const code = base.id.replace("state-", "");
+  const patched = buildVisaFactRows("190", "en", withPrograms(snap, { [code]: { lastVerifiedAt: "2031-03-04T00:00:00.000Z", programYear: "2099-00" } })).find((r) => r.id === base.id)!;
+  t("a state row follows the admin snapshot (verified date and program year change with it)", patched.verified === "2031-03-04" && /2099-00/.test(patched.value) && base.verified !== "2031-03-04");
+  const visaPage = readFileSync("app/[locale]/(main)/visas/[subclass]/page.tsx", "utf8");
+  t("the page renders the fact tables above the older cards, with breadcrumbs, JSON-LD and an hourly re-render", /data-visa-facts/.test(visaPage) && (visaPage.match(/<FactTable /g) ?? []).length >= 2 && /<Breadcrumbs /.test(visaPage) && /dateModified/.test(visaPage) && /export const revalidate = 3600/.test(visaPage));
+  t("state facts come only from getAdminStateData (no hard-coded state table)", /getAdminStateData\(\)/.test(visaPage));
 }
 
 console.log(failures === 0 ? "\n✅ ALL CHECKS PASSED" : `\n❌ ${failures} CHECK(S) FAILED`);
