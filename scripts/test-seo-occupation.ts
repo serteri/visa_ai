@@ -94,7 +94,7 @@ async function main() {
   const urls = new Set(sm.map((e) => e.url));
   check(urls.size === sm.length, "no duplicate URLs");
   check(sm.every((e) => !e.url.includes("/en/") && e.url.startsWith(SITE_ORIGIN)), "every URL is an absolute public URL (no /en/ route paths)");
-  const occ = sm.filter((e) => e.url.includes("/occupations/"));
+  const occ = sm.filter((e) => //occupations/d{6}-/.test(e.url));
   check(occ.length === indexable.length, `every indexable occupation page in every locale is listed (${occ.length})`, `${occ.length} vs ${indexable.length}`);
   check(thin.every((c) => !urls.has(publicUrl(c.locale, `/occupations/${c.slug}`))), `no thin page is listed (${thin.length} excluded)`);
   check(indexable.every((c) => urls.has(publicUrl(c.locale, `/occupations/${c.slug}`))), "no indexable page is missing");
@@ -102,7 +102,7 @@ async function main() {
   check(occ.every((e) => /^\d{4}-\d{2}-\d{2}$/.test(String(e.lastModified))), "every occupation entry has a lastmod from data (yyyy-mm-dd)");
   const nowIso = new Date().toISOString().slice(0, 10);
   check(!sm.some((e) => String(e.lastModified).startsWith(nowIso) && e.lastModified !== undefined && !String(e.lastModified).includes("2026-0")) || true, "lastmod is not the request time");
-  check(sm.filter((e) => !e.url.includes("/occupations/")).every((e) => e.lastModified === undefined), "static / visa pages carry no invented lastmod");
+  check(sm.filter((e) => !//occupations/d{6}-/.test(e.url)).every((e) => e.lastModified === undefined), "static / visa pages carry no invented lastmod");
   const rb = robots();
   check(rb.sitemap === `${SITE_ORIGIN}/sitemap.xml`, "robots.txt references the sitemap");
   const rules = Array.isArray(rb.rules) ? rb.rules : [rb.rules];
