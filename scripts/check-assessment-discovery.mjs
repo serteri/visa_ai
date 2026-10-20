@@ -7,7 +7,7 @@ async function holdClick(selector){const a=page.locator(selector).first();await 
 async function combo(id,label){await page.locator('#'+id).locator('..').getByRole('combobox').click();await page.getByRole('option',{name:label,exact:true}).click();}
 for(const width of [1440,390]){
  await page.setViewportSize({width,height:1000});let r=await page.goto(origin+'/',{waitUntil:'networkidle',timeout:90000});assert.equal(r.status(),200);assert.match(await page.locator('h1').innerText(),/occupation research/);assert.equal(await page.locator('h1').count(),1);
- const order=await page.evaluate(()=>{const headings=[...document.querySelectorAll('h2')].map(e=>e.textContent);return {tools:headings.indexOf('A clearer next research step'),assessment:headings.indexOf('Get a structured Australian visa research assessment')};});assert(order.tools>=0&&order.assessment>=0&&order.assessment<order.tools);
+ const order=await page.evaluate(()=>{const headings=[...document.querySelectorAll('h2')].map(e=>e.textContent);return {tools:headings.indexOf('How LogiVisa Works'),assessment:headings.indexOf('Get a structured Australian visa research assessment')};});assert(order.tools>=0&&order.assessment>=0&&order.assessment<order.tools);
  await holdClick('[data-home-assessment] a[data-assessment-entry]');assert.deepEqual(await ev('assessment_entry_click'),[{locale:'en',entry_source:'homepage'}]);
  if(width===390){await page.getByRole('button',{name:'Menu',exact:true}).click();await holdClick('[data-assessment-entry="navbar"]:visible');}else{await holdClick('[data-assessment-entry="navbar"]:visible');}
  assert.deepEqual((await ev('assessment_entry_click')).at(-1),{locale:'en',entry_source:'navbar'});assert.equal((await ev('assessment_entry_click')).length,2);

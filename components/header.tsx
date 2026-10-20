@@ -141,6 +141,7 @@ export function Header({ locale }: { locale: string; showAdmin?: boolean }) {
             {/* Resources Dropdown */}
             <DropdownMenu label={tx("Kaynaklar", "Resources", "资源")}>
               <DropdownLink href={`/${locale}/guides`}>{tx("Rehberler", "Guides", "指南")}</DropdownLink>
+              <DropdownLink href={`/${locale}/sample-report`}>{tx("Örnek Değerlendirme Raporu", "Sample Assessment Report", "评估报告示例")}</DropdownLink>
               <DropdownLink href={`/${locale}/tools/document-checklist-2026`}>{tx("Belge Kontrol", "Document Checklist", "文件清单")}</DropdownLink>
               <DropdownLink href={`/${locale}/contact`}>{tx("İletişim", "Contact", "联系我们")}</DropdownLink>
             </DropdownMenu>
@@ -211,6 +212,7 @@ export function Header({ locale }: { locale: string; showAdmin?: boolean }) {
               <Link href={`/${locale}/ai-visa-match`} onClick={() => setMobileOpen(false)} className="rounded-lg px-3 py-2.5 text-sm font-semibold text-[var(--cf-accent)]">AI Visa Match ⚡</Link>
               <div className="my-1 h-px bg-[var(--cf-line)]" />
               <Link href={`/${locale}/guides`} onClick={() => setMobileOpen(false)} className="rounded-lg px-3 py-2.5 text-sm font-medium text-[var(--cf-muted)] hover:bg-[var(--cf-accent-dim)] hover:text-[var(--cf-accent)]">{tx("Rehberler", "Guides", "指南")}</Link>
+              <Link href={`/${locale}/sample-report`} onClick={() => setMobileOpen(false)} className="rounded-lg px-3 py-2.5 text-sm font-medium text-[var(--cf-muted)] hover:bg-[var(--cf-accent-dim)] hover:text-[var(--cf-accent)]">{tx("Örnek Değerlendirme Raporu", "Sample Assessment Report", "评估报告示例")}</Link>
               <Link href={`/${locale}/tools/document-checklist-2026`} onClick={() => setMobileOpen(false)} className="rounded-lg px-3 py-2.5 text-sm font-medium text-[var(--cf-muted)] hover:bg-[var(--cf-accent-dim)] hover:text-[var(--cf-accent)]">{tx("Belge Kontrol", "Document Checklist", "文件清单")}</Link>
               <Link href={`/${locale}/contact`} onClick={() => setMobileOpen(false)} className="rounded-lg px-3 py-2.5 text-sm font-medium text-[var(--cf-muted)] hover:bg-[var(--cf-accent-dim)] hover:text-[var(--cf-accent)]">{tx("İletişim", "Contact", "联系我们")}</Link>
               <div className="my-1 h-px bg-[var(--cf-line)]" />
