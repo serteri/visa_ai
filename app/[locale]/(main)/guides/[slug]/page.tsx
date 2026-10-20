@@ -7,6 +7,8 @@ import guides from "@/src/data/guides.json";
 import { InlineLeadCta } from "../InlineLeadCta";
 import { FinalGuideCta } from "../FinalGuideCta";
 import { pageAlternates, publicUrl } from "@/lib/seo/urls";
+import { ResearchGuideView } from "@/components/guides/research-guide-view";
+import { findResearchGuide, RESEARCH_GUIDES } from "@/lib/guides/research-guides";
 
 // The production origin, not an environment variable: a missing or malformed NEXT_PUBLIC_BASE_URL must not break metadata or point canonicals at localhost.
 const BASE_URL = "https://www.logivisa.com";
@@ -105,11 +107,23 @@ function ArticleBlock({ block, locale }: { block: string; locale: string }) {
 }
 
 export async function generateStaticParams() {
-  return guides.map((guide) => ({ slug: guide.slug }));
+  return [...guides.map((guide) => ({ slug: guide.slug })), ...RESEARCH_GUIDES.map((guide) => ({ slug: guide.slug }))];
 }
 
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
   const { locale, slug } = await params;
+  const research = findResearchGuide(slug);
+  if (research) {
+    // Wave 1 research guides are English only: no hreflang alternates, and other locales answer 404 (see page below).
+    if (locale !== "en") return { robots: { index: false, follow: false } };
+    return {
+      title: research.title,
+      description: research.description,
+      alternates: { canonical: publicUrl("en", `/guides/${research.slug}`) },
+      robots: { index: true, follow: true },
+      openGraph: { title: research.title, description: research.description, type: "article", url: publicUrl("en", `/guides/${research.slug}`), images: [{ url: "/og/default-og.png", width: 1200, height: 630 }] },
+    };
+  }
   const guide = findGuide(slug);
   const siteUrl = new URL(BASE_URL);
 
@@ -141,6 +155,11 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 
 export default async function GuideArticlePage({ params }: PageProps) {
   const { locale, slug } = await params;
+  const research = findResearchGuide(slug);
+  if (research) {
+    if (locale !== "en") notFound();
+    return <ResearchGuideView guide={research} />;
+  }
   const guide = findGuide(slug);
   const isTr = locale === "tr";
   const isZh = locale === "zh-Hans";

@@ -4,10 +4,20 @@ import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { occupationDistinction } from "@/lib/occupations/distinctions";
 import { publicPath } from "@/lib/seo/urls";
 
+/** Wave 1 research guides that go deeper on a documented confusion (English only). */
+const GUIDE_FOR_CODE: Record<string, { path: string; label: string }> = {
+  "351311": { path: "/guides/chef-vs-cook-australia", label: "Chef vs Cook: the descriptions compared" },
+  "351411": { path: "/guides/chef-vs-cook-australia", label: "Chef vs Cook: the descriptions compared" },
+  "261312": { path: "/guides/developer-programmer-vs-software-engineer", label: "Developer Programmer vs Software Engineer compared" },
+  "261313": { path: "/guides/developer-programmer-vs-software-engineer", label: "Developer Programmer vs Software Engineer compared" },
+  "233211": { path: "/guides/engineers-australia-accredited-vs-cdr", label: "Accredited qualification vs CDR explained" },
+};
+
 /** Source-linked "do not confuse" block; renders nothing for occupations without a documented confusion. */
 export function OccupationDistinction({ code, locale }: { code: string; locale: string }) {
   const d = occupationDistinction(code, locale);
   if (!d) return null;
+  const guide = locale === "en" ? GUIDE_FOR_CODE[code] : undefined;
   return (
     <Card className="border-slate-200/80 bg-white/95 shadow-lg shadow-slate-900/5" data-occupation-distinction={code}>
       <CardHeader>
@@ -21,6 +31,11 @@ export function OccupationDistinction({ code, locale }: { code: string; locale: 
           {d.compare && (
             <Link className="underline" href={publicPath(locale, `/occupations/${d.compare.slug}`)}>
               {d.compare.label}
+            </Link>
+          )}
+          {guide && (
+            <Link className="underline" href={publicPath(locale, guide.path)} data-guide-link>
+              {guide.label}
             </Link>
           )}
           {d.sources.map((s) => (

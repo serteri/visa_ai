@@ -62,6 +62,24 @@ export function occupationDistinction(code: string, locale: string): OccupationD
         sources: [{ label: t("ACS: ICT occupations and ANZSCO codes", "ACS: BT meslekleri ve ANZSCO kodları", "ACS：ICT 职业与 ANZSCO 代码"), url: ACS_IT }],
       };
     }
+    case "351411":
+      return {
+        heading: t("Cook or Chef? Two separate ANZSCO occupations", "Cook mu Chef mi? İki ayrı ANZSCO mesleği", "Cook 还是 Chef？两个独立的 ANZSCO 职业"),
+        body: [
+          t(
+            "ANZSCO places Cook (351411) in unit group 3514 and Chef (351311) in unit group 3513. The Cook entry describes preparing, seasoning and cooking food; the Chef entry is built around planning and organising food preparation, and the two entries carry different skill levels.",
+            "ANZSCO, Cook (351411) mesleğini 3514, Chef (351311) mesleğini 3513 birim grubunda gösterir. Cook tanımı yemeği hazırlama, baharatlama ve pişirmeye; Chef tanımı ise yemek hazırlığını planlayıp organize etmeye dayanır ve iki kaydın beceri seviyeleri farklıdır.",
+            "ANZSCO 将 Cook (351411) 归入 3514 单元组，Chef (351311) 归入 3513 单元组。Cook 的描述是准备、调味和烹制食物；Chef 的描述围绕规划和组织食物准备，两个条目的技能等级也不同。",
+          ),
+          t(
+            "Which one a person's work matches is a question for the assessing authority or an authorised migration professional. Read both published descriptions side by side before drawing any conclusion.",
+            "Bir kişinin işinin hangisine uyduğu, değerlendirme kurumu veya yetkili bir göçmenlik uzmanının konusudur. Sonuç çıkarmadan önce iki yayımlanmış tanımı yan yana okuyun.",
+            "个人工作更接近哪一个，应由评估机构或获授权移民专业人士判断。请先并排阅读两个已公布的描述。",
+          ),
+        ],
+        compare: { slug: "351311-chef", label: t("Read the Chef (351311) page", "Chef (351311) sayfasını okuyun", "查看 Chef (351311) 页面") },
+        sources: [{ label: t("ABS ANZSCO classification", "ABS ANZSCO sınıflandırması", "ABS ANZSCO 分类"), url: ABS_ANZSCO }],
+      };
     case "233211":
       return {
         heading: t("Accredited qualification or CDR? Two different questions", "Akredite nitelik mi CDR mi? İki farklı soru", "认证学历还是 CDR？两个不同的问题"),

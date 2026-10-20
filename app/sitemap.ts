@@ -8,6 +8,7 @@ import { groupCounts, letterCounts, MAJOR_GROUP_IDS, LETTERS } from "@/lib/occup
 import { buildOccupationSlug, getUniqueOccupations } from "@/lib/occupations/seo";
 import { languageAlternates, publicUrl } from "@/lib/seo/urls";
 import { PAIRS } from "@/lib/visas/pair-comparison";
+import { RESEARCH_GUIDES } from "@/lib/guides/research-guides";
 
 // URLs are the ones that answer 200 (English prefixless -- "/en/..." 308-redirects), each with its hreflang alternates
 // (en, tr, zh-Hans, x-default). A redirecting URL in a sitemap is a Search Console "Page with redirect" issue.
@@ -42,6 +43,9 @@ export function buildSitemap(): MetadataRoute.Sitemap {
   for (const p of PAIRS) add(`/tools/visa-comparison/${p.slug}`);
 
   entries.push({ url: publicUrl("en", "/resources/for-migration-professionals") });
+
+  // Sprint 2E research guides: English only, so no hreflang alternates and no tr / zh-Hans entries. No lastmod, like the other static pages (the checked date is on the page).
+  for (const g of RESEARCH_GUIDES) entries.push({ url: publicUrl("en", `/guides/${g.slug}`) });
 
   const activeVisaSubclasses = Array.from(new Set(mockVisaTypes.filter((visa) => visa.reviewed_status !== "outdated").map((visa) => visa.subclass)));
   for (const subclass of activeVisaSubclasses) add(`/visas/${subclass}`);

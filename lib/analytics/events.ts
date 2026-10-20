@@ -5,6 +5,8 @@
  * points total or free text.
  */
 
+import { RESEARCH_GUIDE_SLUGS } from "@/lib/guides/slugs";
+
 export type AnalyticsEventName =
   | "occupation_page_view"
   | "calculator_start"
@@ -23,7 +25,7 @@ export type AnalyticsEventName =
   | "professional_help_click";
 
 /** The only parameters that may be sent, and the only value types. */
-const ALLOWED_PARAMS = ["occupation_code", "locale", "subclass", "calculator", "link_host", "page_type", "destination", "source_page_type", "source_page_id", "continuation_stage", "entry_source", "product_type"] as const;
+const ALLOWED_PARAMS = ["occupation_code", "locale", "subclass", "calculator", "link_host", "page_type", "destination", "source_page_type", "source_page_id", "continuation_stage", "entry_source", "product_type", "source_type", "source_slug", "destination_type"] as const;
 type ParamKey = (typeof ALLOWED_PARAMS)[number];
 export type AnalyticsParams = Partial<Record<ParamKey, string>>;
 
@@ -42,6 +44,9 @@ export function sanitizeParams(params: Record<string, unknown> = {}): AnalyticsP
     if (key === "continuation_stage" && !["visa_to_tool", "tool_to_tool", "calculator_complete_to_research"].includes(v)) continue;
     if (key === "entry_source" && !["homepage", "homepage_assessment_section", "homepage_sample_report", "homepage_how_it_works", "sample_report_page", "navbar", "occupation", "visa_page", "tool", "other"].includes(v)) continue;
     if (key === "product_type" && v !== "premium") continue;
+    if (key === "source_type" && v !== "guide") continue;
+    if (key === "source_slug" && !RESEARCH_GUIDE_SLUGS.includes(v)) continue;
+    if (key === "destination_type" && !["tool", "occupation", "visa", "guide"].includes(v)) continue;
     if (key === "destination" && !["points_calculator", "skills_assessment", "state_nomination", "anzsco_finder", "visa_comparison", "document_checklist", "cost_calculator"].includes(v)) continue;
     out[key] = v;
   }
