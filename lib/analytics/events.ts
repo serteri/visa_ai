@@ -40,7 +40,7 @@ export function sanitizeParams(params: Record<string, unknown> = {}): AnalyticsP
     if (key === "link_host" && !/^(?:[a-z0-9-]+\.)+[a-z]{2,}$/i.test(v)) continue;
     if (key === "source_page_type" && !["occupation", "visa", "tool"].includes(v)) continue;
     if (key === "continuation_stage" && !["visa_to_tool", "tool_to_tool", "calculator_complete_to_research"].includes(v)) continue;
-    if (key === "entry_source" && !["homepage", "navbar", "occupation", "visa_page", "tool", "other"].includes(v)) continue;
+    if (key === "entry_source" && !["homepage", "homepage_assessment_section", "navbar", "occupation", "visa_page", "tool", "other"].includes(v)) continue;
     if (key === "product_type" && v !== "premium") continue;
     if (key === "destination" && !["points_calculator", "skills_assessment", "state_nomination", "anzsco_finder", "visa_comparison", "document_checklist", "cost_calculator"].includes(v)) continue;
     out[key] = v;

@@ -11,9 +11,9 @@ export function HomeContent() {
   return (
     <div className="case-file">
       <Hero locale={locale} />
+      <AssessmentSection locale={locale} />
       <StatsBar locale={locale} />
       <HowItWorks locale={locale} />
-      <AssessmentSection locale={locale} />
       <Faq locale={locale} />
       <LandingFooter locale={locale} />
     </div>

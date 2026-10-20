@@ -123,6 +123,12 @@ export function Hero({
             </Link>
           ))}
         </div>
+        <p className="mt-5 text-sm text-[var(--cf-muted)]">
+          {text("Prefer a structured review?", "Yapılandırılmış bir inceleme mi tercih edersiniz?", "更喜欢结构化的梳理？")}{" "}
+          <Link className="font-medium text-[var(--cf-accent)] underline underline-offset-4" href={publicPath(locale, "/full-check")}>
+            {text("Start the LogiVisa Assessment →", "LogiVisa Değerlendirmesini başlatın →", "开始 LogiVisa 评估 →")}
+          </Link>
+        </p>
         <p className="mt-7 max-w-xl text-xs leading-relaxed text-[var(--cf-muted)]">
           {text(
             "Information and research tools, not personalised immigration advice. Independent of government and assessing authorities.",
