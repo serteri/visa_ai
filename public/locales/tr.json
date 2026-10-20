@@ -870,7 +870,7 @@
   "home.reportShowcase.title": "Vize Bilgi Raporunun içinde neler var?",
   "home.reportShowcase.subtitle": "Her vize ile her eyalet ve bölge için yayımlanmış bilgiler; her biri kaynağı ve tarihiyle, ayrıca girdilerinizden hesaplanan puan toplamı. Yalnızca bilgi, göçmenlik tavsiyesi değildir. GST dahil A$39.99.",
   "home.reportShowcase.features.cover.title": "Kapak",
-  "home.reportShowcase.features.cover.description": "Başvuru sahibinin adı, rapor tarihi ve seçilen hedef vize.",
+  "home.reportShowcase.features.cover.description": "Rapor tarihi, girilen meslek ve seçtiğiniz hedef vize (veya Emin değilim).",
   "home.reportShowcase.features.glance.title": "Bir bakışta",
   "home.reportShowcase.features.glance.description": "Her vize için sabit sırayla bir satır: kaç gereklilik için bilgi girildi, girilmedi veya formda toplanmadı; rakamlarınız yayımlanmış rakamların yanında.",
   "home.reportShowcase.features.requirements.title": "Vize gereklilikleri",

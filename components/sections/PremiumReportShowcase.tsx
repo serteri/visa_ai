@@ -1,16 +1,16 @@
 "use client";
 
-import { useState } from "react";
-import Image from "next/image";
+import { useState, type ReactNode } from "react";
 import { ClipboardCheck, DollarSign, FileText, ListChecks, type LucideIcon } from "lucide-react";
 
 import { useLanguage, useTranslation } from "@/contexts/language-context";
+import { researchText } from "@/lib/marketing/research-journey";
 
 type FeatureKey = "cover" | "glance" | "requirements" | "costs";
 
-// Pages of the CURRENT information report, rendered from a synthetic profile with a placeholder name by scripts/render-showcase-images.ts
-// (public/images/report-previews/<locale>/<key>.png). The old screenshots of the previous report layout are gone: scripts/test-showcase-images.ts
-// fails if any removed asset is referenced again.
+// Pages of the CURRENT information report, rendered from a synthetic profile with a placeholder name and the target visa "not_sure" by
+// scripts/render-showcase-images.ts (public/images/report-previews/<locale>/<key>.png). The old screenshots of the previous report layout are
+// gone: scripts/test-showcase-images.ts fails if any removed asset is referenced again.
 const FEATURES: Array<{ key: FeatureKey; icon: LucideIcon }> = [
   { key: "cover", icon: FileText },
   { key: "glance", icon: ListChecks },
@@ -20,53 +20,61 @@ const FEATURES: Array<{ key: FeatureKey; icon: LucideIcon }> = [
 const IMAGE_LOCALES = ["en", "tr", "zh-Hans"] as const;
 
 /**
- * Homepage section explaining what the A$39.99 inc. GST premium report actually
- * contains -- horizontal tabs on desktop (feature list left, PDF preview
- * image right), stacking to image-below-text on mobile. Every string comes
- * from public/locales/{locale}.json via useTranslation(), keyed under
- * "home.reportShowcase.*" -- see that namespace for the exact keys.
+ * The real report-page gallery. mode "tabs" (homepage): feature list on the left, the selected report page on the right, stacking on mobile.
+ * mode "sequence" (/sample-report): the four pages one after the other at a readable size, each linking to its full-size image.
+ * Every string comes from public/locales/{locale}.json via useTranslation(), keyed under "home.reportShowcase.*"; `intro` is the section's
+ * heading / price / call-to-action block, which the page supplies.
  */
-export function PremiumReportShowcase() {
+export function PremiumReportShowcase({ intro, mode = "tabs" }: { intro?: ReactNode; mode?: "tabs" | "sequence" }) {
   const { t } = useTranslation();
   const { language } = useLanguage();
   const imageLocale = (IMAGE_LOCALES as readonly string[]).includes(language) ? language : "en";
   const [activeKey, setActiveKey] = useState<FeatureKey>(FEATURES[0].key);
   const active = FEATURES.find((f) => f.key === activeKey) ?? FEATURES[0];
+  const fictional = researchText(language, "Example report — fictional information", "Örnek rapor — kurgusal bilgiler", "示例报告 — 虚构信息");
+  const fullSize = researchText(language, "Open full size", "Tam boyutta aç", "查看原图");
+  const sampleNote = t("home.reportShowcase.sampleNote", "Pages from a sample report with a placeholder name. Information only, not migration advice.");
+  const badge = (
+    <span data-sample-label className="inline-flex rounded-full bg-[var(--cf-accent-dim)] px-3 py-1 text-xs font-semibold text-[var(--cf-accent)]">
+      {fictional}
+    </span>
+  );
+
+  if (mode === "sequence") {
+    return (
+      <div data-report-gallery="sequence">
+        {intro}
+        <div className="mt-6">{badge}</div>
+        <ol className="mt-6 space-y-12">
+          {FEATURES.map((feature, index) => {
+            const src = `/images/report-previews/${imageLocale}/${feature.key}.png`;
+            return (
+              <li key={feature.key}>
+                <h2 className="cf-serif text-xl text-[var(--cf-fg)]">
+                  <span className="cf-mono mr-3 text-sm text-[var(--cf-accent)]">0{index + 1}</span>
+                  {t(`home.reportShowcase.features.${feature.key}.title`, feature.key)}
+                </h2>
+                <p className="mt-2 text-sm leading-relaxed text-[var(--cf-muted)]">{t(`home.reportShowcase.features.${feature.key}.description`, "")}</p>
+                <a href={src} target="_blank" rel="noopener noreferrer" className="mt-4 block overflow-hidden rounded-xl border border-[var(--cf-line)] bg-white" aria-label={`${t(`home.reportShowcase.features.${feature.key}.title`, feature.key)} — ${fullSize}`}>
+                  {/* eslint-disable-next-line @next/next/no-img-element -- a static report page of varying height; shown at its natural ratio */}
+                  <img src={src} alt={t(`home.reportShowcase.features.${feature.key}.title`, feature.key)} loading={index === 0 ? "eager" : "lazy"} className="h-auto w-full" />
+                </a>
+                <a href={src} target="_blank" rel="noopener noreferrer" className="mt-2 inline-block text-sm font-medium text-[var(--cf-accent)] underline underline-offset-4">{fullSize} →</a>
+              </li>
+            );
+          })}
+        </ol>
+        <p className="mt-8 text-xs text-[var(--cf-muted)]" data-showcase-note>{sampleNote}</p>
+      </div>
+    );
+  }
 
   return (
-    <section className="relative overflow-hidden border-t border-slate-200 py-24 sm:py-32">
-      {/* Soft accent glow behind the heading -- kept subtle on the light
-          background (was a much brighter blur meant to pop off black). */}
-      <div
-        aria-hidden
-        className="pointer-events-none absolute -top-24 left-1/2 h-[420px] w-[720px] -translate-x-1/2 rounded-full opacity-10 blur-[110px]"
-        style={{
-          background:
-            "radial-gradient(circle at 30% 30%, #8052ff, transparent 60%), radial-gradient(circle at 70% 60%, #53917E, transparent 55%)",
-        }}
-      />
-
-      <div className="relative mx-auto max-w-6xl px-4">
-        <div className="mx-auto max-w-2xl text-center">
-          <span className="inline-flex items-center gap-2 rounded-full border border-[#53917E]/30 bg-[#53917E]/10 px-4 py-1 text-xs font-semibold uppercase tracking-wider text-[#53917E]">
-            <span className="h-1.5 w-1.5 rounded-full bg-[#53917E]" />
-            {t("home.reportShowcase.eyebrow", "A$39.99 inc. GST · Visa Information Report")}
-          </span>
-          <h2 className="mt-6 text-4xl font-extrabold tracking-tight text-slate-900 sm:text-5xl">
-            {t("home.reportShowcase.title", "What's inside the Visa Information Report?")}
-          </h2>
-          <p className="mt-4 text-lg font-medium leading-relaxed text-slate-700">
-            {t(
-              "home.reportShowcase.subtitle",
-              "Published facts for every visa and every state and territory, each with its source and date, plus the points total calculated from your entries. Information only, not migration advice. A$39.99 inc. GST."
-            )}
-          </p>
-        </div>
-
-        <div className="mt-16 grid gap-8 lg:grid-cols-[minmax(0,0.85fr)_minmax(0,1.15fr)] lg:items-center lg:gap-12">
-          {/* Feature list -- suspended in the void, no boxed card fills;
-              just a thin left rule that glows iris when active. */}
-          <div className="flex gap-2 overflow-x-auto pb-2 lg:flex-col lg:overflow-visible lg:gap-1 lg:pb-0">
+    <section data-report-gallery="tabs" className="case-file border-t border-[var(--cf-line)] py-12 sm:py-20">
+      <div className="section-shell">
+        {intro}
+        <div className="mt-10 grid gap-8 lg:grid-cols-[minmax(0,0.85fr)_minmax(0,1.15fr)] lg:items-start lg:gap-12">
+          <div className="flex gap-2 overflow-x-auto pb-2 lg:flex-col lg:overflow-visible lg:gap-1 lg:pb-0" role="group" aria-label={t("home.reportShowcase.features.cover.title", "Cover")}>
             {FEATURES.map((feature) => {
               const Icon = feature.icon;
               const isActive = feature.key === activeKey;
@@ -76,63 +84,36 @@ export function PremiumReportShowcase() {
                   type="button"
                   onClick={() => setActiveKey(feature.key)}
                   aria-pressed={isActive}
-                  className={`flex shrink-0 items-start gap-3 border-l-2 px-5 py-4 text-left transition-colors lg:shrink lg:w-full ${
-                    isActive
-                      ? "border-[#8052ff] bg-[#8052ff]/5"
-                      : "border-slate-200 hover:border-slate-400"
-                  }`}
+                  data-report-tab={feature.key}
+                  className={`flex shrink-0 items-start gap-3 border-l-2 px-5 py-4 text-left transition-colors lg:w-full lg:shrink ${isActive ? "border-[var(--cf-accent)] bg-[var(--cf-accent-dim)]" : "border-[var(--cf-line)] hover:border-[var(--cf-muted)]"}`}
                 >
-                  <span
-                    className={`mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-full ${
-                      isActive ? "bg-[#8052ff] text-white" : "bg-transparent text-slate-500 border border-slate-200"
-                    }`}
-                  >
+                  <span className={`mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-full ${isActive ? "bg-[var(--cf-accent)] text-white" : "border border-[var(--cf-line)] bg-transparent text-[var(--cf-muted)]"}`}>
                     <Icon className="h-4 w-4" />
                   </span>
                   <span className="min-w-0">
-                    <span className="block whitespace-nowrap text-sm font-semibold text-slate-900 lg:whitespace-normal">
-                      {t(`home.reportShowcase.features.${feature.key}.title`, feature.key)}
-                    </span>
-                    <span className="mt-0.5 hidden text-xs leading-relaxed text-slate-700 lg:block">
-                      {t(`home.reportShowcase.features.${feature.key}.description`, "")}
-                    </span>
+                    <span className="block whitespace-nowrap text-sm font-semibold text-[var(--cf-fg)] lg:whitespace-normal">{t(`home.reportShowcase.features.${feature.key}.title`, feature.key)}</span>
+                    <span className="mt-0.5 hidden text-xs leading-relaxed text-[var(--cf-muted)] lg:block">{t(`home.reportShowcase.features.${feature.key}.description`, "")}</span>
                   </span>
                 </button>
               );
             })}
           </div>
 
-          {/* Preview image -- comes after the tabs in DOM order, so on
-              mobile (single-column grid) it stacks below the feature text;
-              from lg: up the grid goes two-column and they sit side by
-              side instead. */}
           <div>
-            <p className="mb-3 text-sm leading-relaxed text-slate-700 lg:hidden">
-              {t(`home.reportShowcase.features.${active.key}.description`, "")}
-            </p>
-            {/* No border, no box-shadow -- flat/borderless per the site's
-                elevation rule. A soft iris glow sits behind the image
-                instead of a hard edge. */}
-            <div className="relative aspect-[3/4] w-full">
-              <div
-                aria-hidden
-                className="pointer-events-none absolute inset-[-6%] rounded-3xl opacity-40 blur-3xl"
-                style={{
-                  background:
-                    "radial-gradient(closest-side, rgba(128,82,255,0.35), transparent 75%)",
-                }}
-              />
-              <Image
+            <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
+              {badge}
+              <a href={`/images/report-previews/${imageLocale}/${active.key}.png`} target="_blank" rel="noopener noreferrer" className="text-sm font-medium text-[var(--cf-accent)] underline underline-offset-4">{fullSize} →</a>
+            </div>
+            <p className="mb-3 text-sm leading-relaxed text-[var(--cf-muted)] lg:hidden">{t(`home.reportShowcase.features.${active.key}.description`, "")}</p>
+            <div className="overflow-hidden rounded-xl border border-[var(--cf-line)] bg-white">
+              {/* eslint-disable-next-line @next/next/no-img-element -- a static report page of varying height; shown at its natural ratio */}
+              <img
                 src={`/images/report-previews/${imageLocale}/${active.key}.png`}
                 alt={t(`home.reportShowcase.features.${active.key}.title`, active.key)}
-                fill
-                className="relative object-contain object-top"
-                sizes="(min-width: 1024px) 50vw, 100vw"
+                className="h-auto w-full"
               />
             </div>
-            <p className="mt-3 text-center text-xs text-slate-600" data-showcase-note>
-              {t("home.reportShowcase.sampleNote", "Pages from a sample report with a placeholder name. Information only, not migration advice.")}
-            </p>
+            <p className="mt-3 text-center text-xs text-[var(--cf-muted)]" data-showcase-note>{sampleNote}</p>
           </div>
         </div>
       </div>

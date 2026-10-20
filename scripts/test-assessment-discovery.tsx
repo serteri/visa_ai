@@ -1,8 +1,7 @@
 import assert from "node:assert/strict";
 import fs from "node:fs";
 import { renderToStaticMarkup } from "react-dom/server";
-import { SampleReportSection } from "../components/landing/SampleReportSection";
-import { SampleReportDocument } from "../components/landing/SampleReportDocument";
+import { SampleReportIntro } from "../components/landing/SampleReportSection";
 import { HowItWorks } from "../components/landing/HowItWorks";
 import { findBannedPhrases } from "../lib/seo/banned-phrases";
 import { AssessmentSection, ASSESSMENT_PRICE_LABEL } from "../components/landing/AssessmentSection";
@@ -26,12 +25,19 @@ assert.deepEqual(sanitizeParams({entry_source:"homepage",locale:"en",reportId:"p
 assert.deepEqual(sanitizeParams({entry_source:"someone@example.com",product_type:"arbitrary"}),{});
 for(const locale of ["en","tr","zh-Hans"]){const home=renderToStaticMarkup(<AssessmentSection locale={locale}/>);const overview=renderToStaticMarkup(<AssessmentOverview locale={locale}/>);assert(home.includes('data-assessment-entry="homepage_assessment_section"'));assert(home.includes(ASSESSMENT_PRICE_LABEL));assert(!/eligibility (assessment|checker)/i.test(home));assert(home.includes('/full-check'));assert(overview.includes('<h1'));assert(overview.includes('PDF'));assert(!/\d+\s*(minutes|mins)/.test(overview));}
 for(const locale of ["en","tr","zh-Hans"]){
-  const sample=renderToStaticMarkup(<SampleReportSection locale={locale}/>);const full=renderToStaticMarkup(<SampleReportDocument locale={locale} full/>);const how=renderToStaticMarkup(<HowItWorks locale={locale}/>);
-  assert(sample.includes(ASSESSMENT_PRICE_LABEL),"sample section shows the canonical price");assert(sample.includes('data-assessment-entry="homepage_sample_report"'));assert(sample.includes("/sample-report"));assert(sample.includes("data-sample-label"));
-  assert(!/@|LVA-|report[_ -]?id/i.test(full),"sample carries no email or report id");
+  const intro=renderToStaticMarkup(<SampleReportIntro locale={locale}/>);const page=renderToStaticMarkup(<SampleReportIntro locale={locale} sequence/>);const how=renderToStaticMarkup(<HowItWorks locale={locale}/>);
+  assert(intro.includes(ASSESSMENT_PRICE_LABEL),"sample section shows the canonical price");assert(page.includes(ASSESSMENT_PRICE_LABEL));assert(intro.includes('data-assessment-entry="homepage_sample_report"'));assert(page.includes('data-assessment-entry="sample_report_page"'));assert(intro.includes("/sample-report"));
   assert((how.match(/<li/g)||[]).length===4&&how.includes("/full-check"));
-  if(locale==="en"){for(const html of [sample,full,how])assert.deepEqual(findBannedPhrases(html.replace(/<[^>]+>/g," ").replace(/(Information and research support only|Illustration of structure only)[^.]*\.[^.]*\./g,"")),[]);assert(!/best visa|find your pathway|what you qualify|migration strategy|choose your/i.test(sample+full+how));}
+  if(locale==="en"){for(const html of [intro,page,how])assert.deepEqual(findBannedPhrases(html.replace(/<[^>]+>/g," ").replace(/(Information and research support only|Illustration of structure only)[^.]*\.[^.]*\./g,"")),[]);assert(!/best visa|find your pathway|what you qualify|migration strategy|choose your/i.test(intro+page+how));}
 }
+// The homepage and /sample-report show the REAL report-page screenshots (PremiumReportShowcase); the static HTML mock is gone.
+const read=(f:string)=>fs.readFileSync(f,"utf8");
+assert(/SampleReportSection/.test(read("components/home-content.tsx")));assert(/PremiumReportShowcase/.test(read("components/landing/SampleReportSection.tsx")));
+assert(/PremiumReportShowcase[^>]*mode="sequence"/.test(read("app/[locale]/(main)/sample-report/page.tsx")));
+assert(!fs.existsSync("components/landing/SampleReportDocument.tsx"));for(const f of ["components/home-content.tsx","components/landing/SampleReportSection.tsx","app/[locale]/(main)/sample-report/page.tsx","components/sections/PremiumReportShowcase.tsx"])assert(!/SampleReportDocument/.test(read(f)));
+const homeOrder=read("components/home-content.tsx");assert(homeOrder.indexOf("<AssessmentSection")<homeOrder.indexOf("<SampleReportSection")&&homeOrder.indexOf("<SampleReportSection")<homeOrder.indexOf("<HowItWorks"));
+for(const L of ["en","tr","zh-Hans"])for(const k of ["cover","glance","requirements","costs"])assert(fs.existsSync(`public/images/report-previews/${L}/${k}.png`),`${L}/${k}.png`);
+const render=read("scripts/render-showcase-images.ts");assert(/targetVisa: "not_sure"/.test(render)&&!/preferredPathway/.test(render.replace(/\/\/.*$/gm,"")),"showcase profile pre-selects no visa");
 const samplePage=fs.readFileSync("app/[locale]/(main)/sample-report/page.tsx","utf8");assert(/index:\s*false/.test(samplePage));assert(!fs.readFileSync("app/sitemap.ts","utf8").includes("sample-report"));
 // Price consistency: homepage headline price must equal the amount the checkout line item charges.
 assert.equal(getCheckoutLineItem("premium").price_data.unit_amount,PREMIUM_PRICE_AUD_CENTS);assert.equal(ASSESSMENT_PRICE_LABEL,`A$${(getCheckoutLineItem("premium").price_data.unit_amount/100).toFixed(2)}`);
