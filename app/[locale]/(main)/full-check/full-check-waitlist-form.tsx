@@ -177,8 +177,10 @@ export function FullCheckWaitlistForm({
   );
   const [currentCountry, setCurrentCountry] = useState(initialValues.currentCountry ?? "");
   // The chosen destination ("" until one is chosen, or named by ?country=). The passport list never offers it, and choosing it clears a passport country.
-  const [destination, setDestination] = useState<Destination | "">(destinationFromParam(initialValues.destination));
-  const [passportCountry, setPassportCountry] = useState(passportIsDestination(initialValues.passportCountry, destinationFromParam(initialValues.destination)) ? "" : (initialValues.passportCountry ?? ""));
+  // With Canada switched off there is nothing to choose: the destination is Australia from the start (no selector is shown).
+  const initialDestination: Destination | "" = destinationFromParam(initialValues.destination) || (canadaReportEnabled ? "" : "AU");
+  const [destination, setDestination] = useState<Destination | "">(initialDestination);
+  const [passportCountry, setPassportCountry] = useState(passportIsDestination(initialValues.passportCountry, initialDestination) ? "" : (initialValues.passportCountry ?? ""));
   const [passportNote, setPassportNote] = useState<string | null>(null);
   const changeDestination = (c: string) => {
     if (!isDestination(c)) return;

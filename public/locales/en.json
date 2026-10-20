@@ -864,6 +864,8 @@
   "home.reportShowcase.subtitle": "Published facts for every visa and every state and territory, each with its source and date, plus the points total calculated from your entries. Information only, not migration advice. A$39.99 inc. GST.",
   "home.reportShowcase.features.cover.title": "Cover",
   "home.reportShowcase.features.cover.description": "The report date, the occupation entered and the target visa you selected (or Not sure).",
+  "home.reportShowcase.features.summary.title": "Professional summary",
+  "home.reportShowcase.features.summary.description": "What was entered and what was not, the published areas covered and the items left to verify independently, on one page.",
   "home.reportShowcase.features.glance.title": "At a glance",
   "home.reportShowcase.features.glance.description": "One row per visa in a fixed order: how many requirements have information entered, not entered or not collected, with your figures beside the published figures.",
   "home.reportShowcase.features.requirements.title": "Visa requirements",

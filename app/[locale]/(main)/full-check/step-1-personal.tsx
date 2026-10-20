@@ -114,8 +114,12 @@ export function Step1Personal({
         {fieldErrors?.["waitlist-e"] && <p className="text-xs text-red-600">{fieldErrors["waitlist-e"]}</p>}
       </div>
 
+      {/* Australia is the only destination the Assessment completes end to end (Canada report generation is switched off, lib/readiness/report-mode.ts):
+          a one-item dropdown asks a question with no choice, so the destination is fixed internally and no selector is shown. */}
+      {!canadaReportEnabled && <input id="waitlist-target-country" type="hidden" name="targetCountry" value="AU" data-testid="destination-fixed-au" />}
+      {canadaReportEnabled && (
       <div className="space-y-2">
-        <Label htmlFor="waitlist-target-country">{txt("Hangi ülke için rapor istiyorsunuz?", "Which country is this report for?", "您希望针对哪个国家生成报告？")}</Label>
+        <Label htmlFor="waitlist-target-country">{txt("Hedef ülkenizi seçin", "Select your destination country", "请选择您的目的地国家")}</Label>
         <Combobox
           placeholder={txt("Ülke seçin", "Select country", "请选择国家")}
           items={activeCountries.filter((code) => code !== "CA" || canadaReportEnabled).map(code => ({ value: code, label: countryLabels[code][isTr ? "tr" : isZh ? "zh-Hans" : "en"] }))}
@@ -126,12 +130,8 @@ export function Step1Personal({
         />
         <input id="waitlist-target-country" type="hidden" name="targetCountry" value={destination} />
         {fieldErrors?.["waitlist-target-country"] && <p className="text-xs text-red-600">{fieldErrors["waitlist-target-country"]}</p>}
-        {!canadaReportEnabled && (
-          <p className="text-xs text-slate-500" data-testid="canada-unavailable">
-            {txt("Kanada raporları beta döneminde kullanılamıyor.", "Canada reports are not available during the beta.", "测试期间暂不提供加拿大报告。")}
-          </p>
-        )}
       </div>
+      )}
 
       {selectedCountry === "AU" ? (
         <div className="space-y-2" data-field-error={fieldErrors?.["waitlist-target-visa"] || undefined}>

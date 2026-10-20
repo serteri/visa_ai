@@ -72,7 +72,7 @@ export function buildCostsInfo(report: ReadinessReport, occupationRaw: string | 
   const gov = VISA_ORDER.map((k) => {
     const c = visaCharge(k);
     const f = (n: number | null) => (n === null || (c.main === 0 && n === 0) ? "—" : `AUD ${money(n)}`);
-    return [visaName(k, l), c.main === null ? "—" : `AUD ${money(c.main)}`, f(c.partner), f(c.child), f(c.second), c.verified || T(l, "per the subclass 186 data file", "subclass 186 veri dosyasına göre", "据 186 子类数据文件")];
+    return [visaName(k, l), c.main === null ? "—" : `AUD ${money(c.main)}`, f(c.partner), f(c.child), f(c.second), c.verified || T(l, "as published for subclass 186", "subclass 186 için yayımlandığı şekliyle", "按 186 子类已公布内容")];
   });
 
   // 2. The assessing authority's fees, one row per pathway, with the amounts the authority states excluding GST and including GST. A figure for

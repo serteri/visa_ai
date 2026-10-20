@@ -1,0 +1,126 @@
+/**
+ * The agent-ready report upgrade, on REAL generated PDF text (the production PDF route, via scripts/render-persona-pdfs.ts) for the
+ * synthetic agent-sample profile in en / tr / zh-Hans:
+ *   - Professional Summary: present, after the cover, built from the supplied facts, missing values explicit, no verdict wording
+ *   - no invitation estimate / trend-based level anywhere; no repository filenames or internal process wording in the sources
+ *   - points scenarios only in the appendix "Published points-table examples", with the arithmetic-only sentence
+ *   - sample identity: "Sample Applicant", report ID SAMPLE-REPORT, no customer-looking ID, no personal data
+ *   - country routing: an Australian report carries no Canada content and a Canadian report carries no Australian visa content;
+ *     the Assessment form shows no one-item country selector while Canada is off
+ *
+ *   npx tsx scripts/test-agent-ready-report.ts
+ */
+import "./lib/stub-request-context";
+
+import { readFileSync } from "node:fs";
+
+import { BANNED_INFORMATION_PAGE_PHRASES } from "../lib/seo/banned-phrases";
+import { buildReportView } from "../lib/reports/report-view";
+import { reportSectionTitle } from "../lib/reports/report-section-titles";
+import { blockStrings } from "../lib/reports/report-blocks";
+import { longDate, publicConditionText, publicDocumentTitle } from "../lib/reports/public-sources";
+import { isSampleApplicant, SAMPLE_APPLICANT_NAME, SAMPLE_REPORT_ID } from "../lib/reports/sample";
+import type { Locale, ReadinessInput } from "../lib/readiness/types";
+import { renderPersonaPdfTexts } from "./render-persona-pdfs";
+import { AGENT_SAMPLE_PROFILE } from "./render-agent-sample";
+
+let failures = 0;
+const ok = (m: string) => console.log(`  ✅ ${m}`);
+const check = (cond: boolean, m: string, detail = "") => {
+  if (cond) ok(m);
+  else {
+    failures++;
+    console.error(`  ❌ ${m}${detail ? ` -- ${detail}` : ""}`);
+  }
+};
+
+const LOCALES: Locale[] = ["en", "tr", "zh-Hans"];
+
+async function main() {
+  process.env.DATABASE_URL ||= "postgresql://u:p@localhost:5432/d?sslmode=disable";
+  const rendered = await renderPersonaPdfTexts({ agentSample: AGENT_SAMPLE_PROFILE }, LOCALES, undefined, "2026-10-21T00:00:00Z", undefined, SAMPLE_APPLICANT_NAME);
+
+  console.log("\n1. Sample identity");
+  check(isSampleApplicant(SAMPLE_APPLICANT_NAME) && SAMPLE_REPORT_ID === "SAMPLE-REPORT" && SAMPLE_APPLICANT_NAME === "Sample Applicant", "the synthetic name and ID constants");
+  for (const r of rendered) {
+    check(r.text.includes("Sample Applicant") && r.text.includes("SAMPLE-REPORT"), `${r.locale}: name Sample Applicant and report ID SAMPLE-REPORT`);
+    check(!/LVA-\d{8}-/.test(r.text), `${r.locale}: no customer-looking report ID`);
+    check(!/Serter|iyigunlu|@[a-z0-9-]+\.[a-z]{2,}/i.test(r.text.replace(/support@logivisa\.com|[a-z0-9.-]+@logivisa\.com/gi, "")), `${r.locale}: no real name or email`);
+  }
+  const real = isSampleApplicant("Jane Citizen");
+  check(!real, "a real customer name never prints the sample ID");
+
+  for (const r of rendered) {
+    console.log(`\n2. ${r.locale}: Professional summary`);
+    const t = r.text;
+    const iSummary = t.indexOf(reportSectionTitle("summary", r.locale));
+    const iDetails = t.indexOf(reportSectionTitle("details", r.locale));
+    const iGlance = t.indexOf(reportSectionTitle("glance", r.locale));
+    check(iSummary > 0 && iDetails > iSummary && iGlance > iDetails, "the summary section follows the cover and precedes applicant information and At a glance");
+    const view = buildReportView({ report: r.report as never, locale: r.locale, profile: { name: SAMPLE_APPLICANT_NAME, occupation: "Software Engineer", occupationRaw: "Software Engineer (261313)", age: "28", englishLevel: "superior", currentCountry: "AU", mainGoal: AGENT_SAMPLE_PROFILE.mainGoal }, dateText: "21 October 2026", asOf: new Date("2026-10-21T00:00:00Z") });
+    const summary = view.sections.find((s) => s.id === "summary");
+    check(!!summary && view.sections[0].id === "summary", "summary is the first section of the view");
+    const text = (summary?.blocks ?? []).flatMap(blockStrings).join("\n");
+    check(/261313/.test(text) && /\b28\b/.test(text), "facts come from the supplied data (occupation code, age)");
+    check(/Employment|Çalışma|工作经历/.test(text) && /Partner|伴侣/.test(text), "values that were not entered are listed explicitly (employment, partner)");
+    check(!/Annual salary: .*\d/.test(text) && !/AUD [\d,]+ per year entered/.test(text), "no value is invented for a missing field");
+    const verdict = BANNED_INFORMATION_PAGE_PHRASES.filter((p) => p.re.test(text)).map((p) => p.id);
+    check(verdict.length === 0, "no eligibility, recommendation, chance or directive wording in the summary", verdict.join(", "));
+    check(!/\b(not eligible|likely|suitable|strongest|best visa|recommended visa)\b/i.test(text), "no outcome language in the summary");
+    check(summary!.blocks.flatMap(blockStrings).join("").length < 4200, "the summary stays about one page");
+  }
+
+  for (const r of rendered) {
+    console.log(`\n3. ${r.locale}: estimates, sources, points`);
+    const t = r.text;
+    check(!/Recent invitation level|Son davet seviyesi|近期邀请分|Estimate from our trend data|Trend verilerimizden tahmin|根据我们趋势数据的估算/.test(t), "no trend-based invitation estimate anywhere");
+    check(!/invitation[^.\n]{0,40}estimate|estimated invitation|predicted cut-?off|cutoff estimate/i.test(t), "no estimated invitation score or cutoff");
+    check(!/\.(md|xlsx|csv|json)\b/i.test(t) && !/\(fetched \d{4}/.test(t), "no repository filename or snapshot stamp");
+    check(!/project owner|could not be fetched automatically|user-confirmed|our trend data|data file/i.test(t), "no internal process wording");
+    check(!/scenario|Senaryo|情景/.test(t.split(reportSectionTitle("pointsExamples", r.locale))[0]), "points scenarios do not appear before the appendix");
+    if (t.includes(reportSectionTitle("pointsExamples", r.locale))) check(/arithmetic|aritmetik|算术/.test(t.split(reportSectionTitle("pointsExamples", r.locale))[1].slice(0, 600)), "the appendix opens with the arithmetic-only sentence");
+    if (r.locale === "en") {
+      check(/Checked/.test(t) && /\d{1,2} (January|February|March|April|May|June|July|August|September|October|November|December) \d{4}/.test(t), "sources show long checked dates");
+      check(/ACT Government — /.test(t.replace(/\s+/g, " ")) && /NSW Government — /.test(t.replace(/\s+/g, " ")), "state sources are shown as organisation — page title");
+      check(/Program status/.test(t) && /Key published conditions/.test(t) && /Official source/.test(t), "each state uses the same card: status, list status, key conditions, data checked, official source");
+      for (const code of ["ACT", "NSW", "NT", "QLD", "SA", "TAS", "VIC", "WA"]) check(new RegExp(`\\(${code}\\)`).test(t), `${code} is present in the state section`);
+    }
+  }
+
+  console.log("\n4. Source helpers");
+  check(publicDocumentTitle("NSW Skilled Nominated visa (subclass 190) (fetched 2026-10-13).md", "NSW") === "Skilled Nominated visa (subclass 190)", "snapshot name -> page title");
+  check(publicDocumentTitle("NT user-confirmed status (checked 2026-10-13).md", "NT") === "Program status", "user-confirmed -> neutral title");
+  check(longDate("2026-10-13", "en") === "13 October 2026", "long date");
+  check(!/project owner/.test(publicConditionText("Fee AUD 387. Confirmed by the project owner on 13 October 2026.")), "internal confirmation wording is neutralised");
+
+  console.log("\n5. Country routing");
+  const au = rendered[0];
+  check(!/Canada|Canadian|Express Entry|IRCC|\bNOC\b|\bCRS\b/.test(au.text), "an Australian report carries no Canada content");
+  const caInput = { locale: "en", country: "CA", currentCountry: "IN", passportCountry: "IN", age: "29", occupation: "Software developers and programmers (21232)", nocCode: "21232", nocTeer: 1, englishLevel: "CLB 9", qualificationLevel: "Master's Degree (Research)", migrationGoals: ["direct_pr"], mainGoal: "Researching Canadian immigration information" } as unknown as ReadinessInput;
+  const { runReadinessEngine } = await import("../src/lib/readiness-engine");
+  const caReport = runReadinessEngine(caInput);
+  check(caReport.country === "CA", "a Canada input produces a Canada report (the engine routes on the destination)");
+  const caView = buildReportView({ report: caReport, locale: "en", profile: { name: SAMPLE_APPLICANT_NAME, occupation: "Software developers", occupationRaw: "Software developers and programmers (21232)" }, dateText: "" });
+  check(!caView.sections.some((s) => s.id === "summary" || s.id === "points" || s.id === "states"), "a Canadian report gains no Australian summary, points or state sections");
+  const caSummaryWording = caView.sections.filter((s) => s.id === "summary").flatMap((s) => s.blocks.flatMap(blockStrings)).join(" ");
+  check(caSummaryWording === "", "no Professional Summary (and so no Australian wording from it) is added to a Canadian report");
+  // Known gap, recorded in the audit: the shared view's visa, process and sources sections are still Australia-specific; that is why Canada report generation stays switched off.
+  const step1 = readFileSync("app/[locale]/(main)/full-check/step-1-personal.tsx", "utf8");
+  const form = readFileSync("app/[locale]/(main)/full-check/full-check-waitlist-form.tsx", "utf8");
+  check(/\{!canadaReportEnabled && <input[^>]*value="AU"/.test(step1) && /\{canadaReportEnabled && \(/.test(step1), "no country selector while Canada is off: the destination is fixed to AU");
+  check(/Select your destination country/.test(step1) && !/Which country is this report for/.test(step1), "when Canada is enabled the selector reads 'Select your destination country'");
+  check(/canadaReportEnabled \? "" : "AU"/.test(form), "the form's destination defaults to AU when Canada is off");
+  const actions = readFileSync("app/[locale]/(main)/full-check/actions.ts", "utf8");
+  check(/targetCountry === "CA" && !isCanadaReportEnabled\(\)/.test(actions), "the server refuses a Canada request while Canada is off");
+
+  if (failures) {
+    console.error(`\n❌ ${failures} check(s) failed`);
+    process.exit(1);
+  }
+  console.log("\n✅ ALL CHECKS PASSED");
+}
+
+main().catch((e) => {
+  console.error(e);
+  process.exit(1);
+});

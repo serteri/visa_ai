@@ -3,7 +3,7 @@
  *   1. the old screenshots (the verdict-style report layout: viability ranking, percentages, "Highly Recommended") are removed from disk and
  *      referenced by no tracked source file, doc or config;
  *   2. the homepage and pricing page (and their component trees) reference only image files that exist; none of the removed assets;
- *   3. the four current preview pages (cover, At a glance, visa requirements with Your figure / Published figure, costs) exist in every
+ *   3. the five current preview pages (cover, Professional summary, At a glance, visa requirements with Your figure / Published figure, costs) exist in every
  *      locale as real PNGs, are generated from a synthetic profile with a placeholder name (scripts/render-showcase-images.ts) and the component
  *      points at them;
  *   4. captions in the three locale files: present, no verdict / ranking / recommendation / percentage wording; the old caption keys are gone.
@@ -27,7 +27,7 @@ const t = (name: string, cond: boolean, detail = "") => {
 };
 const read = (f: string) => readFileSync(f, "utf8");
 const LOCALES = ["en", "tr", "zh-Hans"] as const;
-const KEYS = ["cover", "glance", "requirements", "costs"] as const;
+const KEYS = ["cover", "summary", "glance", "requirements", "costs"] as const;
 
 const REMOVED = ["screenshot-2026-08-26-204059.png", "screenshot-2026-08-26-204437.png", "screenshot-2026-08-26-204504.png", "screenshot-2026-08-26-204514.png", "screenshot-2026-08-26-204527.png", "screenshot-2026-08-26-204541.png"];
 
@@ -73,7 +73,7 @@ async function main() {
 
   console.log("\n3. the current preview pages");
   const component = read("components/sections/PremiumReportShowcase.tsx");
-  t("the component lists the four current pages and builds the path from the locale and the key", KEYS.every((k) => component.includes(`key: "${k}"`)) && /\/images\/report-previews\/\$\{imageLocale\}\/\$\{active\.key\}\.png/.test(component));
+  t("the component lists the five current pages and builds the path from the locale and the key", KEYS.every((k) => component.includes(`key: "${k}"`)) && /\/images\/report-previews\/\$\{imageLocale\}\/\$\{active\.key\}\.png/.test(component));
   t("the component no longer lists the old feature keys", !/viabilityRanking|pointsBreakdown|pointsBooster|financialRoadmap|historicalTrends/.test(component));
   for (const L of LOCALES) {
     for (const k of KEYS) {
@@ -87,7 +87,7 @@ async function main() {
     }
   }
   const gen = read("scripts/render-showcase-images.ts");
-  t("the images come from the real PDF route with a synthetic profile and the placeholder name 'Sample Applicant'", /SHOWCASE_NAME = "Sample Applicant"/.test(gen) && /REVIEW_PERSONAS\["reference-se-au"\]/.test(gen) && /renderPersonaPdfTexts/.test(gen));
+  t("the images come from the real PDF route with a synthetic profile and the placeholder name 'Sample Applicant'", /SHOWCASE_NAME = "Sample Applicant"/.test(gen) && /AGENT_SAMPLE_PROFILE/.test(gen) && /renderPersonaPdfTexts/.test(gen));
   t("the generator refuses a page with a percentage or verdict / ranking / recommendation wording", /VERDICT\[locale\]/.test(gen) && /%/.test(gen) && /recommend/.test(gen));
 
   console.log("\n4. captions");
@@ -99,7 +99,7 @@ async function main() {
   for (const L of LOCALES) {
     const d = JSON.parse(read(`public/locales/${L}.json`)) as Record<string, string>;
     const strings = KEYS.flatMap((k) => [d[`home.reportShowcase.features.${k}.title`], d[`home.reportShowcase.features.${k}.description`]]).concat(d["home.reportShowcase.sampleNote"]);
-    t(`${L}: a title and a description for each of the four pages, and the sample note`, strings.every((x) => typeof x === "string" && x.length > 1));
+    t(`${L}: a title and a description for each of the five pages, and the sample note`, strings.every((x) => typeof x === "string" && x.length > 1));
     const bad = strings.filter((x) => x && (VERDICT[L].test(x) || (L === "en" && findBannedPhrases(x).length > 0)));
     t(`${L}: no verdict, ranking, recommendation, match or percentage wording in the captions`, bad.length === 0, bad.join(" | "));
     t(`${L}: the old caption keys are gone`, !Object.keys(d).some((k) => /home\.reportShowcase\.features\.(viabilityRanking|pointsBreakdown|pointsBooster|financialRoadmap|historicalTrends)/.test(k)));

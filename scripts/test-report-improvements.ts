@@ -116,7 +116,7 @@ async function main() {
 
     console.log("3. at a glance");
     const ids = nsView.sections.map((s) => s.id);
-    t("the glance section comes right after Your details", ids[0] === "details" && ids[1] === "glance", ids.slice(0, 3).join(","));
+    t("the summary and applicant information come first, then the glance section", ids[0] === "summary" && ids[1] === "details" && ids[2] === "glance", ids.slice(0, 4).join(","));
     const glanceTable = blocks(nsView, "glance").find((b) => b.kind === "table");
     const g1 = glanceTable && glanceTable.kind === "table" ? glanceTable : undefined;
     t("one row per visa, nine rows, columns: visa | entered | not entered | not collected | figures", !!g1 && g1.rows.length === 9 && g1.headers.length === 5);
@@ -134,7 +134,7 @@ async function main() {
     console.log("4. invitation levels and history");
     const ov = visaBlocks; void ov;
     const invLevel = blocks(nsView, "visas").flatMap((b) => (b.kind === "kv" ? b.rows : [])).filter(([k]) => /Recent invitation level|Son davet seviyesi|近期邀请分/.test(k));
-    t("every recent invitation level is labelled inline as an estimate with its date", invLevel.length === 3 && invLevel.every(([k, val]) => /estimate|tahmin|估算/i.test(k) && /(Estimate from our trend data|Trend verilerimizden tahmin|根据我们趋势数据的估算).*2026-04-30|2026-04-30/.test(val)), JSON.stringify(invLevel));
+    t("no trend-based invitation level or estimate is printed in any visa block", invLevel.length === 0 && !/Estimate from our trend data|Trend verilerimizden tahmin|根据我们趋势数据的估算/.test(JSON.stringify(blocks(nsView, "visas"))), JSON.stringify(invLevel));
     const now = new Date("2026-10-08T00:00:00Z");
     const mk = (date: string, lowestPoints: number | null) => ({ id: date, date, visaSubclass: "189", visaName: "x", invitations: 100, lowestPoints, notes: null, isEstimated: false, source: "Home Affairs" });
     const mixed = buildInvitationInfo(L, now, { lastUpdated: "2026-09-01", rounds: [mk("2025-01-15", 85), mk("2026-09-01", 90), mk("2026-09-02", null)] });
@@ -145,7 +145,7 @@ async function main() {
     const stale = buildInvitationInfo(L, now, { lastUpdated: "2025-06-01", rounds: [mk("2025-06-01", 80)] });
     t("data last updated more than 12 months ago is stated", stale.ageNote.includes("2025-06-01"));
     const invBlocks = blocks(nsView, "invitations");
-    t("the live data has no lowest-points figures: the section carries no table", !invBlocks.some((b) => b.kind === "table") && invBlocks.some((b) => b.kind === "text" && b.text === buildInvitationInfo(L, new Date()).emptyNote));
+    t("the live data has no lowest-points figures: the invitation section is left out (nothing is estimated in its place)", invBlocks.length === 0 && !ids.includes("invitations"));
 
     console.log("5. assessing-authority fees");
     const costs = blocks(nsView, "costs");

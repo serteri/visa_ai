@@ -1,18 +1,19 @@
 "use client";
 
 import { useState, type ReactNode } from "react";
-import { ClipboardCheck, DollarSign, FileText, ListChecks, type LucideIcon } from "lucide-react";
+import { ClipboardCheck, ClipboardList, DollarSign, FileText, ListChecks, type LucideIcon } from "lucide-react";
 
 import { useLanguage, useTranslation } from "@/contexts/language-context";
 import { researchText } from "@/lib/marketing/research-journey";
 
-type FeatureKey = "cover" | "glance" | "requirements" | "costs";
+type FeatureKey = "cover" | "summary" | "glance" | "requirements" | "costs";
 
 // Pages of the CURRENT information report, rendered from a synthetic profile with a placeholder name and the target visa "not_sure" by
 // scripts/render-showcase-images.ts (public/images/report-previews/<locale>/<key>.png). The old screenshots of the previous report layout are
 // gone: scripts/test-showcase-images.ts fails if any removed asset is referenced again.
 const FEATURES: Array<{ key: FeatureKey; icon: LucideIcon }> = [
   { key: "cover", icon: FileText },
+  { key: "summary", icon: ClipboardList },
   { key: "glance", icon: ListChecks },
   { key: "requirements", icon: ClipboardCheck },
   { key: "costs", icon: DollarSign },

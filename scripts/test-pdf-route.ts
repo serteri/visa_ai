@@ -67,7 +67,7 @@ import { runReadinessEngine } from "../src/lib/readiness-engine";
 import { generateReadinessPDF } from "../lib/readiness/generate-pdf";
 import { buildReportView } from "../lib/reports/report-view";
 import { REPORT_DISCLAIMER } from "../lib/reports/report-disclaimer";
-import { NO_LEVEL, hasSection, inviteLevel, scenarioRows, stateCount, stateRow, totalsRows } from "./lib/view-compat";
+import { hasSection, inviteLevel, scenarioRows, stateCount, stateRow, totalsRows } from "./lib/view-compat";
 import { computeEstimatedTotalAud, computePartnerTotalAud, estimateQualifier, formatEstimatedTotalLine, formatPartnerTotalLine, formatSecondInstalmentLine } from "../lib/readiness/financial-roadmap-totals";
 import visaFeesData from "../src/data/visa-fees.json";
 import { ENGLISH_TEST_VALIDITY_YEARS, SECOND_INSTALMENT_AUD } from "../lib/readiness/constants";
@@ -776,8 +776,7 @@ async function runPathwayChecks(
         if (s !== "189" && row[2] !== `+${p.nominationBonus}`) f(`${s}: nomination points ${row[2]} != +${p.nominationBonus}`);
         if (row[3] !== String(now)) f(`${s}: total ${row[3]} != score with the required nomination (${now})`);
         if (row[4] !== "65") f(`${s}: published minimum ${row[4]} != 65`);
-        if (p.benchmark !== null && !inviteLevel(view, s).startsWith(String(p.benchmark))) f(`${s}: published invitation score "${inviteLevel(view, s)}" != benchmark ${p.benchmark}`);
-        if (p.benchmark === null && /^\d/.test(inviteLevel(view, s))) f(`${s}: an invitation score is shown although no benchmark exists`);
+        if (inviteLevel(view, s)) f(`${s}: a trend-based invitation level is printed ("${inviteLevel(view, s)}"); invitation estimates are not part of the report`);
         if (!squashAll(flat).includes(squashAll(row[0]))) f(`${s}: the totals row is not in the PDF`);
       }
       // 2. No comparison with the benchmark ("short", "above"), no ranking, no fit label, no "nomination bonus" wording.
@@ -893,11 +892,10 @@ async function runAuthorityChecks(
       const noBenchmark = PATHWAY_SUBCLASSES.filter((s) => scores[s].benchmark === null);
       const noLevel = { en: "not available", tr: "mevcut değil", "zh-Hans": "暂无" }[locale];
       if (noBenchmark.length === PATHWAY_SUBCLASSES.length) {
-        if (!PATHWAY_SUBCLASSES.every((sc) => NO_LEVEL.test(inviteLevel(view, sc)))) f("a pathway shows a published invitation score although no pathway has an invitation benchmark");
-        if (!new RegExp(noLevel, "i").test(flat)) f("the visa blocks do not say there is no published invitation score");
+        if (PATHWAY_SUBCLASSES.some((sc) => inviteLevel(view, sc))) f("a pathway shows an invitation level; no invitation estimate is part of the report");
         if (/A (?:moderate|meaningful|substantial) gap exists between your profile and/.test(flat)) f("a 'gap exists between your profile and recent benchmarks' sentence is shown next to 'no benchmark available'");
       } else if (noBenchmark.length === 0) {
-        if (PATHWAY_SUBCLASSES.some((sc) => NO_LEVEL.test(inviteLevel(view, sc)))) f("'not available' is shown although benchmarks exist");
+        if (PATHWAY_SUBCLASSES.some((sc) => inviteLevel(view, sc))) f("an invitation level is shown; invitation estimates are not part of the report");
       }
 
       // ── 4. One authority per occupation in the whole text ──────────────────
@@ -1057,7 +1055,7 @@ async function runFrictionChecks(
       for (const s of PATHWAY_SUBCLASSES) {
         const row = totalsRows(view).find((r) => r[0].includes(s));
         if (!row) { f(`${s}: no points totals row`); continue; }
-        if (scores[s].benchmark !== null && !inviteLevel(view, s).startsWith(String(scores[s].benchmark))) f(`${s}: the visa block "${inviteLevel(view, s)}" does not carry the published invitation score ${scores[s].benchmark}`);
+        if (inviteLevel(view, s)) f(`${s}: the visa block carries an invitation level; none is printed`);
         if (!squashAll(flat).includes(squashAll(row[0]))) f(`${s}: the totals row is not in the PDF`);
       }
       if (!caseFailed) console.log("  ✅ ok");

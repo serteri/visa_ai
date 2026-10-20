@@ -72,7 +72,7 @@ async function main() {
   console.log("\n3. the form and the code");
   const step1 = readFileSync("app/[locale]/(main)/full-check/step-1-personal.tsx", "utf8");
   const page = readFileSync("app/[locale]/(main)/full-check/page.tsx", "utf8");
-  check(/filter\(\(code\) => code !== "CA" \|\| canadaReportEnabled\)/.test(step1) && /canada-unavailable/.test(step1), "the country list omits Canada while the flag is off and says why (en / tr / zh-Hans)");
+  check(/filter\(\(code\) => code !== "CA" \|\| canadaReportEnabled\)/.test(step1) && /destination-fixed-au/.test(step1) && /\{canadaReportEnabled && \(/.test(step1) && !/Which country is this report for/.test(step1) && /Select your destination country/.test(step1), "while the flag is off no country selector is shown (destination fixed to AU); when on, the selector is labelled 'Select your destination country' and omits nothing unsupported");
   check(/upper === "CA" && !canadaReportEnabled\) return null/.test(step1) && /isCanadaReportEnabled\(\)/.test(page), "a ?country=CA link does not preselect Canada while the flag is off");
   check(/runCanadaReadinessEngine/.test(readFileSync("lib/readiness/engine.ts", "utf8")), "the Canada engine is still in the repository");
 

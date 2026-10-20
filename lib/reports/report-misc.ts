@@ -7,7 +7,6 @@ import feeProvenance from "@/src/data/fee-provenance.json";
 import occupationsData from "@/src/data/occupations.json";
 import visaFees from "@/src/data/visa-fees.json";
 import visaGatesData from "@/src/data/visa-gates.json";
-import visaTrends from "@/src/data/visa-trends.json";
 import { ENGLISH_TEST_VALIDITY_YEARS } from "@/lib/readiness/constants";
 import { publishedRequirements } from "@/lib/readiness/visa-gates";
 import type { Locale, ReadinessReport } from "@/lib/readiness/types";
@@ -16,6 +15,7 @@ import { resolveLocalized } from "@/lib/skills-assessment/i18n";
 import { VISA_ORDER, VisaKey, visaCharge } from "./report-visas";
 import type { StateInfo } from "./report-states";
 import { T, money } from "./report-text";
+import { longDate } from "./public-sources";
 
 // ── invitation history ─────────────────────────────────────────────────────────────────────────────
 
@@ -57,7 +57,7 @@ export function buildInvitationInfo(l: Locale, now: Date = new Date(), data: { l
         ? T(l, "Rounds marked “older than 12 months” are more than 12 months before this report.", "“12 aydan eski” işaretli turlar bu rapordan 12 aydan fazla önceye aittir.", "标注“已超过 12 个月”的轮次早于本报告日期 12 个月以上。")
         : "",
     stateNote: T(l, "State and territory invitation, allocation and registration information is listed with each state or territory above.", "Eyalet ve bölge davet, kontenjan ve kayıt bilgileri yukarıda her eyalet veya bölgenin altında listelenmiştir.", "各州和领地的邀请、配额和登记信息列于上方各州或领地条目下。"),
-    note: T(l, "The recent invitation level shown for each points-tested visa is an estimate from our trend data for the occupation entered, with its data date; it is not a published round result.", "Her puan testli vize için gösterilen son davet seviyesi, girilen meslek için trend verilerimizden bir tahmindir ve veri tarihiyle verilmiştir; yayımlanmış bir tur sonucu değildir.", "每种积分测试签证所示的近期邀请分是根据我们趋势数据对所填职业作出的估算，并附数据日期；它不是已公布的轮次结果。"),
+    note: T(l, "These are historical results published by the Department of Home Affairs, with the date of our data. They describe past rounds only; nothing here forecasts a future round.", "Bunlar İçişleri Bakanlığı tarafından yayımlanmış geçmiş sonuçlardır ve veri tarihimiz belirtilmiştir. Yalnızca geçmiş turları anlatır; burada gelecekteki bir turu öngören hiçbir şey yoktur.", "以下为澳大利亚内政部公布的历史结果，并附我们数据的日期。仅描述过去的轮次；此处没有任何内容预测未来轮次。"),
   };
 }
 
@@ -189,21 +189,21 @@ export function buildSources(report: ReadinessReport, occupationRaw: string | un
   const feeFacts = (feeProvenance as unknown as { facts: Array<{ id: string; last_verified?: string | null }> }).facts;
   const feeDate = feeFacts.filter((f) => f.id.startsWith("vac_") && f.last_verified).map((f) => f.last_verified as string).sort().at(-1) ?? "";
   const auth = occupationRaw ? resolveAssessingAuthority(occupationRaw).authority : undefined;
+  const d = (iso: string | undefined | null) => (iso ? longDate(iso, l) : "—");
   const out: SourceRow[] = [];
-  out.push([T(l, "Visa requirements: Department of Home Affairs visa pages (subclasses 189, 190, 491, 482, 485, 500, 186, 820/801)", "Vize gereklilikleri: İçişleri Bakanlığı vize sayfaları (subclass 189, 190, 491, 482, 485, 500, 186, 820/801)", "签证要求：内政部签证页面（189、190、491、482、485、500、186、820/801 子类）"), T(l, "Visa information, requirement maps", "Vize bilgileri, gereklilik tabloları", "签证信息、要求对照"), gates.last_verified]);
-  out.push([T(l, "Visa application charges: Department of Home Affairs fee schedule effective 1 July 2026 (our fee data)", "Vize başvuru ücretleri: 1 Temmuz 2026 itibarıyla İçişleri Bakanlığı ücret tarifesi (ücret verilerimiz)", "签证申请费：自 2026 年 7 月 1 日起生效的内政部收费表（我们的费用数据）"), T(l, "Government charges, sums", "Devlet ücretleri, toplamlar", "政府费用、合计"), feeDate || (visaFees as unknown as { generated_on: string }).generated_on]);
-  out.push([T(l, "Cost estimates (English tests, health, police, translations, professional services): our cost data", "Maliyet tahminleri (İngilizce sınavları, sağlık, adli sicil, çeviri, profesyonel hizmetler): maliyet verilerimiz", "费用估算（英语考试、体检、无犯罪记录、翻译、专业服务）：我们的费用数据"), T(l, "Other listed items", "Listelenen diğer kalemler", "其他列出的项目"), (visaFees as unknown as { generated_on: string }).generated_on]);
-  if (auth) out.push([`${auth.authorityName}: ${auth.sourceDocument ?? ""}`.trim(), T(l, "Assessing authority fees and processing time", "Değerlendirme kurumu ücretleri ve işlem süresi", "评估机构费用与处理时间"), auth.lastVerified ?? "—"]);
-  for (const s of states) out.push([`${s.name}: ${s.sources}`, T(l, "State and territory program information", "Eyalet ve bölge programı bilgileri", "各州和领地项目信息"), s.checked || "—"]);
-  out.push([T(l, "SkillSelect invitation rounds: Department of Home Affairs (our round data)", "SkillSelect davet turları: İçişleri Bakanlığı (tur verilerimiz)", "SkillSelect 邀请轮次：内政部（我们的轮次数据）"), T(l, "Invitation history", "Davet geçmişi", "邀请历史"), ROUNDS.lastUpdated]);
-  const trends = visaTrends as unknown as { generated_on: string; methodology_note: string };
-  out.push([T(l, `Recent invitation levels by occupation: our trend data (the data file describes them as estimates derived from 2025-2026 trend patterns)`, `Mesleğe göre son davet seviyeleri: eğilim verilerimiz (veri dosyası bunları 2025-2026 eğilim örüntülerinden türetilmiş tahminler olarak tanımlar)`, `按职业的近期邀请分：我们的趋势数据（数据文件将其描述为根据 2025-2026 趋势推导的估算）`), T(l, "Recent invitation level in each points-tested visa entry", "Her puan testli vize bölümündeki son davet seviyesi", "各积分测试签证条目中的近期邀请分"), trends.generated_on]);
-  out.push([T(l, "Occupation lists: our occupation dataset (list placement should be re-validated against the current legislative instrument)", "Meslek listeleri: meslek veri setimiz (liste yerleşimi güncel mevzuat belgesine karşı yeniden doğrulanmalıdır)", "职业清单：我们的职业数据集（清单归属应对照现行法律文书重新核对）"), T(l, "Occupation-list results", "Meslek listesi sonuçları", "职业清单结果"), (occupationsData as unknown as { generated_on: string }).generated_on]);
+  out.push([T(l, "Department of Home Affairs — visa pages for subclasses 189, 190, 491, 482, 485, 500, 186 and 820/801\nhttps://immi.homeaffairs.gov.au/visas", "İçişleri Bakanlığı — subclass 189, 190, 491, 482, 485, 500, 186 ve 820/801 vize sayfaları\nhttps://immi.homeaffairs.gov.au/visas", "内政部 — 189、190、491、482、485、500、186、820/801 子类签证页面\nhttps://immi.homeaffairs.gov.au/visas"), T(l, "Visa information, requirement maps", "Vize bilgileri, gereklilik tabloları", "签证信息、要求对照"), d(gates.last_verified)]);
+  out.push([T(l, "Department of Home Affairs — visa application charges, schedule effective 1 July 2026\nhttps://immi.homeaffairs.gov.au/visas/getting-a-visa/fees-and-charges/current-visa-pricing", "İçişleri Bakanlığı — vize başvuru ücretleri, 1 Temmuz 2026 itibarıyla geçerli tarife\nhttps://immi.homeaffairs.gov.au/visas/getting-a-visa/fees-and-charges/current-visa-pricing", "内政部 — 签证申请费，自 2026 年 7 月 1 日起生效的收费表\nhttps://immi.homeaffairs.gov.au/visas/getting-a-visa/fees-and-charges/current-visa-pricing"), T(l, "Government charges, sums", "Devlet ücretleri, toplamlar", "政府费用、合计"), d(feeDate || (visaFees as unknown as { generated_on: string }).generated_on)]);
+  out.push([T(l, "LogiVisa cost data — English tests, health examinations, police certificates, translations and professional services (general figures, not quotes)", "LogiVisa maliyet verisi — İngilizce sınavları, sağlık muayenesi, adli sicil, çeviri ve profesyonel hizmetler (genel rakamlar, teklif değildir)", "LogiVisa 费用数据 — 英语考试、体检、无犯罪记录、翻译及专业服务（一般数字，非报价）"), T(l, "Other listed items", "Listelenen diğer kalemler", "其他列出的项目"), d((visaFees as unknown as { generated_on: string }).generated_on)]);
+  if (auth) out.push([`${auth.authorityName} — ${(auth.sourceDocument ?? "").replace(/\s+--\s+/g, " – ")}`.replace(/ — $/, "").trim(), T(l, "Assessing authority fees and processing time", "Değerlendirme kurumu ücretleri ve işlem süresi", "评估机构费用与处理时间"), d(auth.lastVerified)]);
+  for (const s of states) out.push([s.officialUrl ? `${s.sources}
+${s.officialUrl}` : s.sources, T(l, "State and territory program information", "Eyalet ve bölge programı bilgileri", "各州和领地项目信息"), s.checkedLong || "—"]);
+  out.push([T(l, "Department of Home Affairs — SkillSelect invitation rounds\nhttps://immi.homeaffairs.gov.au/visas/working-in-australia/skillselect", "İçişleri Bakanlığı — SkillSelect davet turları\nhttps://immi.homeaffairs.gov.au/visas/working-in-australia/skillselect", "内政部 — SkillSelect 邀请轮次\nhttps://immi.homeaffairs.gov.au/visas/working-in-australia/skillselect"), T(l, "Invitation history (historical published results)", "Davet geçmişi (geçmiş yayımlanmış sonuçlar)", "邀请历史（已公布的历史结果）"), d(ROUNDS.lastUpdated)]);
+  out.push([T(l, "LogiVisa occupation dataset — list placement as recorded; the current legislative instrument is the authority", "LogiVisa meslek veri seti — liste yerleşimi kayıtlı şekliyle; yetkili kaynak güncel mevzuat belgesidir", "LogiVisa 职业数据集 — 清单归属按记录；以现行法律文书为准"), T(l, "Occupation-list results", "Meslek listesi sonuçları", "职业清单结果"), d((occupationsData as unknown as { generated_on: string }).generated_on)]);
   void report;
   return out;
 }
 
-export const sourcesHeaders = (l: Locale): string[] => [T(l, "Source", "Kaynak", "来源"), T(l, "Used for", "Kullanıldığı yer", "用途"), T(l, "Data date", "Veri tarihi", "数据日期")];
+export const sourcesHeaders = (l: Locale): string[] => [T(l, "Source", "Kaynak", "来源"), T(l, "Used for", "Kullanıldığı yer", "用途"), T(l, "Checked", "Kontrol tarihi", "核对日期")];
 
 export const agentStatement = (l: Locale) =>
   T(

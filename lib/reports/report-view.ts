@@ -28,6 +28,7 @@ import { buildPointsInfo } from "./report-points";
 import type { StateMonitorSnapshot } from "@/lib/state-monitor/status";
 import type { AdminStateData } from "@/lib/admin-data/types";
 import { buildStateInfos } from "./report-states";
+import { buildProfessionalSummary } from "./report-summary";
 import { T, factLabel, tagsFor } from "./report-text";
 import { buildVisaInfos, visaLabels } from "./report-visas";
 import { reportDisclaimer } from "./report-disclaimer";
@@ -121,8 +122,18 @@ export function buildReportView(args: ReportViewArgs): ReportView {
   const notProvided = T(l, "Not entered", "Girilmedi", "未填写");
 
   const sections: ReportSection[] = [];
+  const visaInfos = buildVisaInfos(report, target, facts, l);
+  const stateInfos = isCA ? [] : buildStateInfos(report, occupationRaw, l, asOf, args.stateMonitor, args.stateData);
 
-  // 2. Your details: everything entered, labelled.
+  // 1. Professional summary: what was supplied, what was not, the published areas covered, what remains to be verified (about one page).
+  // The summary is written for the Australian report only: the rest of this view (visas, process, sources) is Australia-specific, and a Canadian report must not gain Australian wording.
+  if (!isCA) sections.push({
+    id: "summary",
+    title: reportSectionTitle("summary", l),
+    blocks: buildProfessionalSummary({ report, facts, l, occupationRaw, targetVisaLine: `${T(l, "Target visa", "Hedef vize", "目标签证")}: ${targetVisaName(target, l)}`, states: stateInfos, visaCount: visaInfos.length, isCA }),
+  });
+
+  // 2. Applicant information: everything entered, labelled.
   const detailLines = factList.map((f) => `${factLabel(f.field, l)}: ${f.value ?? notProvided}  [${f.value === null ? tags.unknown : tags.supplied}]`);
   const extras: string[] = [];
   if (profile.mainGoal) extras.push(`${T(l, "Main goal", "Ana hedef", "主要目标")}: ${profile.mainGoal}  [${tags.supplied}]`);
@@ -141,7 +152,6 @@ export function buildReportView(args: ReportViewArgs): ReportView {
   });
 
   // 2b. At a glance: one row per visa in the fixed order, counts of what is entered / not entered / not collected, and the numeric figures side by side.
-  const visaInfos = buildVisaInfos(report, target, facts, l);
   const glance = buildGlance(visaInfos, l);
   sections.push({
     id: "glance",
@@ -151,6 +161,8 @@ export function buildReportView(args: ReportViewArgs): ReportView {
 
   // 3. Points: the full table, then every scenario as arithmetic.
   const pts = buildPointsInfo(report, l);
+  let pointsExamples: ReportSection | undefined;
+  let stateDetail: ReportSection | undefined;
   if (!isCA && pts.applicable) {
     const blocks: Block[] = [
       table([...pts.breakdownHeaders], pts.breakdown, [0.34, 0.12, 0.1, 0.44]),
@@ -158,10 +170,15 @@ export function buildReportView(args: ReportViewArgs): ReportView {
       table(pts.totalsHeaders, pts.totals, [0.22, 0.16, 0.16, 0.16, 0.3].slice(0, pts.totalsHeaders.length)),
     ];
     if (pts.stageNote) blocks.push({ kind: "text", text: pts.stageNote });
-    if (pts.singles.length) blocks.push({ kind: "heading", text: pts.singlesTitle }, table(pts.scenarioHeaders, pts.singles, [0.43, 0.13, 0.14, 0.15, 0.15]));
-    if (pts.combined.length) blocks.push({ kind: "heading", text: pts.combinedTitle }, table(pts.scenarioHeaders, pts.combined, [0.43, 0.13, 0.14, 0.15, 0.15]));
-    blocks.push({ kind: "text", text: pts.note });
     sections.push({ id: "points", title: reportSectionTitle("points", l), blocks });
+    // The arithmetic examples are an appendix (placed before the sources, below): not part of the points information itself.
+    if (pts.singles.length || pts.combined.length) {
+      const ex: Block[] = [{ kind: "text", text: T(l, "These examples show arithmetic using published points-table values only. They are not advice on any action and do not predict an outcome.", "Bu örnekler yalnızca yayımlanmış puan tablosu değerleriyle aritmetik gösterir. Herhangi bir eylem konusunda tavsiye değildir ve sonuç öngörmez.", "这些示例仅使用已公布积分表的数值进行算术演示，并非对任何行动的指引，也不预测结果。") }];
+      if (pts.singles.length) ex.push({ kind: "heading", text: pts.singlesTitle }, table(pts.scenarioHeaders, pts.singles, [0.43, 0.13, 0.14, 0.15, 0.15]));
+      if (pts.combined.length) ex.push({ kind: "heading", text: pts.combinedTitle }, table(pts.scenarioHeaders, pts.combined, [0.43, 0.13, 0.14, 0.15, 0.15]));
+      ex.push({ kind: "text", text: pts.note });
+      pointsExamples = { id: "pointsExamples", title: reportSectionTitle("pointsExamples", l), blocks: ex };
+    }
   }
 
   // 4. Visa information: one block per visa, target first.
@@ -188,36 +205,54 @@ export function buildReportView(args: ReportViewArgs): ReportView {
 
   // 5. States and territories.
   if (!isCA) {
-    const states = buildStateInfos(report, occupationRaw, l, asOf, args.stateMonitor, args.stateData);
+    const states = stateInfos;
     if (states.length) {
       const blocks: Block[] = [
         { kind: "text", text: T(l, "Published information for all eight states and territories in a fixed order, as recorded in our sources. The occupation-list line matches the occupation you entered (supplied by you) against each published list. No state is left out or ordered by your details; a list entry is published information, not a nomination.", "Sekiz eyalet ve bölgenin tamamı için, kaynaklarımızda kayıtlı yayımlanmış bilgiler, sabit sırayla. Meslek listesi satırı girdiğiniz mesleği (sizin girdiğiniz) her yayımlanmış listeyle eşleştirir. Hiçbir eyalet dışarıda bırakılmaz veya bilgilerinize göre sıralanmaz; liste kaydı yayımlanmış bilgidir, bir adaylık değildir.", "按固定顺序列出八个州和领地的公开信息，依我们的资料记录。职业清单一行将您填写的职业（由您提供）与各州已公布清单比对。不遗漏任何州，也不按您的信息排序；清单收录是已公布的信息，并非提名。") },
       ];
+      // One overview table first, so all eight jurisdictions can be scanned in one look.
+      blocks.push(
+        table(
+          [T(l, "State or territory", "Eyalet veya bölge", "州或领地"), T(l, "Program status", "Program durumu", "项目状态"), T(l, "Occupation on its list (190 / 491)", "Meslek listede (190 / 491)", "职业是否在清单上（190 / 491）"), T(l, "Checked", "Kontrol tarihi", "核对日期")],
+          states.map((s) => [`${s.name} (${s.code})`, s.status, s.occupationList, s.checkedLong || "—"]),
+          [0.27, 0.2, 0.33, 0.2],
+        ),
+      );
+      // Then one card per jurisdiction in the same order of fields: program status, occupation-list status, key published conditions, data checked, official source.
+      // Everything after the first few conditions is in the appendix "Additional published detail" (nothing is dropped).
       for (const s of states) {
         blocks.push({ kind: "heading", text: `${s.name} (${s.code})` });
         blocks.push({
           kind: "kv",
           rows: [
-            [T(l, "Program status in our sources", "Kaynaklarımızdaki program durumu", "资料中的项目状态"), s.status],
-            [T(l, "Occupation on its list (190 / 491)", "Meslek listede (190 / 491)", "职业是否在清单上（190 / 491）"), s.occupationList],
-            ...(s.conditions.length ? s.conditions : ["—"]).map((c, i): [string, string] => [i === 0 ? T(l, "Published conditions", "Yayımlanmış koşullar", "已公布的条件") : " ", c]),
-            [T(l, "Source", "Kaynak", "来源"), s.sources || "—"],
-            [T(l, "Data checked", "Veri kontrol tarihi", "数据核对日期"), s.checked ? `${s.checked}${s.staleNote ? `. ${s.staleNote}` : ""}` : "—"],
+            [T(l, "Program status", "Program durumu", "项目状态"), s.status],
+            [T(l, "Occupation-list status (190 / 491)", "Meslek listesi durumu (190 / 491)", "职业清单情况（190 / 491）"), s.occupationList],
+            [T(l, "Key published conditions", "Temel yayımlanmış koşullar", "主要已公布条件"), s.keyConditions.length ? s.keyConditions.map((c) => `• ${c}`).join("\n") : "—"],
+            [T(l, "Data checked", "Veri kontrol tarihi", "数据核对日期"), s.checkedLong ? `${s.checkedLong}${s.staleNote ? `. ${s.staleNote}` : ""}` : "—"],
+            [T(l, "Official source", "Resmi kaynak", "官方来源"), [s.sources || "—", s.officialUrl].filter(Boolean).join("\n")],
           ],
         });
+        if (s.additionalDetail.length) blocks.push({ kind: "text", text: T(l, `${s.additionalDetail.length} further published ${s.additionalDetail.length === 1 ? "detail" : "details"} for ${s.code} are listed under “Additional published detail” after the costs and process sections.`, `${s.code} için ${s.additionalDetail.length} ek yayımlanmış ayrıntı, maliyet ve süreç bölümlerinden sonra “Ek yayımlanmış ayrıntılar” altında listelenir.`, `${s.code} 另有 ${s.additionalDetail.length} 项已公布细节，列于费用和流程部分之后的“补充已公布细节”中。`) });
       }
       sections.push({ id: "states", title: reportSectionTitle("states", l), blocks });
+      const detailBlocks: Block[] = [{ kind: "text", text: T(l, "The remaining published conditions for each state and territory, as recorded in our sources with the date checked. They are published information, not a nomination or a statement about any person.", "Her eyalet ve bölge için kalan yayımlanmış koşullar, kaynaklarımızda kayıtlı şekliyle ve kontrol tarihiyle. Yayımlanmış bilgidir; bir adaylık veya herhangi bir kişi hakkında bir ifade değildir.", "各州和领地其余已公布的条件，依我们资料记录并附核对日期。属于公开信息，不是提名，也不是对任何个人的陈述。") }];
+      for (const s of states) {
+        if (!s.additionalDetail.length) continue;
+        detailBlocks.push({ kind: "heading", text: `${s.name} (${s.code}) — ${s.checkedLong || "—"}` }, { kind: "lines", lines: s.additionalDetail.map((c) => `• ${c}`) });
+      }
+      if (detailBlocks.length > 1) stateDetail = { id: "stateDetail", title: reportSectionTitle("stateDetail", l), blocks: detailBlocks };
     }
   }
 
   // 6. Invitation history.
+  // Only published, dated historical rounds are shown (never an estimate); with none recorded the section is left out.
   const inv = buildInvitationInfo(l, asOf);
-  const invBlocks: Block[] = [{ kind: "text", text: inv.intro }];
-  if (inv.rows.length) invBlocks.push(table(inv.headers, inv.rows, [0.15, 0.11, 0.1, 0.12, 0.31, 0.21]));
-  else invBlocks.push({ kind: "text", text: inv.emptyNote });
-  if (inv.ageNote) invBlocks.push({ kind: "text", text: inv.ageNote });
-  invBlocks.push({ kind: "text", text: inv.stateNote }, { kind: "text", text: inv.note });
-  sections.push({ id: "invitations", title: reportSectionTitle("invitations", l), blocks: invBlocks });
+  if (inv.rows.length) {
+    const invBlocks: Block[] = [{ kind: "text", text: inv.intro }, table(inv.headers, inv.rows, [0.15, 0.11, 0.1, 0.12, 0.31, 0.21])];
+    if (inv.ageNote) invBlocks.push({ kind: "text", text: inv.ageNote });
+    invBlocks.push({ kind: "text", text: inv.stateNote }, { kind: "text", text: inv.note });
+    sections.push({ id: "invitations", title: reportSectionTitle("invitations", l), blocks: invBlocks });
+  }
 
   // 7. Costs.
   const costs = buildCostsInfo(report, occupationRaw, l, target);
@@ -249,9 +284,11 @@ export function buildReportView(args: ReportViewArgs): ReportView {
   sections.push({ id: "documents", title: reportSectionTitle("documents", l), blocks: docBlocks });
 
   // 10. Sources register and the advice statement.
-  const states = isCA ? [] : buildStateInfos(report, occupationRaw, l, asOf, args.stateMonitor, args.stateData);
+  // Appendices (before the sources): the published points-table examples and the additional published state detail.
+  if (pointsExamples) sections.push(pointsExamples);
+  if (stateDetail) sections.push(stateDetail);
   const resources = getResourcesSection(l, isCA ? "CA" : "AU");
-  const srcBlocks: Block[] = [table(sourcesHeaders(l), buildSources(report, occupationRaw, states, l).map((r) => [...r]), [0.55, 0.3, 0.15])];
+  const srcBlocks: Block[] = [table(sourcesHeaders(l), buildSources(report, occupationRaw, stateInfos, l).map((r) => [...r]), [0.58, 0.24, 0.18])];
   const links = resources.sections.flatMap((s) => s.links.map((k) => `${k.label} — ${k.url}`));
   if (links.length) srcBlocks.push({ kind: "heading", text: T(l, "Official resources", "Resmi kaynaklar", "官方资源") }, { kind: "lines", lines: links });
   srcBlocks.push({ kind: "text", text: agentStatement(l) });

@@ -18,10 +18,12 @@ import sharp from "sharp";
 import { reportDisclaimer } from "../lib/reports/report-disclaimer";
 import { reportSectionTitle } from "../lib/reports/report-section-titles";
 import type { Locale, ReadinessInput } from "../lib/readiness/types";
-import { REVIEW_PERSONAS, renderPersonaPdfTexts } from "./render-persona-pdfs";
+import { renderPersonaPdfTexts } from "./render-persona-pdfs";
+import { AGENT_SAMPLE_PROFILE } from "./render-agent-sample";
 
 export const SHOWCASE_NAME = "Sample Applicant";
-export const SHOWCASE_PAGES = ["cover", "glance", "requirements", "costs"] as const;
+export const SHOWCASE_PAGES = ["cover", "summary", "glance", "requirements", "costs"] as const;
+const REQUIREMENT_HEADER: Record<Locale, string> = { en: "Published requirement", tr: "Yayımlanmış gereklilik", "zh-Hans": "已公布的要求" };
 const FIGURE_HEADER: Record<Locale, string> = { en: "Published figure", tr: "Yayımlanmış rakam", "zh-Hans": "已公布的数字" };
 const VERDICT: Record<Locale, RegExp> = {
   en: /estimate|recommend|eligible|eligibility|likely|best match|strongest|chance|probab|ranking|rank\b|high potential|low potential|you should|you must|you need|suitab/i,
@@ -29,14 +31,65 @@ const VERDICT: Record<Locale, RegExp> = {
   "zh-Hans": /估计|估算|推荐|最佳|最强|最弱|几率|概率|可能性|排名|适合您|高潜力|低潜力|符合条件/,
 };
 /** Each image starts at its section heading (the cover and the requirements page are whole pages: the requirements image is the first visa block (cropped above the next block title) on the first page after the "Visa information" heading page that has the Your figure / Published figure columns and passes the image gate below, so a block with an invitation-level estimate is skipped). */
-const CROP_AT: Record<(typeof SHOWCASE_PAGES)[number], "glance" | "visas" | "costs" | null> = { cover: null, glance: "glance", requirements: null, costs: "costs" };
+const CROP_AT: Record<(typeof SHOWCASE_PAGES)[number], "glance" | "visas" | "costs" | null> = { cover: null, summary: null, glance: "glance", requirements: null, costs: "costs" };
 const OUT = path.join("public", "images", "report-previews");
 
+type PageWord = { y: number; h: number; str: string };
+const PY = process.platform === "win32" ? "python" : "python3";
+
+/** The words of one page with their top edge and height, and the page height: poppler's `pdftotext -bbox`, else PyMuPDF (xpdf's pdftotext, e.g. on Windows, has no -bbox). */
+function pageWords(pdfPath: string, pageNo: number): { height: number; words: PageWord[] } {
+  try {
+    const xml = execFileSync("pdftotext", ["-bbox", "-f", String(pageNo), "-l", String(pageNo), pdfPath, "-"], { encoding: "utf8", maxBuffer: 64 * 1024 * 1024, stdio: ["ignore", "pipe", "ignore"] });
+    const height = Number(/<page width="[\d.]+" height="([\d.]+)"/.exec(xml)?.[1]);
+    if (!Number.isFinite(height)) throw new Error("no bbox output");
+    const words = [...xml.matchAll(/<word xMin="[\d.]+" yMin="([\d.]+)" xMax="[\d.]+" yMax="([\d.]+)">([^<]*)<\/word>/g)].map((m) => ({ y: Number(m[1]), h: Number(m[2]) - Number(m[1]), str: m[3].replace(/&amp;/g, "&").replace(/&lt;/g, "<").replace(/&gt;/g, ">").replace(/&quot;/g, '"').replace(/&#39;/g, "'") }));
+    return { height, words };
+  } catch {
+    const py = "import sys,json,fitz; sys.stdout.reconfigure(encoding='utf-8'); p=fitz.open(sys.argv[1])[int(sys.argv[2])-1]; print(json.dumps({'height':p.rect.height,'words':[{'y':w[1],'h':w[3]-w[1],'str':w[4]} for w in p.get_text('words')]}))";
+    return JSON.parse(execFileSync(PY, ["-c", py, pdfPath, String(pageNo)], { encoding: "utf8", maxBuffer: 64 * 1024 * 1024 }));
+  }
+}
+
+/** The text of one page, line by line: `pdftotext`, else PyMuPDF. */
+function pageText(pdfPath: string, pageNo: number): string {
+  try {
+    return execFileSync("pdftotext", ["-f", String(pageNo), "-l", String(pageNo), pdfPath, "-"], { encoding: "utf8", maxBuffer: 64 * 1024 * 1024, stdio: ["ignore", "pipe", "ignore"] });
+  } catch {
+    return execFileSync(PY, ["-c", "import sys,fitz; sys.stdout.reconfigure(encoding='utf-8'); print(fitz.open(sys.argv[1])[int(sys.argv[2])-1].get_text())", pdfPath, String(pageNo)], { encoding: "utf8", maxBuffer: 64 * 1024 * 1024 });
+  }
+}
+
+/** The header of a requirement table's second column, which starts the table after the figure table in a visa block. */
+const SECOND_TABLE_HEADER: Record<Locale, string[]> = { en: ["What", "you", "entered"], tr: ["Girdiğiniz"], "zh-Hans": ["您填写的内容"] };
+
+export type Crop = { page: number; text: string; topFraction: number; bottomFraction: number };
+
+/**
+ * The visa blocks on a page as candidate crops. A visa block's title is the largest text on the page after the section heading; a block runs from its
+ * title to the next title and stops where the second requirement table (What you entered) starts, so the crop shows the overview and the Your figure /
+ * Published figure table. Only the words inside the crop are checked.
+ */
+function visaBlockCrops(pdfPath: string, pageNo: number, locale: Locale): Crop[] {
+  const { height, words } = pageWords(pdfPath, pageNo);
+  const sizes = words.map((w) => w.h).filter((h) => h < 16);
+  if (!sizes.length) return [];
+  const maxH = Math.max(...sizes);
+  const titleYs = [...new Set(words.filter((w) => w.h > maxH - 0.5 && w.h < 16).map((w) => Math.round(w.y)))].sort((a, b) => a - b);
+  const header = SECOND_TABLE_HEADER[locale];
+  return titleYs.map((y, k) => {
+    const top = Math.max(0, y - 6);
+    let bottom = k + 1 < titleYs.length ? titleYs[k + 1] - 6 : height;
+    const inside = words.filter((w) => w.y >= top && w.y < bottom);
+    const at = inside.findIndex((w, i) => header.every((t, j) => inside[i + j]?.str === t));
+    if (at > 0 && inside[at].y > top + 60) bottom = inside[at].y - 10;
+    return { page: pageNo, topFraction: top / height, bottomFraction: bottom / height, text: words.filter((w) => w.y >= top && w.y < bottom).map((w) => w.str).join(" ") };
+  });
+}
+
 /** The text on a page below the heading `title` (its whole text when `title` is null), and the heading's top edge as a fraction of the page height (poppler's pdftotext -bbox). */
-function textBelow(pdfPath: string, pageNo: number, title: string | null, locale: Locale, firstBlockOnly = false): { text: string; topFraction: number; bottomFraction: number } {
-  const xml = execFileSync("pdftotext", ["-bbox", "-f", String(pageNo), "-l", String(pageNo), pdfPath, "-"], { encoding: "utf8", maxBuffer: 64 * 1024 * 1024 });
-  const height = Number(/<page width="[\d.]+" height="([\d.]+)"/.exec(xml)?.[1]);
-  const words = [...xml.matchAll(/<word xMin="[\d.]+" yMin="([\d.]+)" xMax="[\d.]+" yMax="([\d.]+)">([^<]*)<\/word>/g)].map((m) => ({ y: Number(m[1]), h: Number(m[2]) - Number(m[1]), str: m[3].replace(/&amp;/g, "&").replace(/&lt;/g, "<").replace(/&gt;/g, ">").replace(/&quot;/g, '"').replace(/&#39;/g, "'") }));
+function textBelow(pdfPath: string, pageNo: number, title: string | null, locale: Locale): { text: string; topFraction: number; bottomFraction: number } {
+  const { height, words } = pageWords(pdfPath, pageNo);
   let cut = 0;
   if (title) {
     const toks = title.split(/\s+/);
@@ -46,29 +99,31 @@ function textBelow(pdfPath: string, pageNo: number, title: string | null, locale
   }
   // The text in the image: the page's lines from the heading down, without the standard disclaimer (it names what the report is NOT, in the banned words).
   const flat = (x: string) => x.replace(/\s+/g, "");
-  const lines = execFileSync("pdftotext", ["-f", String(pageNo), "-l", String(pageNo), pdfPath, "-"], { encoding: "utf8", maxBuffer: 64 * 1024 * 1024 }).split("\n");
+  const lines = pageText(pdfPath, pageNo).split("\n");
   const from = title ? Math.max(0, lines.findIndex((l) => l.trim() === title || l.trim().startsWith(title))) : 0;
   const disclaimer = flat(reportDisclaimer(locale));
-  let text = lines.slice(from).filter((l) => !(flat(l).length > 6 && disclaimer.includes(flat(l)))).join("\n");
-  let bottom = height;
-  if (firstBlockOnly) {
-    // A visa block's title is the largest text on the page: the image runs from the first title to where the second title starts, and only the words in between are checked.
-    const maxH = Math.max(...words.map((w) => w.h));
-    const titleYs = [...new Set(words.filter((w) => w.h > maxH - 0.5).map((w) => Math.round(w.y)))].sort((a, b) => a - b);
-    const next = titleYs.find((y) => y > titleYs[0] + 60);
-    cut = Math.max(0, titleYs[0] - 6);
-    if (next) bottom = next - 6;
-    text = words.filter((w) => w.y >= cut && w.y < bottom).map((w) => w.str).join(" ");
-  }
+  const text = lines.slice(from).filter((l) => !(flat(l).length > 6 && disclaimer.includes(flat(l)))).join("\n");
+  const bottom = height;
   return { text, topFraction: Math.max(0, cut / height), bottomFraction: bottom / height };
+}
+
+/** One PDF page as <outBase>.png at 110 dpi: poppler's pdftoppm when installed, else PyMuPDF (python -m pip install pymupdf) -- e.g. on Windows, where poppler is not packaged. */
+function rasterisePage(pdfPath: string, pageNo: number, outBase: string): void {
+  try {
+    execFileSync("pdftoppm", ["-png", "-r", "110", "-f", String(pageNo), "-l", String(pageNo), "-singlefile", pdfPath, outBase]);
+  } catch (e) {
+    if ((e as NodeJS.ErrnoException).code !== "ENOENT") throw e;
+    const py = "import sys,fitz; d=fitz.open(sys.argv[1]); d[int(sys.argv[2])-1].get_pixmap(dpi=110).save(sys.argv[3]+'.png')";
+    execFileSync(process.platform === "win32" ? "python" : "python3", ["-c", py, pdfPath, String(pageNo), outBase]);
+  }
 }
 
 async function main() {
   // (render only; the dummy DATABASE_URL below keeps every database read on the bundled fallback data)
   process.env.DATABASE_URL ||= "postgresql://u:p@localhost:5432/d?sslmode=disable";
-  const base = REVIEW_PERSONAS["reference-se-au"];
   // Neutral showcase: the target visa is the schema's "not_sure" (TARGET_VISAS), with no preferred pathway, so no visa is pre-selected.
-  const persona = { ...base, mainGoal: "Researching Australian skilled visa information", targetVisa: "not_sure", offshoreExperienceYears: 3, onshoreExperienceYears: 1, annualSalaryAud: 90000 } as ReadinessInput;
+  // The same synthetic profile as the agent sample PDF (scripts/render-agent-sample.ts): target visa "not_sure", no preferred pathway, employment and partner details not entered.
+  const persona = { ...AGENT_SAMPLE_PROFILE } as ReadinessInput;
   const pdfs: Partial<Record<Locale, Uint8Array>> = {};
   await renderPersonaPdfTexts({ showcase: persona }, ["en", "tr", "zh-Hans"], undefined, "2026-10-01T00:00:00Z", (_id, l, b) => (pdfs[l] = b.slice()), SHOWCASE_NAME);
   if (process.env.KEEP_PDF) for (const l of ["en", "tr", "zh-Hans"] as const) writeFileSync(`/tmp/claude-0/showcase-${l}.pdf`, pdfs[l]!);
@@ -80,23 +135,28 @@ async function main() {
       await parser.destroy();
       const flat = (x: string) => x.replace(/\s+/g, " ");
       const lines = pages.map((t) => t.split("\n").map((l) => l.trim()));
+      const summary = lines.findIndex((l) => l.includes(reportSectionTitle("summary", locale))) + 1;
       const glance = lines.findIndex((l) => l.includes(reportSectionTitle("glance", locale))) + 1;
       const visasPage = lines.findIndex((l) => l.some((x) => x === reportSectionTitle("visas", locale))) + 1;
       const pdfPath = path.join(tmp, `${locale}.pdf`);
       writeFileSync(pdfPath, pdfs[locale]!);
-      const requirements = lines.findIndex((l, i) => i + 1 > visasPage && visasPage > 0 && l.some((x) => x.includes(FIGURE_HEADER[locale])) && !VERDICT[locale].test(textBelow(pdfPath, i + 1, null, locale, true).text) && !/%/.test(textBelow(pdfPath, i + 1, null, locale, true).text)) + 1;
+      // The requirements image: the first visa block, from the "Visa information" page on, with the Your figure / Published figure columns that passes the image gate.
+      const gateOk = (t: string) => !VERDICT[locale].test(t) && !/%/.test(t);
+      let requirementsCrop: Crop | null = null;
+      for (let pg = visasPage; visasPage > 0 && pg <= lines.length && !requirementsCrop; pg++) requirementsCrop = visaBlockCrops(pdfPath, pg, locale).find((c) => c.text.includes(REQUIREMENT_HEADER[locale]) && c.text.includes(FIGURE_HEADER[locale]) && gateOk(c.text)) ?? null;
+      const requirements = requirementsCrop?.page ?? 0;
       const costTitle = reportSectionTitle("costs", locale);
       const costs = lines.map((l, i) => (l.some((x) => x === costTitle) ? i + 1 : 0)).filter(Boolean).pop() ?? 0;
-      if (!glance || !requirements || !costs) throw new Error(`${locale}: pages not found (glance ${glance}, requirements ${requirements}, costs ${costs})`);
-      const wanted: Record<(typeof SHOWCASE_PAGES)[number], number> = { cover: 1, glance, requirements, costs };
+      if (!summary || !glance || !requirements || !costs) throw new Error(`${locale}: pages not found (summary ${summary}, glance ${glance}, requirements ${requirements}, costs ${costs})`);
+      const wanted: Record<(typeof SHOWCASE_PAGES)[number], number> = { cover: 1, summary, glance, requirements, costs };
       mkdirSync(path.join(OUT, locale), { recursive: true });
       for (const key of SHOWCASE_PAGES) {
         // Each section image is cropped at its heading, and only what is in the image is checked.
-        const { text, topFraction, bottomFraction } = textBelow(pdfPath, wanted[key], CROP_AT[key] ? reportSectionTitle(CROP_AT[key]!, locale) : null, locale, key === "requirements");
+        const { text, topFraction, bottomFraction } = key === "requirements" ? requirementsCrop! : textBelow(pdfPath, wanted[key], CROP_AT[key] ? reportSectionTitle(CROP_AT[key]!, locale) : null, locale);
         // The PDF's own wording is held by test-report-banned-phrases; this is the image gate: no percentage and no verdict / ranking / recommendation word.
         const verdict = VERDICT[locale].exec(text)?.[0];
         if (/%/.test(text) || verdict) throw new Error(`${locale}/${key}: page ${wanted[key]} has verdict-style text: ${verdict ?? "%"}`);
-        execFileSync("pdftoppm", ["-png", "-r", "110", "-f", String(wanted[key]), "-l", String(wanted[key]), "-singlefile", pdfPath, path.join(tmp, `${locale}-${key}`)]);
+        rasterisePage(pdfPath, wanted[key], path.join(tmp, `${locale}-${key}`));
         const png = sharp(readFileSync(path.join(tmp, `${locale}-${key}.png`)));
         const meta = await png.metadata();
         const top = Math.floor((meta.height ?? 0) * topFraction);

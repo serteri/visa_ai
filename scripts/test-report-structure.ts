@@ -57,7 +57,9 @@ export const BANNED: Record<L, RegExp> = {
 const PERSONA_IDS = ["real-b0d20f74-inputs", "ref-xyz-qld", "ref-xyz-wa-job", "reference-se-au"] as const;
 const MAIN_TARGETS: TargetVisa[] = ["491", "189", "not_sure"];
 const OTHER_TARGETS: TargetVisa[] = ["190", "482", "186", "485", "500"];
-const SECTION_IDS = ["details", "glance", "points", "visas", "states", "invitations", "costs", "process", "documents", "sources"];
+const SECTION_IDS = ["summary", "details", "glance", "points", "visas", "states", "costs", "process", "documents", "sources"];
+// Sections that appear only when they have content: the appendices (points examples, additional state detail) and published invitation rounds.
+const OPTIONAL_IDS = ["invitations", "pointsExamples", "stateDetail"];
 const FIXED_VISA_ORDER = ["500", "485", "482", "Direct Entry", "Temporary Residence Transition", "189", "190", "491", "820"];
 const STATE_ORDER = ["ACT", "NSW", "NT", "QLD", "SA", "TAS", "VIC", "WA"];
 
@@ -97,7 +99,7 @@ async function main() {
 
     // structure
     const ids = view.sections.map((s) => s.id);
-    t(`sections in the fixed order: ${ids.join(" > ")}`, JSON.stringify(ids) === JSON.stringify(SECTION_IDS), ids.join(","));
+    t(`sections in the fixed order: ${ids.join(" > ")}`, JSON.stringify(ids.filter((x) => !OPTIONAL_IDS.includes(x))) === JSON.stringify(SECTION_IDS) && ids[ids.length - 1] === "sources", ids.join(","));
     const lines = r.text.split("\n").map((x) => x.trim());
     const at = view.sections.map((s) => lines.findIndex((x) => x === s.title));
     t("the PDF prints every section title, in order", at.every((i) => i >= 0) && at.every((i, k) => k === 0 || i > at[k - 1]), at.join(","));
@@ -119,7 +121,7 @@ async function main() {
     const sh = stateHeadings(view);
     t("states: all eight in the fixed order", STATE_ORDER.every((c, i) => sh[i]?.includes(`(${c})`)) && sh.length === 8, sh.join(" | "));
     const stateBlocks = view.sections.find((s) => s.id === "states")!.blocks.filter((b) => b.kind === "kv");
-    t("states: each block has a source and a data-checked date", stateBlocks.length === 8 && stateBlocks.every((b) => b.kind === "kv" && b.rows.some(([, v]) => /20\d\d-\d\d-\d\d/.test(v)) && b.rows.some(([k, v]) => /Source|Kaynak|来源/.test(k) && v.length > 3 && v !== "—")));
+    t("states: each block has a source and a data-checked date", stateBlocks.length === 8 && stateBlocks.every((b) => b.kind === "kv" && b.rows.some(([, v]) => /20\d\d-\d\d-\d\d|\d{1,2} \p{L}+ 20\d\d|20\d\d年\d{1,2}月\d{1,2}日/u.test(v)) && b.rows.some(([k, v]) => /Official source|Resmi kaynak|官方来源/.test(k) && v.length > 3 && v !== "—")));
     t("states: none described as unavailable to the applicant", !/not available to you|size açık olmayan|对您不开放|Available to you/i.test(f));
 
     // provenance
@@ -128,9 +130,10 @@ async function main() {
     // Two kinds of requirement table: numeric (requirement | your figure | published figure | source) and the rest (requirement | what you entered | source | information status).
     const srcIdx = (b: { headers: string[] }) => b.headers.findIndex((h) => /^(Source|Kaynak|来源)$/.test(h));
     t("every visa requirement row: requirement, your entry or figure, a source, and a status or a published figure", reqTables.length >= 7 && reqTables.every((b) => b.kind === "table" && srcIdx(b) >= 0 && b.rows.every((row) => row[0] && row[1] && row[srcIdx(b)].length > 5 && row[2] && row[3])), String(reqTables.length));
-    const inv = view.sections.find((s) => s.id === "invitations")!.blocks.find((b) => b.kind === "table");
-    const invText = view.sections.find((s) => s.id === "invitations")!.blocks.filter((b) => b.kind === "text").map((b) => (b.kind === "text" ? b.text : "")).join(" ");
-    t("invitation rows: every cell filled (date, source), and none without a lowest-points figure; no table at all when nothing remains (and then it says so)", inv ? inv.kind === "table" && inv.rows.length >= 1 && inv.rows.every((row) => row.every((c) => c.length > 0) && /\d/.test(row[3])) : /No invitation round with a recorded lowest-points figure|en düşük puanı kayıtlı bir davet turu bulunmadığından|没有记录了最低受邀分数的邀请轮次/.test(invText));
+    const invSection = view.sections.find((s) => s.id === "invitations");
+    const inv = invSection?.blocks.find((b) => b.kind === "table");
+    const invText = (invSection?.blocks ?? []).filter((b) => b.kind === "text").map((b) => (b.kind === "text" ? b.text : "")).join(" ");
+    t("invitation rows: every cell filled (date, source), and none without a lowest-points figure; no table at all when nothing remains (and then it says so)", !invSection || (!!inv && inv.kind === "table" && inv.rows.length >= 1 && inv.rows.every((row) => row.every((c) => c.length > 0) && /\d/.test(row[3]))));
     const process = view.sections.find((s) => s.id === "process")!.blocks.filter((b) => b.kind === "table");
     t("process: every step has a source; no personal dated plan", process.length >= 5 && process.every((b) => b.kind === "table" && b.rows.every((row) => row[2].length > 3)) && !/Weeks? \d|Hafta \d|第 ?\d+ ?周/i.test(f));
     const costTables = view.sections.find((s) => s.id === "costs")!.blocks.filter((b) => b.kind === "table");

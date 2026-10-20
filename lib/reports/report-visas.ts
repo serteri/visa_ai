@@ -9,7 +9,6 @@ import subclass186 from "@/src/data/visas/subclass-186.json";
 import visaDetails from "@/src/data/visa-details.json";
 import visaFees from "@/src/data/visa-fees.json";
 import visaGatesData from "@/src/data/visa-gates.json";
-import visaTrends from "@/src/data/visa-trends.json";
 import { publishedRequirements } from "@/lib/readiness/visa-gates";
 import type { Locale, ReadinessReport } from "@/lib/readiness/types";
 import type { TargetVisa } from "@/lib/readiness/target-visa";
@@ -85,7 +84,7 @@ export function chargeLines(k: VisaKey, l: Locale): string[] {
   if (c.child !== null && c.main > 0) lines.push(T(l, `Additional applicant under 18: AUD ${money(c.child)}`, `18 yaş altı ek başvuru sahibi: AUD ${money(c.child)}`, `18 岁以下附加申请人：AUD ${money(c.child)}`));
   if (c.second !== null) lines.push(T(l, `Second instalment (applicants 18+ without functional English): AUD ${money(c.second)}`, `İkinci taksit (işlevsel İngilizcesi olmayan 18 yaş üstü başvuru sahipleri): AUD ${money(c.second)}`, `第二期费用（无功能性英语的 18 岁以上申请人）：AUD ${money(c.second)}`));
   if (k === "820") lines.push(T(l, "The charge covers both the 820 and the 801 stages.", "Ücret hem 820 hem 801 aşamasını kapsar.", "该费用涵盖 820 和 801 两个阶段。"));
-  if (k === "186DE" || k === "186TRT") lines.push(T(l, "Figure from the subclass 186 data file for this stream.", "Bu akış için subclass 186 veri dosyasındaki tutar.", "该通道在 186 子类数据文件中的金额。"));
+  if (k === "186DE" || k === "186TRT") lines.push(T(l, "Published figure for the subclass 186 stream.", "Subclass 186 akışı için yayımlanmış tutar.", "该通道的 186 子类已公布金额。"));
   return lines;
 }
 
@@ -286,15 +285,8 @@ export type VisaLabels = {
   pointsTest: string;
   fees: string;
   processing: string;
-  invitation: string;
   progression: string;
 };
-
-const TREND_DATA_DATE = (visaTrends as unknown as { generated_on: string }).generated_on;
-
-/** The inline label every recent invitation level carries: it is an estimate from trend data, with its date. */
-export const invitationEstimateLabel = (asOf: string, l: Locale) =>
-  T(l, `Estimate from our trend data, as of ${asOf}`, `Trend verilerimizden tahmin, ${asOf} itibarıyla`, `根据我们趋势数据的估算，截至 ${asOf}`);
 
 export const visaLabels = (l: Locale): VisaLabels => ({
   type: T(l, "Type", "Tür", "类型"),
@@ -302,7 +294,6 @@ export const visaLabels = (l: Locale): VisaLabels => ({
   pointsTest: T(l, "Points test", "Puan testi", "积分测试"),
   fees: T(l, "Published charges", "Yayımlanmış ücretler", "已公布的费用"),
   processing: T(l, "Typical processing information", "Tipik işlem bilgisi", "典型处理信息"),
-  invitation: T(l, "Recent invitation level (estimate)", "Son davet seviyesi (tahmin)", "近期邀请分（估算）"),
   progression: T(l, "Progression pattern", "İlerleme örüntüsü", "常见衔接路径"),
 });
 
@@ -315,7 +306,6 @@ function pointsFromEntries(report: ReadinessReport): PointsFromEntries | undefin
 export function buildVisaInfos(report: ReadinessReport, target: TargetVisa, facts: Map<string, string | null>, l: Locale): VisaInfo[] {
   const labels = visaLabels(l);
   const selected = new Set(selectedKeys(target));
-  const asOf = report.premiumSections?.historicalInvitationTrends?.dataAsOf;
   return orderedKeys(target).map((k): VisaInfo => {
     const d = detailOf(k);
     const raw = d ? (l === "tr" ? d.description_tr : l === "zh-Hans" ? d.description_zh : d.description) ?? d.description : undefined;
@@ -329,10 +319,6 @@ export function buildVisaInfos(report: ReadinessReport, target: TargetVisa, fact
     const fees = chargeLines(k, l);
     if (fees.length) overview.push([labels.fees, fees.join("\n")]);
     overview.push([labels.processing, processingText(k, l)]);
-    if (pointsTested) {
-      const b = report.pathwayScores?.[k as "189" | "190" | "491"]?.benchmark;
-      overview.push([labels.invitation, b === null || b === undefined ? T(l, "Not available in our data", "Verilerimizde mevcut değil", "我们的数据中暂无") : `${b} — ${invitationEstimateLabel(asOf ?? TREND_DATA_DATE, l)}`]);
-    }
     if (PROGRESSION[k]) overview.push([labels.progression, T(l, ...PROGRESSION[k]!)]);
     return { key: k, selected: selected.has(k), title: visaName(k, l), overview, requirements: requirementRows(k, facts, l, pointsFromEntries(report)), tags: [] };
   });

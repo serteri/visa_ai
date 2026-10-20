@@ -864,6 +864,8 @@
   "home.reportShowcase.subtitle": "每种签证及每个州和领地的公开信息，均标明来源和日期，另含根据您的填写计算的积分总分。仅为信息，不构成移民建议。A$39.99（含GST）。",
   "home.reportShowcase.features.cover.title": "封面",
   "home.reportShowcase.features.cover.description": "报告日期、所填写的职业，以及您选择的目标签证（或“不确定”）。",
+  "home.reportShowcase.features.summary.title": "专业摘要",
+  "home.reportShowcase.features.summary.description": "一页内列出已填写与未填写的内容、涵盖的公开数据领域，以及有待独立核实的事项。",
   "home.reportShowcase.features.glance.title": "一览",
   "home.reportShowcase.features.glance.description": "每种签证一行，顺序固定：已填写、未填写或表单未收集信息的要求数量，以及您的数字与已公布数字并列。",
   "home.reportShowcase.features.requirements.title": "签证要求",

@@ -1,3 +1,4 @@
+import { isSampleApplicant, SAMPLE_REPORT_ID } from "@/lib/reports/sample";
 import { getAdminStateData } from "@/lib/admin-data/loader";
 import type { AdminStateData } from "@/lib/admin-data/types";
 import { AGENT_LEAD_NOTICE } from "./agent-lead-notice";
@@ -1857,7 +1858,7 @@ export async function generateReadinessPDF(input: PDFGeneratorInput): Promise<Ui
 
     const subjectName = userInputSummary.name || "Applicant";
     const safeName = subjectName.replace(/[^A-Za-z0-9]/g, "").slice(0, 10).toUpperCase() || "CLIENT";
-    const reportId = `LVA-${aestDatePart.replace(/-/g, "")}-${safeName}`;
+    const reportId = isSampleApplicant(subjectName) ? SAMPLE_REPORT_ID : `LVA-${aestDatePart.replace(/-/g, "")}-${safeName}`;
 
     // ── Full-bleed navy background (matches the site's .case-file theme) ────
     doc.setFillColor(COLORS.primaryDeep.r, COLORS.primaryDeep.g, COLORS.primaryDeep.b);

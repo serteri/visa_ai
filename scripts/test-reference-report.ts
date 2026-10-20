@@ -93,7 +93,7 @@ async function main() {
     // 8.
     const row189 = report.pathwayScores?.["189"];
     const v491 = report.pathwayScores?.["491"];
-    t("8. the published invitation score is data with its date (491 shown with the target); 189 is in the Pathway table as a published fact", !!v491 && (v491.benchmark === null ? NO_LEVEL.test(inviteLevel(view, "491")) : inviteLevel(view, "491").startsWith(String(v491.benchmark))) && (!row189 || inviteLevel(view, "189").length > 0));
+    t("8. no trend-based invitation level is printed for 491 or 189 (invitation estimates are not part of the report)", !!v491 && inviteLevel(view, "491") === "" && inviteLevel(view, "189") === "");
 
     // 9.
         t("9. state and territory information: all eight, fixed order, none described as unavailable to the applicant", stateCount(view) === 8 && ["ACT", "NSW", "NT", "QLD", "SA", "TAS", "VIC", "WA"].every((c) => stateRow(view, c) !== null) && !/not available to you|size açık olmayan|对您不开放/i.test(text));

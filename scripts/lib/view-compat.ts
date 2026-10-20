@@ -17,7 +17,7 @@ export function pointsTables(v: ReportView): string[][][] {
 export const totalsRows = (v: ReportView): string[][] => pointsTables(v)[1] ?? [];
 
 /** The scenario rows (single-factor then combined): [label, points added, total 189, total 190, total 491]. */
-export const scenarioRows = (v: ReportView): string[][] => (section(v, "points")?.blocks ?? []).flatMap((b, i, all) => (b.kind === "table" && i > 2 && all[i - 1]?.kind === "heading" ? b.rows : []));
+export const scenarioRows = (v: ReportView): string[][] => (section(v, "pointsExamples")?.blocks ?? []).flatMap((b, i, all) => (b.kind === "table" && i > 0 && all[i - 1]?.kind === "heading" ? b.rows : []));
 
 /** The kv rows of the block that follows the heading containing `needle` (visas and states sections). */
 export function blockAfterHeading(v: ReportView, sectionId: string, needle: string): Array<[string, string]> {
@@ -35,14 +35,27 @@ export function inviteLevel(v: ReportView, sub: string): string {
 
 export const NO_LEVEL = /not available|mevcut değil|暂无/i;
 
-/** A state's block as the old row shape: [heading, occupation-list result, conditions, source + checked date]. */
+const MONTHS: Record<string, number> = { january: 1, february: 2, march: 3, april: 4, may: 5, june: 6, july: 7, august: 8, september: 9, october: 10, november: 11, december: 12, ocak: 1, "şubat": 2, mart: 3, nisan: 4, "mayıs": 5, haziran: 6, temmuz: 7, "ağustos": 8, "eylül": 9, ekim: 10, "kasım": 11, "aralık": 12 };
+/** "13 October 2026" / "13 Ekim 2026" / "2026年10月13日" -> "2026-10-13"; anything else unchanged. */
+export function isoOfLongDate(text: string): string {
+  const zh = /(\d{4})年(\d{1,2})月(\d{1,2})日/.exec(text);
+  if (zh) return `${zh[1]}-${zh[2].padStart(2, "0")}-${zh[3].padStart(2, "0")}`;
+  const m = /(\d{1,2}) ([A-Za-zçğıöşüÇĞİÖŞÜ]+) (\d{4})/.exec(text);
+  const mo = m ? MONTHS[m[2].toLowerCase()] : undefined;
+  return m && mo ? `${m[3]}-${String(mo).padStart(2, "0")}-${m[1].padStart(2, "0")}` : text;
+}
+
+/** A state's card as the old row shape: [heading, occupation-list result, conditions (key and additional), source + checked date (ISO)]. */
 export function stateRow(v: ReportView, code: string): string[] | null {
   const rows = blockAfterHeading(v, "states", `(${code})`);
   if (rows.length === 0) return null;
-  const list = rows.find(([k]) => /Occupation on its list|Meslek listede|职业是否在清单/.test(k))?.[1] ?? "";
-  const checked = rows.find(([k]) => /Data checked|Veri kontrol|数据核对/.test(k))?.[1] ?? "";
-  const source = rows.find(([k]) => /^(Source|Kaynak|来源)$/.test(k))?.[1] ?? "";
-  return [`(${code})`, list, rows.map(([, x]) => x).join(" "), `${source} ${checked}`];
+  const list = rows.find(([k]) => /Occupation-list status|Meslek listesi durumu|职业清单情况/.test(k))?.[1] ?? "";
+  const checked = isoOfLongDate(rows.find(([k]) => /Data checked|Veri kontrol|数据核对/.test(k))?.[1] ?? "");
+  const source = rows.find(([k]) => /^(Official source|Resmi kaynak|官方来源)$/.test(k))?.[1] ?? "";
+  const detailBlocks = section(v, "stateDetail")?.blocks ?? [];
+  const di = detailBlocks.findIndex((b) => b.kind === "heading" && b.text.includes(`(${code})`));
+  const extra = di >= 0 && detailBlocks[di + 1]?.kind === "lines" ? (detailBlocks[di + 1] as { lines: string[] }).lines.join(" ") : "";
+  return [`(${code})`, list, `${rows.map(([, x]) => x).join(" ")} ${extra}`, `${source} ${checked}`];
 }
 
 export const stateCount = (v: ReportView): number => (section(v, "states")?.blocks ?? []).filter((b) => b.kind === "heading").length;

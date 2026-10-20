@@ -2,12 +2,14 @@
 import type { Locale } from "@/lib/readiness/types";
 import { T } from "@/lib/reports/report-text";
 
-export type ReportSectionId = "details" | "glance" | "points" | "visas" | "states" | "invitations" | "costs" | "process" | "documents" | "sources";
+export type ReportSectionId = "summary" | "details" | "glance" | "points" | "visas" | "states" | "invitations" | "costs" | "process" | "documents" | "pointsExamples" | "stateDetail" | "sources";
 
 export function reportSectionTitle(id: ReportSectionId, l: Locale): string {
   switch (id) {
+    case "summary":
+      return T(l, "Professional summary", "Profesyonel özet", "专业摘要");
     case "details":
-      return T(l, "Your details", "Bilgileriniz", "您的信息");
+      return T(l, "Applicant information", "Başvuru sahibi bilgileri", "申请人信息");
     case "glance":
       return T(l, "At a glance", "Bir bakışta", "一览");
     case "points":
@@ -24,9 +26,13 @@ export function reportSectionTitle(id: ReportSectionId, l: Locale): string {
       return T(l, "Typical process", "Tipik süreç", "典型流程");
     case "documents":
       return T(l, "Documents and general points", "Belgeler ve genel noktalar", "文件与一般事项");
+    case "pointsExamples":
+      return T(l, "Published points-table examples", "Yayımlanmış puan tablosu örnekleri", "已公布积分表示例");
+    case "stateDetail":
+      return T(l, "Additional published detail: states and territories", "Ek yayımlanmış ayrıntılar: eyaletler ve bölgeler", "补充已公布细节：各州和领地");
     case "sources":
       return T(l, "Sources and advice", "Kaynaklar ve danışmanlık", "来源与咨询");
   }
 }
 
-export const REPORT_SECTION_IDS: ReportSectionId[] = ["details", "glance", "points", "visas", "states", "invitations", "costs", "process", "documents", "sources"];
+export const REPORT_SECTION_IDS: ReportSectionId[] = ["summary", "details", "glance", "points", "visas", "states", "invitations", "costs", "process", "documents", "pointsExamples", "stateDetail", "sources"];

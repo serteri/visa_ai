@@ -11,6 +11,7 @@ import type { AdminStateData } from "@/lib/admin-data/types";
 import type { StateMonitorSnapshot } from "@/lib/state-monitor/status";
 import type { Locale, ReadinessReport } from "@/lib/readiness/types";
 import { T } from "./report-text";
+import { longDate, publicConditionText, publicStateSource, publicStateSourceTitles, stateOfficialUrl } from "./public-sources";
 
 /** Without a successful monitor check (or hand verification) for more than this many days, a state's data is flagged "may have changed since". */
 export const STATE_MONITOR_MAX_DAYS = 14;
@@ -73,19 +74,24 @@ export type StateInfo = {
   name: string;
   status: string;
   occupationList: string;
+  /** Every published condition (the state's summary first). */
   conditions: string[];
+  /** The conditions a reader scans first (the state's summary and its first key facts); the rest are "Additional published detail". */
+  keyConditions: string[];
+  additionalDetail: string[];
+  /** "<organisation> — <page titles>" (never a repository filename), the state's official portal URL, and the date checked as "13 October 2026". */
   sources: string;
+  officialUrl: string;
   checked: string;
+  checkedLong: string;
   /** Set by the page monitor (an unapplied change, or no successful check for 14 days): "data may have changed since". */
   staleNote: string;
 };
 
-const STATE_CODES = ["ACT", "NSW", "NT", "QLD", "SA", "TAS", "VIC", "WA"] as const;
+/** How many published conditions are "key" (scanned first): the state's summary and its next two. */
+const KEY_CONDITIONS = 3;
 
-const docTitle = (doc: string) => {
-  const t = doc.split("/").pop() ?? doc;
-  return t.replace(/\.(pdf|png)$/i, "");
-};
+const STATE_CODES = ["ACT", "NSW", "NT", "QLD", "SA", "TAS", "VIC", "WA"] as const;
 
 export function buildStateInfos(report: ReadinessReport, occupationRaw: string | undefined, l: Locale, now: Date = new Date(), stateMonitor?: StateMonitorSnapshot | null, data: AdminStateData = seedStateData()): StateInfo[] {
   const tracker = report.stateNominationTracker;
@@ -114,16 +120,20 @@ export function buildStateInfos(report: ReadinessReport, occupationRaw: string |
       ...(s?.streamNotes ?? []).map((x) => ({ en: x, shown: x })),
     ].filter((x) => !!x.en);
     const summary = rawConditions[0]?.en ?? "";
-    const conditions = rawConditions.filter((x, i) => i === 0 || !repeatsSummary(x.en, summary)).map((x) => x.shown);
+    const conditions = [...new Set(rawConditions.filter((x, i) => i === 0 || !repeatsSummary(x.en, summary)).map((x) => publicConditionText(x.shown)))];
     const checked = (s?.lastVerifiedAt ?? rule?.lastVerified ?? "").slice(0, 10);
     return {
       code,
       name: rule?.name ?? s?.name ?? code,
       status: displayStatus(s?.status ?? rule?.status ?? "—", l),
       occupationList,
-      conditions: [...new Set(conditions)],
-      sources: (rule?.sourceDocument ?? "").split(";").map((d) => docTitle(d.trim())).filter(Boolean).join("; ") || "—",
+      conditions,
+      keyConditions: conditions.slice(0, KEY_CONDITIONS),
+      additionalDetail: conditions.slice(KEY_CONDITIONS),
+      sources: publicStateSource(code, publicStateSourceTitles(rule?.sourceDocument, code), l),
+      officialUrl: stateOfficialUrl(code),
       checked,
+      checkedLong: checked ? longDate(checked, l) : "",
       staleNote: staleNoteText(stateDataFlag({ verified: checked, monitor: stateMonitor?.[code] ?? null, now }), l),
     };
   });
