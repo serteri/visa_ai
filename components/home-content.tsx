@@ -6,6 +6,7 @@ import { HowItWorks } from "@/components/landing/HowItWorks";
 import { Faq } from "@/components/landing/Faq";
 import { LandingFooter } from "@/components/landing/footer";
 import { SampleReportSection } from "@/components/landing/SampleReportSection";
+import { ResearchGuidesHome } from "@/components/landing/ResearchGuidesHome";
 import { AssessmentSection } from "@/components/landing/AssessmentSection";
 export function HomeContent() {
   const { locale } = useParams<{ locale: string }>();
@@ -15,6 +16,7 @@ export function HomeContent() {
       <AssessmentSection locale={locale} />
       <SampleReportSection locale={locale} />
       <HowItWorks locale={locale} />
+      <ResearchGuidesHome locale={locale} />
       <StatsBar locale={locale} />
       <Faq locale={locale} />
       <LandingFooter locale={locale} />

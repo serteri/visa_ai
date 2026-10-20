@@ -4,6 +4,7 @@ import { ArrowRight, BookOpen } from "lucide-react";
 
 import { Card, CardContent } from "@/components/ui/card";
 import guides from "@/src/data/guides.json";
+import { ResearchGuidesHubSection } from "@/components/guides/research-guides-hub-section";
 import { pageAlternates, publicUrl } from "@/lib/seo/urls";
 
 // The production origin, not an environment variable: a missing or malformed NEXT_PUBLIC_BASE_URL must not break metadata or point canonicals at localhost.
@@ -83,6 +84,8 @@ export default async function GuidesIndexPage({ params }: PageProps) {
           </div>
         </div>
       </section>
+
+      <ResearchGuidesHubSection locale={locale} />
 
       <section className="mx-auto max-w-6xl px-4 py-16 sm:px-6 lg:px-8">
         <div className="grid gap-6 md:grid-cols-2">

@@ -9,6 +9,7 @@ import sitemap from "../app/sitemap";
 import { sanitizeParams } from "../lib/analytics/events";
 import { RESEARCH_GUIDES, GUIDES_CHECKED_ON } from "../lib/guides/research-guides";
 import { RESEARCH_GUIDE_SLUGS } from "../lib/guides/slugs";
+import { HOME_GUIDE_SLUGS, HUB_GUIDES } from "../lib/guides/hub";
 import { findBannedPhrases } from "../lib/seo/banned-phrases";
 
 const EXPECTED = ["chef-vs-cook-australia", "tra-msa-vs-osap", "developer-programmer-vs-software-engineer", "skills-assessment-vs-visa-eligibility", "engineers-australia-accredited-vs-cdr", "state-occupation-list-vs-nomination"];
@@ -67,6 +68,15 @@ assert.deepEqual(sanitizeParams({ source_type: "guide", source_slug: "tra-msa-vs
 assert.deepEqual(sanitizeParams({ source_type: "blog", source_slug: "someone@example.com", destination_type: "free text" }), {});
 ok("analytics: guide continuation parameters are allow-listed; free text is dropped");
 
+assert.deepEqual(HUB_GUIDES.map((g) => g.slug), EXPECTED);
+assert.deepEqual(HOME_GUIDE_SLUGS, ["chef-vs-cook-australia", "tra-msa-vs-osap", "skills-assessment-vs-visa-eligibility"]);
+for (const g of HUB_GUIDES) assert(g.title && g.category && g.description.length > 40 && !findBannedPhrases(g.description).length, `${g.slug}: hub card`);
+// The card title may carry "Eligibility" only for the guide whose subject is that contrast (see the exception above); no other banned wording in any title.
+for (const g of HUB_GUIDES) assert.deepEqual(findBannedPhrases(g.title).filter((id) => !(id === "eligib*" && g.slug === "skills-assessment-vs-visa-eligibility")), [], `${g.slug}: hub title`);
+const hub = fs.readFileSync("app/[locale]/(main)/guides/page.tsx", "utf8");
+assert(hub.includes("<ResearchGuidesHubSection") && hub.includes("guides.map((guide)"), "hub keeps the existing catalogue and adds the new section");
+assert(fs.readFileSync("components/home-content.tsx", "utf8").includes("<ResearchGuidesHome"), "homepage discovery section is mounted");
+ok("hub: six cards with categories above the unchanged catalogue; homepage features exactly three");
 const route = fs.readFileSync("app/[locale]/(main)/guides/[slug]/page.tsx", "utf8");
 assert(route.includes("findResearchGuide") && route.includes('locale !== "en"') && route.includes("robots: { index: true, follow: true }"));
 assert(!fs.existsSync("app/[locale]/(main)/blog"), "no /blog/ architecture");
