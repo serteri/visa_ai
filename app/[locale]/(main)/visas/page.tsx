@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
 import { pageAlternates } from "@/lib/seo/urls";
+import { publicPath } from "@/lib/seo/urls";
 
 // The production origin, not an environment variable: a missing or malformed NEXT_PUBLIC_BASE_URL must not break metadata or point canonicals at localhost.
 const BASE_URL = "https://www.logivisa.com";
@@ -41,7 +42,7 @@ export default async function VisasOverviewPage({ params }: PageProps) {
         : isZh
         ? "探索澳大利亚的学习、工作和永久居留签证。"
         : "Explore Australia visas for study, work, and permanent residency.",
-      href: `/${locale}/visas/australia`,
+      href: publicPath(locale, `/visas/australia`),
       accent: "border-[#53917E]/30 bg-[#53917E]/10 text-[#53917E] hover:border-[#53917E]/50 hover:bg-[#53917E]/20 dark:text-blue-300",
     },
     {
@@ -51,7 +52,7 @@ export default async function VisasOverviewPage({ params }: PageProps) {
         : isZh
         ? "通过快速通道了解加拿大永久居留申请流程。"
         : "Learn how Express Entry supports Canada permanent residency applications.",
-      href: `/${locale}/visas/canada`,
+      href: publicPath(locale, `/visas/canada`),
       accent: "border-rose-200 bg-rose-50 text-rose-700 hover:border-rose-300 hover:bg-rose-100 dark:text-rose-300",
     },
   ];

@@ -67,7 +67,7 @@ export function MiniCvTeaser({ occupationId }: MiniCvTeaserProps) {
     const params = new URLSearchParams();
     params.set("occupation", occupationId);
     if (duties.trim()) params.set("duties", duties.trim());
-    router.push(`/en/full-check?${params.toString()}`);
+    router.push(`/full-check?${params.toString()}`);
   }
 
   return (

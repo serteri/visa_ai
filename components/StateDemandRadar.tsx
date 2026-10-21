@@ -103,7 +103,7 @@ export function StateDemandRadar({ locale, occupationName, occupationId }: State
   const dataset = sponsorshipData as SponsorshipDataset;
   const anzscoCode = extractAnzscoCode(occupationId);
   const occupationEntry = dataset.occupations.find((item) => item.anzscoCode === anzscoCode);
-  const fullCheckHref = `/en/full-check?occupation=${encodeURIComponent(occupationId)}`;
+  const fullCheckHref = `/full-check?occupation=${encodeURIComponent(occupationId)}`;
 
   if (!occupationEntry) {
     return (

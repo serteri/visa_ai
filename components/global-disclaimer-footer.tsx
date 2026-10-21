@@ -5,6 +5,7 @@ import Link from "next/link";
 
 import { useLanguage, useTranslation } from "@/contexts/language-context";
 import { PdfDownloadModal } from "@/components/PdfDownloadModal";
+import { publicPath } from "@/lib/seo/urls";
 
 export function GlobalDisclaimerFooter() {
   const { t } = useTranslation();
@@ -15,7 +16,7 @@ export function GlobalDisclaimerFooter() {
     <footer className="border-t border-border/70 bg-background/95 px-4 py-4 text-center text-xs text-muted-foreground">
       <p>{t("footer.generalInfo")}</p>
       <Link
-        href={`/${language}/contact`}
+        href={publicPath(language, "/contact")}
         className="mt-1 inline-block font-medium text-foreground/70 underline underline-offset-2 hover:text-foreground"
       >
         {t("footer.contact")}

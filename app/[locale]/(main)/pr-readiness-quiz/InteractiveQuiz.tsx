@@ -258,7 +258,7 @@ function ResultView() {
 
             {/* CTA -- honest, price-stated label (see quiz.result.cta) */}
             <Link
-              href="/en/full-check"
+              href="/full-check"
               className="group flex w-full items-center justify-center gap-3 rounded-2xl bg-cyan-600 px-5 py-4 text-sm font-bold text-white shadow-lg shadow-cyan-600/20 transition-all duration-200 hover:scale-[1.02] hover:bg-cyan-500 hover:shadow-cyan-500/30 sm:text-base"
             >
               <span>{t("quiz.result.cta")}</span>

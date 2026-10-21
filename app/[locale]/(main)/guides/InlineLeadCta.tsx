@@ -22,7 +22,7 @@ export function InlineLeadCta() {
           size="lg"
           className="h-12 shrink-0 rounded-xl bg-cyan-500 px-6 text-base font-bold text-slate-950 shadow-lg shadow-cyan-950/20 hover:bg-cyan-400"
         >
-          <Link href="/en/full-check">
+          <Link href="/full-check">
             Calculate PR Points (Free)
             <ArrowRight className="h-4 w-4" />
           </Link>

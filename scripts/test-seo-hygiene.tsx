@@ -48,13 +48,18 @@ async function main() {
     "app/[locale]/(main)/tools/english-points/EnglishPointsClient.tsx", "app/[locale]/(main)/tools/skills-assessment/SkillsAssessmentClient.tsx",
     "app/[locale]/(main)/tools/visa-comparison/VisaComparisonClient.tsx", "app/[locale]/(main)/tools/document-checklist-2026/DocumentChecklist2026.tsx",
     "app/[locale]/(main)/tools/document-checklist-2026/DocumentChecklist2026Localized.tsx", "app/[locale]/(main)/points-calculator/page.tsx",
-    "app/[locale]/(main)/occupation-checker/page.tsx",
+    "app/[locale]/(main)/occupation-checker/page.tsx", "app/[locale]/(main)/visas/page.tsx", "components/global-disclaimer-footer.tsx",
   ];
   for (const f of NAV_FILES) {
     // The guide renderer's "{locale}" placeholder replacement is the one deliberate template; it is not a link.
     const src = readFileSync(f, "utf8").split("\n").filter((l) => !l.includes("rawHref.replace")).join("\n");
     check(!/`\/\$\{locale\}[^`]*`/.test(src) && /publicPath/.test(src), `${f}: no raw \`/\${locale}...\` link; uses publicPath`);
   }
+  // No public component hard-codes an English "/en/..." link (it would 308 to the prefixless URL).
+  const { readdirSync, statSync } = await import("node:fs");
+  const walk = (dir: string): string[] => readdirSync(dir).flatMap((n) => { const f = `${dir}/${n}`; return statSync(f).isDirectory() ? (/admin|portal|node_modules/.test(f) ? [] : walk(f)) : /\.tsx$/.test(f) ? [f] : []; });
+  const offenders = [...walk("components"), ...walk("app/[locale]/(main)")].filter((f) => /(href|to)=("|\{`)\/en\//.test(readFileSync(f, "utf8")) || /(push|replace)\(`\/en\//.test(readFileSync(f, "utf8")));
+  check(offenders.length === 0, "no public component hard-codes an /en/... href or router push", offenders.join(", "));
   const header = readFileSync("components/header.tsx", "utf8");
   check(/publicPath\(locale, "\/"\)/.test(header) && /publicPath\(locale, `\/visas\/australia`\)/.test(header) && /publicPath\(locale, `\/full-check`\)/.test(header), "the main header's home, Australia visas and Assessment links use publicPath");
   check(/locale === "en" \? "" : `\/\$\{locale\}`/.test(readFileSync("app/[locale]/(main)/guides/[slug]/page.tsx", "utf8")), "the guide-content {locale} placeholder becomes empty for English (not '/' and not '/en')");
