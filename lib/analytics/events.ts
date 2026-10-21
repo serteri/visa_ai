@@ -22,10 +22,16 @@ export type AnalyticsEventName =
   | "pdf_download"
   | "report_unlocked"
   | "checkout_initiated"
-  | "professional_help_click";
+  | "professional_help_click"
+  | "site_guide_impression"
+  | "site_guide_open"
+  | "site_guide_quick_action"
+  | "site_guide_route_click"
+  | "site_guide_ai_assistant_handoff"
+  | "site_guide_dismiss";
 
 /** The only parameters that may be sent, and the only value types. */
-const ALLOWED_PARAMS = ["occupation_code", "locale", "subclass", "calculator", "link_host", "page_type", "destination", "source_page_type", "source_page_id", "continuation_stage", "entry_source", "product_type", "source_type", "source_slug", "destination_type"] as const;
+const ALLOWED_PARAMS = ["occupation_code", "locale", "subclass", "calculator", "link_host", "page_type", "destination", "source_page_type", "source_page_id", "continuation_stage", "entry_source", "product_type", "source_type", "source_slug", "destination_type", "destination_slug", "country", "interaction_type"] as const;
 type ParamKey = (typeof ALLOWED_PARAMS)[number];
 export type AnalyticsParams = Partial<Record<ParamKey, string>>;
 
@@ -40,13 +46,17 @@ export function sanitizeParams(params: Record<string, unknown> = {}): AnalyticsP
     if (key === "calculator" && v !== "australia_points") continue;
     if (key === "page_type" && !["occupation", "visa", "tool", "visa_comparison", "points_calculator"].includes(v)) continue;
     if (key === "link_host" && !/^(?:[a-z0-9-]+\.)+[a-z]{2,}$/i.test(v)) continue;
-    if (key === "source_page_type" && !["occupation", "visa", "tool"].includes(v)) continue;
+    if (key === "source_page_type" && !["occupation", "visa", "tool", "home", "comparison", "points", "guide", "canada", "other"].includes(v)) continue;
     if (key === "continuation_stage" && !["visa_to_tool", "tool_to_tool", "calculator_complete_to_research"].includes(v)) continue;
     if (key === "entry_source" && !["homepage", "homepage_assessment_section", "homepage_sample_report", "homepage_how_it_works", "sample_report_page", "navbar", "occupation", "visa_page", "tool", "other"].includes(v)) continue;
     if (key === "product_type" && v !== "premium") continue;
     if (key === "source_type" && v !== "guide") continue;
     if (key === "source_slug" && !RESEARCH_GUIDE_SLUGS.includes(v)) continue;
-    if (key === "destination_type" && !["tool", "occupation", "visa", "guide"].includes(v)) continue;
+    if (key === "destination_type" && !["tool", "occupation", "visa", "guide", "comparison", "points", "skills-assessment", "state-nomination", "assessment", "australia", "canada"].includes(v)) continue;
+    // Site guide: a registry id (lower-case words and hyphens), a country code and a fixed interaction vocabulary. Never typed text.
+    if (key === "destination_slug" && !/^[a-z0-9]+(?:-[a-z0-9]+){0,6}$/.test(v)) continue;
+    if (key === "country" && v !== "AU" && v !== "CA") continue;
+    if (key === "interaction_type" && !["nudge", "launcher", "quick_action", "free_text", "context_link", "route_click", "handoff", "dismiss"].includes(v)) continue;
     if (key === "destination" && !["points_calculator", "skills_assessment", "state_nomination", "anzsco_finder", "visa_comparison", "document_checklist", "cost_calculator"].includes(v)) continue;
     out[key] = v;
   }

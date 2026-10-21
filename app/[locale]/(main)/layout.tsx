@@ -11,6 +11,7 @@ import { ResearchContinuationTracker } from "@/components/analytics/research-con
 import { AssessmentEntryTracker } from "@/components/analytics/assessment-entry-tracker";
 import { AssessmentPrivacyBoundary } from "@/components/analytics/assessment-privacy-boundary";
 import { Toaster } from "@/components/ui/sonner";
+import { SiteGuide } from "@/components/site-guide/site-guide";
 import { isValidLocale, type Locale } from "@/lib/i18n/config";
 import { getTranslations } from "@/lib/i18n/get-translations";
 
@@ -151,6 +152,7 @@ export default async function LocaleLayout({
       <main className="overflow-x-hidden pt-28 sm:pt-32">{children}</main>
       <ShellFooterGate locale={locale} />
       <Toaster />
+      <SiteGuide locale={locale} />
       {gaId ? <Suspense fallback={null}><AssessmentPrivacyBoundary gaId={gaId}>
         <GoogleAnalytics gaId={gaId} />
         <OutboundLinkTracker locale={locale} />

@@ -119,6 +119,9 @@ jobs:
 
       - name: Canada NOC selection (the clicked result is what the form holds, submits and the report names)
         run: npm run test:noc-selection
+
+      - name: Site guide (routes exist, delayed prompt, 7-day cap, route gating, AU/CA separation, fallback, compliance wording, analytics privacy)
+        run: npm run test:site-guide
       - name: "Canada report is Canadian (deep check of the rendered PDF text, no Australian content, Australia unchanged, English-only in every locale)"
         run: npm run test:canada-report
       - name: Target visa field, DISABLED mode, engine carries the target (en / tr / zh-Hans)
