@@ -71,7 +71,7 @@ async function main() {
   check(!/Express Entry|IRCC|\bCRS\b/.test(text(au)), "an Australian report carries no Canadian program content");
   const caText = text(ca);
   check(/Express Entry|IRCC|Canada/.test(caText), "a Canadian report is Canadian");
-  console.log(`  ℹ️  Canadian view still mentions Australian terms: ${/subclass|Home Affairs|SkillSelect/.test(caText)} (known gap; why CANADA_REPORT_ENABLED stays off)`);
+  console.log(`  ℹ️  Canadian view still mentions Australian terms: ${/subclass|Home Affairs|SkillSelect/.test(caText)} (Canada reports use the Canada model; see test:canada-report)`);
 
   if (failures) { console.error(`\n❌ ${failures} check(s) failed`); process.exit(1); }
   console.log("\n✅ ALL CHECKS PASSED");

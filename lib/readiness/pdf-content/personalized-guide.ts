@@ -407,8 +407,8 @@ export function getPersonalizedApplicationGuide(
         ? [
             "ECA değerlendirmesi: CAD 200-300",
             "Dil testi: CAD 300-400",
-            "Başvuru ücreti: CAD 1,365 (başvuran)",
-            "Ek partner/çocuk: CAD 1,365 kişi başı",
+            "Başvuru ücreti: CAD 1,590 (başvuran)",
+            "Ek partner/çocuk: CAD 1,590 kişi başı",
             "Sağlık muayenesi: CAD 300-450",
             "Toplam tahmini: CAD 2,500-4,000",
           ]
@@ -416,16 +416,16 @@ export function getPersonalizedApplicationGuide(
           ? [
               "ECA认证：200-300加元",
               "语言考试：300-400加元",
-              "申请费：1365加元（主申请人）",
-              "随行伴侣/子女：每人1365加元",
+              "申请费：1590加元（主申请人）",
+              "随行伴侣/子女：每人1590加元",
               "体检：300-450加元",
               "预计总计：2500-4000加元",
             ]
           : [
               "ECA assessment: CAD 200-300",
               "Language test: CAD 300-400",
-              "Application fee: CAD 1,365 (primary)",
-              "Additional partner/child: CAD 1,365 each",
+              "Application fee: CAD 1,590 (primary)",
+              "Additional partner/child: CAD 1,590 each",
               "Health examination: CAD 300-450",
               "Estimated total: CAD 2,500-4,000",
             ]);

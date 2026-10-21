@@ -6335,21 +6335,21 @@ function buildCanadaFinancialRoadmap(
     {
       category: t("IRCC PR Processing Fee (main applicant)", "IRCC PR İşlem Ücreti (ana başvurucu)", "IRCC PR 审核费（主申请人）"),
       estimateType: "official_fee",
-      amountLabel: "CAD $1,525",
+      amountLabel: "CAD $1,590",
       explanation: t(
-        "Official IRCC fee for the permanent residence application. Spouse/common-law partner adds CAD $825; each dependent child adds CAD $225. Payable when the application is submitted.",
-        "Daimi ikamet başvurusu için resmi IRCC ücreti. Eş/birlikte yaşanan partner +CAD 825; her bağımlı çocuk +CAD 225 ekler. Başvuru sunulduğunda ödenir.",
-        "永久居留申请的官方IRCC费用。配偶/同居伴侣加收CAD $825；每位受养子女加收CAD $225。提交申请时支付。"
+        "Official IRCC fee for the permanent residence application. Spouse/common-law partner adds CAD $1,590; each dependent child adds CAD $270. Payable when the application is submitted.",
+        "Daimi ikamet başvurusu için resmi IRCC ücreti. Eş/birlikte yaşanan partner +CAD 1,590; her bağımlı çocuk +CAD 270 ekler. Başvuru sunulduğunda ödenir.",
+        "永久居留申请的官方IRCC费用。配偶/同居伴侣加收CAD $1,590；每位受养子女加收CAD $270。提交申请时支付。"
       ),
     },
     {
       category: t("Right of Permanent Residence Fee (RPRF)", "Daimi İkamet Hakkı Ücreti (RPRF)", "永久居留权费（RPRF）"),
       estimateType: "official_fee",
-      amountLabel: "CAD $515",
+      amountLabel: "Not priced here",
       explanation: t(
-        "Payable by the principal applicant and any accompanying spouse or common-law partner upon approval of PR. Not payable by dependent children.",
-        "PR onaylanınca ana başvurucu ve eşi/birlikte yaşanan partneri tarafından ödenir. Bağımlı çocuklar için ödenmez.",
-        "PR批准后，主申请人及随行配偶/同居伴侣需支付。受养子女无需支付。"
+        "Listed separately by IRCC; see the current IRCC fee list for the amount that applies to your application. Not priced here.",
+        "IRCC tarafından ayrıca listelenir; güncel IRCC ücret listesine bakın. Burada fiyatlandırılmaz.",
+        "IRCC单独列出；适用金额请查阅IRCC最新费用表。此处不标价。"
       ),
     },
     {

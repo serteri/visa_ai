@@ -296,10 +296,10 @@ export function getPersonalizedFaq(
               ? "总费用取决于您的技能评估费用、语言考试费用和官方申请费（VAC）——详见本报告的费用路线图部分。"
               : "Total cost depends on your skills-assessment fee, language test, and the official application fee (VAC) -- see the Financial Roadmap section of this report for the full breakdown."
         : isTr
-          ? "ECA: 200-300 CAD. Dil testi: 300-400 CAD. Başvuru ücreti: 1365 CAD. Toplam: 2000-3000 CAD."
+          ? "ECA: 200-300 CAD. Dil testi: 300-400 CAD. Başvuru ücreti: 1590 CAD. Toplam: 2000-3000 CAD."
           : isZh
-            ? "ECA：200-300加元。语言考试：300-400加元。申请费：1365加元。总计：2000-3000加元。"
-            : "ECA: CAD 200-300. Language test: CAD 300-400. Application fee: CAD 1,365. Total: CAD 2,000-3,000.",
+            ? "ECA：200-300加元。语言考试：300-400加元。申请费：1590加元。总计：2000-3000加元。"
+            : "ECA: CAD 200-300. Language test: CAD 300-400. Application fee: CAD 1,590. Total: CAD 2,000-3,000.",
   });
 
   // ── Partner question ──────────────────────────────────────────────────
