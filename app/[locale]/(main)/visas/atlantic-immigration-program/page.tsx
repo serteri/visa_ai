@@ -10,6 +10,7 @@ import { getTranslations } from "@/lib/i18n/get-translations";
 import type { Locale } from "@/lib/i18n/config";
 import visaDetails from "@/src/data/visa-details.json";
 import { pageAlternates } from "@/lib/seo/urls";
+import { publicPath } from "@/lib/seo/urls";
 
 // The production origin, not an environment variable: a missing or malformed NEXT_PUBLIC_BASE_URL must not break metadata or point canonicals at localhost.
 const BASE_URL = "https://www.logivisa.com";
@@ -286,7 +287,7 @@ export default async function AtlanticImmigrationProgramPage({ params }: PagePro
       <section className="mx-auto max-w-6xl px-4 pb-12 sm:px-6 lg:px-8">
         <div className="mb-6 flex flex-wrap items-center gap-3">
           <Link
-            href={`/${locale}/visas/canada`}
+            href={publicPath(locale, `/visas/canada`)}
             className="inline-flex items-center gap-2 rounded-full border border-slate-200 bg-white px-4 py-2 text-sm font-semibold text-slate-700 transition-colors hover:bg-slate-50 dark:border-slate-800 dark:bg-slate-900 dark:text-slate-200 dark:hover:bg-slate-800"
           >
             {backToVisasLabel}
@@ -341,7 +342,7 @@ export default async function AtlanticImmigrationProgramPage({ params }: PagePro
               </div>
 
               <div className="flex flex-wrap gap-3">
-                <Link href={`/${locale}/full-check`}>
+                <Link href={publicPath(locale, `/full-check`)}>
                   <Button className="bg-sky-600 text-white hover:bg-sky-700">
                     <span>{checkEligibilityLabel}</span>
                     <ArrowRight className="ml-2 h-4 w-4" />

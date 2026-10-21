@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { publicPath } from "@/lib/seo/urls";
 
 const copy = {
   en: {
@@ -37,7 +38,7 @@ export function FinalGuideCta({ locale }: { locale: string }) {
       </p>
       <p className="mx-auto mt-3 max-w-xl text-lg text-slate-600">{t.body}</p>
       <Link
-        href={`/${locale}/ai-visa-match`}
+        href={publicPath(locale, `/ai-visa-match`)}
         className="group mt-8 inline-flex items-center gap-3 rounded-2xl bg-gradient-to-r from-indigo-600 to-purple-600 px-10 py-5 text-xl font-extrabold text-white shadow-2xl shadow-indigo-500/40 transition-all duration-300 hover:scale-105 hover:shadow-indigo-500/60 sm:px-12 sm:py-6 sm:text-2xl"
       >
         {t.button}

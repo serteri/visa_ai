@@ -122,6 +122,9 @@ jobs:
 
       - name: Site guide (routes exist, delayed prompt, 7-day cap, route gating, AU/CA separation, fallback, compliance wording, analytics privacy)
         run: npm run test:site-guide
+
+      - name: SEO hygiene (prefixless English links, /guide product page, /tr and /zh-Hans /guide redirects, sitemap, occupation canonical unchanged)
+        run: npm run test:seo-hygiene
       - name: "Canada report is Canadian (deep check of the rendered PDF text, no Australian content, Australia unchanged, English-only in every locale)"
         run: npm run test:canada-report
       - name: Target visa field, DISABLED mode, engine carries the target (en / tr / zh-Hans)

@@ -4,6 +4,7 @@ import { ArrowLeft, ArrowRight, Info, Sparkles } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { pageAlternates, publicUrl } from "@/lib/seo/urls";
+import { publicPath } from "@/lib/seo/urls";
 
 // The production origin, not an environment variable: a missing or malformed NEXT_PUBLIC_BASE_URL must not break metadata or point canonicals at localhost.
 const BASE_URL = "https://www.logivisa.com";
@@ -89,7 +90,7 @@ function MidCta({ locale }: { locale: string }) {
         size="lg"
         className="h-12 rounded-2xl bg-[var(--color-electric-iris)] px-8 font-bold text-white hover:opacity-90"
       >
-        <Link href={`/${locale}/full-check`}>
+        <Link href={publicPath(locale, `/full-check`)}>
           {tx(locale, "免费生成我的分数报告", "Ücretsiz Puan Raporumu Al", "Get My Free Points Report")}
           <ArrowRight className="ml-2 h-4 w-4" />
         </Link>
@@ -107,7 +108,7 @@ export default async function IncreasePrPoints2026GuidePage({ params }: PageProp
 
       <article className="relative mx-auto max-w-3xl px-4 sm:px-6 lg:px-8">
         <Link
-          href={`/${locale}/guides`}
+          href={publicPath(locale, `/guides`)}
           className="inline-flex items-center gap-2 text-sm font-bold text-[var(--color-electric-iris)] transition-colors hover:opacity-80"
         >
           <ArrowLeft className="h-4 w-4" />
@@ -283,7 +284,7 @@ export default async function IncreasePrPoints2026GuidePage({ params }: PageProp
                 "Herhangi bir hazırlığa başlamadan önce, kendi",
                 "Before you start any preparation, look up your exact"
               )}{" "}
-              <Link href={`/${locale}/occupations`}>
+              <Link href={publicPath(locale, `/occupations`)}>
                 {tx(locale, "职业数据库", "meslek kodunuzu veri tabanımızdan", "ANZSCO occupation code in our database")}
               </Link>{" "}
               {tx(
@@ -332,7 +333,7 @@ export default async function IncreasePrPoints2026GuidePage({ params }: PageProp
                 size="lg"
                 className="h-14 rounded-2xl bg-[var(--color-electric-iris)] px-10 text-base font-bold text-white shadow-xl hover:opacity-90"
               >
-                <Link href={`/${locale}/full-check`}>
+                <Link href={publicPath(locale, `/full-check`)}>
                   {tx(locale, "生成我的签证信息报告", "Vize Bilgi Raporumu Oluştur", "Generate My Visa Information Report")}
                   <ArrowRight className="ml-2 h-5 w-5" />
                 </Link>

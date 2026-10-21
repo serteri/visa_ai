@@ -401,7 +401,7 @@ export function SkillsAssessmentClient({ locale, initialQuery }: { locale: strin
                     {t("sa.anzscoNudgeText", "Use our ANZSCO Finder tool to identify your correct occupation code.")}
                   </p>
                   <Link
-                    href={`/${locale}/tools/anzsco-finder`}
+                    href={publicPath(locale, `/tools/anzsco-finder`)}
                     className="mt-2 inline-flex items-center gap-1.5 text-xs font-semibold text-slate-500 hover:underline"
                   >
                     {t("sa.openAnzscoFinder", "Open ANZSCO Finder")} <ArrowRight className="h-3 w-3" />

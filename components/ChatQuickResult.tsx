@@ -2,6 +2,7 @@
 
 import { useTranslation } from "@/contexts/language-context";
 import type { EngineResultSummary } from "@/lib/chat/quick-profile-api";
+import { publicPath } from "@/lib/seo/urls";
 
 /**
  * The compact result for a free visitor's quick profile (no model call): the points from the entries, the total per subclass next to
@@ -36,7 +37,7 @@ export function ChatQuickResult({ result, locale, onEdit }: { result: EngineResu
       )}
       <p className="text-xs text-muted-foreground" data-testid="chat-full-report-cta">
         {t("chat.result.cta", "The Visa Information Report sets out published requirements, your figures side by side, sourced costs and state program information in one PDF.")}{" "}
-        <a href={`/${locale}/full-check`} className="font-medium text-primary underline-offset-2 hover:underline">
+        <a href={publicPath(locale, `/full-check`)} className="font-medium text-primary underline-offset-2 hover:underline">
           {t("chat.result.ctaLink", "Get the full report")}
         </a>
       </p>

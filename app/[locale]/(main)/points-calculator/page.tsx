@@ -10,6 +10,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { calculateAustraliaPoints } from "@/lib/points/calculate-australia-points";
+import { publicPath } from "@/lib/seo/urls";
 import type {
   AgeOption,
   AustralianEmploymentOption,
@@ -412,16 +413,16 @@ export default function PointsCalculatorPage() {
           </CardHeader>
           <CardContent className="flex flex-col gap-3 sm:flex-row sm:flex-wrap">
             <Button asChild>
-              <Link href={`/${locale}/visas/189`}>{content.cta189}</Link>
+              <Link href={publicPath(locale, `/visas/189`)}>{content.cta189}</Link>
             </Button>
             <Button asChild variant="outline">
-              <Link href={`/${locale}/visas/190`}>{content.cta190}</Link>
+              <Link href={publicPath(locale, `/visas/190`)}>{content.cta190}</Link>
             </Button>
             <Button asChild variant="outline">
-              <Link href={`/${locale}/visas/491`}>{content.cta491}</Link>
+              <Link href={publicPath(locale, `/visas/491`)}>{content.cta491}</Link>
             </Button>
             <Button asChild variant="secondary">
-              <Link href={`/${locale}/full-check`}>{content.ctaAgent}</Link>
+              <Link href={publicPath(locale, `/full-check`)}>{content.ctaAgent}</Link>
             </Button>
           </CardContent>
         </Card>

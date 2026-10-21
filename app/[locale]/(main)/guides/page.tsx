@@ -6,6 +6,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import guides from "@/src/data/guides.json";
 import { ResearchGuidesHubSection } from "@/components/guides/research-guides-hub-section";
 import { pageAlternates, publicUrl } from "@/lib/seo/urls";
+import { publicPath } from "@/lib/seo/urls";
 
 // The production origin, not an environment variable: a missing or malformed NEXT_PUBLIC_BASE_URL must not break metadata or point canonicals at localhost.
 const BASE_URL = "https://www.logivisa.com";
@@ -97,7 +98,7 @@ export default async function GuidesIndexPage({ params }: PageProps) {
             const readTime = (g.readTime as number | undefined) ?? 7;
 
             return (
-            <Link key={guide.slug} href={`/${locale}/guides/${guide.slug}`} className="group">
+            <Link key={guide.slug} href={publicPath(locale, `/guides/${guide.slug}`)} className="group">
               <Card className="h-full overflow-hidden rounded-2xl border-slate-200 bg-white transition-all duration-200 hover:-translate-y-1 hover:border-cyan-200 hover:shadow-[0_28px_80px_-50px_rgba(8,145,178,0.6)]">
                 <CardContent className="flex h-full flex-col p-6">
                   <div className="flex items-center justify-between gap-4">

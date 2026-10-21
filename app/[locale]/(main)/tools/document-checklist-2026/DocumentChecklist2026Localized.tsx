@@ -17,6 +17,7 @@ import {
   ArrowLeft,
 } from 'lucide-react'
 import { getChecklistContent, type ChecklistLocale, type VisaSubclass, type ChecklistDoc } from '@/lib/i18n/checklist-content'
+import { publicPath } from "@/lib/seo/urls";
 
 type DocState = {
   checked: boolean
@@ -375,7 +376,7 @@ export function DocumentChecklist2026Localized({ locale, initialVisa }: { locale
     })
   }, [])
 
-  const backHref = `/${locale}/tools/document-checklist-2026`
+  const backHref = publicPath(locale, `/tools/document-checklist-2026`)
 
   if (!selectedVisa) {
     return (
@@ -389,7 +390,7 @@ export function DocumentChecklist2026Localized({ locale, initialVisa }: { locale
             {VISA_ORDER.map((visa) => (
               <Link
                 key={visa}
-                href={`/${locale}/tools/document-checklist-2026/${visa}`}
+                href={publicPath(locale, `/tools/document-checklist-2026/${visa}`)}
                 className="group rounded-sm border-2 border-[#e2e8f0] bg-[#ffffff] p-6 text-left transition-all duration-150 hover:-translate-y-0.5 hover:shadow-sm"
               >
                 <div className="mb-3 text-3xl">📄</div>
@@ -457,7 +458,7 @@ export function DocumentChecklist2026Localized({ locale, initialVisa }: { locale
               <Info className="h-4 w-4 shrink-0" />
               <span className="break-words whitespace-normal">{pack.loginNotice}</span>
             </div>
-            <a href={`/${locale}/sign-in`} className="flex shrink-0 items-center gap-1 rounded border border-[#53917E] px-2 py-1 text-xs font-medium whitespace-nowrap text-[#53917E] transition-colors hover:bg-[#53917E1a]">
+            <a href={publicPath(locale, `/sign-in`)} className="flex shrink-0 items-center gap-1 rounded border border-[#53917E] px-2 py-1 text-xs font-medium whitespace-nowrap text-[#53917E] transition-colors hover:bg-[#53917E1a]">
               <LogIn className="h-3.5 w-3.5" /> {pack.loginButton}
             </a>
           </div>

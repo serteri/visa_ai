@@ -29,6 +29,18 @@ const nextConfig: NextConfig = {
         destination: "/:path*",
         permanent: true,
       },
+      // /guide is an English-only product page. Its /tr and /zh-Hans URLs served the same English page under self-canonicals with hreflang
+      // alternates, which is not localization: they permanently redirect to the one real page until genuinely localized content exists.
+      {
+        source: "/tr/guide",
+        destination: "/guide",
+        permanent: true,
+      },
+      {
+        source: "/zh-Hans/guide",
+        destination: "/guide",
+        permanent: true,
+      },
     ];
   },
 };

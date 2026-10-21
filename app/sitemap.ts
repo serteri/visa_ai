@@ -32,7 +32,7 @@ export function buildSitemap(): MetadataRoute.Sitemap {
     }
   };
 
-  for (const path of ["", "/full-check", "/guide", "/tools/points-calculator", "/tools/anzsco-finder", "/tools/points-calculator/australia", "/tools/skills-assessment", "/tools/visa-comparison", "/tools/state-nomination", "/tools/document-checklist-2026", "/tools/cost-calculator"]) add(path || "/");
+  for (const path of ["", "/full-check", "/tools/points-calculator", "/tools/anzsco-finder", "/tools/points-calculator/australia", "/tools/skills-assessment", "/tools/visa-comparison", "/tools/state-nomination", "/tools/document-checklist-2026", "/tools/cost-calculator"]) add(path || "/");
 
   // The occupation index: overview, one page per ANZSCO major group and per starting letter (only groups / letters that list a page).
   add("/occupations");
@@ -43,6 +43,9 @@ export function buildSitemap(): MetadataRoute.Sitemap {
   for (const p of PAIRS) add(`/tools/visa-comparison/${p.slug}`);
 
   entries.push({ url: publicUrl("en", "/resources/for-migration-professionals") });
+
+  // /guide is a product page that exists in English only: one entry, no hreflang alternates. /tr/guide and /zh-Hans/guide are permanent redirects to it (next.config.ts), so they are not listed.
+  entries.push({ url: publicUrl("en", "/guide") });
 
   // Sprint 2E research guides: English only, so no hreflang alternates and no tr / zh-Hans entries. No lastmod, like the other static pages (the checked date is on the page).
   for (const g of RESEARCH_GUIDES) entries.push({ url: publicUrl("en", `/guides/${g.slug}`) });

@@ -7,6 +7,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { AlertCircle, TrendingUp, BookOpen, ArrowRight } from "lucide-react";
 import { useTranslation } from "@/contexts/language-context";
+import { publicPath } from "@/lib/seo/urls";
 
 type TestType = "ielts" | "pte" | "toefl" | "oet";
 type OetGrade = "A" | "B" | "C+" | "";
@@ -563,7 +564,7 @@ export function EnglishPointsClient({ locale }: { locale: string }) {
             <p className="text-slate-600 dark:text-slate-300">
               {t("ep.ctaText", "Factor in your age, education, and work experience to get your complete visa points score.")}
             </p>
-            <Link href={`/${locale}/tools/points-calculator`}>
+            <Link href={publicPath(locale, `/tools/points-calculator`)}>
               <Button className="bg-[#53917E] hover:bg-[#53917E]/90 dark:bg-[#53917E] dark:hover:bg-[#53917E]/90">
                 {t("ep.ctaButton", "Go to Full Points Calculator")}
                 <ArrowRight className="ml-2 h-4 w-4" />

@@ -6,6 +6,7 @@ import { Menu, X, ChevronDown } from "lucide-react";
 
 import { LanguageSelector } from "@/components/language-selector";
 import { ThemeToggle } from "@/components/ThemeToggle";
+import { publicPath } from "@/lib/seo/urls";
 
 interface LandingHeaderProps {
   locale: string;
@@ -45,7 +46,7 @@ function DropdownMenu({ label, children }: { label: string; children: React.Reac
 function DropdownLink({ href, locale, children }: { href: string; locale: string; children: React.ReactNode }) {
   return (
     <Link
-      href={`/${locale}${href}`}
+      href={publicPath(locale, href)}
       className="block rounded-lg px-4 py-2.5 text-sm text-[var(--cf-cover-muted)] transition-colors hover:bg-[var(--cf-accent-dim)] hover:text-[var(--cf-cover-fg)]"
     >
       {children}
@@ -64,7 +65,7 @@ export function LandingHeader({ locale }: LandingHeaderProps) {
       <div className="mx-auto max-w-7xl rounded-2xl border border-[var(--cf-line)] bg-[var(--cf-bg)]/80 px-4 py-3 shadow-[0_8px_30px_rgb(0,0,0,0.08)] backdrop-blur-md sm:px-6">
         <nav className="flex items-center justify-between">
           {/* Logo */}
-          <Link href={`/${locale}`} className="text-lg font-extrabold tracking-tight text-[var(--cf-fg)]">
+          <Link href={publicPath(locale, "/")} className="text-lg font-extrabold tracking-tight text-[var(--cf-fg)]">
             Logi<span className="text-[var(--cf-accent)]">Visa</span>
           </Link>
 
@@ -96,7 +97,7 @@ export function LandingHeader({ locale }: LandingHeaderProps) {
             <LanguageSelector currentLocale={locale} compact />
             <div className="hidden h-6 w-px bg-[var(--cf-line)] sm:block" />
             <Link
-              href={`/${locale}/full-check`}
+              href={publicPath(locale, `/full-check`)}
               className="hidden whitespace-nowrap rounded-full bg-[var(--cf-accent)] px-4 py-2 text-sm font-semibold text-[var(--cf-bg-deep)] shadow-sm transition-all hover:opacity-90 hover:shadow-md sm:inline-flex"
             >
               {tx("Değerlendirme Başlat", "Start Assessment", "开始评估")}
@@ -118,20 +119,20 @@ export function LandingHeader({ locale }: LandingHeaderProps) {
         {mobileOpen && (
           <div className="mt-3 border-t border-[var(--cf-line)] pt-3 lg:hidden">
             <div className="flex flex-col gap-1">
-              <Link href={`/${locale}/visas/australia`} onClick={() => setMobileOpen(false)} className="rounded-lg px-3 py-2.5 text-sm font-medium text-[var(--cf-muted)] hover:bg-[var(--cf-accent-dim)] hover:text-[var(--cf-accent)]">{tx("Avustralya Vizeleri", "Australia Visas", "澳大利亚签证")}</Link>
-              <Link href={`/${locale}/visas/canada`} onClick={() => setMobileOpen(false)} className="rounded-lg px-3 py-2.5 text-sm font-medium text-[var(--cf-muted)] hover:bg-[var(--cf-accent-dim)] hover:text-[var(--cf-accent)]">{tx("Kanada Vizeleri", "Canada Visas", "加拿大签证")}</Link>
+              <Link href={publicPath(locale, `/visas/australia`)} onClick={() => setMobileOpen(false)} className="rounded-lg px-3 py-2.5 text-sm font-medium text-[var(--cf-muted)] hover:bg-[var(--cf-accent-dim)] hover:text-[var(--cf-accent)]">{tx("Avustralya Vizeleri", "Australia Visas", "澳大利亚签证")}</Link>
+              <Link href={publicPath(locale, `/visas/canada`)} onClick={() => setMobileOpen(false)} className="rounded-lg px-3 py-2.5 text-sm font-medium text-[var(--cf-muted)] hover:bg-[var(--cf-accent-dim)] hover:text-[var(--cf-accent)]">{tx("Kanada Vizeleri", "Canada Visas", "加拿大签证")}</Link>
               <div className="my-1 h-px bg-[var(--cf-line)]" />
-              <Link href={`/${locale}/tools/anzsco-finder`} onClick={() => setMobileOpen(false)} className="rounded-lg px-3 py-2.5 text-sm font-medium text-[var(--cf-muted)] hover:bg-[var(--cf-accent-dim)] hover:text-[var(--cf-accent)]">{tx("Meslek Ara", "Occupation Search", "职业搜索")}</Link>
-              <Link href={`/${locale}/tools/points-calculator`} onClick={() => setMobileOpen(false)} className="rounded-lg px-3 py-2.5 text-sm font-medium text-[var(--cf-muted)] hover:bg-[var(--cf-accent-dim)] hover:text-[var(--cf-accent)]">{tx("Puan Hesapla", "Points Calculator", "积分计算器")}</Link>
-              <Link href={`/${locale}/tools/skills-assessment`} onClick={() => setMobileOpen(false)} className="rounded-lg px-3 py-2.5 text-sm font-medium text-[var(--cf-muted)] hover:bg-[var(--cf-accent-dim)] hover:text-[var(--cf-accent)]">{tx("Beceri Değerlendirme", "Skills Assessment", "技能评估")}</Link>
-              <Link href={`/${locale}/ai-visa-match`} onClick={() => setMobileOpen(false)} className="rounded-lg px-3 py-2.5 text-sm font-semibold text-[var(--cf-accent)]">AI Visa Match ⚡</Link>
+              <Link href={publicPath(locale, `/tools/anzsco-finder`)} onClick={() => setMobileOpen(false)} className="rounded-lg px-3 py-2.5 text-sm font-medium text-[var(--cf-muted)] hover:bg-[var(--cf-accent-dim)] hover:text-[var(--cf-accent)]">{tx("Meslek Ara", "Occupation Search", "职业搜索")}</Link>
+              <Link href={publicPath(locale, `/tools/points-calculator`)} onClick={() => setMobileOpen(false)} className="rounded-lg px-3 py-2.5 text-sm font-medium text-[var(--cf-muted)] hover:bg-[var(--cf-accent-dim)] hover:text-[var(--cf-accent)]">{tx("Puan Hesapla", "Points Calculator", "积分计算器")}</Link>
+              <Link href={publicPath(locale, `/tools/skills-assessment`)} onClick={() => setMobileOpen(false)} className="rounded-lg px-3 py-2.5 text-sm font-medium text-[var(--cf-muted)] hover:bg-[var(--cf-accent-dim)] hover:text-[var(--cf-accent)]">{tx("Beceri Değerlendirme", "Skills Assessment", "技能评估")}</Link>
+              <Link href={publicPath(locale, `/ai-visa-match`)} onClick={() => setMobileOpen(false)} className="rounded-lg px-3 py-2.5 text-sm font-semibold text-[var(--cf-accent)]">AI Visa Match ⚡</Link>
               <div className="my-1 h-px bg-[var(--cf-line)]" />
-              <Link href={`/${locale}/guides`} onClick={() => setMobileOpen(false)} className="rounded-lg px-3 py-2.5 text-sm font-medium text-[var(--cf-muted)] hover:bg-[var(--cf-accent-dim)] hover:text-[var(--cf-accent)]">{tx("Rehberler", "Guides", "指南")}</Link>
-              <Link href={`/${locale}/sample-report`} onClick={() => setMobileOpen(false)} className="rounded-lg px-3 py-2.5 text-sm font-medium text-[var(--cf-muted)] hover:bg-[var(--cf-accent-dim)] hover:text-[var(--cf-accent)]">{tx("Örnek Değerlendirme Raporu", "Sample Assessment Report", "评估报告示例")}</Link>
-              <Link href={`/${locale}/tools/document-checklist-2026`} onClick={() => setMobileOpen(false)} className="rounded-lg px-3 py-2.5 text-sm font-medium text-[var(--cf-muted)] hover:bg-[var(--cf-accent-dim)] hover:text-[var(--cf-accent)]">{tx("Belge Kontrol", "Document Checklist", "文件清单")}</Link>
-              <Link href={`/${locale}/contact`} onClick={() => setMobileOpen(false)} className="rounded-lg px-3 py-2.5 text-sm font-medium text-[var(--cf-muted)] hover:bg-[var(--cf-accent-dim)] hover:text-[var(--cf-accent)]">{tx("İletişim", "Contact", "联系我们")}</Link>
+              <Link href={publicPath(locale, `/guides`)} onClick={() => setMobileOpen(false)} className="rounded-lg px-3 py-2.5 text-sm font-medium text-[var(--cf-muted)] hover:bg-[var(--cf-accent-dim)] hover:text-[var(--cf-accent)]">{tx("Rehberler", "Guides", "指南")}</Link>
+              <Link href={publicPath(locale, `/sample-report`)} onClick={() => setMobileOpen(false)} className="rounded-lg px-3 py-2.5 text-sm font-medium text-[var(--cf-muted)] hover:bg-[var(--cf-accent-dim)] hover:text-[var(--cf-accent)]">{tx("Örnek Değerlendirme Raporu", "Sample Assessment Report", "评估报告示例")}</Link>
+              <Link href={publicPath(locale, `/tools/document-checklist-2026`)} onClick={() => setMobileOpen(false)} className="rounded-lg px-3 py-2.5 text-sm font-medium text-[var(--cf-muted)] hover:bg-[var(--cf-accent-dim)] hover:text-[var(--cf-accent)]">{tx("Belge Kontrol", "Document Checklist", "文件清单")}</Link>
+              <Link href={publicPath(locale, `/contact`)} onClick={() => setMobileOpen(false)} className="rounded-lg px-3 py-2.5 text-sm font-medium text-[var(--cf-muted)] hover:bg-[var(--cf-accent-dim)] hover:text-[var(--cf-accent)]">{tx("İletişim", "Contact", "联系我们")}</Link>
               <div className="my-1 h-px bg-[var(--cf-line)]" />
-              <Link href={`/${locale}/full-check`} onClick={() => setMobileOpen(false)} className="mt-1 rounded-full bg-[var(--cf-accent)] px-4 py-2.5 text-center text-sm font-semibold text-[var(--cf-bg-deep)]">
+              <Link href={publicPath(locale, `/full-check`)} onClick={() => setMobileOpen(false)} className="mt-1 rounded-full bg-[var(--cf-accent)] px-4 py-2.5 text-center text-sm font-semibold text-[var(--cf-bg-deep)]">
                 {tx("Değerlendirme Başlat", "Start Assessment", "开始评估")}
               </Link>
             </div>

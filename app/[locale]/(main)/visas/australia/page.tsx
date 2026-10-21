@@ -5,6 +5,7 @@ import { ArrowRight, Clock } from "lucide-react";
 import visaDetails from "@/src/data/visa-details.json";
 import subclass186 from "@/src/data/visas/subclass-186.json";
 import { pageAlternates } from "@/lib/seo/urls";
+import { publicPath } from "@/lib/seo/urls";
 
 // The production origin, not an environment variable: a missing or malformed NEXT_PUBLIC_BASE_URL must not break metadata or point canonicals at localhost.
 const BASE_URL = "https://www.logivisa.com";
@@ -157,7 +158,7 @@ export default async function AustraliaVisasPage({ params }: PageProps) {
             return (
               <Link
                 key={v.subclass}
-                href={`/${locale}/visas/${v.subclass}`}
+                href={publicPath(locale, `/visas/${v.subclass}`)}
                 className="group flex flex-col justify-between overflow-hidden rounded-2xl border border-gray-200 bg-white p-6 shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-md dark:border-zinc-800 dark:bg-zinc-900"
               >
                 <div>

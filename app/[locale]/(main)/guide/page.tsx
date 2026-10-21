@@ -3,6 +3,7 @@ import { Locale } from "@/lib/i18n/config"
 import { DownloadForm } from "../rehber/DownloadForm"
 import { Metadata } from "next"
 import { getCachedGuideDownloadStats } from "@/lib/cache/public-read-models"
+import { publicUrl } from "@/lib/seo/urls"
 
 export const revalidate = 3600
 
@@ -15,6 +16,8 @@ export async function generateMetadata({
   return {
     title: dictionary.guidePage.title,
     description: dictionary.guidePage.subtitle,
+    // English-only product page: a self-canonical and no hreflang alternates (the layout default would advertise tr / zh-Hans / home URLs).
+    alternates: { canonical: publicUrl("en", "/guide") },
   }
 }
 

@@ -2,6 +2,7 @@ import { pageAlternates, publicUrl, SITE_ORIGIN } from "@/lib/seo/urls";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { ArrowRight, Compass, Shield } from "lucide-react";
+import { publicPath } from "@/lib/seo/urls";
 
 const BASE_URL = SITE_ORIGIN;
 
@@ -93,7 +94,7 @@ export default async function PointsCalculatorHubPage({ params }: PageProps) {
               </p>
             </div>
             <div className="mt-8">
-              <Link href={`/${locale}/tools/points-calculator/australia`}>
+              <Link href={publicPath(locale, `/tools/points-calculator/australia`)}>
                 <button className="flex w-full items-center justify-center gap-2 rounded-sm bg-[#53917E] py-3 text-sm font-semibold text-white shadow-sm transition-all hover:opacity-90">
                   <span>{ctaBtn}</span>
                   <ArrowRight className="h-4 w-4" />
@@ -116,7 +117,7 @@ export default async function PointsCalculatorHubPage({ params }: PageProps) {
               </p>
             </div>
             <div className="mt-8">
-              <Link href={`/${locale}/tools/points-calculator/canada`}>
+              <Link href={publicPath(locale, `/tools/points-calculator/canada`)}>
                 <button className="flex w-full items-center justify-center gap-2 rounded-sm bg-[#53917E] py-3 text-sm font-semibold text-white shadow-sm transition-all hover:opacity-90">
                   <span>{ctaBtn}</span>
                   <ArrowRight className="h-4 w-4" />

@@ -6,6 +6,7 @@ import { LanguageProvider } from "@/contexts/language-context";
 import { getTranslations, t } from "@/lib/i18n/get-translations";
 import type { Locale } from "@/lib/i18n/config";
 import { KnowledgeChatUI } from "@/components/KnowledgeChatUI";
+import { publicPath } from "@/lib/seo/urls";
 
 type PageProps = {
   params: Promise<{ locale: string }>;
@@ -43,7 +44,7 @@ export default async function AiAssistantPage({ params, searchParams }: PageProp
       <div className="min-h-screen bg-background">
         <div className="mx-auto max-w-4xl px-4 pt-6">
           <Link
-            href={`/${locale}`}
+            href={publicPath(locale, "/")}
             className="group inline-flex items-center gap-1.5 rounded-full px-2 py-1 text-sm font-medium text-slate-600 transition-colors hover:bg-[#53917E]/10 hover:text-slate-900"
           >
             <ArrowLeft className="h-4 w-4 transition-transform group-hover:-translate-x-0.5" />

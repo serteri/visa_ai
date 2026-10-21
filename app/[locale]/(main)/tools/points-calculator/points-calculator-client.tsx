@@ -10,6 +10,7 @@ import { trackEvent } from "@/lib/analytics/events";
 import { ResearchLinks } from "@/components/research-links";
 import { researchLinks } from "@/lib/marketing/research-journey";
 import { saveCalculation } from "@/app/[locale]/(main)/dashboard/actions";
+import { publicPath } from "@/lib/seo/urls";
 
 // ─── DHA point tables (values + points only — labels come from translations) ──
 
@@ -870,7 +871,7 @@ export function PointsCalculatorClient({ locale, hideHeader }: { locale: string;
                   {t("pc.insights.hookSubtitle")}
                 </p>
                 <Link
-                  href={`/${locale}/full-check`}
+                  href={publicPath(locale, `/full-check`)}
                   className="group relative z-10 flex w-full items-center justify-center gap-2 rounded-lg bg-[#53917E] px-5 py-4 text-sm font-bold text-white shadow-[0_0_20px_rgba(83,145,126,0.3)] transition-all hover:bg-[#53917E]/90 hover:shadow-[0_0_30px_rgba(83,145,126,0.5)] active:scale-[0.98]"
                 >
                   <span className="relative flex h-3 w-3">

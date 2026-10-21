@@ -10,6 +10,7 @@ import quebecSelectedFederalData from "@/src/data/countries/ca/quebec-selected-s
 import ruralFrancophonePilotsData from "@/src/data/countries/ca/rural-francophone-pilots.json";
 import visaDetails from "@/src/data/visa-details.json";
 import { pageAlternates } from "@/lib/seo/urls";
+import { publicPath } from "@/lib/seo/urls";
 
 // The production origin, not an environment variable: a missing or malformed NEXT_PUBLIC_BASE_URL must not break metadata or point canonicals at localhost.
 const BASE_URL = "https://www.logivisa.com";
@@ -384,7 +385,7 @@ export default async function CanadaVisasPage({ params }: PageProps) {
         {/* Visas Grid */}
         <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
           <Link
-            href={`/${locale}/visas/canada-quebec-business`}
+            href={publicPath(locale, `/visas/canada-quebec-business`)}
             className="group flex flex-col justify-between overflow-hidden rounded-2xl border border-violet-200 bg-violet-50 p-6 shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-md dark:border-violet-700/40 dark:bg-violet-950/20"
           >
             <div>
@@ -438,7 +439,7 @@ export default async function CanadaVisasPage({ params }: PageProps) {
           </Link>
 
           <Link
-            href={`/${locale}/visas/canada-quebec-skilled-workers`}
+            href={publicPath(locale, `/visas/canada-quebec-skilled-workers`)}
             className="group flex flex-col justify-between overflow-hidden rounded-2xl border border-amber-300 bg-amber-50 p-6 shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-md dark:border-amber-700/40 dark:bg-amber-950/20"
           >
             <div>
@@ -488,7 +489,7 @@ export default async function CanadaVisasPage({ params }: PageProps) {
           </Link>
 
           <Link
-            href={`/${locale}/visas/canada-rural-pilot`}
+            href={publicPath(locale, `/visas/canada-rural-pilot`)}
             className="group flex flex-col justify-between overflow-hidden rounded-2xl border border-gray-200 bg-white p-6 shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-md dark:border-zinc-800 dark:bg-zinc-900"
           >
             <div>
@@ -530,7 +531,7 @@ export default async function CanadaVisasPage({ params }: PageProps) {
           </Link>
 
           <Link
-            href={`/${locale}/visas/canada-francophone-pilot`}
+            href={publicPath(locale, `/visas/canada-francophone-pilot`)}
             className="group flex flex-col justify-between overflow-hidden rounded-2xl border border-gray-200 bg-white p-6 shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-md dark:border-zinc-800 dark:bg-zinc-900"
           >
             <div>
@@ -575,7 +576,7 @@ export default async function CanadaVisasPage({ params }: PageProps) {
           </Link>
 
           <Link
-            href={`/${locale}/visas/canada-medical-doctor`}
+            href={publicPath(locale, `/visas/canada-medical-doctor`)}
             className="group flex flex-col justify-between overflow-hidden rounded-2xl border border-gray-200 bg-white p-6 shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-md dark:border-zinc-800 dark:bg-zinc-900"
           >
             <div>
@@ -617,7 +618,7 @@ export default async function CanadaVisasPage({ params }: PageProps) {
           </Link>
 
           <Link 
-            href={`/${locale}/visas/canada-express-entry`}
+            href={publicPath(locale, `/visas/canada-express-entry`)}
             className="group flex flex-col justify-between overflow-hidden rounded-2xl border border-gray-200 bg-white p-6 shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-md dark:border-zinc-800 dark:bg-zinc-900"
           >
             <div>
@@ -665,7 +666,7 @@ export default async function CanadaVisasPage({ params }: PageProps) {
           </Link>
 
           <Link
-            href={`/${locale}/visas/canada-pnp-non-express-entry`}
+            href={publicPath(locale, `/visas/canada-pnp-non-express-entry`)}
             className="group flex flex-col justify-between overflow-hidden rounded-2xl border border-gray-200 bg-white p-6 shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-md dark:border-zinc-800 dark:bg-zinc-900"
           >
             <div>
@@ -710,7 +711,7 @@ export default async function CanadaVisasPage({ params }: PageProps) {
           </Link>
 
           <Link
-            href={`/${locale}/visas/atlantic-immigration-program`}
+            href={publicPath(locale, `/visas/atlantic-immigration-program`)}
             className="group flex flex-col justify-between overflow-hidden rounded-2xl border border-gray-200 bg-white p-6 shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-md dark:border-zinc-800 dark:bg-zinc-900"
           >
             <div>
@@ -752,7 +753,7 @@ export default async function CanadaVisasPage({ params }: PageProps) {
           </Link>
 
           <Link
-            href={`/${locale}/visas/canada-family-sponsorship`}
+            href={publicPath(locale, `/visas/canada-family-sponsorship`)}
             className="group flex flex-col justify-between overflow-hidden rounded-2xl border border-gray-200 bg-white p-6 shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-md dark:border-zinc-800 dark:bg-zinc-900"
           >
             <div>
@@ -790,7 +791,7 @@ export default async function CanadaVisasPage({ params }: PageProps) {
           </Link>
 
           <Link
-            href={`/${locale}/visas/canada-caregivers`}
+            href={publicPath(locale, `/visas/canada-caregivers`)}
             className="group flex flex-col justify-between overflow-hidden rounded-2xl border border-gray-200 bg-white p-6 shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-md dark:border-zinc-800 dark:bg-zinc-900"
           >
             <div>

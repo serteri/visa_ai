@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { publicPath } from "@/lib/seo/urls";
 
 interface LandingFooterProps {
   locale: string;
@@ -23,15 +24,15 @@ export function LandingFooter({ locale }: LandingFooterProps) {
       links: [
         {
           label: isTr ? "Meslek Ara (ANZSCO)" : isZh ? "职业搜索 (ANZSCO)" : "Occupation Search (ANZSCO)",
-          href: `/${locale}/tools/anzsco-finder`,
+          href: publicPath(locale, `/tools/anzsco-finder`),
         },
         {
           label: isTr ? "Puan Hesaplayıcı" : isZh ? "积分计算器" : "Points Calculator",
-          href: `/${locale}/tools/points-calculator/australia`,
+          href: publicPath(locale, `/tools/points-calculator/australia`),
         },
         {
           label: isTr ? "Beceri Değerlendirme" : isZh ? "技能评估" : "Skills Assessment",
-          href: `/${locale}/tools/skills-assessment`,
+          href: publicPath(locale, `/tools/skills-assessment`),
         },
       ],
     },
@@ -40,15 +41,15 @@ export function LandingFooter({ locale }: LandingFooterProps) {
       links: [
         {
           label: isTr ? "Rehberler" : isZh ? "指南" : "Guides",
-          href: `/${locale}/guides`,
+          href: publicPath(locale, `/guides`),
         },
         {
           label: isTr ? "Vizeler" : isZh ? "签证" : "Visas",
-          href: `/${locale}/visas/australia`,
+          href: publicPath(locale, `/visas/australia`),
         },
         {
           label: isTr ? "İletişim" : isZh ? "联系我们" : "Contact",
-          href: `/${locale}/contact`,
+          href: publicPath(locale, `/contact`),
         },
       ],
     },
@@ -57,15 +58,15 @@ export function LandingFooter({ locale }: LandingFooterProps) {
   const legalLinks = [
     {
       label: isTr ? "Kullanım Koşulları" : isZh ? "条款" : "Terms",
-      href: `/${locale}/terms`,
+      href: publicPath(locale, `/terms`),
     },
     {
       label: isTr ? "Yasal Uyarı" : isZh ? "法律声明" : "Legal",
-      href: `/${locale}/legal`,
+      href: publicPath(locale, `/legal`),
     },
     {
       label: isTr ? "Gizlilik" : isZh ? "隐私" : "Privacy",
-      href: `/${locale}/legal`,
+      href: publicPath(locale, `/legal`),
     },
   ];
 

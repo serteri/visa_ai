@@ -6,7 +6,7 @@ import { ArrowLeft } from "lucide-react";
 import guides from "@/src/data/guides.json";
 import { InlineLeadCta } from "../InlineLeadCta";
 import { FinalGuideCta } from "../FinalGuideCta";
-import { pageAlternates, publicUrl } from "@/lib/seo/urls";
+import { pageAlternates, publicPath, publicUrl } from "@/lib/seo/urls";
 import { ResearchGuideView } from "@/components/guides/research-guide-view";
 import { findResearchGuide, RESEARCH_GUIDES } from "@/lib/guides/research-guides";
 
@@ -40,7 +40,8 @@ function renderInline(text: string, locale: string) {
   const parts = text.split(/(\*\*[^*]+\*\*|\[[^\]]+\]\([^\)]+\))/g);
 
   function normalizeHref(rawHref: string) {
-    return rawHref.replace("{locale}", `/${locale}`);
+    // "{locale}/guides/x" in the guide data: English is prefixless, so its placeholder becomes empty.
+    return rawHref.replace("{locale}", locale === "en" ? "" : `/${locale}`);
   }
 
   return (
@@ -215,7 +216,7 @@ export default async function GuideArticlePage({ params }: PageProps) {
       ) : null}
       <article className="mx-auto max-w-3xl px-4 py-12 sm:px-6 lg:px-8">
         <Link
-          href={`/${locale}/guides`}
+          href={publicPath(locale, `/guides`)}
           className="inline-flex items-center gap-2 text-sm font-bold text-cyan-800 transition-colors hover:text-cyan-950"
         >
           <ArrowLeft className="h-4 w-4" />

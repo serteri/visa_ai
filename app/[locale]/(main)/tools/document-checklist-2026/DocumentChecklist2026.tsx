@@ -4,6 +4,7 @@ import { useState, useEffect, useMemo, useCallback } from 'react'
 import { useSession } from 'next-auth/react'
 import Link from 'next/link'
 import { Progress } from '@/components/ui/progress'
+import { publicPath } from "@/lib/seo/urls";
 import {
   ChevronDown, ChevronUp, Printer, AlertCircle, Info,
   Calendar, Stamp, Languages, LogIn, ArrowLeft,
@@ -485,7 +486,7 @@ export function DocumentChecklist2026({ locale, dictionary, initialVisa }: Docum
             {VISA_OPTIONS.map(v => (
               <Link
                 key={v.subclass}
-                href={`/${locale}/tools/document-checklist-2026/${v.subclass}`}
+                href={publicPath(locale, `/tools/document-checklist-2026/${v.subclass}`)}
                 className={`group rounded-lg border-2 ${v.border} ${v.bg} p-6 text-left transition-all duration-150 hover:-translate-y-0.5 hover:shadow-sm`}
               >
                 <div className="text-3xl mb-3">{v.emoji}</div>
@@ -519,7 +520,7 @@ export function DocumentChecklist2026({ locale, dictionary, initialVisa }: Docum
           <div className="flex items-center justify-between mb-2 gap-2">
             <div className="flex items-center gap-2 flex-wrap min-w-0">
               <Link
-                href={`/${locale}/tools/document-checklist-2026`}
+                href={publicPath(locale, `/tools/document-checklist-2026`)}
                 className="flex items-center gap-1 text-sm text-gray-400 hover:text-gray-900 transition-colors shrink-0"
               >
                 <ArrowLeft className="h-4 w-4" />
@@ -574,7 +575,7 @@ export function DocumentChecklist2026({ locale, dictionary, initialVisa }: Docum
               <span>İlerlemeniz tarayıcı hafızasına kaydediliyor. Oturum açarak kalıcı olarak kaydedin.</span>
             </div>
             <a
-              href={`/${locale}/sign-in`}
+              href={publicPath(locale, `/sign-in`)}
               className="flex items-center gap-1 text-xs font-medium text-amber-700 border border-amber-300 rounded px-2 py-1 hover:bg-amber-100 whitespace-nowrap transition-colors shrink-0"
             >
               <LogIn className="h-3.5 w-3.5" /> Giriş Yap
@@ -751,7 +752,7 @@ export function DocumentChecklist2026({ locale, dictionary, initialVisa }: Docum
         {/* Bottom bar */}
         <div className="flex items-center justify-between pt-2 pb-10 print:hidden">
           <Link
-            href={`/${locale}/tools/document-checklist-2026`}
+            href={publicPath(locale, `/tools/document-checklist-2026`)}
             className="flex items-center gap-1 text-sm text-gray-500 hover:text-gray-900 transition-colors"
           >
             <ArrowLeft className="h-4 w-4" /> Farklı vize seç

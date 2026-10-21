@@ -17,6 +17,7 @@ import { FactTable } from "@/components/occupations/fact-tables";
 import { getAdminStateData } from "@/lib/admin-data/loader";
 import { buildVisaFactRows, isFactSubclass } from "@/lib/visas/facts";
 import { researchLinks, researchText, type ResearchLink } from "@/lib/marketing/research-journey";
+import { publicPath } from "@/lib/seo/urls";
 
 type PageProps = {
   params: Promise<{ locale: string; subclass: string }>;
@@ -390,7 +391,7 @@ export default async function VisaSubclassPage({ params }: PageProps) {
         {factSubclass ? <div className="mb-4"><Breadcrumbs locale={locale} crumbs={factCrumbs} /></div> : null}
         <div className="mb-6 flex flex-wrap items-center gap-3">
           <Link
-            href={`/${locale}/visas`}
+            href={publicPath(locale, `/visas`)}
             className="inline-flex items-center gap-2 rounded-full border border-slate-200 bg-white px-4 py-2 text-sm font-semibold text-slate-700 transition-colors hover:bg-slate-50 dark:border-slate-800 dark:bg-slate-900 dark:text-slate-200 dark:hover:bg-slate-800"
           >
             {backToVisasLabel}

@@ -86,7 +86,7 @@ export function VisaComparisonClient({ locale }: { locale: string }) {
           <h2 className="text-base font-bold text-slate-900">{copy.ctaTitle}</h2>
           <p className="mt-1 text-sm text-slate-600">{copy.ctaText}</p>
           <Button asChild className="mt-4 bg-[#53917E] hover:bg-[#53917E]/90">
-            <Link href={`/${locale}/tools/points-calculator`}>{copy.ctaButton}</Link>
+            <Link href={publicPath(locale, `/tools/points-calculator`)}>{copy.ctaButton}</Link>
           </Button>
         </div>
       </section>

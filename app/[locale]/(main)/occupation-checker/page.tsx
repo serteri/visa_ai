@@ -9,6 +9,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { checkOccupation } from "@/lib/occupations/check-occupation";
+import { publicPath } from "@/lib/seo/urls";
 
 export default function OccupationCheckerPage() {
   const params = useParams();
@@ -112,19 +113,19 @@ export default function OccupationCheckerPage() {
           </CardHeader>
           <CardContent className="flex flex-col gap-3 sm:flex-row sm:flex-wrap">
             <Button asChild>
-              <Link href={`/${locale}/visas/189`}>{t("occupationChecker.cta189")}</Link>
+              <Link href={publicPath(locale, `/visas/189`)}>{t("occupationChecker.cta189")}</Link>
             </Button>
             <Button asChild variant="outline">
-              <Link href={`/${locale}/visas/190`}>{t("occupationChecker.cta190")}</Link>
+              <Link href={publicPath(locale, `/visas/190`)}>{t("occupationChecker.cta190")}</Link>
             </Button>
             <Button asChild variant="outline">
-              <Link href={`/${locale}/visas/491`}>{t("occupationChecker.cta491")}</Link>
+              <Link href={publicPath(locale, `/visas/491`)}>{t("occupationChecker.cta491")}</Link>
             </Button>
             <Button asChild variant="secondary">
-              <Link href={`/${locale}/points-calculator`}>{t("occupationChecker.ctaPoints")}</Link>
+              <Link href={publicPath(locale, `/points-calculator`)}>{t("occupationChecker.ctaPoints")}</Link>
             </Button>
             <Button asChild variant="ghost">
-              <Link href={`/${locale}/full-check`}>{t("occupationChecker.ctaAgent")}</Link>
+              <Link href={publicPath(locale, `/full-check`)}>{t("occupationChecker.ctaAgent")}</Link>
             </Button>
           </CardContent>
         </Card>

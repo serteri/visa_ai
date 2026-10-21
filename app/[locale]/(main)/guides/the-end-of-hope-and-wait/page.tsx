@@ -5,6 +5,7 @@ import { ArrowLeft, ArrowRight, Sparkles, AlertTriangle, CheckCircle, Info } fro
 import { LeadMagnetForm } from "@/components/LeadMagnetForm";
 import { Button } from "@/components/ui/button";
 import { pageAlternates, publicUrl } from "@/lib/seo/urls";
+import { publicPath } from "@/lib/seo/urls";
 
 // The production origin, not an environment variable: a missing or malformed NEXT_PUBLIC_BASE_URL must not break metadata or point canonicals at localhost.
 const BASE_URL = "https://www.logivisa.com";
@@ -66,7 +67,7 @@ export default async function HopeAndWaitGuidePage({ params }: PageProps) {
     <main className="min-h-screen bg-white">
       <article className="mx-auto max-w-3xl px-4 py-12 sm:px-6 lg:px-8">
         <Link
-          href={`/${locale}/guides`}
+          href={publicPath(locale, `/guides`)}
           className="inline-flex items-center gap-2 text-sm font-bold text-cyan-800 transition-colors hover:text-cyan-950"
         >
           <ArrowLeft className="h-4 w-4" />
@@ -440,7 +441,7 @@ export default async function HopeAndWaitGuidePage({ params }: PageProps) {
                 size="lg"
                 className="w-full sm:w-auto h-14 rounded-2xl bg-gradient-to-r from-indigo-600 to-purple-600 text-lg font-bold text-white shadow-xl shadow-indigo-500/30 hover:opacity-90"
               >
-                <Link href={`/${locale}/full-check`}>
+                <Link href={publicPath(locale, `/full-check`)}>
                   {tx("Generate My Visa Information Report", "Vize Bilgi Raporumu Oluştur", "生成我的签证信息报告")}
                   <ArrowRight className="ml-2 h-5 w-5" />
                 </Link>
@@ -451,7 +452,7 @@ export default async function HopeAndWaitGuidePage({ params }: PageProps) {
                 size="lg"
                 className="w-full sm:w-auto h-14 rounded-2xl border-slate-300 text-slate-700 text-lg font-bold bg-white/80 hover:bg-slate-100"
               >
-                <Link href={`/${locale}/ai-visa-match`}>
+                <Link href={publicPath(locale, `/ai-visa-match`)}>
                   {tx("Run a Full Audit on My Profile", "Profilime Tam Denetim Yap", "对我的档案运行全面审计")}
                 </Link>
               </Button>
