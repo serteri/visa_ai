@@ -1,0 +1,8 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(git push origin main)",
+      "Bash(git merge --ff-only restore-destination-selector)"
+    ]
+  }
+}
