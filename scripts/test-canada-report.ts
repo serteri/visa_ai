@@ -89,6 +89,7 @@ async function main() {
   check(!/Calculated for you[\s\S]{0,40}Core human capital: total[^\n]*No data available/.test(T) && !/No data available/.test(T), "no empty table cell prints 'No data available'");
   check(!/\b6[05]\b[^\n]*(minimum|threshold)|minimum[^\n]*\b6[05]\b/i.test(T), "no 65-point (or 60) Australian threshold");
   check(!/minimum met|threshold met/i.test(T), "no threshold is ever 'met'");
+  check(/Sources and important notes/.test(T) && !/Sources and advice/.test(T), "the Canada sources section is headed 'Sources and important notes' (not 'advice')");
   check(!/Not priced here/.test(T) && !/CAD 1,590[^\n]*\+ ?CAD 600/.test(T) && /the Right of Permanent Residence Fee is not added again/.test(T), "RPRF is never added on top of CAD 1,590 and is never shown as unpriced");
   check(!/\binvitation (cut-?off|estimate)s?\b[^\n]*\d{3}/i.test(T), "no invitation cut-off estimate is invented");
 

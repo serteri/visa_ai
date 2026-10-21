@@ -88,13 +88,20 @@ async function main() {
     check(!/(valid|geçerli|有效)[^.]{0,30}12 months|12 ay(?:\s|\.)[^.]{0,20}geçerli|chest monitoring|6-12 months longer/i.test(flat), "no universal health-examination validity or chest-monitoring figure");
     check(!/Test Results \(Less than \d+ years old\)|Sınav sonucu \(\d+ yıldan eski olmamalı\)|语言成绩（\d+ 年内）/.test(flat), "the documents table gives no unsourced English-test validity figure");
     check(!/6\+ months validity|en az 6 ay geçerli|有效期至少 6 个月/.test(flat), "no universal passport validity figure");
+    const STATE_FRAMING: Record<string, RegExp> = {
+      en: /The entries below record what the official source stated on the date checked/,
+      tr: /Aşağıdaki kayıtlar, resmî kaynağın kontrol tarihinde ne belirttiğini yansıtır\. Programın güncel durumuna ilişkin bir beyan olarak okunmamalıdır\./,
+      "zh-Hans": /以下条目记录的是官方来源在核对日期当天的表述，不应被视为对项目当前状态的说明。/,
+    };
+    check(STATE_FRAMING[r.locale].test(flat), `${r.locale}: the state-framing sentence is in the report's own language`);
+    if (r.locale !== "en") check(!/The entries below record|date checked, and is not a statement of current status/.test(flat), `${r.locale}: no English state-framing sentence`);
     if (r.locale === "en") {
       check(/vary by issuing authority and country/.test(flat), "police-certificate timing is stated neutrally (varies by authority and country)");
       check(/Valid passport \/ travel document, subject to the requirements applying to the application/.test(flat), "the passport line is neutral");
       check(/as recorded in the source checked on \d{1,2} \w+ \d{4}/.test(flat) && /Program status \(source checked \d{1,2} \w+ \d{4}\)/.test(flat), "state conditions and status are tied to the date the source was checked");
       check(!/is scheduled for|has not yet been confirmed/.test(flat) && /was recorded as scheduled for/.test(flat), "a scheduled round in a dated source is not written as a current upcoming event");
       check(!/\b1 further published details?\b[^.]*\bare listed/.test(flat), "'1 further published detail' agrees in number");
-      check(/each entry records what the source said on the date checked/.test(flat), "the state section says entries record the source as checked, not current status");
+      check(/The entries below record what the official source stated on the date checked\. They should not be read as a statement of current program status\./.test(flat), "the state section says entries record the source as checked, not current status");
     }
     if (r.locale === "en") {
       check(/Checked/.test(t) && /\d{1,2} (January|February|March|April|May|June|July|August|September|October|November|December) \d{4}/.test(t), "sources show long checked dates");

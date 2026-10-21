@@ -17,7 +17,7 @@ export function reportSectionTitle(id: ReportSectionId, l: Locale, country: "AU"
       case "costs":
         return T(l, "Costs and fees", "Maliyetler ve ücretler", "费用");
       case "sources":
-        return T(l, "Sources and advice", "Kaynaklar ve danışmanlık", "来源与咨询");
+        return T(l, "Sources and important notes", "Kaynaklar ve önemli notlar", "来源与重要说明");
       default:
         break;
     }
