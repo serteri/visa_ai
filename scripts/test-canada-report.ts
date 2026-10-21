@@ -17,6 +17,7 @@ import { renderCountrySamples } from "./render-country-samples";
 import { CA_SAMPLE_PROFILE } from "./render-country-samples";
 import { buildReportView } from "../lib/reports/report-view";
 import { sectionStrings } from "../lib/reports/report-blocks";
+import { BANNED_INFORMATION_PAGE_PHRASES } from "../lib/seo/banned-phrases";
 import { SAMPLE_APPLICANT_NAME } from "../lib/reports/sample";
 import type { ReadinessReport } from "../lib/readiness/types";
 
@@ -86,14 +87,21 @@ async function main() {
   ] as const) check(re.test(T), `has ${what}`);
   check(!/Calculated for you[\s\S]{0,40}Core human capital: total[^\n]*No data available/.test(T) && !/No data available/.test(T), "no empty table cell prints 'No data available'");
   check(!/\b6[05]\b[^\n]*(minimum|threshold)|minimum[^\n]*\b6[05]\b/i.test(T), "no 65-point (or 60) Australian threshold");
-  check(/partial figure/.test(T) && !/minimum met|threshold met/i.test(T), "the partial CRS figure is labelled partial and never 'met'");
+  check(!/minimum met|threshold met/i.test(T), "no threshold is ever 'met'");
   check(!/\binvitation (cut-?off|estimate)s?\b[^\n]*\d{3}/i.test(T), "no invitation cut-off estimate is invented");
 
-  console.log("\n2. the Canada report in Turkish and Chinese");
+  console.log("\n2. the Canada report is English-only: no part-translated paid report (tr / zh-Hans)");
   for (const r of [pick("ca", "tr"), pick("ca", "zh-Hans")]) {
     for (const [name, re] of AUSTRALIAN) check(hits(r.text, re).length === 0, `${r.locale}: no ${name}`, hits(r.text, re).join(" | "));
-    check(/(Provincial Nominee|省提名)/.test(r.text) && /IRCC/.test(r.text) && /(RCIC)/.test(r.text), `${r.locale}: Canadian programs, IRCC and the RCIC disclaimer are present`);
+    check(r.text === T, `${r.locale}: the Canada PDF text is identical to the English one (the whole report is English)`, `${r.text.length} vs ${T.length} characters`);
+    check(!/[\u3400-\u9fff]/.test(r.text) && !/[ğĞşŞıİ]/.test(r.text), `${r.locale}: no Chinese characters and no Turkish letters anywhere in the PDF`);
+    check(/Professional summary/.test(r.text) && !/Profesyonel özet|专业摘要|Kanada Göçmenlik|加拿大移民信息报告/.test(r.text), `${r.locale}: the headings are the English ones`);
   }
+  check(!/lib\/reports\/canada\/locale/.test("") && /CANADA_REPORT_LOCALE/.test(readFileSync("lib/readiness/generate-pdf.ts", "utf8")), "the PDF route forces the Canada report's language");
+  const step1src = readFileSync("app/[locale]/(main)/full-check/step-1-personal.tsx", "utf8");
+  check(/data-testid="canada-english-only"/.test(step1src) && /CANADA_ENGLISH_ONLY_NOTICE/.test(step1src), "the Assessment says the Canada report is English when Canada is chosen in another language");
+  const loc = await import("../lib/reports/canada/locale");
+  check(loc.CANADA_ENGLISH_ONLY_NOTICE.tr.length > 20 && loc.CANADA_ENGLISH_ONLY_NOTICE["zh-Hans"].length > 10 && JSON.stringify(loc.CANADA_REPORT_LOCALES) === '["en"]', "the notice exists in tr and zh-Hans; the Canada report's languages are [en]");
 
   console.log("\n3. the Canada report's sections (the view the PDF draws)");
   const view = buildReportView({ report: ca.report as ReadinessReport, locale: "en", profile: { name: SAMPLE_APPLICANT_NAME, occupation: "Software developers and programmers", occupationRaw: "Software developers and programmers (21232)", preferredPathway: CA_SAMPLE_PROFILE.preferredPathway }, dateText: "" });
@@ -122,7 +130,50 @@ async function main() {
     check(text.includes(SAMPLE_APPLICANT_NAME) && text.includes("SAMPLE-REPORT") && !/@(?!logivisa)/.test(text.replace(/hello@logivisa\.com/g, "")), `${label}: Sample Applicant, SAMPLE-REPORT, no personal e-mail`);
   }
 
-  console.log("\n6. wiring");
+  console.log("\n6. the CRS in the rendered report");
+  const PT = pick("ca-partial", "en").text;
+  check(/CRS score calculated from your answers/.test(T) && /calculated CRS score of 507/.test(T) && /507 of 1200/.test(T), "every CRS question answered: the report states a calculated CRS score (507 of 1200)");
+  check(!/No CRS score is shown/.test(T) && !/partial figure/.test(T), "...and carries no partial-figure wording");
+  check(/No CRS score is shown/.test(PT) && /not a CRS score and not an estimate of one/.test(PT) && /Factors not calculated/.test(PT), "a CRS question not answered: 'No CRS score is shown', the partial sum is 'not a CRS score', and the factors not calculated are listed");
+  check(!/CRS score calculated from your answers/.test(PT) && !/calculated CRS score of/.test(PT) && !/ of 1200\b/.test(PT.replace(/published maximum of 1200/g, "")), "...and nowhere claims a CRS score");
+  check(/Canadian work experience/.test(PT) && /Skill transferability factors/.test(PT), "...naming the factors that depend on the missing answers");
+  check(!/Not applicable until age and language/.test(T + PT), "no stale 'age and language only' wording");
+
+  console.log("\n7. provincial coverage wording");
+  for (const [name, text] of [["complete", T], ["partial", PT]] as const) {
+    check(/Programs currently covered in LogiVisa's verified data/.test(text) && /not included in the current dataset/.test(text), `${name}: the section says what is covered and that other provinces and territories are not included`);
+    check(/not a complete list of Canada's provincial and territorial programs/.test(text), `${name}: it says it is not a complete list`);
+    check(!/\ball (provinces|provincial)\b|every province|across Canada/i.test(text), `${name}: nothing implies Canada-wide coverage`);
+  }
+  check(!/eligibility results below/i.test(T), "no wording that refers to results this report does not contain");
+
+  console.log("\n8. official source URLs for AIP and Family Sponsorship");
+  const details = (await import("../src/data/visa-details.json")).default as Array<Record<string, unknown>>;
+  const AIP_URL = "https://www.canada.ca/en/immigration-refugees-citizenship/services/immigrate-canada/atlantic-immigration.html";
+  const FAMILY_URL = "https://www.canada.ca/en/immigration-refugees-citizenship/services/immigrate-canada/family-sponsorship/spouse-partner-children.html";
+  const aipEntries = details.filter((d) => d.id === "canada-atlantic-immigration-program");
+  const famEntries = details.filter((d) => d.id === "canada-family-sponsorship");
+  check(aipEntries.length > 0 && aipEntries.every((d) => d.officialUrl === AIP_URL), "every Atlantic Immigration Program record carries the exact IRCC program URL");
+  check(famEntries.length === 1 && famEntries[0].officialUrl === FAMILY_URL, "the Family Sponsorship record carries the exact IRCC program URL");
+  for (const u of [AIP_URL, FAMILY_URL]) {
+    const url = new URL(u);
+    check(url.protocol === "https:" && url.hostname === "www.canada.ca" && url.pathname.startsWith("/en/immigration-refugees-citizenship/services/immigrate-canada/") && url.pathname !== "/en/immigration-refugees-citizenship.html", `${u.split("immigrate-canada/")[1]}: an https www.canada.ca IRCC program page, not the IRCC home page`);
+  }
+  const flat = T.replace(/\s+/g, ""); // the PDF wraps long URLs across lines
+  check(flat.includes(`Officialsource${AIP_URL}`), "the report's Atlantic Immigration Program block cites the exact program URL");
+  check(flat.includes(`Officialsource${FAMILY_URL}`), "the report's Family Sponsorship block cites the exact program URL");
+  check(flat.split(AIP_URL).length > 2 && flat.split(FAMILY_URL).length > 2, "both URLs appear twice: in the program block and in the Sources table");
+  check(!/Officialsourcehttps:\/\/www\.canada\.ca\/en\/immigration-refugees-citizenship\.html/.test(flat), "no program block cites the IRCC home page");
+  const builderSrc = readFileSync("lib/reports/canada/build-canada-view.ts", "utf8");
+  check(!/https:\/\/www\.canada\.ca\/en\/immigration-refugees-citizenship\.html/.test(builderSrc) && !builderSrc.includes(AIP_URL) && !builderSrc.includes(FAMILY_URL), "the URLs live in the program data, not in the report model");
+
+  console.log("\n9. banned wording in the authored Canada sections");
+  const authored = view.sections.filter((s) => ["summary", "details", "points"].includes(s.id)).flatMap(sectionStrings).join("\n");
+  const banned = BANNED_INFORMATION_PAGE_PHRASES.filter((p) => p.re.test(authored)).map((p) => p.id);
+  check(banned.length === 0, "no eligibility, recommendation, chance or directive wording in the Canada summary, applicant information or CRS sections", banned.join(", "));
+  check(!/\b(likely|suitable|strongest|recommended|virtually guarantees|you should|you must)\b/i.test(T) && !/\b(you are|you may be) (not )?eligible\b/i.test(T), "no outcome language anywhere in the Canada PDF (a province's published condition may say who is not eligible; the report never says it of the applicant)");
+
+  console.log("\n10. wiring");
   const pdf = readFileSync("lib/readiness/generate-pdf.ts", "utf8");
   check(/const useRestructuredReport = !report\.partnerSponsorshipAssessment;/.test(pdf), "the PDF route draws a Canada report from the country model, not the old advisory flow");
   const view2 = readFileSync("lib/reports/report-view.ts", "utf8");

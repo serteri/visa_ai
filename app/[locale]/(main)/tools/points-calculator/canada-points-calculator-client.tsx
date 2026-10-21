@@ -47,8 +47,9 @@ const EDUCATION_OPTIONS = [
 
 const CLB_OPTIONS = [
   { value: "not_selected", label: "Select your score" },
-  { value: "less_than_CLB4", label: "CLB 4 or less" },
-  { value: "CLB_4_5", label: "CLB 5" },
+  { value: "less_than_CLB4", label: "CLB 3 or less" },
+  { value: "CLB_4", label: "CLB 4" },
+  { value: "CLB_5", label: "CLB 5" },
   { value: "CLB_6", label: "CLB 6" },
   { value: "CLB_7", label: "CLB 7" },
   { value: "CLB_8", label: "CLB 8" },
@@ -411,7 +412,7 @@ export function CanadaPointsCalculatorClient({ locale }: { locale: string }) {
             <Section step={5} title={isTr ? "İkinci Dil (Opsiyonel)" : isZh ? "第二外语（选填）" : "Second Language"}>
               <SelectField
                 id="secondLanguageBand"
-                label="Second official language test band (if any)"
+                label="Second official language level (applied to all four abilities; leave at the lowest option if none)"
                 options={SECOND_LANG_OPTIONS}
                 value={form.secondLanguageBand}
                 onChange={(v) => setField("secondLanguageBand", v)}
@@ -500,6 +501,9 @@ export function CanadaPointsCalculatorClient({ locale }: { locale: string }) {
                     <ScoreRow label="Canadian work experience" pts={calc.breakdown.coreHumanCapital.canadianWorkExperience} />
                   </div>
                   <ScoreRow label="B. Spouse / Common-Law Partner Factors" pts={calc.breakdown.spouseFactors.total} />
+                  {calc.notCalculated.includes("spouseOrPartnerFactors") && (
+                    <p className="text-xs text-amber-700" data-testid="crs-spouse-not-calculated">The spouse or partner factors (up to 40 points) are not calculated by this tool, so the total below is partial. Use IRCC&apos;s official calculator for the full score.</p>
+                  )}
                   <ScoreRow label="C. Skill Transferability (Max 100)" pts={calc.breakdown.skillTransferability.total} />
                   <ScoreRow label="D. Additional Points (Max 600)" pts={calc.breakdown.additionalPoints.total} />
                 </div>

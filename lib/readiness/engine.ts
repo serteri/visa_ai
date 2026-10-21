@@ -78,6 +78,7 @@ import { buildPointsActionPlan } from "@/lib/readiness/points-actions";
 import { isEnglishAtMaximum, parseEnglishOption } from "@/lib/points/parse-english";
 import { calculateCanadaCRS } from "@/lib/points/calculate-canada-crs";
 import type { CanadaCRSInput, CLBLevel } from "@/lib/points/canada-types";
+import { assessCanadaCrs, blankCanadaCrsEntry, isCanadaCrsEntry } from "@/lib/points/canada-crs-intake";
 import type { PartnerOption } from "@/lib/points/types";
 import type {
   AgeOption,
@@ -3465,6 +3466,7 @@ function buildCanadaPointsEstimate(input: ReadinessInput, locale: Locale): Point
       appliesTo: ["CEC", "FSW", "FSTP"],
       estimatedPoints: undefined,
       breakdown: [],
+      crs: { status: "none" as const, calculated: [], notCalculated: [], configVersion: expressEntryConfig.lastVerified, entered: [] },
       note: isTr
         ? "CRS tahmini için yaş ve İngilizce seviyesi sağlanmadı. Puan hesaplaması mevcut değil."
         : "Age and English level were not provided. A CRS estimate is not available.",
@@ -3473,51 +3475,45 @@ function buildCanadaPointsEstimate(input: ReadinessInput, locale: Locale): Point
     };
   }
 
-  const clb = englishOptionToClb(englishOption);
-  const result = calculateCanadaCRS({
-    hasSpouseOrPartner: false,
-    age: ageBracket ?? "20_29",
-    education: "less_than_secondary",
-    firstLanguageAbilityScores: { speaking: clb, listening: clb, reading: clb, writing: clb },
-    secondLanguageBand: "none",
-    canadianWorkExperience: "none_or_less_than_1yr",
-    postSecondaryCredentialCount: "none",
-    foreignWorkExperienceYears: "none",
-    hasCertificateOfQualification: false,
-    hasSiblingInCanada: false,
-    frenchAbility: "none",
-    canadianPostSecondaryCredentialYears: "none",
-    hasProvincialNomination: false,
+  // The CRS from the Assessment's Canada answers (lib/points/canada-crs-intake.ts). A report stored before those questions existed has only
+  // age, a single English level and marital status: they are read as the same four-ability answers, and every other factor stays not calculated.
+  const stored = isCanadaCrsEntry(input.canadaCrs) ? input.canadaCrs : undefined;
+  const legacyClb = englishOption ? englishOptionToClb(englishOption) : undefined;
+  const sponsor = (input.sponsorOrFamily ?? "").toLowerCase();
+  const legacyEntry = stored ?? {
+    ...blankCanadaCrsEntry(),
+    spouse: sponsor.startsWith("single") ? "no" : sponsor.startsWith("spouse") ? "yes" : "",
+    firstLanguage: legacyClb ? { speaking: legacyClb, listening: legacyClb, reading: legacyClb, writing: legacyClb } : blankCanadaCrsEntry().firstLanguage,
+  };
+  const assessment = assessCanadaCrs({
+    entry: legacyEntry,
+    age: input.age,
+    canadianWorkYears: input.onshoreExperienceYears === undefined ? undefined : Number(input.onshoreExperienceYears),
+    foreignWorkYears: input.offshoreExperienceYears === undefined ? undefined : Number(input.offshoreExperienceYears),
   });
 
-  const breakdown = [
-    ageBracket
-      ? {
-          label: isTr ? "Yaş puanı" : "Age points",
-          points: result.breakdown.coreHumanCapital.age,
-          note: input.age,
-        }
-      : null,
-    englishOption
-      ? {
-          label: isTr ? "İngilizce seviyesi puanı (CLB tahmini)" : "English level points (estimated CLB)",
-          points: result.breakdown.coreHumanCapital.firstLanguage,
-          note: input.englishLevel,
-        }
-      : null,
-  ].filter((item): item is NonNullable<typeof item> => Boolean(item));
-
-  const estimatedPoints = breakdown.reduce((sum, item) => sum + item.points, 0);
-
-  const note = isTr
-    ? `Bu yalnızca yaş${ageBracket ? "" : " (belirtilmedi)"} ve İngilizce seviyesine${englishOption ? "" : " (belirtilmedi)"} dayalı kısmi bir CRS tahminidir (config v${result.configVersion}). Eğitim, Kanada/yurt dışı iş tecrübesi, eş faktörleri ve ek puanlar dahil değildir. Gerçek CRS puanınız IRCC'nin resmi Express Entry hesaplayıcısıyla doğrulanmalıdır.`
-    : `This is a partial CRS estimate (config v${result.configVersion}) based on age${ageBracket ? "" : " (not provided)"} and English level${englishOption ? "" : " (not provided)"} only. Education, Canadian/foreign work experience, spouse factors, and additional points are not included. Verify your actual CRS score against IRCC's official Express Entry calculator.`;
+  const breakdown = assessment.calculated.map((f) => ({ label: f.label, points: f.points }));
+  const crs = {
+    status: assessment.status,
+    ...(assessment.total !== undefined ? { total: assessment.total } : {}),
+    ...(assessment.partialSum !== undefined ? { partialSum: assessment.partialSum } : {}),
+    calculated: assessment.calculated,
+    notCalculated: assessment.notCalculated,
+    configVersion: assessment.configVersion,
+    entered: assessment.entered,
+  };
+  const names = assessment.notCalculated.map((f) => f.label.toLowerCase()).join(", ");
+  const note = assessment.status === "complete"
+    ? `CRS score calculated from your answers under the published IRCC criteria (config v${assessment.configVersion}). Verify it with IRCC's official Express Entry calculator before relying on it.`
+    : `Not a CRS score. These factors could not be calculated from the information entered: ${names}. The sum of the factors that were calculated is shown for reference only (config v${assessment.configVersion}).`;
 
   return {
     appliesTo: ["CEC", "FSW", "FSTP"],
-    estimatedPoints,
+    // The shared score field carries a value ONLY for a complete CRS; a partial sum is never reported as the score.
+    estimatedPoints: assessment.status === "complete" ? assessment.total : undefined,
     breakdown,
     note,
+    crs,
     isEoiEligible,
     eoiIneligibilityReason,
   };
@@ -7204,7 +7200,8 @@ export function runReadinessEngine(input: ReadinessInput): ReadinessReport {
 }
 
 function runReadinessEngineInternal(input: ReadinessInput): ReadinessReport {
-  if (input.country === "CA") return runCanadaReadinessEngine(input);
+  // The Canada report is English-only in this release (lib/reports/canada/locale.ts): its supplied facts and every text are built in English.
+  if (input.country === "CA") return runCanadaReadinessEngine({ ...input, locale: "en" });
 
   if (isPartnerFamilySponsorship(input.preferredPathway)) {
     return buildPartnerReadinessReport(input, "AU");

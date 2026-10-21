@@ -13,7 +13,7 @@ type Locale = "en" | "tr" | "zh-Hans";
 
 /** One neutral line per section of the Visa Information Report: what it lists, nothing it concludes. */
 const SECTION_NOTE: Record<ReportSectionId, [string, string, string]> = {
-  provinces: ["Provincial and territorial program streams as published, with the date checked", "Yayımlanmış eyalet ve bölge program akışları, kontrol tarihiyle", "各省和地区项目通道（按公布内容，含核对日期）"],
+  provinces: ["Ontario, British Columbia and Alberta streams and Quebec's federal stage, as held in our verified data (other provinces and territories are not included)", "Doğrulanmış verilerimizdeki Ontario, British Columbia ve Alberta akışları ile Quebec'in federal aşaması (diğer eyalet ve bölgeler dahil değildir)", "我们已核实数据中的安大略省、不列颠哥伦比亚省和阿尔伯塔省通道及魁北克联邦阶段（不含其他省和地区）"],
   summary: ["What was entered, what was not, the published areas covered and what remains to be verified", "Nelerin girildiği, nelerin girilmediği, kapsanan yayımlanmış alanlar ve doğrulanması gerekenler", "已填写与未填写的内容、涵盖的公开数据领域及有待核实的事项"],
   pointsExamples: ["Arithmetic examples using published points-table values only", "Yalnızca yayımlanmış puan tablosu değerleriyle aritmetik örnekler", "仅使用已公布积分表数值的算术示例"],
   stateDetail: ["Further published detail for each state and territory", "Her eyalet ve bölge için ek yayımlanmış ayrıntılar", "各州和领地的补充已公布细节"],

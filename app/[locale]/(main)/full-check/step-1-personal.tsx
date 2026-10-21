@@ -14,6 +14,7 @@ function ErrorText({ message }: { message?: string }) {
   if (!message) return null;
   return <p className="text-xs text-red-600">{message}</p>;
 }
+import { CANADA_ENGLISH_ONLY_NOTICE } from "@/lib/reports/canada/locale";
 import { isPartnerFamilySponsorship, activeCountries, countryLabels, countryVisaPathways, migrationGoalOptions, getVisaSubclassesForGoals, type SupportedCountry, type MigrationGoalId } from "@/lib/countries";
 import { TARGET_VISAS, targetVisaOption } from "@/lib/readiness/target-visa";
 import { renderVisaPathwayOptions } from "./full-check-waitlist-form";
@@ -127,6 +128,9 @@ export function Step1Personal({
         />
         <input id="waitlist-target-country" type="hidden" name="targetCountry" value={destination} />
         {fieldErrors?.["waitlist-target-country"] && <p className="text-xs text-red-600">{fieldErrors["waitlist-target-country"]}</p>}
+        {destination === "CA" && locale !== "en" && (
+          <p className="text-xs text-slate-700" data-testid="canada-english-only">{CANADA_ENGLISH_ONLY_NOTICE[locale === "tr" ? "tr" : "zh-Hans"]}</p>
+        )}
         {destination === "CA" && !canadaReportEnabled && (
           <p className="text-xs text-slate-500" data-testid="canada-unavailable">
             {txt("Kanada raporları beta döneminde kullanılamıyor.", "Canada reports are not available during the beta.", "测试期间暂不提供加拿大报告。")}

@@ -45,6 +45,8 @@
     "test:canada-flag": "tsx scripts/test-canada-flag.ts",
     "test:destination-selector": "tsx scripts/test-destination-selector.ts",
     "test:canada-report": "tsx scripts/test-canada-report.ts",
+    "test:canada-crs": "tsx scripts/test-canada-crs.ts",
+    "test:canada-assessment-submit": "tsx scripts/test-canada-assessment-submit.ts",
     "samples:country": "tsx scripts/render-country-samples.ts",
     "test:target-visa": "tsx scripts/test-target-visa.ts",
     "test:lead-magnets": "tsx scripts/test-lead-magnets.ts",

@@ -45,9 +45,15 @@ export type CanadaSpouseEducationLevel =
   | "masters_or_professional"
   | "doctoral";
 
+/**
+ * A first-official-language result per ability. CLB 4 and CLB 5 score the same core points (the published table row is "CLB 4 or 5") but differ for
+ * the certificate-of-qualification rule (CLB 5 or more), so they are separate values; "CLB_4_5" is the older combined value, read as CLB 5.
+ */
 export type CLBLevel =
   | "not_selected"
   | "less_than_CLB4"
+  | "CLB_4"
+  | "CLB_5"
   | "CLB_4_5"
   | "CLB_6"
   | "CLB_7"
@@ -83,12 +89,16 @@ export type CanadaCRSInput = {
     reading: CLBLevel;
     writing: CLBLevel;
   };
+  /** Older single value: the same band for all four abilities. Ignored when secondLanguageAbilityScores is given. */
   secondLanguageBand: SecondLanguageCLBBand | "none";
+  /** Second official language per ability (points are per ability: 1 / 3 / 6, capped at 24, or 22 with a spouse or partner). */
+  secondLanguageAbilityScores?: { speaking: SecondLanguageCLBBand | "none"; listening: SecondLanguageCLBBand | "none"; reading: SecondLanguageCLBBand | "none"; writing: SecondLanguageCLBBand | "none" };
   canadianWorkExperience: CanadianWorkExperienceYears;
 
   spouse?: {
     education: CanadaSpouseEducationLevel;
-    firstLanguageAbilityScores: { speaking: number; listening: number; reading: number; writing: number };
+    /** The spouse or partner's first official language per ability, as CLB levels (points per ability: 1 / 3 / 5, capped at 20). */
+    firstLanguageAbilityScores: { speaking: CLBLevel; listening: CLBLevel; reading: CLBLevel; writing: CLBLevel };
     canadianWorkExperience: SpouseCanadianWorkExperienceYears;
   };
 
@@ -134,6 +144,8 @@ export type CanadaCRSBreakdown = {
 };
 
 export type CanadaCRSResult = {
+  /** Factors the calculator could not score from this input (for example a spouse or partner whose details were not given). Empty = every factor was scored. */
+  notCalculated: string[];
   configVersion: string;
   totalScore: number;
   maxScore: number;

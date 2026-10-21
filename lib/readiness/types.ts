@@ -78,6 +78,8 @@ export type ReadinessInput = {
   isLabourAgreementEmployer?: boolean;
   /** Official NOC 2021 V1.0 unit group code (5 digits), set when user picks from autocomplete. */
   nocCode?: string;
+  /** Canada only: the answers to the Comprehensive Ranking System questions (lib/points/canada-crs-intake.ts). */
+  canadaCrs?: import("@/lib/points/canada-crs-intake").CanadaCrsEntry;
   /** TEER level (0–5) derived from the selected NOC code. */
   nocTeer?: number;
   /**
@@ -212,9 +214,25 @@ export type PointsBreakdownItem = {
   note?: string;
 };
 
+/** Canada only: what could be calculated of the Comprehensive Ranking System score (lib/points/canada-crs-intake.ts). */
+export type CanadaCrsSummary = {
+  /** complete: every factor was answered, so estimatedPoints is the calculated CRS score; partial: some factor was not answered (partialSum is NOT a CRS score); none: nothing could be calculated. */
+  status: "complete" | "partial" | "none";
+  total?: number;
+  partialSum?: number;
+  calculated: Array<{ id: string; label: string; points: number }>;
+  notCalculated: Array<{ id: string; label: string }>;
+  configVersion: string;
+  /** The answers entered, as label / value pairs. */
+  entered: Array<{ label: string; value: string }>;
+};
+
 export type PointsEstimate = {
   appliesTo: string[];
+  /** Canada: set ONLY when the CRS score is complete (see crs). */
   estimatedPoints?: number;
+  /** Canada only. */
+  crs?: CanadaCrsSummary;
   breakdown: PointsBreakdownItem[];
   note: string;
   /** One-line note about occupation/skills-assessment status, shown under the breakdown table -- occupation itself does not carry points-table score, so it's kept out of the scored breakdown array but still needs surfacing. */

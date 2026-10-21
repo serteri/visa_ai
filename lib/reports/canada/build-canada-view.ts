@@ -8,15 +8,15 @@
  */
 import { countryName, toPassportLocale } from "@/lib/intake/passport";
 import { getResourcesSection } from "@/lib/readiness/pdf-content/resources";
-import { ontarioStreamsIntroText, bcStreamsIntroText, albertaStreamsIntroText } from "@/lib/readiness/pnp-provinces";
 import type { Locale } from "@/lib/readiness/types";
 import type { ReportView, ReportViewArgs } from "@/lib/reports/report-view";
 import type { Block, ReportSection } from "../report-blocks";
 import { canadaDisclaimer } from "./disclaimer";
+import { CANADA_REPORT_LOCALE } from "./locale";
 import { longDate } from "../public-sources";
 import { reportSectionTitle } from "../report-section-titles";
 import { T, statusLabel, tagsFor, type RequirementStatus } from "../report-text";
-import { CA_PROGRAM_ORDER, EE, PNP, PROVINCES, PROVINCIAL_FEES, QC_FEDERAL, caVisaDetail, nocFromOccupation, selectedCaPrograms, type CaProgramKey } from "./data";
+import { CA_PROGRAM_ORDER, EE, PNP, PROVINCE_NOTES, PROVINCES, PROVINCIAL_FEES, QC_FEDERAL, caVisaDetail, nocFromOccupation, selectedCaPrograms, type CaProgramKey } from "./data";
 
 const table = (headers: string[], rows: string[][], widths: number[]): Block => ({ kind: "table", headers, rows, widths });
 const cad = (n: number) => `CAD ${n.toLocaleString("en-CA")}`;
@@ -36,23 +36,39 @@ const programName = (k: CaProgramKey, l: Locale) => T(l, ...PROGRAM_NAME[k]);
 const teerLabel = (s: string) => s.replace(/^TEER_(\d)_(\d)$/, "TEER $1–$2").replace(/_/g, " ");
 
 export function buildCanadaReportView(args: ReportViewArgs): ReportView {
-  const { report, locale: l, profile, dateText } = args;
+  const { report, profile, dateText } = args;
+  // Release decision: the Canada Assessment and report are English-only (lib/reports/canada/locale.ts), so a PDF is never part Turkish or Chinese
+  // and part English; the labels below keep their tr / zh-Hans text for when the Canada data is localised.
+  const l: Locale = CANADA_REPORT_LOCALE;
   const tags = tagsFor(l);
   const eeChecked = longDate(EE.lastVerified, l);
   const pnpChecked = longDate(PNP.lastVerified, l);
   const programs = selectedCaPrograms(profile.preferredPathway);
   const ordered = [...programs, ...CA_PROGRAM_ORDER.filter((k) => !programs.includes(k))];
 
-  const factList = (report.suppliedFacts ?? []).filter((f) => ["occupation", "age", "englishLevel", "qualificationLevel", "currentCountry", "passportCountry"].includes(f.field));
+  const factList = (report.suppliedFacts ?? []).filter((f) => ["occupation", "age", "englishLevel", "qualificationLevel", "currentCountry", "passportCountry", "offshoreExperienceYears", "onshoreExperienceYears", "qualificationAwardedInAustralia"].includes(f.field));
   const facts = new Map(factList.map((f) => [f.field, f.value]));
   const entered = (f: string) => (facts.get(f) ?? (f === "occupation" ? profile.occupation : f === "age" ? profile.age : f === "englishLevel" ? profile.englishLevel : f === "currentCountry" ? profile.currentCountry : undefined)) ?? null;
   const occupation = entered("occupation");
   const noc = nocFromOccupation(profile.occupationRaw ?? occupation);
   const language = entered("englishLevel");
+  // "clb9" (the single legacy value, the lowest of the four abilities) -> "CLB 9 (lowest ability)"
+  const languageFigure = language ? (/^none$/i.test(language) ? "Below CLB 4 in at least one ability" : `${language.replace(/^clb\s*/i, "CLB ")} (lowest of the four abilities)`) : null;
   const notEntered = T(l, "Not entered", "Girilmedi", "未填写");
   const selectedNames = programs.map((k) => programName(k, l));
   const topicLine = selectedNames.length ? selectedNames.join("; ") : T(l, "Not selected (all programs listed)", "Seçilmedi (tüm programlar listelenir)", "未选择（列出全部项目）");
   const countryLabel = (code: string | null) => (code ? countryName(code, toPassportLocale(l)) : notEntered);
+
+  const crsInfo = report.pointsEstimate?.crs;
+  const crsEntered = crsInfo?.entered ?? [];
+  const workOutside = entered("offshoreExperienceYears");
+  const workInside = entered("onshoreExperienceYears");
+  const ecaAnswer = entered("qualificationAwardedInAustralia");
+  const crsStatusValue = !crsInfo || crsInfo.status === "none"
+    ? "Not calculated: no CRS answers were entered"
+    : crsInfo.status === "complete"
+      ? `Calculated from your answers: ${crsInfo.total} of ${EE.crsScore.maxScore}`
+      : `No score shown: ${crsInfo.notCalculated.length} factor${crsInfo.notCalculated.length === 1 ? "" : "s"} not calculated (the partial sum of ${crsInfo.partialSum} is not a CRS score)`;
 
   const sections: ReportSection[] = [];
 
@@ -65,23 +81,22 @@ export function buildCanadaReportView(args: ReportViewArgs): ReportView {
   suppliedRow(T(l, "Current country", "Bulunduğunuz ülke", "当前所在国家"), entered("currentCountry") ? countryLabel(entered("currentCountry")) : null);
   suppliedRow(T(l, "Passport country", "Pasaport ülkesi", "护照国家"), entered("passportCountry") ? countryLabel(entered("passportCountry")) : null);
   suppliedRow(T(l, "Age", "Yaş", "年龄"), entered("age"));
-  suppliedRow(T(l, "Language level entered", "Girilen dil düzeyi", "所填语言水平"), language);
-  suppliedRow(T(l, "Highest education", "En yüksek eğitim", "最高学历"), entered("qualificationLevel"));
+  const answer = (label: string) => crsEntered.find((a) => a.label === label)?.value ?? null;
+  suppliedRow("English test results (CLB, per ability)", answer("First official language results (per ability)") ?? languageFigure);
+  suppliedRow("Level of education", answer("Level of education") ?? entered("qualificationLevel"));
+  suppliedRow("Skilled work experience in Canada (years)", workInside);
+  suppliedRow("Skilled work experience outside Canada (years)", workOutside);
   suppliedRow(T(l, "Occupation", "Meslek", "职业"), occupation);
   if (noc) suppliedRow(T(l, "NOC 2021 code and TEER category", "NOC 2021 kodu ve TEER kategorisi", "NOC 2021 编码及 TEER 类别"), `${noc.code} · TEER ${noc.teer}`);
+  supplied.push(["Comprehensive Ranking System (CRS)", crsStatusValue]);
   const missing: string[] = [];
-  if (!entered("age")) missing.push(T(l, "Age", "Yaş", "年龄"));
-  if (!language) missing.push(T(l, "Language test level (CLB / NCLC)", "Dil sınavı düzeyi (CLB / NCLC)", "语言考试水平（CLB / NCLC）"));
-  if (!entered("qualificationLevel")) missing.push(T(l, "Highest education", "En yüksek eğitim", "最高学历"));
-  if (!occupation) missing.push(T(l, "Occupation (NOC 2021 code)", "Meslek (NOC 2021 kodu)", "职业（NOC 2021 编码）"));
-  if (!entered("currentCountry")) missing.push(T(l, "Current country", "Bulunduğunuz ülke", "当前所在国家"));
-  if (!entered("passportCountry")) missing.push(T(l, "Passport country", "Pasaport ülkesi", "护照国家"));
-  const notCollected = T(
-    l,
-    "Information the published program requirements use and this report did not receive: Canadian and foreign work experience (years and hours), Educational Credential Assessment (ECA) status, spouse or partner details, job offer, proof of funds, province or territory of interest, French-language results",
-    "Yayımlanmış program gereksinimlerinin kullandığı ve bu raporun almadığı bilgiler: Kanada ve yurt dışı iş deneyimi (yıl ve saat), Eğitim Denklik Değerlendirmesi (ECA) durumu, eş veya partner bilgileri, iş teklifi, yeterli fon kanıtı, ilgilenilen eyalet veya bölge, Fransızca sonuçları",
-    "已公布的项目要求会用到、但本报告未收到的信息：加拿大及境外工作经验（年数与工时）、学历认证（ECA）状态、配偶或伴侣信息、工作邀约、资金证明、感兴趣的省或地区、法语成绩",
-  );
+  if (!entered("age")) missing.push("Age");
+  if (!occupation) missing.push("Occupation (NOC 2021 code)");
+  if (!entered("currentCountry")) missing.push("Current country");
+  if (!entered("passportCountry")) missing.push("Passport country");
+  for (const f of crsInfo?.notCalculated ?? []) missing.push(`CRS factor not calculated: ${f.label}`);
+  if (!crsEntered.length && !language) missing.push("English test results (CLB)");
+  const notCollected = "Information the published program requirements use and this report did not receive: job offer details, proof of funds, province or territory of interest, French-language results the programs use";
   sections.push({
     id: "summary",
     title: reportSectionTitle("summary", l, "CA"),
@@ -103,7 +118,7 @@ export function buildCanadaReportView(args: ReportViewArgs): ReportView {
       bullets([
         T(l, "Program information: Express Entry (CEC, FSW, FSTP), the Provincial Nominee Program non-Express Entry process, the Atlantic Immigration Program and Family Sponsorship, with published requirements and sources", "Program bilgileri: Express Entry (CEC, FSW, FSTP), Provincial Nominee Program Express Entry dışı süreç, Atlantic Immigration Program ve aile sponsorluğu; yayımlanmış gereksinimler ve kaynaklar", "项目信息：快速通道（CEC、FSW、FSTP）、省提名计划非快速通道流程、大西洋移民计划与家庭担保，含已公布的要求与来源"),
         T(l, "Comprehensive Ranking System (CRS): the published factors and maximums, and the factors that could be calculated from the entries", "Comprehensive Ranking System (CRS): yayımlanmış faktörler ve üst sınırlar ile girdilerden hesaplanabilen faktörler", "综合排名系统（CRS）：已公布的评分因素及上限，以及可由所填信息计算的因素"),
-        T(l, "Provincial and territorial programs: Ontario, British Columbia and Alberta streams, and the federal stage for Quebec-selected workers", "Eyalet ve bölge programları: Ontario, British Columbia ve Alberta akışları ile Quebec tarafından seçilen çalışanlar için federal aşama", "省和地区项目：安大略省、不列颠哥伦比亚省和阿尔伯塔省的通道，以及魁北克选定技术工人的联邦阶段"),
+        T(l, "Provincial and territorial programs: only the Ontario, British Columbia and Alberta streams and the federal stage for Quebec-selected workers that are in the verified data (other provinces and territories are not included)", "Eyalet ve bölge programları: Ontario, British Columbia ve Alberta akışları ile Quebec tarafından seçilen çalışanlar için federal aşama", "省和地区项目：安大略省、不列颠哥伦比亚省和阿尔伯塔省的通道，以及魁北克选定技术工人的联邦阶段"),
         T(l, "Costs, the typical process and the documents commonly requested, as the sources publish them", "Maliyetler, tipik süreç ve yaygın istenen belgeler; kaynakların yayımladığı şekilde", "费用、典型流程及常见所需文件（按来源公布的内容）"),
         T(l, "Sources: every source with its organisation, page and date checked (last section)", "Kaynaklar: her kaynak, kurumu, sayfası ve kontrol tarihiyle (son bölüm)", "来源：每个来源的机构、页面和核对日期（最后一部分）"),
       ]),
@@ -124,8 +139,12 @@ export function buildCanadaReportView(args: ReportViewArgs): ReportView {
     detailLine(T(l, "Occupation", "Meslek", "职业"), occupation),
     ...(noc ? [`${T(l, "NOC 2021 code and TEER category", "NOC 2021 kodu ve TEER kategorisi", "NOC 2021 编码及 TEER 类别")}: ${noc.code}, TEER ${noc.teer}  [${tags.calculation}]`] : []),
     detailLine(T(l, "Age", "Yaş", "年龄"), entered("age")),
-    detailLine(T(l, "Language level entered", "Girilen dil düzeyi", "所填语言水平"), language),
-    detailLine(T(l, "Highest education", "En yüksek eğitim", "最高学历"), entered("qualificationLevel")),
+    ...(crsEntered.length
+      ? crsEntered.map((a) => `${a.label}: ${a.value}  [${tags.supplied}]`)
+      : [detailLine("English test results (CLB)", language), detailLine("Highest education", entered("qualificationLevel"))]),
+    detailLine("Skilled work experience in Canada (years)", workInside),
+    detailLine("Skilled work experience outside Canada (years)", workOutside),
+    ...(ecaAnswer ? [detailLine("Educational Credential Assessment (ECA) obtained", ecaAnswer)] : []),
     detailLine(T(l, "Current country", "Bulunduğunuz ülke", "当前所在国家"), entered("currentCountry") ? countryLabel(entered("currentCountry")) : null),
     detailLine(T(l, "Passport country", "Pasaport ülkesi", "护照国家"), entered("passportCountry") ? countryLabel(entered("passportCountry")) : null),
     ...(profile.mainGoal ? [`${T(l, "Main goal", "Ana hedef", "主要目标")}: ${profile.mainGoal}  [${tags.supplied}]`] : []),
@@ -170,13 +189,13 @@ export function buildCanadaReportView(args: ReportViewArgs): ReportView {
       : k === "fsw"
         ? String(p.languageRequirement)
         : T(l, `Speaking and listening ${p.languageRequirement.speakingListening}; reading and writing ${p.languageRequirement.readingWriting}`, `Konuşma ve dinleme ${p.languageRequirement.speakingListening}; okuma ve yazma ${p.languageRequirement.readingWriting}`, `听说 ${p.languageRequirement.speakingListening}；读写 ${p.languageRequirement.readingWriting}`);
-    const numeric: string[][] = [[`${T(l, "Language level", "Dil düzeyi", "语言水平")}\n(${T(l, "CLB", "CLB", "CLB")})`, language ?? notEntered, langPublished, eeSource]];
+    const numeric: string[][] = [[`${T(l, "Language level", "Dil düzeyi", "语言水平")}\n(${T(l, "CLB", "CLB", "CLB")})`, languageFigure ?? notEntered, langPublished, eeSource]];
     out.push(table(figureHeaders, numeric, [0.3, 0.2, 0.32, 0.18]));
     const rows: string[][] = [
       [`${T(l, "Occupation category", "Meslek kategorisi", "职业类别")}: ${nocs}`, noc ? `NOC ${noc.code}, TEER ${noc.teer}` : notEntered, eeSource, st(noc ? "provided" : "not_provided")],
       [`${T(l, "Work experience", "İş deneyimi", "工作经验")}: ${p.workExperience.type}; ${p.workExperience.amount}`, T(l, "Not collected by the form", "Formda toplanmıyor", "表单未收集"), eeSource, st("not_collected")],
       [`${T(l, "Job offer", "İş teklifi", "工作邀约")}: ${yesNo(p.jobOfferRequired)}${p.jobOfferAlternative ? ` (${p.jobOfferAlternative})` : ""}`, T(l, "Not collected by the form", "Formda toplanmıyor", "表单未收集"), eeSource, st("not_collected")],
-      [`${T(l, "Education", "Eğitim", "学历")}: ${typeof p.educationRequired === "string" ? p.educationRequired : yesNo(p.educationRequired)}`, entered("qualificationLevel") ?? notEntered, eeSource, st(entered("qualificationLevel") ? "provided" : "not_provided")],
+      [`${T(l, "Education", "Eğitim", "学历")}: ${typeof p.educationRequired === "string" ? p.educationRequired : yesNo(p.educationRequired)}`, answer("Level of education") ?? entered("qualificationLevel") ?? notEntered, eeSource, st(answer("Level of education") ?? entered("qualificationLevel") ? "provided" : "not_provided")],
       [`${T(l, "Proof of funds", "Yeterli fon kanıtı", "资金证明")}: ${yesNo(p.proofOfFundsRequired)}`, T(l, "Not collected by the form", "Formda toplanmıyor", "表单未收集"), eeSource, st("not_collected")],
     ];
     if (k === "fsw") rows.push([`${T(l, "FSW selection factors: maximum", "FSW seçim faktörleri: azami", "FSW 选择因素：满分")} ${p.selectionFactorPointsMax}; ${T(l, "pass mark", "geçme notu", "及格分")} ${p.selectionFactorPassMark}`, T(l, "Not calculated from your entries", "Girdilerinizden hesaplanmadı", "未根据您所填信息计算"), eeSource, st("not_collected")]);
@@ -212,7 +231,7 @@ export function buildCanadaReportView(args: ReportViewArgs): ReportView {
       [T(l, "Scoring system", "Puanlama sistemi", "评分体系"), T(l, "Not applicable (no CRS ranking)", "Uygulanmaz (CRS sıralaması yok)", "不适用（无 CRS 排名）")],
     ];
     if (k === "aip") rows.push([T(l, "Atlantic provinces", "Atlantik eyaletleri", "大西洋省份"), (d.target_provinces as string[]).join(", ")]);
-    rows.push([T(l, "Official source", "Resmi kaynak", "官方来源"), String(d.officialUrl ?? "https://www.canada.ca/en/immigration-refugees-citizenship.html")]);
+    if (d.officialUrl) rows.push([T(l, "Official source", "Resmi kaynak", "官方来源"), String(d.officialUrl)]);
     return [
       { kind: "heading", text: programName(k, l), marked: programs.includes(k) ? T(l, "Your selected program", "Seçtiğiniz program", "您选择的项目") : undefined },
       { kind: "text", text: String(d.overview) },
@@ -232,23 +251,29 @@ export function buildCanadaReportView(args: ReportViewArgs): ReportView {
 
   // ── 4. CRS ──────────────────────────────────────────────────────────────────────────────────────────────────────────────────
   const crs = EE.crsScore as Record<string, any>; // eslint-disable-line @typescript-eslint/no-explicit-any
-  const pe = report.pointsEstimate;
-  const calculated = (pe?.breakdown ?? []).filter((b) => typeof b.points === "number");
   const crsBlocks: Block[] = [
-    { kind: "text", text: T(l, `The Comprehensive Ranking System (CRS) ranks candidates in the Express Entry pool, out of a published maximum of ${crs.maxScore}. It applies to the CEC, FSW and FSTP. It is Not applicable to the Provincial Nominee Program non-Express Entry process, the Atlantic Immigration Program or Family Sponsorship. No score threshold or invitation cut-off is shown here: IRCC publishes the result of each round.`, `Comprehensive Ranking System (CRS), Express Entry havuzundaki adayları yayımlanmış ${crs.maxScore} üst sınırı üzerinden sıralar. CEC, FSW ve FSTP için geçerlidir. Provincial Nominee Program Express Entry dışı süreç, Atlantic Immigration Program ve aile sponsorluğu için Uygulanmaz. Burada puan eşiği veya davet sınırı gösterilmez: IRCC her turun sonucunu yayımlar.`, `综合排名系统（CRS）对快速通道候选池中的候选人排名，公布的满分为 ${crs.maxScore}。适用于 CEC、FSW 和 FSTP；不适用于省提名计划非快速通道流程、大西洋移民计划和家庭担保。此处不显示分数门槛或邀请分数线：IRCC 会公布每一轮的结果。`) },
+    { kind: "text", text: `The Comprehensive Ranking System (CRS) ranks candidates in the Express Entry pool, out of a published maximum of ${crs.maxScore}. It applies to the CEC, FSW and FSTP. It is Not applicable to the Provincial Nominee Program non-Express Entry process, the Atlantic Immigration Program or Family Sponsorship. No score threshold or invitation cut-off is shown here: IRCC publishes the result of each round.` },
   ];
-  if (calculated.length) {
+  const noSpouse = crsEntered.some((a) => a.label === "Spouse or partner who will accompany you" && a.value === "No");
+  const calculatedIds = new Set((crsInfo?.calculated ?? []).map((f) => f.id));
+  if (crsInfo && crsInfo.status === "complete") {
     crsBlocks.push(
-      { kind: "heading", text: T(l, "Factors calculated from your entries", "Girdilerinizden hesaplanan faktörler", "根据您所填信息计算的因素") },
-      table(
-        [T(l, "Factor", "Faktör", "因素"), T(l, "Points", "Puan", "分数"), T(l, "Your entry", "Girdiniz", "您的填写"), T(l, "Source", "Kaynak", "来源")],
-        calculated.map((b) => [b.label, String(b.points), String(b.note ?? ""), `IRCC CRS criteria (${eeChecked})`]),
-        [0.4, 0.12, 0.2, 0.28],
-      ),
-      { kind: "text", text: T(l, `Sum of the factors above: ${calculated.reduce((s, b) => s + (b.points ?? 0), 0)}. This is a partial figure: only the factors listed were calculated, with no spouse or partner factors because partner details were not entered. It is not your CRS score.`, `Yukarıdaki faktörlerin toplamı: ${calculated.reduce((s, b) => s + (b.points ?? 0), 0)}. Bu kısmi bir rakamdır: yalnızca listelenen faktörler hesaplandı; eş veya partner bilgisi girilmediği için eş faktörleri yoktur. CRS puanınız değildir.`, `以上因素合计：${calculated.reduce((s, b) => s + (b.points ?? 0), 0)}。这是部分数字：仅计算了所列因素，且因未填写伴侣信息，不含配偶或伴侣因素。这不是您的 CRS 分数。`) },
+      { kind: "heading", text: "CRS score calculated from your answers" },
+      { kind: "kv", rows: [["CRS score calculated from your answers", `${crsInfo.total} of ${crs.maxScore}`]] },
+      table(["Factor", "Points", "Source"], crsInfo.calculated.map((f) => [f.label, String(f.points), `IRCC CRS criteria (${eeChecked})`]), [0.6, 0.14, 0.26]),
+      { kind: "text", text: `Every CRS question was answered, so the factors above add up to a calculated CRS score of ${crsInfo.total}. It is calculated by LogiVisa from your answers under the criteria published by IRCC (checked ${eeChecked}); it is not an IRCC assessment. Verify it with IRCC's official CRS calculator before relying on it. The score in an Express Entry profile also depends on the evidence IRCC accepts for each answer.` },
+    );
+  } else if (crsInfo && crsInfo.status === "partial") {
+    crsBlocks.push(
+      { kind: "heading", text: "No CRS score is shown" },
+      { kind: "text", text: `A CRS score needs an answer to every factor. ${crsInfo.notCalculated.length} factor${crsInfo.notCalculated.length === 1 ? " was" : "s were"} not answered, so none is claimed here. The factors that could be calculated are listed below for reference only.` },
+      table(["Factor calculated from your answers", "Points", "Source"], crsInfo.calculated.map((f) => [f.label, String(f.points), `IRCC CRS criteria (${eeChecked})`]), [0.6, 0.14, 0.26]),
+      { kind: "text", text: `Sum of the factors above: ${crsInfo.partialSum}. This is a partial figure, not a CRS score and not an estimate of one.` },
+      { kind: "heading", text: "Factors not calculated" },
+      table(["Factor", "Reason"], crsInfo.notCalculated.map((f) => [f.label, "Not answered, or depends on an answer that was not given"]), [0.55, 0.45]),
     );
   } else {
-    crsBlocks.push({ kind: "text", text: T(l, "No CRS factor could be calculated from the entries. Not applicable until age and language level are entered.", "Girdilerden hiçbir CRS faktörü hesaplanamadı. Yaş ve dil düzeyi girilene kadar uygulanmaz.", "无法根据所填信息计算任何 CRS 因素。在填写年龄和语言水平之前不适用。") });
+    crsBlocks.push({ kind: "text", text: "No CRS factor could be calculated because the CRS questions were not answered. No CRS score is shown." });
   }
   const core = crs.coreHumanCapitalFactors;
   const max = (a: number, b: number) => `${a} / ${b}`;
@@ -258,14 +283,14 @@ export function buildCanadaReportView(args: ReportViewArgs): ReportView {
       [T(l, "Factor", "Faktör", "因素"), T(l, "Maximum (without / with spouse or partner)", "Üst sınır (eşsiz / eşli veya partnerli)", "上限（无配偶 / 有配偶或伴侣）"), T(l, "Calculated for you", "Sizin için hesaplandı", "已为您计算")],
       [
         [T(l, "Core human capital: total", "Temel beşeri sermaye: toplam", "核心人力资本：合计"), max(core.maxWithoutSpouse, core.maxWithSpouse), "—"],
-        [T(l, "Age", "Yaş", "年龄"), max(core.age.maxWithoutSpouse, core.age.maxWithSpouse), calculated.some((b) => /age/i.test(b.label)) ? T(l, "Yes", "Evet", "是") : T(l, "No", "Hayır", "否")],
-        [T(l, "Level of education", "Eğitim düzeyi", "教育程度"), max(core.education.maxWithoutSpouse, core.education.maxWithSpouse), T(l, "No", "Hayır", "否")],
-        [T(l, "Official languages: first language, per ability", "Resmi diller: birinci dil, beceri başına", "官方语言：第一语言（每项能力）"), max(core.firstOfficialLanguage.maxPerAbilityWithoutSpouse, core.firstOfficialLanguage.maxPerAbilityWithSpouse), calculated.some((b) => /english|language/i.test(b.label)) ? T(l, "Yes", "Evet", "是") : T(l, "No", "Hayır", "否")],
-        [T(l, "Official languages: second language", "Resmi diller: ikinci dil", "官方语言：第二语言"), max(core.secondOfficialLanguage.maxCombinedWithoutSpouse, core.secondOfficialLanguage.maxCombinedWithSpouse), T(l, "No", "Hayır", "否")],
-        [T(l, "Canadian work experience", "Kanada iş deneyimi", "加拿大工作经验"), max(core.canadianWorkExperience.maxWithoutSpouse, core.canadianWorkExperience.maxWithSpouse), T(l, "No", "Hayır", "否")],
-        [T(l, "Spouse or partner factors", "Eş veya partner faktörleri", "配偶或伴侣因素"), String(crs.spouseFactors.maxTotal), T(l, "No", "Hayır", "否")],
-        [T(l, "Skill transferability factors", "Beceri aktarılabilirliği faktörleri", "技能可转移性因素"), String(crs.skillTransferabilityFactors.maxTotal), T(l, "No", "Hayır", "否")],
-        [T(l, "Additional points (e.g. provincial nomination 600, French-language skills, sibling in Canada, Canadian study)", "Ek puanlar (ör. eyalet adaylığı 600, Fransızca, Kanada'da kardeş, Kanada'da eğitim)", "附加分（如省提名 600、法语能力、在加拿大的兄弟姐妹、加拿大学习）"), String(crs.additionalPoints.maxTotal), T(l, "No", "Hayır", "否")],
+        [T(l, "Age", "Yaş", "年龄"), max(core.age.maxWithoutSpouse, core.age.maxWithSpouse), calculatedIds.has("age") ? "Yes" : "Not calculated"],
+        [T(l, "Level of education", "Eğitim düzeyi", "教育程度"), max(core.education.maxWithoutSpouse, core.education.maxWithSpouse), calculatedIds.has("education") ? "Yes" : "Not calculated"],
+        [T(l, "Official languages: first language, per ability", "Resmi diller: birinci dil, beceri başına", "官方语言：第一语言（每项能力）"), max(core.firstOfficialLanguage.maxPerAbilityWithoutSpouse, core.firstOfficialLanguage.maxPerAbilityWithSpouse), calculatedIds.has("firstLanguage") ? "Yes" : "Not calculated"],
+        [T(l, "Official languages: second language", "Resmi diller: ikinci dil", "官方语言：第二语言"), max(core.secondOfficialLanguage.maxCombinedWithoutSpouse, core.secondOfficialLanguage.maxCombinedWithSpouse), calculatedIds.has("secondLanguage") ? "Yes" : "Not calculated"],
+        [T(l, "Canadian work experience", "Kanada iş deneyimi", "加拿大工作经验"), max(core.canadianWorkExperience.maxWithoutSpouse, core.canadianWorkExperience.maxWithSpouse), calculatedIds.has("canadianWorkExperience") ? "Yes" : "Not calculated"],
+        [T(l, "Spouse or partner factors", "Eş veya partner faktörleri", "配偶或伴侣因素"), String(crs.spouseFactors.maxTotal), noSpouse ? "Not applicable (no spouse or partner)" : calculatedIds.has("spouseOrPartnerFactors") ? "Yes" : "Not calculated"],
+        [T(l, "Skill transferability factors", "Beceri aktarılabilirliği faktörleri", "技能可转移性因素"), String(crs.skillTransferabilityFactors.maxTotal), calculatedIds.has("skillTransferability") ? "Yes" : "Not calculated"],
+        [T(l, "Additional points (e.g. provincial nomination 600, French-language skills, sibling in Canada, Canadian study)", "Ek puanlar (ör. eyalet adaylığı 600, Fransızca, Kanada'da kardeş, Kanada'da eğitim)", "附加分（如省提名 600、法语能力、在加拿大的兄弟姐妹、加拿大学习）"), String(crs.additionalPoints.maxTotal), (calculatedIds.has("siblingInCanada") && calculatedIds.has("frenchLanguage") && calculatedIds.has("canadianStudy") && calculatedIds.has("provincialNomination")) ? "Yes" : "Not calculated"],
       ],
       [0.5, 0.28, 0.22],
     ),
@@ -276,6 +301,8 @@ export function buildCanadaReportView(args: ReportViewArgs): ReportView {
 
   // ── 5. Provincial and territorial programs ──────────────────────────────────────────────────────────────────────────────────
   const provBlocks: Block[] = [
+    { kind: "heading", text: "Programs currently covered in LogiVisa's verified data" },
+    { kind: "text", text: "This section covers the Ontario, British Columbia and Alberta nominee streams and the federal stage for Quebec-selected workers. It is not a complete list of Canada's provincial and territorial programs: the other provinces and territories are not included in the current dataset. A program missing from this section may exist; check the province or territory's own immigration website." },
     { kind: "text", text: T(l, "Each province and territory runs its own nominee streams, with its own criteria, scoring model and occupation policy. They are listed as each publishes them, with the date checked. A nomination is a provincial decision; the permanent residence application is then decided by IRCC. “Enhanced” streams are linked to Express Entry and the published CRS addition for a nomination is 600.", "Her eyalet ve bölge kendi adaylık akışlarını, ölçütlerini, puanlama modelini ve meslek politikasını yürütür. Her birinin yayımladığı şekilde ve kontrol tarihiyle listelenir. Aday gösterme eyaletin kararıdır; daimi oturum başvurusuna ardından IRCC karar verir. “Enhanced” akışlar Express Entry'ye bağlıdır ve aday gösterme için yayımlanmış CRS eki 600'dür.", "各省和地区运行各自的提名通道，标准、评分模式和职业政策各不相同。此处按各方公布的内容列出并注明核对日期。提名是省级决定，之后永久居留申请由 IRCC 决定。“Enhanced”通道与快速通道挂钩，已公布的提名 CRS 加分为 600。") },
     table(
       [T(l, "Province", "Eyalet", "省份"), T(l, "Stream", "Akış", "通道"), T(l, "Linked to Express Entry", "Express Entry'ye bağlı", "与快速通道挂钩"), T(l, "Language threshold", "Dil eşiği", "语言门槛"), T(l, "Checked", "Kontrol", "核对")],
@@ -283,10 +310,9 @@ export function buildCanadaReportView(args: ReportViewArgs): ReportView {
       [0.17, 0.33, 0.16, 0.22, 0.12],
     ),
   ];
-  const intros = { ON: ontarioStreamsIntroText(l), BC: bcStreamsIntroText(l), AB: albertaStreamsIntroText(l) } as const;
   const model = (m: string) => (m === "teer-pathway" ? T(l, "TEER pathway", "TEER yolu", "TEER 路径") : m === "points-based-sirs" ? T(l, "Points-based (SIRS)", "Puan tabanlı (SIRS)", "积分制（SIRS）") : m === "signal-based" ? T(l, "Profile-signal based", "Profil sinyaline dayalı", "基于档案信号") : T(l, "Job offer required", "İş teklifi gerekli", "需要工作邀约"));
   for (const p of PROVINCES) {
-    provBlocks.push({ kind: "heading", text: `${T(l, p.name.en, p.name.tr, p.name.zh)} (${p.code}) — ${longDate(p.verified, l)}` }, { kind: "text", text: intros[p.code] });
+    provBlocks.push({ kind: "heading", text: `${T(l, p.name.en, p.name.tr, p.name.zh)} (${p.code}) — ${longDate(p.verified, l)}` }, { kind: "text", text: PROVINCE_NOTES[p.code] });
     for (const s of p.streams) {
       provBlocks.push({
         kind: "kv",
@@ -305,8 +331,8 @@ export function buildCanadaReportView(args: ReportViewArgs): ReportView {
   provBlocks.push(
     { kind: "heading", text: `${T(l, "Quebec", "Quebec", "魁北克")} — ${longDate(QC_FEDERAL.lastVerified, l)}` },
     { kind: "text", text: T(l, `Quebec selects its own economic immigrants through the Certificat de sélection du Québec (CSQ), issued by the Ministère de l'Immigration, de la Francisation et de l'Intégration. Only the federal stage that follows is held in this report's data: IRCC processing of about 11 months and an application fee from ${cad(QC_FEDERAL.fees.processingFeeFrom)}, once a valid CSQ is held. Quebec's own selection criteria, fees and processing time are not held and are not covered.`, `Quebec, ekonomik göçmenlerini Ministère de l'Immigration, de la Francisation et de l'Intégration tarafından verilen Certificat de sélection du Québec (CSQ) ile kendisi seçer. Bu raporun verisinde yalnızca ardından gelen federal aşama vardır: geçerli bir CSQ'ya sahip olunduğunda yaklaşık 11 aylık IRCC işlemi ve ${cad(QC_FEDERAL.fees.processingFeeFrom)}'den başlayan başvuru ücreti. Quebec'in kendi seçim ölçütleri, ücretleri ve işlem süresi tutulmaz ve kapsanmaz.`, `魁北克通过魁北克移民、法语化与融入部（MIFI）签发的魁北克选择证书（CSQ）自行遴选经济类移民。本报告数据仅涵盖其后的联邦阶段：持有有效 CSQ 后，IRCC 处理约 11 个月，申请费自 ${cad(QC_FEDERAL.fees.processingFeeFrom)} 起。魁北克自己的遴选标准、费用和处理时间不在数据中，也未涵盖。`) },
-    { kind: "heading", text: T(l, "Other provinces and territories", "Diğer eyaletler ve bölgeler", "其他省和地区") },
-    { kind: "text", text: T(l, `The streams of the provinces and territories not listed above are not held in this report's data. IRCC's overview of the Provincial Nominee Program: ${PNP.sourceUrl}`, `Yukarıda listelenmeyen eyalet ve bölgelerin akışları bu raporun verisinde yoktur. IRCC'nin Provincial Nominee Program özeti: ${PNP.sourceUrl}`, `上文未列出的省和地区的通道不在本报告数据中。IRCC 省提名计划概览：${PNP.sourceUrl}`) },
+    { kind: "heading", text: "Not included in the current dataset" },
+    { kind: "text", text: `The nominee streams of the other provinces and territories (Manitoba, Saskatchewan, Nova Scotia, New Brunswick, Prince Edward Island, Newfoundland and Labrador, Yukon, the Northwest Territories and Nunavut) are not included in the current dataset, and nothing is stated about them in this report. IRCC's overview of the Provincial Nominee Program: ${PNP.sourceUrl}` },
   );
   sections.push({ id: "provinces", title: reportSectionTitle("provinces", l, "CA"), blocks: provBlocks });
 
@@ -418,8 +444,8 @@ export function buildCanadaReportView(args: ReportViewArgs): ReportView {
     [`${T(l, "IRCC — Provincial Nominee Program, non-Express Entry process", "IRCC — Provincial Nominee Program, Express Entry dışı süreç", "IRCC — 省提名计划（非快速通道流程）")}\n${PNP.sourceUrl}`, T(l, "Process, fees, forms and notices", "Süreç, ücretler, formlar ve notlar", "流程、费用、表格和提示"), pnpChecked],
     ...PROVINCES.map((p) => [`${T(l, `Government of ${p.name.en}`, `${p.name.tr} hükümeti`, `${p.name.zh}政府`)}\n${p.urls.join("\n")}`, T(l, `${p.name.en} nominee streams`, `${p.name.tr} aday akışları`, `${p.name.zh}提名通道`), longDate(p.verified, l)]),
     [`${T(l, "IRCC — Quebec-selected skilled workers (federal stage)", "IRCC — Quebec tarafından seçilen vasıflı çalışanlar (federal aşama)", "IRCC — 魁北克选定技术工人（联邦阶段）")}`, T(l, "Federal fee and processing time after a CSQ", "CSQ sonrası federal ücret ve işlem süresi", "获得 CSQ 后的联邦费用与处理时间"), longDate(QC_FEDERAL.lastVerified, l)],
-    ...(aip ? [[`${T(l, "IRCC — Atlantic Immigration Program", "IRCC — Atlantic Immigration Program", "IRCC — 大西洋移民计划")}\n${aip.officialUrl ?? "https://www.canada.ca/en/immigration-refugees-citizenship.html"}`, T(l, "Program status, fees and processing time", "Program durumu, ücretler ve işlem süresi", "项目状态、费用和处理时间"), "—"]] : []),
-    ...(fam ? [[`${T(l, "IRCC — Sponsor your spouse, partner or child", "IRCC — Eşinizi, partnerinizi veya çocuğunuzu sponsor olun", "IRCC — 为配偶、伴侣或子女担保")}\n${fam.officialUrl ?? "https://www.canada.ca/en/immigration-refugees-citizenship.html"}`, T(l, "Program status, fees and processing time", "Program durumu, ücretler ve işlem süresi", "项目状态、费用和处理时间"), "—"]] : []),
+    ...(aip?.officialUrl ? [[`${T(l, "IRCC — Atlantic Immigration Program", "IRCC — Atlantic Immigration Program", "IRCC — 大西洋移民计划")}\n${aip.officialUrl}`, T(l, "Program status, fees and processing time", "Program durumu, ücretler ve işlem süresi", "项目状态、费用和处理时间"), "—"]] : []),
+    ...(fam?.officialUrl ? [[`${T(l, "IRCC — Sponsor your spouse, partner or child", "IRCC — Eşinizi, partnerinizi veya çocuğunuzu sponsor olun", "IRCC — 为配偶、伴侣或子女担保")}\n${fam.officialUrl}`, T(l, "Program status, fees and processing time", "Program durumu, ücretler ve işlem süresi", "项目状态、费用和处理时间"), "—"]] : []),
   ];
   const resources = getResourcesSection(l, "CA");
   const links = resources.sections.flatMap((s) => s.links.map((k) => `${k.label} — ${k.url}`));

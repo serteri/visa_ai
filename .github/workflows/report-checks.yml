@@ -112,6 +112,10 @@ jobs:
         run: npm run test:canada-flag
       - name: Destination selector (Australia and Canada always visible; each loads its own flow; current / passport country independent)
         run: npm run test:destination-selector
+      - name: Canada CRS (verified calculator caps and per-ability rules, complete / partial states, no partial figure as the score)
+        run: npm run test:canada-crs
+      - name: Canada Assessment submit (CRS questions required, validated, stored; single fields derived)
+        run: npm run test:canada-assessment-submit
       - name: Canada report is Canadian (deep check of the rendered PDF text: no Australian content; Australia unchanged; en / tr / zh-Hans)
         run: npm run test:canada-report
       - name: Target visa field, DISABLED mode, engine carries the target (en / tr / zh-Hans)
