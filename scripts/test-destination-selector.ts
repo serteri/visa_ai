@@ -73,6 +73,13 @@ async function main() {
   check(/Express Entry|IRCC|Canada/.test(caText), "a Canadian report is Canadian");
   console.log(`  ℹ️  Canadian view still mentions Australian terms: ${/subclass|Home Affairs|SkillSelect/.test(caText)} (Canada reports use the Canada model; see test:canada-report)`);
 
+  const fcDir = "app/[locale]/(main)/full-check/";
+  const interactive = readFileSync(fcDir + "full-check-interactive-section.tsx", "utf8");
+  const pageSrc = readFileSync(fcDir + "page.tsx", "utf8");
+  const step3 = readFileSync(fcDir + "step-3-language.tsx", "utf8");
+  check(/\{!isCanada && australiaOnlyFooter\}/.test(interactive) && pageSrc.split("<ProfessionalHelp").length === 2 && pageSrc.indexOf("<ProfessionalHelp") > pageSrc.indexOf("australiaOnlyFooter={") && pageSrc.indexOf("<ProfessionalHelp") < pageSrc.indexOf("formHeader={"), "the Australian research links and the MARA register are not shown while Canada is the selected destination");
+  check(/\{!isPartner && !selectedCountryIsCA && \(/.test(step3), "the Australian graduate-visa question is not asked in the Canada Assessment");
+
   if (failures) { console.error(`\n❌ ${failures} check(s) failed`); process.exit(1); }
   console.log("\n✅ ALL CHECKS PASSED");
   process.exit(0);

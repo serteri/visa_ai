@@ -123,6 +123,12 @@ export default async function FullCheckPage({ params, searchParams }: FullCheckP
           remainingSpots={remainingSpots}
           paidCheckoutEnabled={paidCheckoutEnabled}
           canadaReportEnabled={canadaReportEnabled}
+          australiaOnlyFooter={
+            <div className="mx-auto grid max-w-6xl gap-6 lg:grid-cols-2">
+              <ResearchLinks locale={locale} />
+              <ProfessionalHelp locale={locale} />
+            </div>
+          }
           formHeader={
             <>
               <div className="mb-6 flex flex-wrap items-center justify-between gap-4 border-b border-slate-200 pb-6">
@@ -157,10 +163,6 @@ export default async function FullCheckPage({ params, searchParams }: FullCheckP
           }
         />
 
-        <div className="mx-auto grid max-w-6xl gap-6 lg:grid-cols-2">
-          <ResearchLinks locale={locale} />
-          <ProfessionalHelp locale={locale} />
-        </div>
 
         <p className="text-sm text-muted-foreground">
           {tx(

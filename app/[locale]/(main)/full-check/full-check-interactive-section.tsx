@@ -46,6 +46,7 @@ export function FullCheckInteractiveSection({
   remainingSpots,
   paidCheckoutEnabled = true,
   canadaReportEnabled = false,
+  australiaOnlyFooter,
 }: {
   locale: string;
   formHeader: ReactNode;
@@ -64,6 +65,8 @@ export function FullCheckInteractiveSection({
   paidCheckoutEnabled?: boolean;
   /** Server-side Canada switch (lib/readiness/report-mode.ts); off = Canada is not offered during the beta. */
   canadaReportEnabled?: boolean;
+  /** Australian research links and the MARA register: shown only while Australia is the selected destination. */
+  australiaOnlyFooter?: ReactNode;
 }) {
   const loc: Locale = locale === "tr" ? "tr" : locale === "zh-Hans" ? "zh-Hans" : "en";
   const tx = (en: string, tr: string, zh: string) => (loc === "tr" ? tr : loc === "zh-Hans" ? zh : en);
@@ -78,6 +81,7 @@ export function FullCheckInteractiveSection({
   const shownSections = isCanada ? reportSectionIds("CA") : partnerReport ? (["details", "costs", "documents", "sources"] as ReportSectionId[]) : REPORT_SECTION_IDS.filter((id) => id !== "invitations" && id !== "stateDetail");
 
   return (
+    <>
     <div className="mx-auto grid max-w-6xl grid-cols-1 items-start gap-12 lg:grid-cols-12">
       {/* Form Container */}
       <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm sm:p-8 lg:col-span-7">
@@ -132,5 +136,7 @@ export function FullCheckInteractiveSection({
         </div>
       </div>
     </div>
+    {!isCanada && australiaOnlyFooter}
+    </>
   );
 }

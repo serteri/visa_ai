@@ -205,7 +205,7 @@ export function Step3Language(props: Step3Props) {
         </>
       )}
 
-      {!isPartner && (
+      {!isPartner && !selectedCountryIsCA && (
         <>
           <div className="space-y-2">
             <Label htmlFor="waitlist-graduate-visa-intent">{txt("Mezun vizesi hedefliyor musunuz?", "Graduate visa intent?", "毕业生签证意向？")}</Label>
