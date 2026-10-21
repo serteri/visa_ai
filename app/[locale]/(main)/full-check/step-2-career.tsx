@@ -1,5 +1,6 @@
 "use client";
 
+import { editNocSearch, pickNocResult } from "@/lib/intake/noc-select";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 function RequiredMark() {
@@ -75,13 +76,13 @@ export function Step2Career(props: Step2Props) {
           </Label>
           {selectedCountryIsCA ? (
             <div className="relative">
-              <input id="waitlist-occupation" type="text" value={nocSearch} {...props.noAutofill("occupation")} onChange={(e) => { setNocSearch(e.target.value); setNocCode(""); setNocTeer(null); setNocResults(searchNoc(e.target.value)); setNocOpen(true); }} onBlur={() => setTimeout(() => setNocOpen(false), 150)} onFocus={() => { if (nocSearch.length >= 2) { setNocResults(searchNoc(nocSearch)); setNocOpen(true); } }} className={fieldClassName + " w-full"} placeholder={txt("Yazılım Mühendisi veya NOC kodu", "Software Engineer or NOC code", "软件工程师或 NOC 代码")} />
+              <input id="waitlist-occupation" type="text" value={nocSearch} {...props.noAutofill("occupation")} onChange={(e) => { const next = editNocSearch(e.target.value); setNocSearch(next.search); setNocCode(next.code); setNocTeer(next.teer); setNocResults(searchNoc(e.target.value)); setNocOpen(true); }} onBlur={() => setTimeout(() => setNocOpen(false), 150)} onFocus={() => { if (nocSearch.length >= 2) { setNocResults(searchNoc(nocSearch)); setNocOpen(true); } }} className={fieldClassName + " w-full"} placeholder={txt("Yazılım Mühendisi veya NOC kodu", "Software Engineer or NOC code", "软件工程师或 NOC 代码")} />
               <input type="hidden" name="occupation" value={nocSearch} />
               {nocCode && <><input type="hidden" name="nocCode" value={nocCode} /><p className="mt-1 text-xs text-emerald-700">{txt("Seçildi:", "Selected:", "已选：")} {nocCode} · TEER {nocTeer}</p></>}
               {nocOpen && nocResults.length > 0 && (
                 <ul className="absolute z-50 mt-1 w-full max-h-64 overflow-auto rounded-md border border-border bg-card shadow-lg text-sm">
                   {nocResults.map((entry) => (
-                    <li key={entry.code} onMouseDown={(e) => { e.preventDefault(); setNocSearch(entry.title); setNocCode(entry.code); setNocTeer(entry.teer); setNocOpen(false); setNocResults([]); }} className="flex cursor-pointer items-center justify-between gap-2 px-3 py-2 hover:bg-muted">
+                    <li key={entry.code} data-noc-code={entry.code} onMouseDown={(e) => { e.preventDefault(); const picked = pickNocResult(entry); setNocSearch(picked.search); setNocCode(picked.code); setNocTeer(picked.teer); setNocOpen(false); setNocResults([]); }} className="flex cursor-pointer items-center justify-between gap-2 px-3 py-2 hover:bg-muted">
                       <span>{entry.title}</span><span className="shrink-0 text-xs text-muted-foreground">{entry.code} · TEER {entry.teer}</span>
                     </li>
                   ))}
