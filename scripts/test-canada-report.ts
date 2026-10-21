@@ -97,11 +97,11 @@ async function main() {
     check(!/[\u3400-\u9fff]/.test(r.text) && !/[ğĞşŞıİ]/.test(r.text), `${r.locale}: no Chinese characters and no Turkish letters anywhere in the PDF`);
     check(/Professional summary/.test(r.text) && !/Profesyonel özet|专业摘要|Kanada Göçmenlik|加拿大移民信息报告/.test(r.text), `${r.locale}: the headings are the English ones`);
   }
-  check(!/lib\/reports\/canada\/locale/.test("") && /CANADA_REPORT_LOCALE/.test(readFileSync("lib/readiness/generate-pdf.ts", "utf8")), "the PDF route forces the Canada report's language");
+  check(!/lib\/reports\/canada\/locale/.test("") && /CA_REPORT_LOCALE/.test(readFileSync("lib/readiness/generate-pdf.ts", "utf8")), "the PDF route forces the Canada report's language");
   const step1src = readFileSync("app/[locale]/(main)/full-check/step-1-personal.tsx", "utf8");
   check(/data-testid="canada-english-only"/.test(step1src) && /CANADA_ENGLISH_ONLY_NOTICE/.test(step1src), "the Assessment says the Canada report is English when Canada is chosen in another language");
   const loc = await import("../lib/reports/canada/locale");
-  check(loc.CANADA_ENGLISH_ONLY_NOTICE.tr.length > 20 && loc.CANADA_ENGLISH_ONLY_NOTICE["zh-Hans"].length > 10 && JSON.stringify(loc.CANADA_REPORT_LOCALES) === '["en"]', "the notice exists in tr and zh-Hans; the Canada report's languages are [en]");
+  check(loc.CANADA_ENGLISH_ONLY_NOTICE.tr.length > 20 && loc.CANADA_ENGLISH_ONLY_NOTICE["zh-Hans"].length > 10 && JSON.stringify(loc.CA_REPORT_LOCALES) === '["en"]', "the notice exists in tr and zh-Hans; the Canada report's languages are [en]");
 
   console.log("\n3. the Canada report's sections (the view the PDF draws)");
   const view = buildReportView({ report: ca.report as ReadinessReport, locale: "en", profile: { name: SAMPLE_APPLICANT_NAME, occupation: "Software developers and programmers", occupationRaw: "Software developers and programmers (21232)", preferredPathway: CA_SAMPLE_PROFILE.preferredPathway }, dateText: "" });

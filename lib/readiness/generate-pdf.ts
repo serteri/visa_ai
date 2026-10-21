@@ -24,7 +24,7 @@ import { notoSansBoldBase64 } from "./pdf-font-bold";
 import { notoSansSCRegularBase64 } from "./pdf-font-sc";
 import { appendNominationStreamSuffix, buildCaRankedPathways, calculateRankedPathways } from "./ranked-pathways";
 import { renderReportV2 } from "./pdf-report-v2";
-import { CANADA_REPORT_LOCALE } from "@/lib/reports/canada/locale";
+import { CA_REPORT_LOCALE } from "@/lib/reports/canada/locale";
 import { buildReportView, type ReportView } from "@/lib/reports/report-view";
 import { reportDisclaimer } from "@/lib/reports/report-disclaimer";
 import { renderPersonalizedContent } from "./pdf-personalized-content";
@@ -931,7 +931,7 @@ function formatGoalText(value: string): string {
 export async function generateReadinessPDF(input: PDFGeneratorInput): Promise<Uint8Array> {
   const { report, userInputSummary: rawUserInputSummary } = input;
   // The Canada report is English-only in this release (lib/reports/canada/locale.ts): never a part-translated paid report.
-  const locale = report.country === "CA" ? CANADA_REPORT_LOCALE : input.locale;
+  const locale = report.country === "CA" ? CA_REPORT_LOCALE : input.locale;
   // The state-page monitor's status (null when unavailable: the note then rests on the date the data was verified by hand).
   const stateData = report.country === "CA" ? undefined : input.stateData ?? (await getAdminStateData());
   const stateMonitor = report.country === "CA" ? null : input.stateMonitor !== undefined ? input.stateMonitor : await loadStateMonitorSnapshot();

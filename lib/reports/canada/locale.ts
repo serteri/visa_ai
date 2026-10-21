@@ -8,8 +8,8 @@
  */
 import type { Locale } from "@/lib/readiness/types";
 
-export const CANADA_REPORT_LOCALES: readonly Locale[] = ["en"];
-export const CANADA_REPORT_LOCALE: Locale = "en";
+export const CA_REPORT_LOCALES: readonly Locale[] = ["en"];
+export const CA_REPORT_LOCALE: Locale = "en";
 
 /** Shown under the destination selector when Canada is chosen and the page is not in English. */
 export const CANADA_ENGLISH_ONLY_NOTICE: Record<Locale, string> = {

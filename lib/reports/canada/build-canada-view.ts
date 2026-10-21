@@ -12,7 +12,7 @@ import type { Locale } from "@/lib/readiness/types";
 import type { ReportView, ReportViewArgs } from "@/lib/reports/report-view";
 import type { Block, ReportSection } from "../report-blocks";
 import { canadaDisclaimer } from "./disclaimer";
-import { CANADA_REPORT_LOCALE } from "./locale";
+import { CA_REPORT_LOCALE } from "./locale";
 import { longDate } from "../public-sources";
 import { reportSectionTitle } from "../report-section-titles";
 import { T, statusLabel, tagsFor, type RequirementStatus } from "../report-text";
@@ -39,7 +39,7 @@ export function buildCanadaReportView(args: ReportViewArgs): ReportView {
   const { report, profile, dateText } = args;
   // Release decision: the Canada Assessment and report are English-only (lib/reports/canada/locale.ts), so a PDF is never part Turkish or Chinese
   // and part English; the labels below keep their tr / zh-Hans text for when the Canada data is localised.
-  const l: Locale = CANADA_REPORT_LOCALE;
+  const l: Locale = CA_REPORT_LOCALE;
   const tags = tagsFor(l);
   const eeChecked = longDate(EE.lastVerified, l);
   const pnpChecked = longDate(PNP.lastVerified, l);
