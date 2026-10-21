@@ -6345,11 +6345,11 @@ function buildCanadaFinancialRoadmap(
     {
       category: t("Right of Permanent Residence Fee (RPRF)", "Daimi İkamet Hakkı Ücreti (RPRF)", "永久居留权费（RPRF）"),
       estimateType: "official_fee",
-      amountLabel: "Not priced here",
+      amountLabel: "Included in CAD 1,590",
       explanation: t(
-        "Listed separately by IRCC; see the current IRCC fee list for the amount that applies to your application. Not priced here.",
-        "IRCC tarafından ayrıca listelenir; güncel IRCC ücret listesine bakın. Burada fiyatlandırılmaz.",
-        "IRCC单独列出；适用金额请查阅IRCC最新费用表。此处不标价。"
+        "CAD 600 of the CAD 1,590 total (processing fee CAD 990 + RPRF CAD 600). Not an additional charge.",
+        "CAD 1,590 toplamının CAD 600'ü (işlem CAD 990 + RPRF CAD 600). Ek bir ücret değildir.",
+        "包含在 CAD 1,590 总额内的 CAD 600（审理费 CAD 990 + RPRF CAD 600），并非额外费用。"
       ),
     },
     {

@@ -80,6 +80,7 @@ async function main() {
     ["the Quebec federal-stage note", /Certificat de sélection du Québec/],
     ["IRCC as the source", /Immigration, Refugees and Citizenship Canada \(IRCC\)/],
     ["the verified CAD fee", /CAD 1,590/],
+    ["the CAD 1,590 total broken down as processing 990 + RPRF 600, no double count", /includes processing fee CAD 990 and Right of Permanent Residence Fee CAD 600/],
     ["the NOC 2021 code and TEER", /21232[\s\S]*TEER 1/],
     ["the Canadian disclaimer (RCIC) on the cover and in the footer", /licensed immigration consultant \(RCIC\)/],
     ["Not applicable wording for programs without a CRS", /Not applicable/],
@@ -88,6 +89,7 @@ async function main() {
   check(!/Calculated for you[\s\S]{0,40}Core human capital: total[^\n]*No data available/.test(T) && !/No data available/.test(T), "no empty table cell prints 'No data available'");
   check(!/\b6[05]\b[^\n]*(minimum|threshold)|minimum[^\n]*\b6[05]\b/i.test(T), "no 65-point (or 60) Australian threshold");
   check(!/minimum met|threshold met/i.test(T), "no threshold is ever 'met'");
+  check(!/Not priced here/.test(T) && !/CAD 1,590[^\n]*\+ ?CAD 600/.test(T) && /the Right of Permanent Residence Fee is not added again/.test(T), "RPRF is never added on top of CAD 1,590 and is never shown as unpriced");
   check(!/\binvitation (cut-?off|estimate)s?\b[^\n]*\d{3}/i.test(T), "no invitation cut-off estimate is invented");
 
   console.log("\n2. the Canada report is English-only: no part-translated paid report (tr / zh-Hans)");

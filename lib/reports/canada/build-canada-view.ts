@@ -161,7 +161,7 @@ export function buildCanadaReportView(args: ReportViewArgs): ReportView {
   });
 
   // ── 3. Program information ──────────────────────────────────────────────────────────────────────────────────────────────────
-  const fees = EE.fees as { mainApplicant: number; spouse: number; dependentChild: number; lastIncreaseDate: string };
+  const fees = EE.fees as { mainApplicant: number; spouse: number; dependentChild: number; processingFee: number; rightOfPermanentResidenceFee: number; lastIncreaseDate: string };
   const reqHeaders = [T(l, "Published requirement", "Yayımlanmış gereklilik", "已公布的要求"), T(l, "What you entered", "Girdiğiniz", "您填写的内容"), T(l, "Source", "Kaynak", "来源"), T(l, "Information status", "Bilgi durumu", "信息状态")];
   const figureHeaders = [T(l, "Published requirement", "Yayımlanmış gereklilik", "已公布的要求"), T(l, "Your figure", "Sizin rakamınız", "您的数字"), T(l, "Published figure", "Yayımlanmış rakam", "已公布数字"), T(l, "Source", "Kaynak", "来源")];
   const eeSource = `IRCC, Express Entry (${eeChecked})`;
@@ -177,7 +177,7 @@ export function buildCanadaReportView(args: ReportViewArgs): ReportView {
       rows: [
         [T(l, "System", "Sistem", "体系"), T(l, "Express Entry (points-ranked pool; invitations are issued in rounds)", "Express Entry (puanla sıralanan havuz; davetler turlar halinde verilir)", "快速通道（按分数排名的候选池；分轮次发出邀请）")],
         [T(l, "Scoring system", "Puanlama sistemi", "评分体系"), k === "fsw" ? T(l, "Comprehensive Ranking System (CRS) for the pool; separate FSW selection-factor grid for eligibility", "Havuz için CRS; uygunluk için ayrı FSW seçim faktörü tablosu", "候选池使用综合排名系统（CRS）；资格另有 FSW 选择因素表") : T(l, "Comprehensive Ranking System (CRS)", "Comprehensive Ranking System (CRS)", "综合排名系统（CRS）")],
-        [T(l, "Application fee (main applicant)", "Başvuru ücreti (ana başvuru sahibi)", "申请费（主申请人）"), `${cad(fees.mainApplicant)} (${T(l, "increase effective", "artış tarihi", "上调生效日")} ${longDate(fees.lastIncreaseDate, l)})`],
+        [T(l, "Application fee (main applicant)", "Başvuru ücreti (ana başvuru sahibi)", "申请费（主申请人）"), `${cad(fees.mainApplicant)} (${T(l, `includes processing fee ${cad(fees.processingFee)} and Right of Permanent Residence Fee ${cad(fees.rightOfPermanentResidenceFee)}; increase effective`, "artış tarihi", "上调生效日")} ${longDate(fees.lastIncreaseDate, l)})`],
         [T(l, "Processing time", "İşlem süresi", "处理时间"), T(l, String(EE.processingTimes), "Programa göre değişir", "因项目而异")],
         [T(l, "Data checked", "Veri kontrol tarihi", "数据核对日期"), eeChecked],
         [T(l, "Official source", "Resmi kaynak", "官方来源"), (EE.sourceUrls as string[])[0]],
@@ -350,7 +350,7 @@ export function buildCanadaReportView(args: ReportViewArgs): ReportView {
       ],
       [0.38, 0.14, 0.26, 0.22],
     ),
-    { kind: "text", text: T(l, `The fee schedule increased on ${longDate(fees.lastIncreaseDate, l)}. IRCC lists further charges that are paid separately, such as the right of permanent residence fee and biometrics. They are not summed here.`, `Ücret tarifesi ${longDate(fees.lastIncreaseDate, l)} tarihinde arttı. IRCC, ayrıca ödenen başka ücretleri de listeler (ör. daimi oturum hakkı ücreti ve biyometri). Burada toplanmamıştır.`, `费用表于 ${longDate(fees.lastIncreaseDate, l)} 上调。IRCC 另列有单独缴纳的费用，如永久居留权费和生物识别费，此处未加总。`) },
+    { kind: "text", text: T(l, `Each ${cad(fees.mainApplicant)} total (main applicant and spouse or partner) includes a processing fee of ${cad(fees.processingFee)} and the Right of Permanent Residence Fee of ${cad(fees.rightOfPermanentResidenceFee)}; the Right of Permanent Residence Fee is not added again. A dependent child is ${cad(fees.dependentChild)}. The fee schedule increased on ${longDate(fees.lastIncreaseDate, l)}. IRCC lists other charges that are paid separately, such as biometrics; they are not summed here.`, `Her ${cad(fees.mainApplicant)} toplam tutar (ana başvuru sahibi ve eş veya partner) ${cad(fees.processingFee)} işlem ücretini ve ${cad(fees.rightOfPermanentResidenceFee)} Daimi Oturum Hakkı Ücretini içerir; Daimi Oturum Hakkı Ücreti ayrıca eklenmez. Bağımlı çocuk ${cad(fees.dependentChild)}. Ücret tarifesi ${longDate(fees.lastIncreaseDate, l)} tarihinde arttı. IRCC, ayrıca ödenen başka ücretleri de listeler (ör. biyometri); burada toplanmamıştır.`, `每项 ${cad(fees.mainApplicant)} 总额（主申请人及配偶或伴侣）包含 ${cad(fees.processingFee)} 审理费和 ${cad(fees.rightOfPermanentResidenceFee)} 永久居留权费；永久居留权费不再另加。受抚养子女为 ${cad(fees.dependentChild)}。费用表于 ${longDate(fees.lastIncreaseDate, l)} 上调。IRCC 另列有单独缴纳的费用，如生物识别费，此处未加总。`) },
     { kind: "heading", text: T(l, "Provincial fees recorded", "Kayıtlı eyalet ücretleri", "已记录的省级费用") },
     table(
       [T(l, "Fee", "Ücret", "费用"), T(l, "Amount", "Tutar", "金额"), T(l, "Checked", "Kontrol", "核对")],
