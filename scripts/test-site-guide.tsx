@@ -14,7 +14,7 @@ import { isHiddenPath, resolvePageContext, stripLocale } from "../lib/site-guide
 import { AI_ASSISTANT_PATH, COMPARISON_PAIRS, DESTINATIONS, destinationsFor } from "../lib/site-guide/route-registry";
 import { aiAssistantHref, assessmentLink, buildResponse, contextSuggestions, fallbackText, quickActions } from "../lib/site-guide/response-builder";
 import { DISMISS_DAYS, NUDGE_DELAY_MS, NUDGE_SCROLL_RATIO, dismissUntil, nudgeSuppressed, shouldNudge } from "../lib/site-guide/timing";
-import { GuideLauncherView } from "../components/site-guide/site-guide-views";
+import { GuideLauncherView, GuideScopeRow } from "../components/site-guide/site-guide-views";
 import { sanitizeParams } from "../lib/analytics/events";
 import { RESEARCH_GUIDE_SLUGS } from "../lib/guides/slugs";
 import { PAIRS } from "../lib/visas/pair-comparison";
@@ -211,6 +211,35 @@ async function main() {
   check(!/name="(fullName|email|passport|dob)|type="email"|type="file"/.test(panelSrc), "the panel asks for no name, email, passport, date of birth or upload");
   check(/maxLength=\{120\}/.test(panelSrc), "the question box is short");
   check(readFileSync("components/LogiAIAssistant.tsx", "utf8").length > 0 && !/site-guide/.test(readFileSync("components/LogiAIAssistant.tsx", "utf8")), "the existing AI Assistant is not modified");
+
+  console.log("\n12. 'engineer' alone does not route to Engineers Australia (ICT titles are not engineering-profession intents)");
+  const ENG = "au-guide-engineers-australia";
+  const has = (q: string) => buildResponse(q, "AU", "en", true).links.some((x) => x.id === ENG);
+  for (const q of ["software engineer", "I'm a software engineer", "developer programmer", "I'm a developer programmer", "software developer", "I work as a software engineer", "ICT business analyst", "data engineer", "I'm an engineer"]) check(!has(q), `'${q}' does not return Engineers Australia`);
+  check(buildResponse("I'm a software engineer", "AU", "en").links.some((x) => x.id === "au-guide-developer-vs-software-engineer") && buildResponse("developer programmer", "AU", "en").links.some((x) => x.id === "au-guide-developer-vs-software-engineer"), "software and developer / programmer intents return the ICT guide");
+  const swLinks = buildResponse("I'm a software engineer", "AU", "en").links.map((x) => x.href);
+  check(swLinks.includes("/tools/anzsco-finder?q=software%20engineer") && swLinks.includes("/tools/skills-assessment?q=software%20engineer"), "software engineer: the ANZSCO finder and the Skills Assessment Finder (where ACS information is held)");
+  check(buildResponse("I'm a software engineer", "AU", "en").assessment, "software engineer: the Assessment is offered");
+  for (const q of ["civil engineer", "I'm a civil engineer", "mechanical engineer", "I'm a mechanical engineer", "electrical engineer", "structural engineer", "Engineers Australia CDR", "what is a CDR"]) check(has(q), `'${q}' may return Engineers Australia`);
+  check(!has("software engineering degree") && !has("engineering"), "the bare words 'engineering' and 'software engineering' do not either");
+  const reg = DESTINATIONS.find((d) => d.id === ENG)!;
+  check(!reg.keywords.some((k) => /^(engineer|engineers|engineering|mühendis|工程师)$/.test(k)), "the registry holds no bare 'engineer' keyword for it (specific professions only)");
+
+  console.log("\n13. the active country is visible once established");
+  const scopeAu = renderToStaticMarkup(createElement(GuideScopeRow, { locale: "en", country: "AU" }));
+  check(/data-site-guide-scope="AU"/.test(scopeAu) && /Researching:/.test(scopeAu) && /Australia/.test(scopeAu) && !/Change/.test(scopeAu), "a page-defined country is shown without a Change control");
+  const scopeCa = renderToStaticMarkup(createElement(GuideScopeRow, { locale: "en", country: "CA", onChange: () => {} }));
+  check(/data-site-guide-scope="CA"/.test(scopeCa) && /Researching:/.test(scopeCa) && /Canada/.test(scopeCa) && />Change</.test(scopeCa) && /aria-label="Change the country"/.test(scopeCa), "a chosen country is shown as 'Researching: Canada · Change'");
+  const trCa = renderToStaticMarkup(createElement(GuideScopeRow, { locale: "tr", country: "CA", onChange: () => {} }));
+  const zhAu = renderToStaticMarkup(createElement(GuideScopeRow, { locale: "zh-Hans", country: "AU", onChange: () => {} }));
+  check(/Araştırılan:/.test(trCa) && /Kanada/.test(trCa) && /Değiştir/.test(trCa) && !/Researching|Canada|Change/.test(trCa), "tr: localised label, country and Change");
+  check(/正在研究：/.test(zhAu) && /澳大利亚/.test(zhAu) && /更改/.test(zhAu) && !/Researching|Australia|Change/.test(zhAu), "zh-Hans: localised label, country and Change");
+  const panelSrc2 = readFileSync("components/site-guide/site-guide-panel.tsx", "utf8");
+  check(/\{scope \? <GuideScopeRow/.test(panelSrc2), "the row is rendered only when a country is established");
+  check(/onChange=\{context\.country === null \? changeCountry : undefined\}/.test(panelSrc2), "Change is offered only when the country was chosen in the panel, not when the page defines it");
+  check(/const changeCountry = \(\) => \{\s*setScope\(null\);\s*setResponse\(null\);\s*setPending\(""\);/.test(panelSrc2), "Change clears the sticky country, the answer and the pending question (back to the country choice)");
+  check(/if \(r\.country && r\.country !== scope && r\.kind !== "boundary"\) setScope\(r\.country\);/.test(panelSrc2), "an explicit country mention still sets the sticky country (behaviour kept)");
+  check(/useState<GuideCountry \| null>\(context\.country\)/.test(panelSrc2) && !/localStorage/.test(panelSrc2), "the panel's country starts from the page and is not stored: closing the panel resets it");
 
   if (failures) { console.error(`\n❌ ${failures} check(s) failed`); process.exit(1); }
   console.log("\n✅ ALL CHECKS PASSED");

@@ -79,3 +79,38 @@ export function GuideLauncherView({
     </div>
   );
 }
+
+const SCOPE_TEXT = {
+  researching: { en: "Researching:", tr: "Araştırılan:", "zh-Hans": "正在研究：" },
+  change: { en: "Change", tr: "Değiştir", "zh-Hans": "更改" },
+  changeLabel: { en: "Change the country", tr: "Ülkeyi değiştir", "zh-Hans": "更改国家" },
+  AU: { en: "Australia", tr: "Avustralya", "zh-Hans": "澳大利亚" },
+  CA: { en: "Canada", tr: "Kanada", "zh-Hans": "加拿大" },
+} as const;
+
+/**
+ * The country the guide is answering for, once one is established (an Australia or Canada page, or a choice made in the panel). `onChange` is given
+ * only when the visitor chose the country in the panel: a page-defined country cannot be changed here.
+ */
+export function GuideScopeRow({ locale, country, onChange }: { locale: string; country: "AU" | "CA"; onChange?: () => void }): ReactNode {
+  const l = guideLocale(locale);
+  return (
+    <p data-site-guide-scope={country} className="flex items-center gap-2 text-sm">
+      <span className="text-muted-foreground">{SCOPE_TEXT.researching[l]}</span>
+      <span className="font-semibold text-foreground">{SCOPE_TEXT[country][l]}</span>
+      {onChange ? (
+        <>
+          <span aria-hidden="true" className="text-muted-foreground">·</span>
+          <button
+            type="button"
+            onClick={onChange}
+            aria-label={SCOPE_TEXT.changeLabel[l]}
+            className="min-h-11 rounded-md px-2 text-sm font-medium underline underline-offset-4 hover:text-foreground focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
+          >
+            {SCOPE_TEXT.change[l]}
+          </button>
+        </>
+      ) : null}
+    </p>
+  );
+}

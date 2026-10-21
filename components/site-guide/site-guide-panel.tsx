@@ -11,7 +11,7 @@ import { analyticsPageType } from "@/lib/site-guide/page-context";
 import { AI_ASSISTANT_PATH } from "@/lib/site-guide/route-registry";
 import { aiAssistantHref, assessmentLink, assessmentPromptText, buildResponse, chooseCountryText, contextSuggestions, quickActions } from "@/lib/site-guide/response-builder";
 import type { GuideCountry, GuideLink, GuideResponse, PageContext } from "@/lib/site-guide/types";
-import { guideLocale, GUIDE_TEXT } from "./site-guide-views";
+import { GuideScopeRow, guideLocale, GUIDE_TEXT } from "./site-guide-views";
 
 const TEXT = {
   title: GUIDE_TEXT.label,
@@ -70,6 +70,14 @@ export default function SiteGuidePanel({ locale, context, panelId, onClose }: Si
     setScope(c);
     track("site_guide_quick_action", undefined, "quick_action", c);
     if (pending) setResponse(buildResponse(pending, c, locale, false));
+  };
+
+  // Back to the country choice: clears the country chosen in the panel (and the answer that depended on it). A page-defined country is not changeable.
+  const changeCountry = () => {
+    setScope(null);
+    setResponse(null);
+    setPending("");
+    track("site_guide_quick_action", undefined, "quick_action", null);
   };
 
   const submit = (e: FormEvent) => {
@@ -145,6 +153,8 @@ export default function SiteGuidePanel({ locale, context, panelId, onClose }: Si
 
       <div className="flex-1 space-y-4 overflow-y-auto px-4 py-3">
         <p className="text-xs text-muted-foreground">{TEXT.boundary[l]}</p>
+
+        {scope ? <GuideScopeRow locale={locale} country={scope} onChange={context.country === null ? changeCountry : undefined} /> : null}
 
         {suggestions.length > 0 ? (
           <div>

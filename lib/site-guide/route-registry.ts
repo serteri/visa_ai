@@ -99,7 +99,7 @@ export const DESTINATIONS: Destination[] = [
   { id: "au-guide-developer-vs-software-engineer", path: "/guides/developer-programmer-vs-software-engineer", country: "AU", category: "guide", englishOnly: true,
     title: t("Developer Programmer vs Software Engineer", "Developer Programmer ve Software Engineer", "Developer Programmer 与 Software Engineer"),
     description: t("Compares the published ANZSCO descriptions of these related occupations.", "Bu ilişkili mesleklerin yayımlanmış ANZSCO tanımlarını karşılaştırır.", "对比这些相关职业已公布的 ANZSCO 描述。"),
-    keywords: ["developer", "programmer", "software engineer", "software developer", "software", "coder", "web developer", "yazılım", "软件工程师", "程序员"] },
+    keywords: ["developer", "programmer", "software engineer", "software engineers", "software developer", "software", "coder", "web developer", "ict", "it professional", "analyst programmer", "yazılım", "软件工程师", "程序员"] },
   { id: "au-guide-skills-assessment-vs-eligibility", path: "/guides/skills-assessment-vs-visa-eligibility", country: "AU", category: "guide", englishOnly: true,
     title: t("Skills assessment vs visa eligibility", "Beceri değerlendirmesi ve vize uygunluğu", "技能评估与签证资格"),
     description: t("Explains how a skills assessment differs from a visa decision.", "Beceri değerlendirmesinin vize kararından nasıl farklı olduğunu açıklar.", "说明技能评估与签证决定的区别。"),
@@ -107,7 +107,8 @@ export const DESTINATIONS: Destination[] = [
   { id: "au-guide-engineers-australia", path: "/guides/engineers-australia-accredited-vs-cdr", country: "AU", category: "guide", englishOnly: true,
     title: t("Engineers Australia: accredited vs CDR", "Engineers Australia: akredite ve CDR", "Engineers Australia：认证与 CDR"),
     description: t("Explains the accredited-qualification and CDR routes.", "Akredite yeterlilik ve CDR yollarını açıklar.", "说明认证学历与 CDR 两条路径。"),
-    keywords: ["engineer", "engineers", "engineering", "cdr", "civil engineer", "mechanical engineer", "electrical engineer", "mühendis", "工程师"] },
+    // Engineering-profession intents only: never the bare word "engineer", which also appears in ICT titles such as "software engineer".
+    keywords: ["civil engineer", "civil engineers", "mechanical engineer", "mechanical engineers", "electrical engineer", "electrical engineers", "structural engineer", "structural engineers", "chemical engineer", "mining engineer", "geotechnical engineer", "engineers australia", "cdr", "competency demonstration report", "engineering profession", "inşaat mühendisi", "makine mühendisi", "elektrik mühendisi", "土木工程师", "机械工程师", "电气工程师", "结构工程师"] },
   { id: "au-guide-state-list-vs-nomination", path: "/guides/state-occupation-list-vs-nomination", country: "AU", category: "guide", englishOnly: true,
     title: t("State occupation list vs nomination", "Eyalet meslek listesi ve aday gösterme", "州职业清单与提名"),
     description: t("Explains the difference between being on a state list and being nominated.", "Bir eyalet listesinde yer almak ile aday gösterilmek arasındaki farkı açıklar.", "说明列入州清单与获得提名的区别。"),
