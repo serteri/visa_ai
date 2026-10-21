@@ -213,7 +213,7 @@ export function buildReportView(args: ReportViewArgs): ReportView {
     const states = stateInfos;
     if (states.length) {
       const blocks: Block[] = [
-        { kind: "text", text: T(l, "Published information for all eight states and territories in a fixed order, as recorded in our sources. The occupation-list line matches the occupation you entered (supplied by you) against each published list. No state is left out or ordered by your details; a list entry is published information, not a nomination.", "Sekiz eyalet ve bölgenin tamamı için, kaynaklarımızda kayıtlı yayımlanmış bilgiler, sabit sırayla. Meslek listesi satırı girdiğiniz mesleği (sizin girdiğiniz) her yayımlanmış listeyle eşleştirir. Hiçbir eyalet dışarıda bırakılmaz veya bilgilerinize göre sıralanmaz; liste kaydı yayımlanmış bilgidir, bir adaylık değildir.", "按固定顺序列出八个州和领地的公开信息，依我们的资料记录。职业清单一行将您填写的职业（由您提供）与各州已公布清单比对。不遗漏任何州，也不按您的信息排序；清单收录是已公布的信息，并非提名。") },
+        { kind: "text", text: T(l, "Published information for all eight states and territories in a fixed order, as recorded in our sources. The occupation-list line matches the occupation you entered (supplied by you) against each published list. No state is left out or ordered by your details; a list entry is published information, not a nomination. State and territory programs change often: each entry records what the source said on the date checked, and is not a statement of current status.", "Sekiz eyalet ve bölgenin tamamı için, kaynaklarımızda kayıtlı yayımlanmış bilgiler, sabit sırayla. Meslek listesi satırı girdiğiniz mesleği (sizin girdiğiniz) her yayımlanmış listeyle eşleştirir. Hiçbir eyalet dışarıda bırakılmaz veya bilgilerinize göre sıralanmaz; liste kaydı yayımlanmış bilgidir, bir adaylık değildir.", "按固定顺序列出八个州和领地的公开信息，依我们的资料记录。职业清单一行将您填写的职业（由您提供）与各州已公布清单比对。不遗漏任何州，也不按您的信息排序；清单收录是已公布的信息，并非提名。") },
       ];
       // One overview table first, so all eight jurisdictions can be scanned in one look.
       blocks.push(
@@ -230,20 +230,20 @@ export function buildReportView(args: ReportViewArgs): ReportView {
         blocks.push({
           kind: "kv",
           rows: [
-            [T(l, "Program status", "Program durumu", "项目状态"), s.status],
+            [s.checkedLong ? T(l, `Program status (source checked ${s.checkedLong})`, `Program durumu (kaynak ${s.checkedLong} tarihinde kontrol edildi)`, `项目状态（来源核对于 ${s.checkedLong}）`) : T(l, "Program status", "Program durumu", "项目状态"), s.status],
             [T(l, "Occupation-list status (190 / 491)", "Meslek listesi durumu (190 / 491)", "职业清单情况（190 / 491）"), s.occupationList],
-            [T(l, "Key published conditions", "Temel yayımlanmış koşullar", "主要已公布条件"), s.keyConditions.length ? s.keyConditions.map((c) => `• ${c}`).join("\n") : "—"],
+            [s.checkedLong ? T(l, `Key published conditions, as recorded in the source checked on ${s.checkedLong}`, `Temel yayımlanmış koşullar, ${s.checkedLong} tarihinde kontrol edilen kaynakta kaydedildiği şekilde`, `主要已公布条件（据 ${s.checkedLong} 核对的来源记录）`) : T(l, "Key published conditions", "Temel yayımlanmış koşullar", "主要已公布条件"), s.keyConditions.length ? s.keyConditions.map((c) => `• ${c}`).join("\n") : "—"],
             [T(l, "Data checked", "Veri kontrol tarihi", "数据核对日期"), s.checkedLong ? `${s.checkedLong}${s.staleNote ? `. ${s.staleNote}` : ""}` : "—"],
             [T(l, "Official source", "Resmi kaynak", "官方来源"), [s.sources || "—", s.officialUrl].filter(Boolean).join("\n")],
           ],
         });
-        if (s.additionalDetail.length) blocks.push({ kind: "text", text: T(l, `${s.additionalDetail.length} further published ${s.additionalDetail.length === 1 ? "detail" : "details"} for ${s.code} are listed under “Additional published detail” after the costs and process sections.`, `${s.code} için ${s.additionalDetail.length} ek yayımlanmış ayrıntı, maliyet ve süreç bölümlerinden sonra “Ek yayımlanmış ayrıntılar” altında listelenir.`, `${s.code} 另有 ${s.additionalDetail.length} 项已公布细节，列于费用和流程部分之后的“补充已公布细节”中。`) });
+        if (s.additionalDetail.length) blocks.push({ kind: "text", text: T(l, `${s.additionalDetail.length} further published ${s.additionalDetail.length === 1 ? "detail" : "details"} for ${s.code} ${s.additionalDetail.length === 1 ? "is" : "are"} listed under “Additional published detail” after the costs and process sections.`, `${s.code} için ${s.additionalDetail.length} ek yayımlanmış ayrıntı, maliyet ve süreç bölümlerinden sonra “Ek yayımlanmış ayrıntılar” altında listelenir.`, `${s.code} 另有 ${s.additionalDetail.length} 项已公布细节，列于费用和流程部分之后的“补充已公布细节”中。`) });
       }
       sections.push({ id: "states", title: reportSectionTitle("states", l), blocks });
       const detailBlocks: Block[] = [{ kind: "text", text: T(l, "The remaining published conditions for each state and territory, as recorded in our sources with the date checked. They are published information, not a nomination or a statement about any person.", "Her eyalet ve bölge için kalan yayımlanmış koşullar, kaynaklarımızda kayıtlı şekliyle ve kontrol tarihiyle. Yayımlanmış bilgidir; bir adaylık veya herhangi bir kişi hakkında bir ifade değildir.", "各州和领地其余已公布的条件，依我们资料记录并附核对日期。属于公开信息，不是提名，也不是对任何个人的陈述。") }];
       for (const s of states) {
         if (!s.additionalDetail.length) continue;
-        detailBlocks.push({ kind: "heading", text: `${s.name} (${s.code}) — ${s.checkedLong || "—"}` }, { kind: "lines", lines: s.additionalDetail.map((c) => `• ${c}`) });
+        detailBlocks.push({ kind: "heading", text: `${s.name} (${s.code}) — ${T(l, "as recorded in the source checked on", "kontrol edilen kaynakta kaydedildiği şekilde:", "据核对的来源记录，日期：")} ${s.checkedLong || "—"}` }, { kind: "lines", lines: s.additionalDetail.map((c) => `• ${c}`) });
       }
       if (detailBlocks.length > 1) stateDetail = { id: "stateDetail", title: reportSectionTitle("stateDetail", l), blocks: detailBlocks };
     }

@@ -191,10 +191,10 @@ async function main() {
   console.log("\n==================== B3. application stage (real PDF text) ====================");
   {
     // The report does not tell anyone what to do next: the stage only adds an information line to the points section, and the
-    // typical process (published timeframes) carries the 60-day window and the police / health lead times for the target.
+    // typical process (published timeframes) carries the 60-day window and neutral police / health notes (no universal lead times) for the target.
     const DEADLINE = { en: "within 60 days of the invitation", tr: "60 gün içinde", "zh-Hans": "60 天内" } as const;
-    const LEAD = { en: "15 business days", tr: "15 iş günü", "zh-Hans": "15 个工作日" } as const;
-    const OVERSEAS = { en: "4-12 weeks", tr: "4-12 hafta", "zh-Hans": "4-12 周" } as const;
+    const LEAD = { en: "processing times and validity vary by issuing authority and country", tr: "işlem süreleri ve geçerlilik süresi düzenleyen makama ve ülkeye göre değişir", "zh-Hans": "办理时间和有效期因签发机构和国家而异" } as const;
+    const OVERSEAS = { en: "each country where character requirements apply", tr: "karakter şartlarının geçerli olduğu her ülkeden", "zh-Hans": "适用品行要求的每个国家" } as const;
     const HEALTH = { en: "Bupa Medical Visa Services", tr: "Bupa Medical Visa Services", "zh-Hans": "Bupa Medical Visa Services" } as const;
     const INVITED_NOTE = { en: "You told us you have been invited or nominated", tr: "Davet aldığınızı veya aday gösterildiğinizi belirttiniz", "zh-Hans": "您表示已获邀请或提名" } as const;
     const EOI_NOTE = { en: "You told us an EOI is submitted", tr: "Bir EOI sunduğunuzu belirttiniz", "zh-Hans": "您表示已提交 EOI" } as const;
@@ -205,7 +205,7 @@ async function main() {
       const eoi = squash(pdf("eoi", locale).text);
       t(`${locale}: Invited -> an information line in the points section, no lodgement instructions`, inv.includes(squash(INVITED_NOTE[locale])) && !DIRECTIVE[locale].test(pdf("invited", locale).text));
       const miss = [DEADLINE, LEAD, OVERSEAS, HEALTH].map((m) => m[locale]).filter((m) => !inv.includes(squash(m)));
-      t(`${locale}: ... and the typical process states the 60-day window, police and health lead times`, miss.length === 0, miss.join(" | "));
+      t(`${locale}: ... and the typical process states the 60-day window, police and health notes (stated neutrally: no universal lead time)`, miss.length === 0, miss.join(" | "));
       t(`${locale}: Planning -> no stage line`, !plan.includes(squash(INVITED_NOTE[locale])) && !plan.includes(squash(EOI_NOTE[locale])));
       t(`${locale}: EOI submitted -> its own information line, no instruction`, eoi.includes(squash(EOI_NOTE[locale])) && !DIRECTIVE[locale].test(pdf("eoi", locale).text));
     }

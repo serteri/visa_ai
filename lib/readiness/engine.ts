@@ -5574,16 +5574,6 @@ function buildFinancialRoadmap(
       explanation: isTr
         ? "İngilizce olmayan tüm belgeler (diplom, transkript, kimlik, polis belgesi, doğum/evlilik cüzdanı) NAATI onaylı bir çevirmen tarafından çevrilmelidir. NAATI onaylı çevirmenler belirterek aranabilir. Karmaşık teknik belgeler için sayfa başı AUD 150–200 uygulanabilir. Çeviri maliyetleri, sunulan belge sayısına göre AUD 500–3,000 arasında değişebilir."
         : "All documents not in English must be translated by a NAATI-certified translator (National Accreditation Authority for Translators and Interpreters). Rates range from AUD $80 per page for simple personal documents to AUD $150–$200 per page for technical or legal documents. For a typical visa application with 8–12 documents (transcripts, employment certificates, marriage certificate, police clearances), translation costs commonly total AUD $800–$2,500. NAATI-certified translators can be located via the NAATI online register — never use uncertified translations as they will be rejected by the Department of Home Affairs.",
-    },
-    {
-      category: isTr ? "Kayıtlı Göçmenlik Danışmanı (RMA) veya Göçmenlik Avukatı" : "Registered Migration Agent (RMA) or Immigration Lawyer",
-      estimateType: "variable",
-      amountLabel: isTr
-        ? "AUD 3,000–10,000+ (visa türü ve dosyanın karmaşıklığına göre)"
-        : "AUD $3,000–$10,000+ (varies by visa type and case complexity)",
-      explanation: isTr
-        ? "Kayıtlı bir göçmenlik danışmanı (RMA) veya göçmenlik avukatı ile çalışmak zorunlu değildir, ancak karmaşık durumlarda (ret geçmişi, eksik belgeler, çift uyruk sorunu) önemli avantaj sağlar. Tipik maliyetler: 189/190/491 EOI ve tam başvuru için AUD 3,000–8,000; PY/eğitim başvuruları için AUD 1,500–4,000. MARA (Migration Agents Registration Authority) web sitesinden kayıtlı bir ajan doğrulanabilir. Kayıtlı olmayan danışmanlardan kaçının."
-        : "Engaging a Registered Migration Agent (RMA) or immigration lawyer is not mandatory, but is strongly recommended for applications involving prior visa refusals, complex employment histories, or family members with health or character issues. Typical fee ranges: full EOI + 189/190/491 skilled application: AUD $3,000–$8,000; state nomination assistance only: AUD $1,000–$2,500; 482 employer-sponsored nomination and visa: AUD $5,000–$10,000+. Verify any agent's registration via the MARA (Migration Agents Registration Authority) public register at mara.gov.au. Never pay upfront in full before the work commences.",
     }
   );
 

@@ -71,6 +71,10 @@ export function publicConditionText(text: string): string {
     .replace(/Confirmed by the project owner on/gi, "Confirmed against the official page on")
     .replace(/\s*\((?:the )?(?:site|page|pages) could not be fetched automatically\)/gi, "")
     .replace(/the earlier ([A-Za-z ]+?) document/gi, "the earlier $1 page")
+    // Time-sensitive wording is the source's statement on the date checked, not a statement about the report date.
+    .replace(/\bhas not yet been confirmed\b/gi, "had not yet been confirmed")
+    .replace(/\bis scheduled for\b/gi, "was recorded as scheduled for")
+    .replace(/: not yet confirmed by\b/gi, ": was not yet confirmed by")
     .replace(/\s{2,}/g, " ")
     .trim();
 }

@@ -9,7 +9,7 @@ import visaFees from "@/src/data/visa-fees.json";
 import visaGatesData from "@/src/data/visa-gates.json";
 import { ENGLISH_TEST_VALIDITY_YEARS } from "@/lib/readiness/constants";
 import { publishedRequirements } from "@/lib/readiness/visa-gates";
-import type { Locale, ReadinessReport } from "@/lib/readiness/types";
+import type { DocumentChecklistItem, Locale, ReadinessReport } from "@/lib/readiness/types";
 import { resolveAssessingAuthority } from "@/lib/skills-assessment/resolve-authority";
 import { resolveLocalized } from "@/lib/skills-assessment/i18n";
 import { VISA_ORDER, VisaKey, visaCharge } from "./report-visas";
@@ -85,7 +85,7 @@ export function buildProcessInfo(report: ReadinessReport, occupationRaw: string 
   ];
   const healthPolice = (): [string, string, string] => [
     T(l, "Police certificates and health examination", "Adli sicil belgeleri ve sağlık muayenesi", "无犯罪记录证明与体检"),
-    T(l, "The Australian Federal Police certificate is processed online within 15 business days and is valid for 12 months; overseas police certificates take 4-12 weeks. The health examination is through Bupa Medical Visa Services; results are valid for 12 months, and 6-12 months longer where extra chest monitoring is required.", "Avustralya Federal Polisi (AFP) belgesi 15 iş günü içinde çevrimiçi işlenir ve 12 ay geçerlidir; yurt dışı adli sicil belgeleri 4-12 hafta sürer. Sağlık muayenesi Bupa Medical Visa Services aracılığıyla yapılır; sonuçlar 12 ay geçerlidir, ek akciğer takibi gerekirse 6-12 ay daha uzayabilir.", "澳大利亚联邦警察（AFP）证明在线办理，15 个工作日内完成，有效期 12 个月；海外无犯罪记录证明需 4-12 周。体检通过 Bupa Medical Visa Services 进行，结果有效期 12 个月；如需额外胸部复查，可能再延长 6-12 个月。"),
+    T(l, "Police certificates are requested from each country where character requirements apply; processing times and validity vary by issuing authority and country. The health examination is arranged through the panel provider the Department of Home Affairs approves; how long a result remains valid is set by the Department of Home Affairs and can depend on the case.", "Adli sicil belgeleri, karakter şartlarının geçerli olduğu her ülkeden istenir; işlem süreleri ve geçerlilik süresi düzenleyen makama ve ülkeye göre değişir. Sağlık muayenesi İçişleri Bakanlığı'nın onayladığı panel sağlayıcı aracılığıyla yapılır; sonucun ne kadar süre geçerli kalacağını İçişleri Bakanlığı belirler ve duruma göre değişebilir.", "无犯罪记录证明须向适用品行要求的每个国家申请；办理时间和有效期因签发机构和国家而异。体检通过澳大利亚内政部认可的指定机构安排；结果的有效期由内政部规定，并可能因个案而异。"),
     "Home Affairs; Australian Federal Police; Bupa Medical Visa Services",
   ];
   const decision = (visa: string): [string, string, string] => [
@@ -152,7 +152,11 @@ export type DocumentsInfo = { headers: string[]; rows: string[][]; extraHeaders:
 export function buildDocumentsInfo(report: ReadinessReport, l: Locale): DocumentsInfo {
   const appliesTo = ["189, 190, 491, 482, 500, 485, 820/801", "189, 190, 491, 482, 500, 485", "189, 190, 491, 482, 485", "189, 190, 491, 482, 500, 485, 820/801"];
   const checklist = (report.documentChecklist ?? []).filter((d) => !/^\s*(CRITICAL|KRİTİK|关键|PRIORITY|WARNING)/i.test(d.category));
-  const rows = checklist.map((d, i) => [d.category, d.items.join("; "), appliesTo[i] ?? "—", T(l, "Department of Home Affairs and assessing-authority requirements", "İçişleri Bakanlığı ve değerlendirme kurumu gereklilikleri", "澳大利亚内政部及评估机构要求")]);
+  const neutralEnglishItem = (item: DocumentChecklistItem) =>
+    typeof item === "string" && /test results \(less than \d+ years? old\)|sınav sonucu \(\d+ yıldan eski olmamalı\)|语言成绩（\d+ 年内）/i.test(item)
+      ? T(l, "English test result, within the validity period stated for the visa applied for (see General points)", "İngilizce sınav sonucu, başvurulan vize için belirtilen geçerlilik süresi içinde (bkz. Genel noktalar)", "英语成绩，须在所申请签证规定的有效期内（见“一般事项”）")
+      : item;
+  const rows = checklist.map((d, i) => [d.category, d.items.map(neutralEnglishItem).join("; "), appliesTo[i] ?? "—", T(l, "Department of Home Affairs and assessing-authority requirements", "İçişleri Bakanlığı ve değerlendirme kurumu gereklilikleri", "澳大利亚内政部及评估机构要求")]);
   const extra: string[][] = [
     ["189, 190, 491", T(l, "Skills assessment outcome letter; SkillSelect EOI and invitation reference", "Beceri değerlendirmesi sonuç mektubu; SkillSelect EOI ve davet referansı", "技能评估结果信；SkillSelect EOI 及邀请编号"), "Home Affairs"],
     ["482, 186", T(l, "Employer nomination and sponsorship documents; skills assessment where required", "İşveren adaylık ve sponsorluk belgeleri; gerekiyorsa beceri değerlendirmesi", "雇主提名与担保文件；如需要，技能评估"), "Home Affairs"],
@@ -193,7 +197,7 @@ export function buildSources(report: ReadinessReport, occupationRaw: string | un
   const out: SourceRow[] = [];
   out.push([T(l, "Department of Home Affairs — visa pages for subclasses 189, 190, 491, 482, 485, 500, 186 and 820/801\nhttps://immi.homeaffairs.gov.au/visas", "İçişleri Bakanlığı — subclass 189, 190, 491, 482, 485, 500, 186 ve 820/801 vize sayfaları\nhttps://immi.homeaffairs.gov.au/visas", "内政部 — 189、190、491、482、485、500、186、820/801 子类签证页面\nhttps://immi.homeaffairs.gov.au/visas"), T(l, "Visa information, requirement maps", "Vize bilgileri, gereklilik tabloları", "签证信息、要求对照"), d(gates.last_verified)]);
   out.push([T(l, "Department of Home Affairs — visa application charges, schedule effective 1 July 2026\nhttps://immi.homeaffairs.gov.au/visas/getting-a-visa/fees-and-charges/current-visa-pricing", "İçişleri Bakanlığı — vize başvuru ücretleri, 1 Temmuz 2026 itibarıyla geçerli tarife\nhttps://immi.homeaffairs.gov.au/visas/getting-a-visa/fees-and-charges/current-visa-pricing", "内政部 — 签证申请费，自 2026 年 7 月 1 日起生效的收费表\nhttps://immi.homeaffairs.gov.au/visas/getting-a-visa/fees-and-charges/current-visa-pricing"), T(l, "Government charges, sums", "Devlet ücretleri, toplamlar", "政府费用、合计"), d(feeDate || (visaFees as unknown as { generated_on: string }).generated_on)]);
-  out.push([T(l, "LogiVisa cost data — English tests, health examinations, police certificates, translations and professional services (general figures, not quotes)", "LogiVisa maliyet verisi — İngilizce sınavları, sağlık muayenesi, adli sicil, çeviri ve profesyonel hizmetler (genel rakamlar, teklif değildir)", "LogiVisa 费用数据 — 英语考试、体检、无犯罪记录、翻译及专业服务（一般数字，非报价）"), T(l, "Other listed items", "Listelenen diğer kalemler", "其他列出的项目"), d((visaFees as unknown as { generated_on: string }).generated_on)]);
+  out.push([T(l, "LogiVisa cost data — English tests, health examinations, police certificates and translations (general figures, not quotes)", "LogiVisa maliyet verisi — İngilizce sınavları, sağlık muayenesi, adli sicil ve çeviri (genel rakamlar, teklif değildir)", "LogiVisa 费用数据 — 英语考试、体检、无犯罪记录及翻译（一般数字，非报价）"), T(l, "Other listed items", "Listelenen diğer kalemler", "其他列出的项目"), d((visaFees as unknown as { generated_on: string }).generated_on)]);
   if (auth) out.push([`${auth.authorityName} — ${(auth.sourceDocument ?? "").replace(/\s+--\s+/g, " – ")}`.replace(/ — $/, "").trim(), T(l, "Assessing authority fees and processing time", "Değerlendirme kurumu ücretleri ve işlem süresi", "评估机构费用与处理时间"), d(auth.lastVerified)]);
   for (const s of states) out.push([s.officialUrl ? `${s.sources}
 ${s.officialUrl}` : s.sources, T(l, "State and territory program information", "Eyalet ve bölge programı bilgileri", "各州和领地项目信息"), s.checkedLong || "—"]);

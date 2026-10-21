@@ -5,11 +5,11 @@
       "category": "Identity",
       "category_zh": "身份",
       "items": [
-        "Passport (6+ months validity)",
+        "Valid passport / travel document, subject to the requirements applying to the application",
         "Birth Certificate (NAATI translated)"
       ],
       "items_zh": [
-        "护照（有效期至少 6 个月）",
+        "有效护照/旅行证件（须符合所申请签证适用的要求）",
         "出生证明（NAATI 认证翻译）"
       ],
       "appliesTo": ["189", "190", "491", "482", "500", "485", "820/801"]

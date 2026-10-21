@@ -79,6 +79,23 @@ async function main() {
     check(!/project owner|could not be fetched automatically|user-confirmed|our trend data|data file/i.test(t), "no internal process wording");
     check(!/scenario|Senaryo|情景/.test(t.split(reportSectionTitle("pointsExamples", r.locale))[0]), "points scenarios do not appear before the appendix");
     if (t.includes(reportSectionTitle("pointsExamples", r.locale))) check(/arithmetic|aritmetik|算术/.test(t.split(reportSectionTitle("pointsExamples", r.locale))[1].slice(0, 600)), "the appendix opens with the arithmetic-only sentence");
+    // Final Australia polish: no over-specific universal process claims, no professional-service price, no "advice" section title.
+    const flat = t.replace(/\s+/g, " ");
+    check(!/Sources and advice|Kaynaklar ve danışmanlık|来源与咨询/.test(t), "no 'Sources and advice' heading");
+    check(t.includes(reportSectionTitle("sources", r.locale)) && reportSectionTitle("sources", r.locale) === ({ en: "Sources and important notes", tr: "Kaynaklar ve önemli notlar", "zh-Hans": "来源与重要说明" } as Record<string, string>)[r.locale], "the sources section carries the new heading");
+    check(!/3,000\s*[–-]\s*\$?10,000|3\.000\s*[–-]\s*10\.000|3,000\s*[–-]\s*10,000|3000\s*[–-]\s*10000/.test(flat) && !/Registered Migration Agent \(RMA\) or Immigration Lawyer|Kayıtlı Göçmenlik Danışmanı \(RMA\)|注册移民代理（RMA）或移民律师/.test(flat), "no professional-service (migration agent / lawyer) price estimate");
+    check(!/15 business days|15 iş günü|15 个工作日|4-12 weeks|4–12 weeks|4-12 hafta|4–12 周|4-12 周/.test(flat), "no universal police-certificate processing time");
+    check(!/(valid|geçerli|有效)[^.]{0,30}12 months|12 ay(?:\s|\.)[^.]{0,20}geçerli|chest monitoring|6-12 months longer/i.test(flat), "no universal health-examination validity or chest-monitoring figure");
+    check(!/Test Results \(Less than \d+ years old\)|Sınav sonucu \(\d+ yıldan eski olmamalı\)|语言成绩（\d+ 年内）/.test(flat), "the documents table gives no unsourced English-test validity figure");
+    check(!/6\+ months validity|en az 6 ay geçerli|有效期至少 6 个月/.test(flat), "no universal passport validity figure");
+    if (r.locale === "en") {
+      check(/vary by issuing authority and country/.test(flat), "police-certificate timing is stated neutrally (varies by authority and country)");
+      check(/Valid passport \/ travel document, subject to the requirements applying to the application/.test(flat), "the passport line is neutral");
+      check(/as recorded in the source checked on \d{1,2} \w+ \d{4}/.test(flat) && /Program status \(source checked \d{1,2} \w+ \d{4}\)/.test(flat), "state conditions and status are tied to the date the source was checked");
+      check(!/is scheduled for|has not yet been confirmed/.test(flat) && /was recorded as scheduled for/.test(flat), "a scheduled round in a dated source is not written as a current upcoming event");
+      check(!/\b1 further published details?\b[^.]*\bare listed/.test(flat), "'1 further published detail' agrees in number");
+      check(/each entry records what the source said on the date checked/.test(flat), "the state section says entries record the source as checked, not current status");
+    }
     if (r.locale === "en") {
       check(/Checked/.test(t) && /\d{1,2} (January|February|March|April|May|June|July|August|September|October|November|December) \d{4}/.test(t), "sources show long checked dates");
       check(/ACT Government — /.test(t.replace(/\s+/g, " ")) && /NSW Government — /.test(t.replace(/\s+/g, " ")), "state sources are shown as organisation — page title");

@@ -16,6 +16,8 @@ export function reportSectionTitle(id: ReportSectionId, l: Locale, country: "AU"
         return T(l, "Provincial and territorial programs", "Eyalet (province) ve bölge (territory) programları", "省和地区项目");
       case "costs":
         return T(l, "Costs and fees", "Maliyetler ve ücretler", "费用");
+      case "sources":
+        return T(l, "Sources and advice", "Kaynaklar ve danışmanlık", "来源与咨询");
       default:
         break;
     }
@@ -48,7 +50,7 @@ export function reportSectionTitle(id: ReportSectionId, l: Locale, country: "AU"
     case "stateDetail":
       return T(l, "Additional published detail: states and territories", "Ek yayımlanmış ayrıntılar: eyaletler ve bölgeler", "补充已公布细节：各州和领地");
     case "sources":
-      return T(l, "Sources and advice", "Kaynaklar ve danışmanlık", "来源与咨询");
+      return T(l, "Sources and important notes", "Kaynaklar ve önemli notlar", "来源与重要说明");
   }
 }
 

@@ -7,7 +7,7 @@ const textMap: Record<string, { tr?: string; zh?: string }> = {
   "Skills": { tr: "Mesleki Yeterlilik", zh: "技能" },
   "Spouse/Family": { tr: "Eş/Aile", zh: "配偶/家庭" },
   "CRITICAL": { tr: "KRİTİK", zh: "关键" },
-  "Passport (6+ months validity)": { tr: "Pasaport (en az 6 ay geçerli)", zh: "护照（有效期至少 6 个月）" },
+  "Valid passport / travel document, subject to the requirements applying to the application": { tr: "Geçerli pasaport / seyahat belgesi (başvuruya uygulanan şartlara tabi)", zh: "有效护照/旅行证件（须符合所申请签证适用的要求）" },
   "Birth Certificate (NAATI translated)": { tr: "Doğum belgesi (NAATI çevirili)", zh: "出生证明（NAATI 认证翻译）" },
   "Degree Certificates": { tr: "Diploma belgeleri", zh: "学历证书" },
   "Academic Transcripts": { tr: "Transkript", zh: "成绩单" },
