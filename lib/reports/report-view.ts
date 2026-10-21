@@ -33,6 +33,7 @@ import { T, factLabel, tagsFor } from "./report-text";
 import { buildVisaInfos, visaLabels } from "./report-visas";
 import { reportDisclaimer } from "./report-disclaimer";
 import { reportSectionTitle } from "./report-section-titles";
+import { buildCanadaReportView } from "./canada/build-canada-view";
 import { getResourcesSection } from "@/lib/readiness/pdf-content/resources";
 
 export type { FactTag, RequirementStatus } from "./report-text";
@@ -49,6 +50,8 @@ export type ReportViewProfile = {
   currentCountry?: string;
   migrationGoals?: string[];
   isAustralianQualification?: boolean | null;
+  /** The program(s) picked in the Assessment: Canada program slugs (lib/countries.ts countryVisaPathways.CA), comma separated; read by the Canada report only. */
+  preferredPathway?: string;
 };
 
 /** Title-cases a proper-noun field ("steve" -> "Steve", "USA" stays), as the PDF does for the name on the cover. */
@@ -76,6 +79,7 @@ export function reportViewProfile(input: Partial<ReadinessInput>, fullName: stri
     currentCountry: input.currentCountry ? toDisplayCase(input.currentCountry) : input.currentCountry,
     migrationGoals: input.migrationGoals,
     isAustralianQualification: input.qualificationAwardedInAustralia,
+    preferredPathway: input.preferredPathway,
   };
 }
 
@@ -105,12 +109,14 @@ export type ReportView = {
 const table = (headers: string[], rows: string[][], widths: number[]): Block => ({ kind: "table", headers, rows, widths });
 
 export function buildReportView(args: ReportViewArgs): ReportView {
+  // Country -> content model -> shared renderer: a Canada report is built by the Canada model (lib/reports/canada), never by the
+  // Australian builders below.
+  if (args.report.country === "CA") return buildCanadaReportView(args);
   const { report, locale: l, profile, dateText } = args;
   const asOf = args.asOf ?? new Date();
   const tags = tagsFor(l);
   const target = targetVisaOf({ targetVisa: report.targetVisa });
   const occupationRaw = profile.occupationRaw ?? profile.occupation;
-  const isCA = report.country === "CA";
 
   const factList = report.suppliedFacts ?? [
     { field: "occupation", value: profile.occupation ?? null },
@@ -123,14 +129,13 @@ export function buildReportView(args: ReportViewArgs): ReportView {
 
   const sections: ReportSection[] = [];
   const visaInfos = buildVisaInfos(report, target, facts, l);
-  const stateInfos = isCA ? [] : buildStateInfos(report, occupationRaw, l, asOf, args.stateMonitor, args.stateData);
+  const stateInfos = buildStateInfos(report, occupationRaw, l, asOf, args.stateMonitor, args.stateData);
 
   // 1. Professional summary: what was supplied, what was not, the published areas covered, what remains to be verified (about one page).
-  // The summary is written for the Australian report only: the rest of this view (visas, process, sources) is Australia-specific, and a Canadian report must not gain Australian wording.
-  if (!isCA) sections.push({
+  sections.push({
     id: "summary",
     title: reportSectionTitle("summary", l),
-    blocks: buildProfessionalSummary({ report, facts, l, occupationRaw, targetVisaLine: `${T(l, "Target visa", "Hedef vize", "目标签证")}: ${targetVisaName(target, l)}`, states: stateInfos, visaCount: visaInfos.length, isCA }),
+    blocks: buildProfessionalSummary({ report, facts, l, occupationRaw, targetVisaLine: `${T(l, "Target visa", "Hedef vize", "目标签证")}: ${targetVisaName(target, l)}`, states: stateInfos, visaCount: visaInfos.length }),
   });
 
   // 2. Applicant information: everything entered, labelled.
@@ -139,7 +144,7 @@ export function buildReportView(args: ReportViewArgs): ReportView {
   if (profile.mainGoal) extras.push(`${T(l, "Main goal", "Ana hedef", "主要目标")}: ${profile.mainGoal}  [${tags.supplied}]`);
   if (profile.migrationGoals?.length) extras.push(`${T(l, "Migration goals", "Göç hedefleri", "移民目标")}: ${profile.migrationGoals.join(", ")}  [${tags.supplied}]`);
   // A New Zealand passport on the Australian report: one fixed note (lib/intake/passport.ts); nothing else is added or assumed.
-  const nzNote = !isCA && isNewZealandPassport(facts.get("passportCountry")) ? [{ kind: "text" as const, text: newZealandAustraliaNote(l) }] : [];
+  const nzNote = isNewZealandPassport(facts.get("passportCountry")) ? [{ kind: "text" as const, text: newZealandAustraliaNote(l) }] : [];
   sections.push({
     id: "details",
     title: reportSectionTitle("details", l),
@@ -163,7 +168,7 @@ export function buildReportView(args: ReportViewArgs): ReportView {
   const pts = buildPointsInfo(report, l);
   let pointsExamples: ReportSection | undefined;
   let stateDetail: ReportSection | undefined;
-  if (!isCA && pts.applicable) {
+  if (pts.applicable) {
     const blocks: Block[] = [
       table([...pts.breakdownHeaders], pts.breakdown, [0.34, 0.12, 0.1, 0.44]),
       { kind: "text", text: pts.totalLine },
@@ -204,7 +209,7 @@ export function buildReportView(args: ReportViewArgs): ReportView {
   sections.push({ id: "visas", title: reportSectionTitle("visas", l), blocks: visaBlocks });
 
   // 5. States and territories.
-  if (!isCA) {
+  {
     const states = stateInfos;
     if (states.length) {
       const blocks: Block[] = [
@@ -287,7 +292,7 @@ export function buildReportView(args: ReportViewArgs): ReportView {
   // Appendices (before the sources): the published points-table examples and the additional published state detail.
   if (pointsExamples) sections.push(pointsExamples);
   if (stateDetail) sections.push(stateDetail);
-  const resources = getResourcesSection(l, isCA ? "CA" : "AU");
+  const resources = getResourcesSection(l, "AU");
   const srcBlocks: Block[] = [table(sourcesHeaders(l), buildSources(report, occupationRaw, stateInfos, l).map((r) => [...r]), [0.58, 0.24, 0.18])];
   const links = resources.sections.flatMap((s) => s.links.map((k) => `${k.label} — ${k.url}`));
   if (links.length) srcBlocks.push({ kind: "heading", text: T(l, "Official resources", "Resmi kaynaklar", "官方资源") }, { kind: "lines", lines: links });

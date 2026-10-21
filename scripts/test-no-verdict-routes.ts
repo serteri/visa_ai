@@ -122,7 +122,7 @@ async function main() {
 
   console.log("\n4. source guards");
   const gen = readFileSync("lib/readiness/generate-pdf.ts", "utf8");
-  check(/const useRestructuredReport = !report\.partnerSponsorshipAssessment && report\.country !== "CA";/.test(gen), "the drawer is chosen by the report only (not a mode or a flag): every AU skilled report uses the information-first drawer");
+  check(/const useRestructuredReport = !report\.partnerSponsorshipAssessment;/.test(gen), "the drawer is chosen by the report only (not a mode or a flag): every AU and CA report uses the information-first drawer, each from its own country model");
   check(!/READINESS_REPORT_MODE|readinessReportMode|CANADA_REPORT|_ENABLED/.test(gen) && !/READINESS_REPORT_MODE|readinessReportMode/.test(readFileSync("lib/reports/report-view.ts", "utf8") + readFileSync("lib/readiness/pdf-report-v2.ts", "utf8")), "no mode or flag can select another drawer or view");
   const callers = walk("app").concat(walk("lib"), walk("src")).filter((f) => /generateReadinessPDF\(/.test(readFileSync(f, "utf8")) && !f.endsWith("generate-pdf.ts"));
   check(callers.every((f) => /report-service\.ts$|agent[\\/]lead[\\/]\[id\][\\/]pdf[\\/]route\.ts$/.test(f)) && callers.length === 2, "only two callers build the PDF (the report service for customers, the agent lead route)", callers.join(", "));

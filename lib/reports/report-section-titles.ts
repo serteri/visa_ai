@@ -2,10 +2,27 @@
 import type { Locale } from "@/lib/readiness/types";
 import { T } from "@/lib/reports/report-text";
 
-export type ReportSectionId = "summary" | "details" | "glance" | "points" | "visas" | "states" | "invitations" | "costs" | "process" | "documents" | "pointsExamples" | "stateDetail" | "sources";
+export type ReportSectionId = "summary" | "details" | "glance" | "points" | "visas" | "states" | "invitations" | "costs" | "process" | "documents" | "provinces" | "pointsExamples" | "stateDetail" | "sources";
 
-export function reportSectionTitle(id: ReportSectionId, l: Locale): string {
+/** The title of a section. The shared ids carry country-specific titles: Canada has its own wording for programs, points and regions. */
+export function reportSectionTitle(id: ReportSectionId, l: Locale, country: "AU" | "CA" = "AU"): string {
+  if (country === "CA") {
+    switch (id) {
+      case "visas":
+        return T(l, "Program information", "Program bilgileri", "项目信息");
+      case "points":
+        return T(l, "Comprehensive Ranking System (CRS)", "Comprehensive Ranking System (CRS)", "综合排名系统（CRS）");
+      case "provinces":
+        return T(l, "Provincial and territorial programs", "Eyalet (province) ve bölge (territory) programları", "省和地区项目");
+      case "costs":
+        return T(l, "Costs and fees", "Maliyetler ve ücretler", "费用");
+      default:
+        break;
+    }
+  }
   switch (id) {
+    case "provinces":
+      return T(l, "Provincial and territorial programs", "Eyalet ve bölge programları", "省和地区项目");
     case "summary":
       return T(l, "Professional summary", "Profesyonel özet", "专业摘要");
     case "details":
@@ -36,3 +53,9 @@ export function reportSectionTitle(id: ReportSectionId, l: Locale): string {
 }
 
 export const REPORT_SECTION_IDS: ReportSectionId[] = ["summary", "details", "glance", "points", "visas", "states", "invitations", "costs", "process", "documents", "pointsExamples", "stateDetail", "sources"];
+
+/** The sections of the Canada report, in their fixed order. */
+export const CANADA_REPORT_SECTION_IDS: ReportSectionId[] = ["summary", "details", "visas", "points", "provinces", "costs", "process", "documents", "sources"];
+
+/** The section ids of a destination's report. */
+export const reportSectionIds = (country: "AU" | "CA"): ReportSectionId[] => (country === "CA" ? CANADA_REPORT_SECTION_IDS : REPORT_SECTION_IDS);

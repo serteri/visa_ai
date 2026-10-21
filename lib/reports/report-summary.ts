@@ -25,7 +25,6 @@ export type SummaryArgs = {
   states: StateInfo[];
   /** Visa entries in the report (for the count of the published-data area). */
   visaCount: number;
-  isCA: boolean;
 };
 
 /** The facts a reader would expect to see entered, with the label printed in the "not entered" list. */
@@ -58,7 +57,7 @@ export function buildProfessionalSummary(a: SummaryArgs): Block[] {
   ];
 
   // 1. Client-supplied information.
-  const supplied: Array<[string, string]> = [[T(l, "Destination country", "Hedef ülke", "目的地国家"), a.isCA ? T(l, "Canada", "Kanada", "加拿大") : T(l, "Australia", "Avustralya", "澳大利亚")]];
+  const supplied: Array<[string, string]> = [[T(l, "Destination country", "Hedef ülke", "目的地国家"), T(l, "Australia", "Avustralya", "澳大利亚")]];
   supplied.push([T(l, "Target visa", "Hedef vize", "目标签证"), a.targetVisaLine.replace(/^[^:]*:\s*/, "")]);
   for (const f of SUPPLIED_ORDER) {
     const v = facts.get(f);
@@ -72,7 +71,7 @@ export function buildProfessionalSummary(a: SummaryArgs): Block[] {
     if (v !== null && v !== undefined) supplied.push([factLabel(f, l), v]);
   }
   const pe = report.pointsEstimate;
-  if (!a.isCA && pe && typeof pe.estimatedPoints === "number") {
+  if (pe && typeof pe.estimatedPoints === "number") {
     supplied.push([T(l, "Points from these entries", "Bu girdilerden puan", "根据这些填写计算的积分"), T(l, `${pe.estimatedPoints} (published points table; see the Points section)`, `${pe.estimatedPoints} (yayımlanmış puan tablosu; Puanlar bölümüne bakın)`, `${pe.estimatedPoints}（已公布积分表；见“积分”部分）`)]);
   }
   blocks.push({ kind: "heading", text: T(l, "Client-supplied information", "Sağlanan bilgiler", "客户提供的信息") }, { kind: "kv", rows: supplied });
@@ -89,10 +88,10 @@ export function buildProfessionalSummary(a: SummaryArgs): Block[] {
   });
 
   // 3. Published-data areas covered.
-  const authority = a.occupationRaw && !a.isCA ? resolveAssessingAuthority(a.occupationRaw).authority : undefined;
+  const authority = a.occupationRaw ? resolveAssessingAuthority(a.occupationRaw).authority : undefined;
   const checkedDates = a.states.map((s) => s.checked).filter(Boolean).sort();
   const covered: string[] = [];
-  if (!a.isCA && pe && typeof pe.estimatedPoints === "number") covered.push(T(l, "Points: the published points table applied to the entered information, factor by factor", "Puanlar: yayımlanmış puan tablosunun girilen bilgilere faktör faktör uygulanması", "积分：将已公布积分表逐项应用于所填信息"));
+  if (pe && typeof pe.estimatedPoints === "number") covered.push(T(l, "Points: the published points table applied to the entered information, factor by factor", "Puanlar: yayımlanmış puan tablosunun girilen bilgilere faktör faktör uygulanması", "积分：将已公布积分表逐项应用于所填信息"));
   covered.push(
     authority
       ? T(l, `Skills assessment: the assessing authority for the occupation entered (${authority.authorityName}), its fees and processing time as it publishes them`, `Beceri değerlendirmesi: girilen meslek için değerlendirme kurumu (${authority.authorityName}), yayımladığı ücretler ve işlem süresi`, `技能评估：所填职业的评估机构（${authority.authorityName}）及其公布的费用和处理时间`)
@@ -111,7 +110,7 @@ export function buildProfessionalSummary(a: SummaryArgs): Block[] {
     T(l, "Skills assessment: the occupation it covers and its validity period", "Beceri değerlendirmesi: kapsadığı meslek ve geçerlilik süresi", "技能评估：所涵盖的职业及有效期"),
     T(l, "Work-experience evidence: dates, hours and relevance to the occupation", "Çalışma deneyimi kanıtı: tarihler, saatler ve meslekle ilgisi", "工作经验证明：日期、工时及与职业的相关性"),
     T(l, "English evidence: test type, date and result", "İngilizce kanıtı: sınav türü, tarihi ve sonucu", "英语证明：考试类型、日期和成绩"),
-    ...(a.isCA ? [] : [T(l, "State and territory program conditions: the current official pages, against the date checked shown on each entry", "Eyalet ve bölge program koşulları: her bölümde gösterilen kontrol tarihine karşı güncel resmi sayfalar", "各州和领地项目条件：对照各条目所示核对日期查看现行官方页面")]),
+    ...([T(l, "State and territory program conditions: the current official pages, against the date checked shown on each entry", "Eyalet ve bölge program koşulları: her bölümde gösterilen kontrol tarihine karşı güncel resmi sayfalar", "各州和领地项目条件：对照各条目所示核对日期查看现行官方页面")]),
     T(l, "Visa charges and settings: the effective dates stated with each figure", "Vize ücretleri ve ayarlar: her rakamla belirtilen geçerlilik tarihleri", "签证费用及设置：各数字所注明的生效日期"),
   ];
   blocks.push({ kind: "heading", text: T(l, "Items for independent verification", "Bağımsız olarak doğrulanacak noktalar", "有待独立核实的事项") }, { kind: "lines", lines: verify.map((v) => `• ${v}`) });

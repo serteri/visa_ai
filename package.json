@@ -44,6 +44,8 @@
     "test:occupation-redirects": "tsx scripts/test-occupation-redirects.ts",
     "test:canada-flag": "tsx scripts/test-canada-flag.ts",
     "test:destination-selector": "tsx scripts/test-destination-selector.ts",
+    "test:canada-report": "tsx scripts/test-canada-report.ts",
+    "samples:country": "tsx scripts/render-country-samples.ts",
     "test:target-visa": "tsx scripts/test-target-visa.ts",
     "test:lead-magnets": "tsx scripts/test-lead-magnets.ts",
     "test:email-provider": "tsx scripts/test-email-provider.ts",

@@ -110,6 +110,10 @@ jobs:
         run: npm run test:tra-block
       - name: Canada report generation switched off (flag, neutral message; en / tr / zh-Hans)
         run: npm run test:canada-flag
+      - name: Destination selector (Australia and Canada always visible; each loads its own flow; current / passport country independent)
+        run: npm run test:destination-selector
+      - name: Canada report is Canadian (deep check of the rendered PDF text: no Australian content; Australia unchanged; en / tr / zh-Hans)
+        run: npm run test:canada-report
       - name: Target visa field, DISABLED mode, engine carries the target (en / tr / zh-Hans)
         run: npm run test:target-visa
       - name: Lead magnets (own file per modal, validation, delivery, contrast, legend)

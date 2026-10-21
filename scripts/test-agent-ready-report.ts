@@ -101,10 +101,10 @@ async function main() {
   const caReport = runReadinessEngine(caInput);
   check(caReport.country === "CA", "a Canada input produces a Canada report (the engine routes on the destination)");
   const caView = buildReportView({ report: caReport, locale: "en", profile: { name: SAMPLE_APPLICANT_NAME, occupation: "Software developers", occupationRaw: "Software developers and programmers (21232)" }, dateText: "" });
-  check(!caView.sections.some((s) => s.id === "summary" || s.id === "points" || s.id === "states"), "a Canadian report gains no Australian summary, points or state sections");
-  const caSummaryWording = caView.sections.filter((s) => s.id === "summary").flatMap((s) => s.blocks.flatMap(blockStrings)).join(" ");
-  check(caSummaryWording === "", "no Professional Summary (and so no Australian wording from it) is added to a Canadian report");
-  // Known gap, recorded in the audit: the shared view's visa, process and sources sections are still Australia-specific; that is why Canada report generation stays switched off.
+  check(!caView.sections.some((s) => s.id === "states" || s.id === "stateDetail" || s.id === "pointsExamples" || s.id === "invitations"), "a Canadian report has none of the Australian-only sections (states, state detail, points examples, invitations)");
+  const caWording = caView.sections.flatMap((s) => s.blocks.flatMap(blockStrings)).join(" ");
+  check(caView.sections.some((s) => s.id === "summary") && !/subclass|Home Affairs|SkillSelect|ANZSCO|Australia/i.test(caWording), "a Canadian report has its own Professional Summary and no Australian wording anywhere (deep check: scripts/test-canada-report.ts)");
+  // The Canada report is built by the Canada model (lib/reports/canada); generation stays gated server-side until CANADA_REPORT_ENABLED is turned on.
   const step1 = readFileSync("app/[locale]/(main)/full-check/step-1-personal.tsx", "utf8");
   const form = readFileSync("app/[locale]/(main)/full-check/full-check-waitlist-form.tsx", "utf8");
   check(!/\{!canadaReportEnabled && <input[^>]*value="AU"/.test(step1) && !/\{canadaReportEnabled && \(\s*<div className="space-y-2">/.test(step1), "the destination selector is never hidden behind the Canada flag");
