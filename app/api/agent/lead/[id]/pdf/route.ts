@@ -70,6 +70,7 @@ export async function GET(_req: Request, ctx: { params: Promise<{ id: string }> 
         englishLevel: input.englishLevel,
         sponsorOrFamily: input.sponsorOrFamily,
         biggestConcern: input.biggestConcern,
+        preferredPathway: input.preferredPathway,
       },
     });
 

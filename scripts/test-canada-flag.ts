@@ -72,8 +72,9 @@ async function main() {
   console.log("\n3. the form and the code");
   const step1 = readFileSync("app/[locale]/(main)/full-check/step-1-personal.tsx", "utf8");
   const page = readFileSync("app/[locale]/(main)/full-check/page.tsx", "utf8");
-  check(/filter\(\(code\) => code !== "CA" \|\| canadaReportEnabled\)/.test(step1) && /destination-fixed-au/.test(step1) && /\{canadaReportEnabled && \(/.test(step1) && !/Which country is this report for/.test(step1) && /Select your destination country/.test(step1), "while the flag is off no country selector is shown (destination fixed to AU); when on, the selector is labelled 'Select your destination country' and omits nothing unsupported");
-  check(/upper === "CA" && !canadaReportEnabled\) return null/.test(step1) && /isCanadaReportEnabled\(\)/.test(page), "a ?country=CA link does not preselect Canada while the flag is off");
+  check(!/code !== "CA" \|\| canadaReportEnabled/.test(step1) && /activeCountries\.map/.test(step1) && !/destination-fixed-au/.test(step1) && /Which country are you researching for immigration\?/.test(step1), "the destination selector lists every active country (Canada included) whatever the flag says; only generation is gated");
+  check(/data-testid="canada-unavailable"/.test(step1) && /destination === "CA" && !canadaReportEnabled/.test(step1), "choosing Canada while the flag is off shows the neutral 'not available during the beta' note");
+  check(!/upper === "CA" && !canadaReportEnabled/.test(step1) && !/isCanadaReportEnabled\(\)/.test(readFileSync("app/[locale]/(main)/full-check/page.tsx", "utf8").match(/targetCountry:[^\n]*/)?.[0] ?? ""), "a ?country=CA link preselects Canada whatever the flag says");
   check(/runCanadaReadinessEngine/.test(readFileSync("lib/readiness/engine.ts", "utf8")), "the Canada engine is still in the repository");
 
   if (failures) { console.error(`\n❌ ${failures} check(s) failed`); process.exit(1); }

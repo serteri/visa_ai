@@ -1080,6 +1080,7 @@
   {
     "subclass": "atlantic-immigration-program",
     "id": "canada-atlantic-immigration-program",
+    "officialUrl": "https://www.canada.ca/en/immigration-refugees-citizenship/services/immigrate-canada/atlantic-immigration.html",
     "country": "Canada",
     "program_name": "Atlantic Immigration Program (AIP)",
     "status": "Open",
@@ -1214,6 +1215,7 @@
   },
   {
     "id": "canada-atlantic-immigration-program",
+    "officialUrl": "https://www.canada.ca/en/immigration-refugees-citizenship/services/immigrate-canada/atlantic-immigration.html",
     "country": "Canada",
     "program_name": "Atlantic Immigration Program (AIP)",
     "status": "Open",
@@ -1349,6 +1351,7 @@
   {
     "subclass": "canada-family-sponsorship",
     "id": "canada-family-sponsorship",
+    "officialUrl": "https://www.canada.ca/en/immigration-refugees-citizenship/services/immigrate-canada/family-sponsorship/spouse-partner-children.html",
     "country": "Canada",
     "program_name": "Family Sponsorship (Spouse, Partner or Child)",
     "status": "Open",

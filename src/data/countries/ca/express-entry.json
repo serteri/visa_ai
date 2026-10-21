@@ -230,6 +230,7 @@
       "secondOfficialLanguage": {
         "maxCombinedWithSpouse": 22,
         "maxCombinedWithoutSpouse": 24,
+        "tableIsPerAbility": true,
         "table": {
           "CLB4_or_less": 0,
           "CLB5_6": 1,
@@ -261,7 +262,12 @@
           "two_or_more_credentials": 9, "masters_or_professional": 10, "doctoral": 10
         }
       },
-      "languageFirstOfficial": { "maxPerAbility": 5, "maxTotal": 20 },
+      "languageFirstOfficial": {
+        "maxPerAbility": 5,
+        "maxTotal": 20,
+        "perAbilityTable": { "CLB5_6": 1, "CLB7_8": 3, "CLB9_plus": 5 },
+        "_verifiedAgainst": "Canada.ca, Express Entry: CRS criteria, spouse or common-law partner language table (per ability: CLB 5 or 6 = 1, CLB 7 or 8 = 3, CLB 9 or more = 5; maximum 20). Confirmed 2026-10-21 from IRCC search excerpts; the page itself could not be fetched from the build sandbox. Re-confirm on the page before enabling Canada."
+      },
       "canadianWorkExperience": {
         "max": 10,
         "table": { "none_or_less_1yr": 0, "1_year": 5, "2_years": 7, "3_years": 8, "4_years": 9, "5_plus_years": 10 }
@@ -291,6 +297,12 @@
       "certificateOfQualificationPlusLanguage": {
         "maxWithCLB5": 25,
         "maxWithCLB7": 50
+      },
+      "groupCaps": {
+        "education": 50,
+        "foreignWorkExperience": 50,
+        "certificateOfQualification": 50,
+        "_verifiedAgainst": "Canada.ca, Express Entry: CRS criteria (and the Ministerial Instructions respecting Express Entry): each skill transferability category is capped at 50 points (education = language and Canadian work experience combinations together; foreign work experience = language and Canadian work experience combinations together; certificate of qualification), and the section total at 100. Confirmed 2026-10-21 from IRCC search excerpts; the page itself could not be fetched from the build sandbox."
       }
     },
 

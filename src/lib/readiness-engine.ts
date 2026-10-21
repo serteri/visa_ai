@@ -895,5 +895,5 @@ export { buildLeadQuality } from "@/lib/readiness/engine";
  */
 export function runReadinessEngine(input: ReadinessInput): ReadinessReport {
   const report = runReadinessEngineCore(input);
-  return { ...report, targetVisa: targetVisaOf(input), suppliedFacts: buildSuppliedFacts(input, input.locale) };
+  return { ...report, targetVisa: targetVisaOf(input), suppliedFacts: buildSuppliedFacts(input, input.country === "CA" ? "en" : input.locale) }; // the Canada report is English-only (lib/reports/canada/locale.ts)
 }

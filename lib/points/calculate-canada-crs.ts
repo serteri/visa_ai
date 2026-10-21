@@ -9,6 +9,8 @@ import type {
 const CLB_RANK: Record<CLBLevel, number> = {
   not_selected: 0,
   less_than_CLB4: 0,
+  CLB_4: 4,
+  CLB_5: 5,
   CLB_4_5: 5,
   CLB_6: 6,
   CLB_7: 7,
@@ -16,6 +18,9 @@ const CLB_RANK: Record<CLBLevel, number> = {
   CLB_9: 9,
   CLB_10_plus: 10,
 };
+
+/** CLB 4 and CLB 5 share the published table row "CLB 4 or 5". */
+const tableKey = (level: CLBLevel): string => (level === "CLB_4" || level === "CLB_5" ? "CLB_4_5" : level);
 
 function minClbRank(scores: { speaking: CLBLevel; listening: CLBLevel; reading: CLBLevel; writing: CLBLevel }): number {
   return Math.min(
@@ -47,17 +52,22 @@ function coreHumanCapital(input: CanadaCRSInput) {
   const firstLanguageTable: Record<string, { withSpouse: number; withoutSpouse: number }> =
     crs.firstOfficialLanguage.table;
   const firstLanguage = firstLanguageAbilities.reduce((sum, ability) => {
-    const row = firstLanguageTable[ability]?.[spouseKey] ?? 0;
+    const row = firstLanguageTable[tableKey(ability)]?.[spouseKey] ?? 0;
     return sum + Math.min(row, firstLanguagePerAbilityMax);
   }, 0);
 
   const secondLanguageMax = input.hasSpouseOrPartner
     ? crs.secondOfficialLanguage.maxCombinedWithSpouse
     : crs.secondOfficialLanguage.maxCombinedWithoutSpouse;
-  const secondLanguage =
-    input.secondLanguageBand === "none"
-      ? 0
-      : Math.min(crs.secondOfficialLanguage.table[input.secondLanguageBand] ?? 0, secondLanguageMax);
+  // Points are per ability (1 / 3 / 6 for CLB 5-6 / 7-8 / 9+), summed over the four abilities, then capped (24, or 22 with a spouse or partner).
+  const secondAbilities = input.secondLanguageAbilityScores ?? {
+    speaking: input.secondLanguageBand,
+    listening: input.secondLanguageBand,
+    reading: input.secondLanguageBand,
+    writing: input.secondLanguageBand,
+  };
+  const secondLanguageRaw = Object.values(secondAbilities).reduce((sum, band) => sum + (band === "none" ? 0 : crs.secondOfficialLanguage.table[band] ?? 0), 0);
+  const secondLanguage = Math.min(secondLanguageRaw, secondLanguageMax);
 
   const canadianWorkExperience = crs.canadianWorkExperience.table[input.canadianWorkExperience]?.[spouseKey] ?? 0;
 
@@ -72,13 +82,17 @@ function spouseFactors(input: CanadaCRSInput) {
   const crs = expressEntryConfig.crsScore.spouseFactors;
   const education = crs.education.table[input.spouse.education] ?? 0;
 
-  const abilities = [
+  const spouseTable = crs.languageFirstOfficial.perAbilityTable as Record<string, number>;
+  const spouseAbilityPoints = (level: CLBLevel): number => {
+    const rank = CLB_RANK[level];
+    return rank >= 9 ? spouseTable.CLB9_plus : rank >= 7 ? spouseTable.CLB7_8 : rank >= 5 ? spouseTable.CLB5_6 : 0;
+  };
+  const language = [
     input.spouse.firstLanguageAbilityScores.speaking,
     input.spouse.firstLanguageAbilityScores.listening,
     input.spouse.firstLanguageAbilityScores.reading,
     input.spouse.firstLanguageAbilityScores.writing,
-  ];
-  const language = abilities.reduce((sum, score) => sum + Math.min(score, crs.languageFirstOfficial.maxPerAbility), 0);
+  ].reduce((sum, level) => sum + Math.min(spouseAbilityPoints(level), crs.languageFirstOfficial.maxPerAbility), 0);
   const cappedLanguage = Math.min(language, crs.languageFirstOfficial.maxTotal);
 
   const canadianWorkExperience = crs.canadianWorkExperience.table[input.spouse.canadianWorkExperience] ?? 0;
@@ -114,14 +128,17 @@ function skillTransferability(input: CanadaCRSInput): number {
   const crs = expressEntryConfig.crsScore.skillTransferabilityFactors;
   const firstLanguageMinRank = minClbRank(input.firstLanguageAbilityScores);
   const clb = clbTier(firstLanguageMinRank);
-  let total = 0;
+  const caps = crs.groupCaps;
+  let education = 0;
+  let foreignWork = 0;
+  let certificate = 0;
 
   if (input.postSecondaryCredentialCount !== "none" && clb) {
     const row =
       input.postSecondaryCredentialCount === "two_or_more"
         ? crs.educationPlusLanguage.twoOrMoreCredentials
         : crs.educationPlusLanguage.oneCredential;
-    total += row[clb];
+    education += row[clb];
   }
 
   const caExpTier = canadianExpTier(input.canadianWorkExperience);
@@ -130,23 +147,26 @@ function skillTransferability(input: CanadaCRSInput): number {
       input.postSecondaryCredentialCount === "two_or_more"
         ? crs.educationPlusCanadianWorkExp.twoOrMoreCredentials
         : crs.educationPlusCanadianWorkExp.oneCredential;
-    total += caExpTier === "1_year" ? row["1_year"] : row["2_years_plus"];
+    education += caExpTier === "1_year" ? row["1_year"] : row["2_years_plus"];
   }
 
   if (input.foreignWorkExperienceYears !== "none" && clb) {
     const row = crs.foreignWorkExpPlusLanguage[input.foreignWorkExperienceYears];
-    total += row[clb];
+    foreignWork += row[clb];
   }
 
   if (input.foreignWorkExperienceYears !== "none" && caExpTier) {
     const row = crs.foreignWorkExpPlusCanadianWorkExp[input.foreignWorkExperienceYears];
-    total += caExpTier === "1_year" ? row["1_year"] : row["2_years_plus"];
+    foreignWork += caExpTier === "1_year" ? row["1_year"] : row["2_years_plus"];
   }
 
   if (input.hasCertificateOfQualification) {
-    if (firstLanguageMinRank >= 7) total += crs.certificateOfQualificationPlusLanguage.maxWithCLB7;
-    else if (firstLanguageMinRank >= 5) total += crs.certificateOfQualificationPlusLanguage.maxWithCLB5;
+    if (firstLanguageMinRank >= 7) certificate = crs.certificateOfQualificationPlusLanguage.maxWithCLB7;
+    else if (firstLanguageMinRank >= 5) certificate = crs.certificateOfQualificationPlusLanguage.maxWithCLB5;
   }
+
+  // Each category is capped at 50 (the education combinations together, the foreign work experience combinations together), then the section at 100.
+  const total = Math.min(education, caps.education) + Math.min(foreignWork, caps.foreignWorkExperience) + Math.min(certificate, caps.certificateOfQualification);
 
   return Math.min(total, crs.maxTotal);
 }
@@ -162,7 +182,8 @@ function additionalPoints(input: CanadaCRSInput) {
       : crs.canadianPostSecondaryEducation[input.canadianPostSecondaryCredentialYears] ?? 0;
   const provincialNomination = input.hasProvincialNomination ? crs.provincialOrTerritorialNomination.points : 0;
 
-  const total = sibling + french + canadianEducation + provincialNomination;
+  // The additional-points section is capped at its published maximum (600).
+  const total = Math.min(sibling + french + canadianEducation + provincialNomination, crs.maxTotal);
   return { sibling, french, canadianEducation, provincialNomination, total };
 }
 
@@ -185,7 +206,10 @@ export function calculateCanadaCRS(input: CanadaCRSInput): CanadaCRSResult {
     skillTransferabilityTotal +
     additionalBreakdown.total;
 
+  const notCalculated = input.hasSpouseOrPartner && !input.spouse ? ["spouseOrPartnerFactors"] : [];
+
   return {
+    notCalculated,
     configVersion: expressEntryConfig.lastVerified,
     totalScore,
     maxScore: expressEntryConfig.crsScore.maxScore,

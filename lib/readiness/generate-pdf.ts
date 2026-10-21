@@ -24,6 +24,7 @@ import { notoSansBoldBase64 } from "./pdf-font-bold";
 import { notoSansSCRegularBase64 } from "./pdf-font-sc";
 import { appendNominationStreamSuffix, buildCaRankedPathways, calculateRankedPathways } from "./ranked-pathways";
 import { renderReportV2 } from "./pdf-report-v2";
+import { CA_REPORT_LOCALE } from "@/lib/reports/canada/locale";
 import { buildReportView, type ReportView } from "@/lib/reports/report-view";
 import { reportDisclaimer } from "@/lib/reports/report-disclaimer";
 import { renderPersonalizedContent } from "./pdf-personalized-content";
@@ -142,6 +143,8 @@ interface PDFGeneratorInput {
     annualSalaryAud?: string | null;
     migrationGoals?: string[];
     preferredState?: string;
+    /** The Assessment's program choice (Canada program slugs, comma separated); the Canada report reads it. */
+    preferredPathway?: string;
     isAustralianQualification?: boolean | null;
     isQualificationRecognized?: boolean | null;
     viability?: {
@@ -926,7 +929,9 @@ function formatGoalText(value: string): string {
 }
 
 export async function generateReadinessPDF(input: PDFGeneratorInput): Promise<Uint8Array> {
-  const { report, locale, userInputSummary: rawUserInputSummary } = input;
+  const { report, userInputSummary: rawUserInputSummary } = input;
+  // The Canada report is English-only in this release (lib/reports/canada/locale.ts): never a part-translated paid report.
+  const locale = report.country === "CA" ? CA_REPORT_LOCALE : input.locale;
   // The state-page monitor's status (null when unavailable: the note then rests on the date the data was verified by hand).
   const stateData = report.country === "CA" ? undefined : input.stateData ?? (await getAdminStateData());
   const stateMonitor = report.country === "CA" ? null : input.stateMonitor !== undefined ? input.stateMonitor : await loadStateMonitorSnapshot();
@@ -1122,7 +1127,7 @@ export async function generateReadinessPDF(input: PDFGeneratorInput): Promise<Ui
     // report.disclaimer is country-aware (MARA for AU, RCIC for CA per
     // src/data/countries/ca/express-entry.json); GLOBAL_FOOTER_TEXTS remains
     // only as a fallback for the (should-not-happen) case where it's missing.
-    const footerText = report.country === "AU" ? reportDisclaimer(effectiveLocale) : report.disclaimer || GLOBAL_FOOTER_TEXTS[effectiveLocale];
+    const footerText = report.country === "CA" && useRestructuredReport ? getReportView().disclaimer : report.country === "AU" ? reportDisclaimer(effectiveLocale) : report.disclaimer || GLOBAL_FOOTER_TEXTS[effectiveLocale];
 
     // Starts at page 2 -- the cover page (page 1) already draws its own
     // credit line in addCoverPage(); looping from
@@ -1816,9 +1821,10 @@ export async function generateReadinessPDF(input: PDFGeneratorInput): Promise<Ui
     doc.setPage(last);
   }
 
-  // The restructured customer report (lib/reports/report-view.ts): the AU skilled / employer report. Canada and the
-  // partner (820 / 801) report keep their own flows.
-  const useRestructuredReport = !report.partnerSponsorshipAssessment && report.country !== "CA";
+  // The restructured customer report (lib/reports/report-view.ts): the AU skilled / employer report and the Canada report, each
+  // built by its own country model (lib/reports/canada for Canada) and drawn by the one renderer. The partner (820 / 801)
+  // report keeps its own flow.
+  const useRestructuredReport = !report.partnerSponsorshipAssessment;
   const useInformationCover = useRestructuredReport || report.country === "AU";
   let cachedReportView: ReportView | null = null;
   /** The date on the cover: "Last updated <date>" when the content was recomputed, else the generation date. */
@@ -1832,7 +1838,7 @@ export async function generateReadinessPDF(input: PDFGeneratorInput): Promise<Ui
       cachedReportView = buildReportView({
         report,
         locale: effectiveLocale,
-        profile: { ...userInputSummary, occupationRaw: rawUserInputSummary.occupation },
+        profile: { ...userInputSummary, occupationRaw: rawUserInputSummary.occupation, preferredPathway: rawUserInputSummary.preferredPathway },
         dateText: coverDateText(),
         stateMonitor,
         stateData,
@@ -5305,7 +5311,7 @@ export async function generateReadinessPDF(input: PDFGeneratorInput): Promise<Ui
   }
 
   // ── Appendix Architecture (CA only) ─────────────────────────────────────
-  if (report.country === "CA" && !report.partnerSponsorshipAssessment) drawAppendixSection();
+  if (report.country === "CA" && !report.partnerSponsorshipAssessment && !useRestructuredReport) drawAppendixSection();
 
   // No call-to-action banner ("Want to find your own PR points?") on the last page of any report.
 

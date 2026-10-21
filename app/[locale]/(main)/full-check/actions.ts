@@ -38,6 +38,7 @@ import {
   countFreeBetaUnlocksToday,
 } from "@/src/lib/user-reports";
 import { getApprovedAgentUser } from "@/lib/crm/leads";
+import { legacyEducationLevel, legacyEnglishLevel, legacySponsorOrFamily, parseCanadaCrsEntry } from "@/lib/points/canada-crs-intake";
 import { passportIsDestination, passportSameAsDestinationMessage, toPassportLocale } from "@/lib/intake/passport";
 import { buildReportHeader, type ReportHeader } from "@/lib/reports/report-header";
 import { consentTableReady, hashIp, recordConsentGranted, withdrawalUrl } from "@/lib/consent/referral-consent";
@@ -365,10 +366,16 @@ export async function submitFullCheckWaitlist(
   const occupationRaw = String(formData.get("occupation") ?? "").trim();
   const occupation = canonicalizeOccupationInput(occupationRaw);
   const englishLevelRaw = String(formData.get("englishLevel") ?? "").trim();
-  const englishLevel = isEnglishLevel(englishLevelRaw) ? englishLevelRaw : "";
+  // Canada: the CRS answers (lib/points/canada-crs-intake.ts) are the source; the single English level, education and marital status the rest of
+  // the product reads are derived from them, so they cannot disagree with the CRS figure.
+  const canadaCrs = rawTargetCountry === "CA" ? parseCanadaCrsEntry((name) => formData.get(name)) : undefined;
+  const englishLevelAu = isEnglishLevel(englishLevelRaw) ? englishLevelRaw : "";
+  const englishLevel = (canadaCrs ? legacyEnglishLevel(canadaCrs.firstLanguage) : englishLevelAu) as typeof englishLevelAu;
   const qualificationLevelRaw = String(formData.get("qualificationLevel") ?? "").trim();
   // Field values shared with the in-chat quick profile card (lib/intake/fields.ts).
-  const qualificationLevel = isQualificationLevel(qualificationLevelRaw) ? qualificationLevelRaw : undefined;
+  const qualificationLevel = isQualificationLevel(qualificationLevelRaw)
+    ? qualificationLevelRaw
+    : canadaCrs && isQualificationLevel(legacyEducationLevel(canadaCrs.education)) ? (legacyEducationLevel(canadaCrs.education) as NonNullable<ReadinessInput["qualificationLevel"]>) : undefined;
   const annualSalaryAudRaw = String(formData.get("annualSalaryAud") ?? "").trim();
   const annualSalaryAud = annualSalaryAudRaw ? Number(annualSalaryAudRaw) : undefined;
   // Skills assessment: the explicit radio (no default selection), else the older "Occupation confirmed?" select; an
@@ -506,6 +513,7 @@ export async function submitFullCheckWaitlist(
   const relationshipEvidence = formData.getAll("relationshipEvidence").map(String);
 
   let sponsorOrFamily = String(formData.get("sponsorOrFamily") ?? "").trim();
+  if (canadaCrs) sponsorOrFamily = legacySponsorOrFamily(canadaCrs.spouse) || sponsorOrFamily;
   if (isPartner) {
     const parts = [
       relationshipType ? `Relation: ${relationshipType}` : null,
@@ -752,6 +760,7 @@ export async function submitFullCheckWaitlist(
       biggestConcern: biggestConcern || undefined,
       nocCode: nocCode || undefined,
       nocTeer: nocTeer !== undefined && !isNaN(nocTeer) ? nocTeer : undefined,
+      canadaCrs,
       ...situationInput,
     }),
     targetCountry
@@ -838,6 +847,7 @@ export async function submitFullCheckWaitlist(
     isLabourAgreementEmployer: formData.get("isLabourAgreementEmployer") === "on" || undefined,
     nocCode: nocCode || undefined,
     nocTeer: nocTeer !== undefined && !isNaN(nocTeer) ? nocTeer : undefined,
+    canadaCrs,
     ...situationInput,
   };
 

@@ -6,12 +6,14 @@ import { FileText, ListChecks } from "lucide-react";
 import { FullCheckWaitlistForm } from "./full-check-waitlist-form";
 import { defaultCountry, isSupportedCountry, type SupportedCountry } from "@/lib/countries";
 import { reportDisclaimer } from "@/lib/reports/report-disclaimer";
-import { REPORT_SECTION_IDS, reportSectionTitle, type ReportSectionId } from "@/lib/reports/report-section-titles";
+import { canadaDisclaimer } from "@/lib/reports/canada/disclaimer";
+import { REPORT_SECTION_IDS, reportSectionIds, reportSectionTitle, type ReportSectionId } from "@/lib/reports/report-section-titles";
 
 type Locale = "en" | "tr" | "zh-Hans";
 
 /** One neutral line per section of the Visa Information Report: what it lists, nothing it concludes. */
 const SECTION_NOTE: Record<ReportSectionId, [string, string, string]> = {
+  provinces: ["Ontario, British Columbia and Alberta streams and Quebec's federal stage, as held in our verified data (other provinces and territories are not included)", "Doğrulanmış verilerimizdeki Ontario, British Columbia ve Alberta akışları ile Quebec'in federal aşaması (diğer eyalet ve bölgeler dahil değildir)", "我们已核实数据中的安大略省、不列颠哥伦比亚省和阿尔伯塔省通道及魁北克联邦阶段（不含其他省和地区）"],
   summary: ["What was entered, what was not, the published areas covered and what remains to be verified", "Nelerin girildiği, nelerin girilmediği, kapsanan yayımlanmış alanlar ve doğrulanması gerekenler", "已填写与未填写的内容、涵盖的公开数据领域及有待核实的事项"],
   pointsExamples: ["Arithmetic examples using published points-table values only", "Yalnızca yayımlanmış puan tablosu değerleriyle aritmetik örnekler", "仅使用已公布积分表数值的算术示例"],
   stateDetail: ["Further published detail for each state and territory", "Her eyalet ve bölge için ek yayımlanmış ayrıntılar", "各州和领地的补充已公布细节"],
@@ -25,6 +27,15 @@ const SECTION_NOTE: Record<ReportSectionId, [string, string, string]> = {
   process: ["The usual steps for each pathway family", "Her yol ailesi için olağan adımlar", "各类路径的常见步骤"],
   documents: ["Documents commonly requested and general points", "Sık istenen belgeler ve genel noktalar", "常见所需文件与一般事项"],
   sources: ["Every source with its date", "Tüm kaynaklar ve tarihleri", "全部来源及日期"],
+};
+
+/** Canada's one-line notes where they differ from the Australian ones. */
+const CANADA_SECTION_NOTE: Partial<Record<ReportSectionId, [string, string, string]>> = {
+  summary: ["What was entered, what was not, the Canadian programs covered and what remains to be verified", "Nelerin girildiği, nelerin girilmediği, kapsanan Kanada programları ve doğrulanması gerekenler", "已填写与未填写的内容、涵盖的加拿大项目及有待核实的事项"],
+  visas: ["Each program (Express Entry, Provincial Nominee Program, Atlantic Immigration Program, Family Sponsorship): published requirements, fees and processing information, with sources", "Her program (Express Entry, Provincial Nominee Program, Atlantic Immigration Program, aile sponsorluğu): yayımlanmış gereklilikler, ücretler ve işlem bilgisi, kaynaklarıyla", "每个项目（快速通道、省提名计划、大西洋移民计划、家庭担保）：已公布的要求、费用和处理信息及来源"],
+  points: ["The published CRS factors and maximums, and the factors calculated from your entries", "Yayımlanmış CRS faktörleri ve üst sınırlar ile girdilerinizden hesaplanan faktörler", "已公布的 CRS 因素及上限，以及根据您所填信息计算的因素"],
+  costs: ["Published IRCC fees, provincial fees recorded and settlement funds", "Yayımlanmış IRCC ücretleri, kayıtlı eyalet ücretleri ve yerleşim fonu", "已公布的 IRCC 费用、已记录的省级费用及安家资金"],
+  process: ["The usual steps for Express Entry and the Provincial Nominee Program", "Express Entry ve Provincial Nominee Program için olağan adımlar", "快速通道与省提名计划的常见步骤"],
 };
 
 export function FullCheckInteractiveSection({
@@ -57,13 +68,14 @@ export function FullCheckInteractiveSection({
   const loc: Locale = locale === "tr" ? "tr" : locale === "zh-Hans" ? "zh-Hans" : "en";
   const tx = (en: string, tr: string, zh: string) => (loc === "tr" ? tr : loc === "zh-Hans" ? zh : en);
 
-  const [, setSelectedCountry] = useState<SupportedCountry>(
-    isSupportedCountry(initialValues.targetCountry) && (initialValues.targetCountry !== "CA" || canadaReportEnabled) ? initialValues.targetCountry : defaultCountry
+  const [selectedCountry, setSelectedCountry] = useState<SupportedCountry>(
+    isSupportedCountry(initialValues.targetCountry) ? initialValues.targetCountry : defaultCountry
   );
   const noteIndex = loc === "tr" ? 1 : loc === "zh-Hans" ? 2 : 0;
   const [selectedVisa, setSelectedVisa] = useState(initialValues.visaInterest ?? "");
-  const partnerReport = selectedVisa === "820_801";
-  const shownSections = partnerReport ? (["details", "costs", "documents", "sources"] as ReportSectionId[]) : REPORT_SECTION_IDS.filter((id) => id !== "invitations" && id !== "stateDetail");
+  const isCanada = selectedCountry === "CA";
+  const partnerReport = !isCanada && selectedVisa === "820_801";
+  const shownSections = isCanada ? reportSectionIds("CA") : partnerReport ? (["details", "costs", "documents", "sources"] as ReportSectionId[]) : REPORT_SECTION_IDS.filter((id) => id !== "invitations" && id !== "stateDetail");
 
   return (
     <div className="mx-auto grid max-w-6xl grid-cols-1 items-start gap-12 lg:grid-cols-12">
@@ -92,13 +104,13 @@ export function FullCheckInteractiveSection({
           <ul className="mt-5 space-y-3">
             {shownSections.map((id) => (
               <li key={id} className="rounded-lg border border-slate-200 bg-white p-3">
-                <p className="text-sm font-medium text-slate-900">{reportSectionTitle(id, loc)}</p>
+                <p className="text-sm font-medium text-slate-900">{reportSectionTitle(id, loc, selectedCountry)}</p>
                 <p className="mt-0.5 text-xs text-slate-700">{partnerReport ? ({
                   details: tx("Your relationship and sponsor entries; documents are not reviewed", "İlişki ve sponsor girdileriniz; belgeler incelenmez", "您的关系及担保人填写内容；不审阅文件"),
                   costs: tx("General published charges and labelled cost estimates", "Genel yayımlanmış ücretler ve tahmin olarak etiketlenen maliyetler", "一般公开费用及标明的估算"),
                   documents: tx("Document types you marked or did not enter, not an evidence decision", "İşaretlediğiniz veya belirtmediğiniz belge türleri; belge kararı değildir", "您勾选或未提供的文件类型，并非材料判定"),
                   sources: tx("Home Affairs reference and professional-verification boundary", "Home Affairs kaynağı ve profesyonel doğrulama sınırı", "内政部参考与专业核实界限"),
-                } as Partial<Record<ReportSectionId, string>>)[id] : SECTION_NOTE[id][noteIndex]}</p>
+                } as Partial<Record<ReportSectionId, string>>)[id] : (isCanada ? CANADA_SECTION_NOTE[id] ?? SECTION_NOTE[id] : SECTION_NOTE[id])[noteIndex]}</p>
               </li>
             ))}
           </ul>
@@ -111,12 +123,12 @@ export function FullCheckInteractiveSection({
           </div>
           <p className="mt-2 text-xs leading-relaxed text-slate-700">
             {tx(
-              partnerReport ? "The Partner report records your entries and general cost and document information. It does not decide sponsorship restrictions, relationship evidence or visa eligibility." : "Information from published sources about every visa and every state and territory program, with the source and date of each fact. The visa you select is listed first; everything else is in a fixed order. It does not assess your situation.",
-              partnerReport ? "Partner raporu girdilerinizi, genel maliyet ve belge bilgilerini kaydeder. Sponsorluk kısıtlamaları, ilişki belgeleri veya vize uygunluğu hakkında karar vermez." : "Her vize ile her eyalet ve bölge programı hakkında, her bilginin kaynağı ve tarihiyle, yayımlanmış kaynaklardan bilgi. Seçtiğiniz vize ilk sırada listelenir; diğer her şey sabit bir sıradadır. Durumunuzu değerlendirmez.",
-              partnerReport ? "伴侣报告记录您的填写内容，以及一般费用和文件信息。不判定担保限制、关系材料或签证资格。" : "来自公开来源的信息，涵盖每种签证及每个州和领地项目，并标明每项事实的来源和日期。您选择的签证排在最前，其余按固定顺序排列。不评估您的情况。"
+              isCanada ? "Information from published sources about the Canadian programs and the provincial and territorial streams held in our data, with the source and date of each fact. The program you select is listed first; everything else is in a fixed order. It does not assess your situation." : partnerReport ? "The Partner report records your entries and general cost and document information. It does not decide sponsorship restrictions, relationship evidence or visa eligibility." : "Information from published sources about every visa and every state and territory program, with the source and date of each fact. The visa you select is listed first; everything else is in a fixed order. It does not assess your situation.",
+              isCanada ? "Verilerimizde bulunan Kanada programları ve eyalet ile bölge akışları hakkında, her bilginin kaynağı ve tarihiyle, yayımlanmış kaynaklardan bilgi. Seçtiğiniz program ilk sırada listelenir; diğer her şey sabit bir sıradadır. Durumunuzu değerlendirmez." : partnerReport ? "Partner raporu girdilerinizi, genel maliyet ve belge bilgilerini kaydeder. Sponsorluk kısıtlamaları, ilişki belgeleri veya vize uygunluğu hakkında karar vermez." : "Her vize ile her eyalet ve bölge programı hakkında, her bilginin kaynağı ve tarihiyle, yayımlanmış kaynaklardan bilgi. Seçtiğiniz vize ilk sırada listelenir; diğer her şey sabit bir sıradadır. Durumunuzu değerlendirmez.",
+              isCanada ? "来自公开来源的信息，涵盖我们数据中的加拿大项目以及省和地区通道，并标明每项事实的来源和日期。您选择的项目排在最前，其余按固定顺序排列。不评估您的情况。" : partnerReport ? "伴侣报告记录您的填写内容，以及一般费用和文件信息。不判定担保限制、关系材料或签证资格。" : "来自公开来源的信息，涵盖每种签证及每个州和领地项目，并标明每项事实的来源和日期。您选择的签证排在最前，其余按固定顺序排列。不评估您的情况。"
             )}
           </p>
-          <p className="mt-3 text-xs leading-relaxed text-slate-700">{reportDisclaimer(loc)}</p>
+          <p className="mt-3 text-xs leading-relaxed text-slate-700">{isCanada ? canadaDisclaimer(loc) : reportDisclaimer(loc)}</p>
         </div>
       </div>
     </div>

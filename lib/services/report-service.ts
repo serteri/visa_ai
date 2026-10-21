@@ -251,6 +251,7 @@ async function buildReportPdf(record: UserReportRecord, fullName?: string): Prom
       annualSalaryAud: record.input.annualSalaryAud != null ? String(record.input.annualSalaryAud) : null,
       migrationGoals: record.input.migrationGoals,
       preferredState: record.input.preferredState,
+      preferredPathway: record.input.preferredPathway,
       isAustralianQualification: record.input.qualificationAwardedInAustralia,
       isQualificationRecognized: record.input.isQualificationRecognized,
       viability: viabilityData,

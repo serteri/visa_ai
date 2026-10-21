@@ -10,6 +10,7 @@ function ErrorText({ message }: { message?: string }) {
   if (!message) return null;
   return <p className="text-xs text-red-600">{message}</p>;
 }
+import { CanadaCrsFields } from "./canada-crs-fields";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
 interface Step3Props {
@@ -62,6 +63,15 @@ export function Step3Language(props: Step3Props) {
     <>
       {!isPartner && (
         <>
+          {selectedCountryIsCA ? (
+            <>
+              <CanadaCrsFields selectClassName={selectClassName} errors={state.errors} setEnglishLevel={setEnglishLevel} setQualificationLevel={setQualificationLevel} setSponsorFamilyStatus={setSponsorFamilyStatus} />
+              <input type="hidden" name="englishLevel" value={englishLevel} />
+              <input type="hidden" name="qualificationLevel" value={qualificationLevel} />
+              <input type="hidden" name="sponsorOrFamily" value={sponsorFamilyStatus} />
+            </>
+          ) : (
+            <>
           <div className="space-y-2">
             <Label htmlFor="waitlist-english">{txt("İngilizce seviyesi", "English level", "英语水平")}<RequiredMark /></Label>
             <Select value={englishLevel} onValueChange={setEnglishLevel}>
@@ -85,6 +95,9 @@ export function Step3Language(props: Step3Props) {
             <input type="hidden" name="qualificationLevel" value={qualificationLevel} />
             <ErrorText message={state.errors?.qualificationLevel} />
           </div>
+
+            </>
+          )}
 
           <div className="space-y-2">
             <Label htmlFor="waitlist-qualification-awarded-in-australia">
@@ -166,17 +179,18 @@ export function Step3Language(props: Step3Props) {
 
           <div className="grid gap-4 sm:grid-cols-2">
             <div className="space-y-2">
-              <Label htmlFor="waitlist-offshore-experience-years">{selectedCountryIsCA ? txt("Kanada dışı deneyim (yıl)", "Experience outside Canada (years)", "加拿大境外经验") : txt("Avustralya dışı deneyim (yıl)", "Experience outside Australia (years)", "澳大利亚境外经验")}</Label>
+              <Label htmlFor="waitlist-offshore-experience-years">{selectedCountryIsCA ? txt("Kanada dışı nitelikli iş deneyimi (yıl, yoksa 0)", "Skilled work experience outside Canada (years; 0 if none)", "加拿大境外技术工作经验（年；没有请填 0）") : txt("Avustralya dışı deneyim (yıl)", "Experience outside Australia (years)", "澳大利亚境外经验")}</Label>
               <Input id="waitlist-offshore-experience-years" name="offshoreExperienceYears" type="number" min={0} step="0.5" inputMode="decimal" {...noAutofill("offshoreExperienceYears")} className={fieldClassName} placeholder={txt("Örn: 5", "E.g., 5", "例如：5")} />
               <p className="text-xs text-gray-400">{experienceHelpText}</p>
             </div>
             <div className="space-y-2">
-              <Label htmlFor="waitlist-onshore-experience-years">{selectedCountryIsCA ? txt("Kanada içi deneyim (yıl)", "Experience in Canada (years)", "加拿大境内经验") : txt("Avustralya içi deneyim (yıl)", "Experience in Australia (years)", "澳大利亚境内经验")}</Label>
+              <Label htmlFor="waitlist-onshore-experience-years">{selectedCountryIsCA ? txt("Kanada içi nitelikli iş deneyimi (yıl, yoksa 0)", "Skilled work experience in Canada (years; 0 if none)", "加拿大境内技术工作经验（年；没有请填 0）") : txt("Avustralya içi deneyim (yıl)", "Experience in Australia (years)", "澳大利亚境内经验")}</Label>
               <Input id="waitlist-onshore-experience-years" name="onshoreExperienceYears" type="number" min={0} step="0.5" inputMode="decimal" {...noAutofill("onshoreExperienceYears")} className={fieldClassName} placeholder={txt("Örn: 2", "E.g., 2", "例如：2")} />
               <p className="text-xs text-gray-400">{experienceHelpText}</p>
             </div>
           </div>
 
+          {!selectedCountryIsCA && (
           <div className="space-y-2">
             <Label htmlFor="waitlist-sponsor">{selectedCountryIsCA ? txt("Medeni durum", "Marital status", "婚姻状况") : txt("Partner puanı için ilişki durumu", "Relationship information for partner points", "伴侣积分相关情况")}<RequiredMark /></Label>
             <Select value={sponsorFamilyStatus} onValueChange={setSponsorFamilyStatus}>
@@ -187,6 +201,7 @@ export function Step3Language(props: Step3Props) {
             </Select>
             <input type="hidden" name="sponsorOrFamily" value={sponsorFamilyStatus} />
           </div>
+          )}
         </>
       )}
 
