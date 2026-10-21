@@ -6,7 +6,7 @@
  *   - points scenarios only in the appendix "Published points-table examples", with the arithmetic-only sentence
  *   - sample identity: "Sample Applicant", report ID SAMPLE-REPORT, no customer-looking ID, no personal data
  *   - country routing: an Australian report carries no Canada content and a Canadian report carries no Australian visa content;
- *     the Assessment form shows no one-item country selector while Canada is off
+ *     the Assessment form always shows the destination selector (Australia and Canada)
  *
  *   npx tsx scripts/test-agent-ready-report.ts
  */
@@ -107,9 +107,9 @@ async function main() {
   // Known gap, recorded in the audit: the shared view's visa, process and sources sections are still Australia-specific; that is why Canada report generation stays switched off.
   const step1 = readFileSync("app/[locale]/(main)/full-check/step-1-personal.tsx", "utf8");
   const form = readFileSync("app/[locale]/(main)/full-check/full-check-waitlist-form.tsx", "utf8");
-  check(/\{!canadaReportEnabled && <input[^>]*value="AU"/.test(step1) && /\{canadaReportEnabled && \(/.test(step1), "no country selector while Canada is off: the destination is fixed to AU");
-  check(/Select your destination country/.test(step1) && !/Which country is this report for/.test(step1), "when Canada is enabled the selector reads 'Select your destination country'");
-  check(/canadaReportEnabled \? "" : "AU"/.test(form), "the form's destination defaults to AU when Canada is off");
+  check(!/\{!canadaReportEnabled && <input[^>]*value="AU"/.test(step1) && !/\{canadaReportEnabled && \(\s*<div className="space-y-2">/.test(step1), "the destination selector is never hidden behind the Canada flag");
+  check(/Which country are you researching for immigration\?/.test(step1) && !/Which country is this report for/.test(step1), "the selector reads 'Which country are you researching for immigration?'");
+  check(!/canadaReportEnabled \? "" : "AU"/.test(form), "the form's destination is not forced to AU when Canada generation is off");
   const actions = readFileSync("app/[locale]/(main)/full-check/actions.ts", "utf8");
   check(/targetCountry === "CA" && !isCanadaReportEnabled\(\)/.test(actions), "the server refuses a Canada request while Canada is off");
 

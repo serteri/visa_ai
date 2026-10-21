@@ -64,6 +64,10 @@ export const migrationGoalOptions: Array<{
       "zh-Hans": "独立技术移民(189)或州担保(190)",
     },
     mapsToVisas: ["189", "190"],
+    // CA: the Express Entry program slugs (countryVisaPathways.CA), never AU subclass codes.
+    mapsToVisasByCountry: {
+      CA: ["canada-express-entry-fsw", "canada-express-entry-cec", "canada-express-entry-fstp"],
+    },
   },
   {
     id: "employer_sponsorship",
@@ -100,6 +104,10 @@ export const migrationGoalOptions: Array<{
       "zh-Hans": "偏远地区技术签证(491) — 区域承诺可获额外积分",
     },
     mapsToVisas: ["491"],
+    // CA: the Provincial Nominee Program slug (countryVisaPathways.CA), never an AU subclass code.
+    mapsToVisasByCountry: {
+      CA: ["canada-pnp-non-express-entry"],
+    },
   },
 ];
 

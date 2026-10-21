@@ -88,7 +88,6 @@ export function Step1Personal({
     const code = searchParams.get("country");
     if (!code) return null;
     const upper = code.toUpperCase();
-    if (upper === "CA" && !canadaReportEnabled) return null;
     return ["AU", "CA"].includes(upper) ? (upper as SupportedCountry) : null;
   })();
 
@@ -114,24 +113,26 @@ export function Step1Personal({
         {fieldErrors?.["waitlist-e"] && <p className="text-xs text-red-600">{fieldErrors["waitlist-e"]}</p>}
       </div>
 
-      {/* Australia is the only destination the Assessment completes end to end (Canada report generation is switched off, lib/readiness/report-mode.ts):
-          a one-item dropdown asks a question with no choice, so the destination is fixed internally and no selector is shown. */}
-      {!canadaReportEnabled && <input id="waitlist-target-country" type="hidden" name="targetCountry" value="AU" data-testid="destination-fixed-au" />}
-      {canadaReportEnabled && (
-      <div className="space-y-2">
-        <Label htmlFor="waitlist-target-country">{txt("Hedef ülkenizi seçin", "Select your destination country", "请选择您的目的地国家")}</Label>
+      {/* The destination selector is always shown with both Australia and Canada: it is the first question of the Assessment and is separate from
+          Current country and Passport country. Whether a Canada report can be generated is decided on the server (CANADA_REPORT_ENABLED), not by hiding the choice. */}
+      <div className="space-y-2" data-field-error={fieldErrors?.["waitlist-target-country"] || undefined}>
+        <Label htmlFor="waitlist-target-country">{txt("Göç için hangi ülkeyi araştırıyorsunuz?", "Which country are you researching for immigration?", "您正在研究哪个国家的移民？")}<RequiredMark /></Label>
         <Combobox
           placeholder={txt("Ülke seçin", "Select country", "请选择国家")}
-          items={activeCountries.filter((code) => code !== "CA" || canadaReportEnabled).map(code => ({ value: code, label: countryLabels[code][isTr ? "tr" : isZh ? "zh-Hans" : "en"] }))}
+          items={activeCountries.map(code => ({ value: code, label: countryLabels[code][isTr ? "tr" : isZh ? "zh-Hans" : "en"] }))}
           value={destination}
           onChange={(val) => onCountryChange(val as SupportedCountry)}
           disabled={lockedCountry !== null}
-          className={selectClassName}
+          className={`${selectClassName} ${errCls("waitlist-target-country")}`}
         />
         <input id="waitlist-target-country" type="hidden" name="targetCountry" value={destination} />
         {fieldErrors?.["waitlist-target-country"] && <p className="text-xs text-red-600">{fieldErrors["waitlist-target-country"]}</p>}
+        {destination === "CA" && !canadaReportEnabled && (
+          <p className="text-xs text-slate-500" data-testid="canada-unavailable">
+            {txt("Kanada raporları beta döneminde kullanılamıyor.", "Canada reports are not available during the beta.", "测试期间暂不提供加拿大报告。")}
+          </p>
+        )}
       </div>
-      )}
 
       {selectedCountry === "AU" ? (
         <div className="space-y-2" data-field-error={fieldErrors?.["waitlist-target-visa"] || undefined}>

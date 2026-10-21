@@ -78,7 +78,7 @@ export default async function FullCheckPage({ params, searchParams }: FullCheckP
   const initialValues = {
     visaInterest: query.visaInterest ?? query.preferredPathway ?? "",
     currentCountry: query.currentCountry ?? "",
-    targetCountry: isSupportedCountry(query.country?.toUpperCase()) && (query.country!.toUpperCase() !== "CA" || isCanadaReportEnabled()) ? query.country!.toUpperCase() : "",
+    targetCountry: isSupportedCountry(query.country?.toUpperCase()) ? query.country!.toUpperCase() : "",
     // The destination named by ?country= (any letter case), whether or not Canada reports are on: the passport list never offers it.
     destination: destinationFromParam(query.country),
     occupation: query.occupation ?? "",

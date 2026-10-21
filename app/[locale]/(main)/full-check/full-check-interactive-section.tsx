@@ -58,7 +58,7 @@ export function FullCheckInteractiveSection({
   const tx = (en: string, tr: string, zh: string) => (loc === "tr" ? tr : loc === "zh-Hans" ? zh : en);
 
   const [, setSelectedCountry] = useState<SupportedCountry>(
-    isSupportedCountry(initialValues.targetCountry) && (initialValues.targetCountry !== "CA" || canadaReportEnabled) ? initialValues.targetCountry : defaultCountry
+    isSupportedCountry(initialValues.targetCountry) ? initialValues.targetCountry : defaultCountry
   );
   const noteIndex = loc === "tr" ? 1 : loc === "zh-Hans" ? 2 : 0;
   const [selectedVisa, setSelectedVisa] = useState(initialValues.visaInterest ?? "");
