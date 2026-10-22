@@ -52,5 +52,17 @@ const occ = read(M + "occupations/[id]/page.tsx");
 check(/pageAlternates|languageAlternates|alternates/.test(occ), "occupation pages still declare their own alternates (file untouched by this change)");
 check(/\/tr\/guide|\/zh-Hans\/guide/.test(read("next.config.ts")), "/tr/guide and /zh-Hans/guide redirects still configured");
 
+console.log("\n5. pricing and the widget");
+const pricing = read("app/[locale]/pricing/page.tsx"), widget = read("app/[locale]/widget/points-calculator/page.tsx");
+check(pricing.includes('pageAlternates(locale, "/pricing")') && !/robots/.test(pricing), "pricing: self-canonical + real hreflang set, still indexable (no robots override)");
+for (const [loc, url] of [["en", "https://www.logivisa.com/pricing"], ["tr", "https://www.logivisa.com/tr/pricing"], ["zh-Hans", "https://www.logivisa.com/zh-Hans/pricing"]] as const) {
+  const a = pageAlternates(loc, "/pricing");
+  check(a.canonical === url && a.languages.en === "https://www.logivisa.com/pricing" && a.languages.tr === "https://www.logivisa.com/tr/pricing" && a.languages["zh-Hans"] === "https://www.logivisa.com/zh-Hans/pricing" && a.languages["x-default"] === a.languages.en, `pricing (${loc}): reciprocal en/tr/zh-Hans/x-default, prefixless English`);
+}
+check(/robots: \{ index: false, follow: true \}/.test(widget) && /canonical: publicUrl\(locale, "\/widget\/points-calculator"\)/.test(widget) && !/pageAlternates|languages/.test(widget), "widget: noindex,follow, self-canonical, no hreflang");
+check(publicUrl("en", "/widget/points-calculator") === "https://www.logivisa.com/widget/points-calculator" && !/\/en\//.test(publicUrl("en", "/widget/points-calculator")), "widget English canonical is prefixless");
+check(!/widget|pricing/.test(sitemap), "neither is added to the sitemap");
+check(!/alternatess*:/.test(rootLayout), "no site-wide canonical remains to be inherited (no homepage-canonical inheritance)");
+
 if (failures) { console.error(`\n❌ ${failures} check(s) failed`); process.exit(1); }
 console.log("\n✅ ALL CHECKS PASSED");

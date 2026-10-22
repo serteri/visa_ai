@@ -1,14 +1,20 @@
 import type { Metadata } from "next";
+import { publicUrl } from "@/lib/seo/urls";
 import { PointsCalculatorClient } from "@/app/[locale]/(main)/tools/points-calculator/points-calculator-client";
 
 type PageProps = {
   params: Promise<{ locale: string }>;
 };
 
-export const metadata: Metadata = {
-  title: "Points Calculator Widget | LogiVisa",
-  robots: "noindex, nofollow",
-};
+// An embeddable (iframe) utility for other sites, not a search landing page: noindex, self-canonical, no hreflang, not in the sitemap.
+export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
+  const { locale } = await params;
+  return {
+    title: "Points Calculator Widget | LogiVisa",
+    robots: { index: false, follow: true },
+    alternates: { canonical: publicUrl(locale, "/widget/points-calculator") },
+  };
+}
 
 export default async function WidgetPointsCalculatorPage({ params }: PageProps) {
   const { locale } = await params;

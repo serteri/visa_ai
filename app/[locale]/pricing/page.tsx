@@ -4,6 +4,7 @@ import { ShellHeaderGate } from "@/components/shell-gates";
 import { LanguageProvider } from "@/contexts/language-context";
 import { getTranslations, t } from "@/lib/i18n/get-translations";
 import type { Locale } from "@/lib/i18n/config";
+import { pageAlternates } from "@/lib/seo/urls";
 import { PricingPlans } from "./pricing-plans";
 
 type PageProps = {
@@ -15,6 +16,8 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   const translations = await getTranslations(locale as Locale);
 
   return {
+    // Public product page, translated in all three locales: self-canonical plus the real hreflang equivalents (no site-wide fallback).
+    alternates: pageAlternates(locale, "/pricing"),
     title: `${t(translations, "pricing.title", "Premium Credit Packages")} — LogiVisa`,
     description: t(
       translations,
