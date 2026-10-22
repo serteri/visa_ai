@@ -2,7 +2,8 @@
  * Builds what the guide shows: page-context suggestions, quick actions and the answer to a typed question. Every sentence is a fixed template; the
  * guide never concludes anything about the person (no eligibility, recommendation, ranking or prediction) and only links to existing pages.
  */
-import { matchIntent } from "./intent-map";
+import { isBoundaryQuestion, matchIntent, normalise, scoreDestination } from "./intent-map";
+import { matchShortAnswers, type ShortAnswer } from "./short-answers";
 import { AI_ASSISTANT_PATH, COMPARISON_PAIRS, destinationById, destinationsFor } from "./route-registry";
 import type { Destination, GuideCountry, GuideLink, GuideLocale, GuideResponse, L3, PageContext } from "./types";
 
@@ -56,20 +57,24 @@ const T = {
   introComparison: { en: "LogiVisa has a comparison page for these subclasses:", tr: "LogiVisa'nın bu alt sınıflar için bir karşılaştırma sayfası var:", "zh-Hans": "LogiVisa 有针对这些子类的对比页面：" } as L3,
   introComparisonHub: { en: "LogiVisa has neutral comparison pages for published visa information:", tr: "LogiVisa'nın yayımlanmış vize bilgileri için tarafsız karşılaştırma sayfaları var:", "zh-Hans": "LogiVisa 有针对已公布签证信息的中立对比页面：" } as L3,
   boundary: {
-    en: "LogiVisa does not decide eligibility, recommend a visa, rank options or predict outcomes. These pages show published information you can research:",
-    tr: "LogiVisa uygunluk kararı vermez, vize önermez, seçenekleri sıralamaz ve sonuç tahmin etmez. Araştırabileceğiniz yayımlanmış bilgiler:",
-    "zh-Hans": "LogiVisa 不判断资格、不推荐签证、不对选项排序，也不预测结果。以下页面提供可供研究的已公布信息：",
+    en: "I can show you the published requirements and research tools, but I can’t determine which visa is suitable for you here.",
+    tr: "Yayımlanmış gereklilikleri ve araştırma araçlarını gösterebilirim, ancak burada sizin için hangi vizenin uygun olduğunu belirleyemem.",
+    "zh-Hans": "我可以为您展示已公布的要求和研究工具，但无法在此判断哪种签证适合您。",
   } as L3,
   fallback: {
-    en: "I can help you find a LogiVisa research page, or you can open the full AI Assistant for a more detailed question.",
-    tr: "Size bir LogiVisa araştırma sayfası bulmada yardımcı olabilirim veya daha ayrıntılı bir soru için tam AI Asistanı'nı açabilirsiniz.",
-    "zh-Hans": "我可以帮您找到合适的 LogiVisa 研究页面，也可以打开完整的 AI 助手来回答更详细的问题。",
+    en: "I couldn’t confidently match that to a LogiVisa research topic.",
+    tr: "Bunu bir LogiVisa araştırma konusuyla güvenle eşleştiremedim.",
+    "zh-Hans": "我无法确定这与哪个 LogiVisa 研究主题相关。",
   } as L3,
   chooseCountry: {
-    en: "Which country are you researching: Australia or Canada?",
-    tr: "Hangi ülkeyi araştırıyorsunuz: Avustralya mı, Kanada mı?",
-    "zh-Hans": "您在研究哪个国家：澳大利亚还是加拿大？",
+    en: "Are you researching Australia or Canada?",
+    tr: "Avustralya mı, Kanada mı araştırıyorsunuz?",
+    "zh-Hans": "您在研究澳大利亚还是加拿大？",
   } as L3,
+  viewRequirements: { en: "View published requirements", tr: "Yayımlanmış gereklilikleri görüntüle", "zh-Hans": "查看已公布的要求" } as L3,
+  browseTopics: { en: "Browse topics", tr: "Konulara göz at", "zh-Hans": "浏览主题" } as L3,
+  browseAu: { en: "Browse Australia topics", tr: "Avustralya konularına göz at", "zh-Hans": "浏览澳大利亚主题" } as L3,
+  browseCa: { en: "Browse Canada topics", tr: "Kanada konularına göz at", "zh-Hans": "浏览加拿大主题" } as L3,
   assessmentPrompt: {
     en: "Want a structured report based on the information you enter?",
     tr: "Girdiğiniz bilgilere dayalı yapılandırılmış bir rapor ister misiniz?",
@@ -164,9 +169,50 @@ function guidesFor(term: string, locale: string): GuideLink[] {
     .map((d) => toLink(d, locale));
 }
 
+/** A short, fixed answer for keyword-style input; null when the input is not one of the known short phrases (or belongs to the other country). */
+function shortResponse(text: string, scope: GuideCountry | null, lock: boolean, locale: string): GuideResponse | null {
+  const hits: ShortAnswer[] = matchShortAnswers(normalise(text));
+  if (hits.length === 0) return null;
+  const l = loc(locale);
+  let entry: ShortAnswer | undefined;
+  if (scope) {
+    entry = hits.find((h) => h.country === scope) ?? hits.find((h) => h.country === "ANY");
+    if (!entry && !lock) entry = hits[0];
+  } else {
+    entry = hits.find((h) => h.country === "ANY");
+    if (!entry) {
+      if (new Set(hits.map((h) => h.country)).size > 1) return { kind: "choose-country", message: pick(T.chooseCountry, l), links: [], assessment: false, handoff: false, country: null };
+      entry = hits[0];
+    }
+  }
+  if (!entry) return null;
+  const links = entry.links.map((s) => linkById(s.id, locale, { path: s.path, query: s.query, titleOverride: s.title ? pick(s.title, l) : undefined }));
+  return { kind: "routes", message: pick(entry.message, l), links: dedupe(links), assessment: false, handoff: true, country: entry.country === "ANY" ? null : entry.country };
+}
+
+/** Likely partial matches for an unmatched phrase: destinations with a keyword that starts with (or is started by) a typed word of four or more letters. */
+function partialMatches(text: string, scope: GuideCountry | null, locale: string): GuideLink[] {
+  const tokens = normalise(text).split(/[^a-z0-9]+/).filter((w) => w.length >= 4);
+  if (tokens.length === 0) return [];
+  const pool = scope ? destinationsFor(scope) : [...destinationsFor("AU"), ...destinationsFor("CA")];
+  return pool
+    .filter((d) => d.category !== "assessment" && d.category !== "guide" && d.keywords.some((k) => /^[a-z0-9 \-]{4,}$/.test(k) && tokens.some((w) => k.startsWith(w) || w.startsWith(k))))
+    .slice(0, 2)
+    .map((d) => toLink(d, locale));
+}
+
+function unknownResponse(text: string, scope: GuideCountry | null, locale: string): GuideResponse {
+  const l = loc(locale);
+  const browse = (id: string, label: L3) => linkById(id, locale, { titleOverride: pick(label, l) });
+  const browseLinks = scope === "CA" ? [browse("ca-visas-hub", T.browseTopics)] : scope === "AU" ? [browse("au-guides-hub", T.browseTopics)] : [browse("au-guides-hub", T.browseAu), browse("ca-visas-hub", T.browseCa)];
+  return { kind: "fallback", message: pick(T.fallback, l), links: dedupe([...partialMatches(text, scope, locale), ...browseLinks]), assessment: false, handoff: true, country: scope };
+}
+
 /** Answers a typed question. `scope` is the country the visitor is in (page context or the chosen one), or null when unknown. */
 export function buildResponse(text: string, scope: GuideCountry | null, locale: string, lock = false): GuideResponse {
   const l = loc(locale);
+  const short = isBoundaryQuestion(text) ? null : shortResponse(text, scope, lock, locale);
+  if (short) return short;
   const intent = matchIntent(text, scope, lock);
   const handoffOnly = (kind: GuideResponse["kind"], message: string, links: GuideLink[], country: GuideCountry | null, assessment = false): GuideResponse => ({
     kind, message, links, assessment, handoff: kind === "fallback", country,
@@ -175,7 +221,8 @@ export function buildResponse(text: string, scope: GuideCountry | null, locale: 
   switch (intent.kind) {
     case "boundary": {
       const c = scope;
-      const links = c === "CA" ? [linkById("ca-visas-hub", locale), linkById("ca-points-calculator", locale)] : c === "AU" ? [linkById("au-visa-comparison", locale), linkById("au-points-calculator", locale)] : [];
+      const req = (id: string) => linkById(id, locale, { titleOverride: pick(T.viewRequirements, l) });
+      const links = c === "CA" ? [req("ca-visas-hub"), linkById("ca-points-calculator", locale)] : c === "AU" ? [req("au-visas-hub"), linkById("au-points-calculator", locale)] : [req("au-visas-hub"), linkById("ca-visas-hub", locale)];
       return handoffOnly("boundary", pick(T.boundary, l), links, c, true);
     }
     case "comparison": {
@@ -199,8 +246,13 @@ export function buildResponse(text: string, scope: GuideCountry | null, locale: 
       return { kind: "routes", message: pick(T.intro, l), links, assessment: false, handoff: false, country: intent.country };
     }
     default: {
-      if (intent.country === null) return handoffOnly("choose-country", pick(T.chooseCountry, l), [], null);
-      return handoffOnly("fallback", pick(T.fallback, l), [], intent.country);
+      if (intent.country === null) {
+        // A keyword both countries have asks once; text that matches nothing anywhere is an unknown input.
+        const q = normalise(text);
+        const anyHit = q !== "" && [...destinationsFor("AU"), ...destinationsFor("CA")].some((d) => d.category !== "assessment" && scoreDestination(q, d) > 0);
+        return anyHit ? handoffOnly("choose-country", pick(T.chooseCountry, l), [], null) : unknownResponse(text, null, locale);
+      }
+      return unknownResponse(text, intent.country, locale);
     }
   }
 }

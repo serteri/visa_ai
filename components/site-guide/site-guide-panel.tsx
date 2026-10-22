@@ -9,7 +9,7 @@ import { useEffect, useRef, useState, type FormEvent } from "react";
 import { trackGuideEvent } from "@/lib/site-guide/analytics";
 import { analyticsPageType } from "@/lib/site-guide/page-context";
 import { AI_ASSISTANT_PATH } from "@/lib/site-guide/route-registry";
-import { aiAssistantHref, assessmentLink, assessmentPromptText, buildResponse, chooseCountryText, contextSuggestions, quickActions } from "@/lib/site-guide/response-builder";
+import { aiAssistantHref, assessmentLink, assessmentPromptText, buildResponse, contextSuggestions, quickActions } from "@/lib/site-guide/response-builder";
 import type { GuideCountry, GuideLink, GuideResponse, PageContext } from "@/lib/site-guide/types";
 import { GuideScopeRow, guideLocale, GUIDE_TEXT } from "./site-guide-views";
 
@@ -26,13 +26,23 @@ const TEXT = {
   chooseCountry: { en: "Choose a country", tr: "Bir ülke seçin", "zh-Hans": "选择国家" },
   australia: { en: "Australia research", tr: "Avustralya araştırması", "zh-Hans": "澳大利亚研究" },
   canada: { en: "Canada research", tr: "Kanada araştırması", "zh-Hans": "加拿大研究" },
-  askLabel: { en: "Ask where to find something", tr: "Bir şeyi nerede bulacağınızı sorun", "zh-Hans": "询问在哪里可以找到" },
-  placeholder: { en: "e.g. Where do I check my points?", tr: "ör. Puanlarımı nerede kontrol ederim?", "zh-Hans": "例如：在哪里查看积分？" },
-  send: { en: "Find pages", tr: "Sayfaları bul", "zh-Hans": "查找页面" },
+  askLabel: { en: "Ask LogiVisa Guide", tr: "LogiVisa Rehber'e sorun", "zh-Hans": "询问 LogiVisa 指南" },
+  placeholder: { en: "Try “190”, “software engineer”, “Canada”, “points”…", tr: "Deneyin: “190”, “yazılım mühendisi”, “Kanada”, “puan”…", "zh-Hans": "试试“190”“软件工程师”“加拿大”“积分”…" },
+  send: { en: "Ask", tr: "Sor", "zh-Hans": "提问" },
+  moreDetail: { en: "Need more detail?", tr: "Daha fazla ayrıntı mı gerekli?", "zh-Hans": "需要更多详情？" },
+  detailedConversation: {
+    en: "For a more detailed research conversation, open the AI Assistant.",
+    tr: "Daha ayrıntılı bir araştırma sohbeti için AI Asistanı'nı açın.",
+    "zh-Hans": "如需更详细的研究对话，请打开 AI 助手。",
+  },
+  showQuick: { en: "Show quick actions", tr: "Hızlı işlemleri göster", "zh-Hans": "显示快捷入口" },
+  hideQuick: { en: "Hide quick actions", tr: "Hızlı işlemleri gizle", "zh-Hans": "隐藏快捷入口" },
   openAssistant: { en: "Open AI Assistant", tr: "AI Asistanı'nı aç", "zh-Hans": "打开 AI 助手" },
   startAssessment: { en: "Start Assessment", tr: "Değerlendirmeyi başlat", "zh-Hans": "开始评估" },
   english: { en: "(English)", tr: "(İngilizce)", "zh-Hans": "（英文）" },
 } as const;
+
+const MAX_TURNS = 3;
 
 export type SiteGuidePanelProps = {
   locale: string;
@@ -45,8 +55,9 @@ export default function SiteGuidePanel({ locale, context, panelId, onClose }: Si
   const l = guideLocale(locale);
   const [scope, setScope] = useState<GuideCountry | null>(context.country);
   const [text, setText] = useState("");
-  const [pending, setPending] = useState("");
-  const [response, setResponse] = useState<GuideResponse | null>(null);
+  // The last few exchanges only, in memory: nothing is stored, and the panel is not a chat history.
+  const [turns, setTurns] = useState<Array<{ ask: string; answer: GuideResponse }>>([]);
+  const [showQuick, setShowQuick] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
   const titleRef = useRef<HTMLHeadingElement>(null);
   const source = analyticsPageType(context);
@@ -69,14 +80,18 @@ export default function SiteGuidePanel({ locale, context, panelId, onClose }: Si
   const chooseCountry = (c: GuideCountry) => {
     setScope(c);
     track("site_guide_quick_action", undefined, "quick_action", c);
-    if (pending) setResponse(buildResponse(pending, c, locale, false));
+    // A country choice answers the last "Australia or Canada?" question.
+    setTurns((prev) => {
+      const last = prev[prev.length - 1];
+      if (!last || last.answer.kind !== "choose-country") return prev;
+      return [...prev.slice(0, -1), { ask: last.ask, answer: buildResponse(last.ask, c, locale, false) }];
+    });
   };
 
   // Back to the country choice: clears the country chosen in the panel (and the answer that depended on it). A page-defined country is not changeable.
   const changeCountry = () => {
     setScope(null);
-    setResponse(null);
-    setPending("");
+    setTurns([]);
     track("site_guide_quick_action", undefined, "quick_action", null);
   };
 
@@ -84,14 +99,16 @@ export default function SiteGuidePanel({ locale, context, panelId, onClose }: Si
     e.preventDefault();
     const value = text.trim();
     if (!value) return;
-    setPending(value);
     const r = buildResponse(value, scope, locale, context.country !== null);
     if (r.country && r.country !== scope && r.kind !== "boundary") setScope(r.country);
-    setResponse(r);
+    setTurns((prev) => [...prev, { ask: value, answer: r }].slice(-MAX_TURNS));
+    setText("");
+    setShowQuick(false);
     track("site_guide_quick_action", undefined, "free_text", r.country);
     inputRef.current?.focus();
   };
 
+  const conversation = turns.length > 0;
   const suggestions = contextSuggestions(context, locale);
   const quick = scope ? quickActions(scope, locale) : [];
   const isLinkEnglishOnly = (x: GuideLink) => x.englishOnly && l !== "en";
@@ -112,8 +129,19 @@ export default function SiteGuidePanel({ locale, context, panelId, onClose }: Si
     </li>
   );
 
-  const assessmentLinkItem = () => {
-    const a = assessmentLink(locale, response?.country ?? scope);
+  const countryButton = (c: GuideCountry) => (
+    <button
+      key={c}
+      type="button"
+      onClick={() => chooseCountry(c)}
+      className="min-h-11 rounded-lg border border-border bg-card px-4 text-sm font-medium hover:bg-muted focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
+    >
+      {c === "AU" ? TEXT.australia[l] : TEXT.canada[l]}
+    </button>
+  );
+
+  const assessmentLinkItem = (country: GuideCountry | null) => {
+    const a = assessmentLink(locale, country ?? scope);
     return (
       <div className="mt-3">
         <p className="text-sm text-muted-foreground">{assessmentPromptText(locale)}</p>
@@ -156,62 +184,68 @@ export default function SiteGuidePanel({ locale, context, panelId, onClose }: Si
 
         {scope ? <GuideScopeRow locale={locale} country={scope} onChange={context.country === null ? changeCountry : undefined} /> : null}
 
-        {suggestions.length > 0 ? (
-          <div>
-            <h3 className="mb-2 text-xs font-semibold uppercase tracking-wide text-muted-foreground">{TEXT.onThisPage[l]}</h3>
-            <ul className="space-y-2">{suggestions.map((s) => linkItem(s, "context_link"))}</ul>
-          </div>
-        ) : null}
-
-        {!scope ? (
-          <div>
-            <h3 className="mb-2 text-xs font-semibold uppercase tracking-wide text-muted-foreground">{TEXT.chooseCountry[l]}</h3>
-            <div className="flex flex-wrap gap-2">
-              {(["AU", "CA"] as const).map((c) => (
-                <button
-                  key={c}
-                  type="button"
-                  onClick={() => chooseCountry(c)}
-                  className="min-h-11 rounded-lg border border-border bg-card px-4 text-sm font-medium hover:bg-muted focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
-                >
-                  {c === "AU" ? TEXT.australia[l] : TEXT.canada[l]}
-                </button>
-              ))}
-            </div>
-          </div>
-        ) : (
-          <div>
-            <h3 className="mb-2 text-xs font-semibold uppercase tracking-wide text-muted-foreground">{TEXT.quick[l]}</h3>
-            <ul className="space-y-2">{quick.map((q) => linkItem(q, "quick_action"))}</ul>
-          </div>
-        )}
-
-        {response ? (
-          <div role="status" aria-live="polite" data-site-guide-response>
-            <p className="text-sm">{response.kind === "choose-country" ? chooseCountryText(locale) : response.message}</p>
-            {response.links.length > 0 ? <ul className="mt-2 space-y-2">{response.links.map((r) => linkItem(r, "route_click"))}</ul> : null}
-            {response.kind === "choose-country" ? (
-              <div className="mt-2 flex flex-wrap gap-2">
-                {(["AU", "CA"] as const).map((c) => (
-                  <button key={c} type="button" onClick={() => chooseCountry(c)} className="min-h-11 rounded-lg border border-border bg-card px-4 text-sm font-medium hover:bg-muted focus-visible:outline-2 focus-visible:outline-primary">
-                    {c === "AU" ? TEXT.australia[l] : TEXT.canada[l]}
-                  </button>
-                ))}
+        {!conversation || showQuick ? (
+          <>
+            {suggestions.length > 0 ? (
+              <div>
+                <h3 className="mb-2 text-xs font-semibold uppercase tracking-wide text-muted-foreground">{TEXT.onThisPage[l]}</h3>
+                <ul className="space-y-2">{suggestions.map((s) => linkItem(s, "context_link"))}</ul>
               </div>
             ) : null}
-            {response.handoff || response.kind === "boundary" ? (
-              <a
-                href={aiAssistantHref(locale)}
-                data-site-guide-handoff={AI_ASSISTANT_PATH}
-                onClick={() => track("site_guide_ai_assistant_handoff", undefined, "handoff")}
-                className="mt-3 inline-flex min-h-11 items-center rounded-lg border border-border bg-card px-4 text-sm font-medium hover:bg-muted focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
-              >
-                {TEXT.openAssistant[l]}
-              </a>
-            ) : null}
-            {response.assessment ? assessmentLinkItem() : null}
-          </div>
+
+            {!scope ? (
+              <div>
+                <h3 className="mb-2 text-xs font-semibold uppercase tracking-wide text-muted-foreground">{TEXT.chooseCountry[l]}</h3>
+                <div className="flex flex-wrap gap-2">{(["AU", "CA"] as const).map((c) => countryButton(c))}</div>
+              </div>
+            ) : (
+              <div>
+                <h3 className="mb-2 text-xs font-semibold uppercase tracking-wide text-muted-foreground">{TEXT.quick[l]}</h3>
+                <ul className="space-y-2">{quick.map((q) => linkItem(q, "quick_action"))}</ul>
+              </div>
+            )}
+          </>
         ) : null}
+
+        {conversation ? (
+          <button
+            type="button"
+            onClick={() => setShowQuick((v) => !v)}
+            aria-expanded={showQuick}
+            className="min-h-11 rounded-md px-1 text-xs font-medium text-muted-foreground underline underline-offset-4 hover:text-foreground focus-visible:outline-2 focus-visible:outline-primary"
+          >
+            {showQuick ? TEXT.hideQuick[l] : TEXT.showQuick[l]}
+          </button>
+        ) : null}
+
+        {turns.map((turn, i) => {
+          const latest = i === turns.length - 1;
+          const r = turn.answer;
+          return (
+            <div key={`${i}-${turn.ask}`} className="space-y-2" {...(latest ? { role: "status", "aria-live": "polite" as const, "data-site-guide-response": "" } : {})}>
+              <p data-site-guide-ask className="ml-auto w-fit max-w-full break-words rounded-lg bg-muted px-3 py-1.5 text-sm">
+                {turn.ask}
+              </p>
+              <p className="text-sm">{r.message}</p>
+              {r.links.length > 0 ? <ul className="space-y-2">{r.links.map((x) => linkItem(x, "route_click"))}</ul> : null}
+              {r.kind === "choose-country" && latest ? <div className="flex flex-wrap gap-2">{(["AU", "CA"] as const).map((c) => countryButton(c))}</div> : null}
+              {latest && r.kind !== "choose-country" ? (
+                <div data-site-guide-more>
+                  <p className="text-xs text-muted-foreground">{r.kind === "boundary" ? TEXT.detailedConversation[l] : TEXT.moreDetail[l]}</p>
+                  <a
+                    href={aiAssistantHref(locale)}
+                    data-site-guide-handoff={AI_ASSISTANT_PATH}
+                    onClick={() => track("site_guide_ai_assistant_handoff", undefined, "handoff")}
+                    className="mt-1 inline-flex min-h-11 items-center rounded-lg border border-border bg-card px-4 text-sm font-medium hover:bg-muted focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
+                  >
+                    {TEXT.openAssistant[l]}
+                  </a>
+                </div>
+              ) : null}
+              {latest && r.assessment ? assessmentLinkItem(r.country) : null}
+            </div>
+          );
+        })}
       </div>
 
       <form onSubmit={submit} className="border-t border-border px-4 py-3">
@@ -227,7 +261,7 @@ export default function SiteGuidePanel({ locale, context, panelId, onClose }: Si
             maxLength={120}
             autoComplete="off"
             spellCheck={false}
-            enterKeyHint="search"
+            enterKeyHint="send"
             placeholder={TEXT.placeholder[l]}
             className="min-h-11 min-w-0 flex-1 rounded-lg border border-border bg-background px-3 text-sm focus-visible:outline-2 focus-visible:outline-primary"
           />

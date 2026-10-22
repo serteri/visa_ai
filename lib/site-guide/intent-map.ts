@@ -27,6 +27,9 @@ const BOUNDARY = [
   /\bwhich (visa|pathway|route|program|programme|option) (is|would be|should)\b/,
   /\b(best|better|easiest|fastest|cheapest|safest|strongest) (visa|pathway|route|program|option|choice)\b/,
   /\bwhat (are|is) my (chances?|odds|probability)\b/,
+  /\bwhich (visa|pathway|route|program|programme)\b/,
+  /\b(best|right) .{0,16}for me\b/,
+  /\bfor me\b.*\b(visa|pathway|route)\b/,
   /\b(my )?chances?\b/,
   /\bprobability\b/,
   /\bwill (i|they) (get|be) (invited|approved|accepted|granted)\b/,
@@ -75,7 +78,7 @@ export function extractOccupation(text: string): string | null {
   return term;
 }
 
-function scoreDestination(q: string, d: Destination): number {
+export function scoreDestination(q: string, d: Destination): number {
   let score = 0;
   for (const k of d.keywords) {
     const kw = k.toLowerCase();

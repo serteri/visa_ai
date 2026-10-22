@@ -12,6 +12,7 @@ import { guideEventParams } from "../lib/site-guide/analytics";
 import { matchIntent, isBoundaryQuestion } from "../lib/site-guide/intent-map";
 import { isHiddenPath, resolvePageContext, stripLocale } from "../lib/site-guide/page-context";
 import { AI_ASSISTANT_PATH, COMPARISON_PAIRS, DESTINATIONS, destinationsFor } from "../lib/site-guide/route-registry";
+import { SHORT_ANSWERS } from "../lib/site-guide/short-answers";
 import { aiAssistantHref, assessmentLink, buildResponse, contextSuggestions, fallbackText, quickActions } from "../lib/site-guide/response-builder";
 import { DISMISS_DAYS, NUDGE_DELAY_MS, NUDGE_SCROLL_RATIO, dismissUntil, nudgeSuppressed, shouldNudge } from "../lib/site-guide/timing";
 import { GuideLauncherView, GuideScopeRow } from "../components/site-guide/site-guide-views";
@@ -157,9 +158,9 @@ async function main() {
   console.log("\n8. unknown requests fall back to the full AI Assistant");
   for (const q of ["what is the weather today", "tell me a joke", "xyzzy", "my cousin lives in Perth and likes surfing"]) {
     const r = buildResponse(q, "AU", "en", true);
-    check(r.kind === "fallback" && r.handoff && r.links.length === 0 && r.message === fallbackText("en"), `'${q}' -> the fallback message and the AI Assistant handoff`);
+    check(r.kind === "fallback" && r.handoff && r.links.length >= 1 && r.links.length <= 3 && r.message === fallbackText("en"), `'${q}' -> the unknown-input message, Browse topics and the AI Assistant handoff`);
   }
-  check(fallbackText("en") === "I can help you find a LogiVisa research page, or you can open the full AI Assistant for a more detailed question.", "the fallback uses the specified wording");
+  check(fallbackText("en") === "I couldn’t confidently match that to a LogiVisa research topic.", "the unknown-input message uses the specified wording");
   check(aiAssistantHref("en") === "/ai-assistant" && aiAssistantHref("tr") === "/tr/ai-assistant", "the handoff links the full AI Assistant");
   check(matchIntent("", "AU").kind === "none", "an empty question routes nowhere");
 
@@ -174,7 +175,7 @@ async function main() {
   check(!BANNED.test(panel), "none in the panel or launcher text");
   for (const q of ["Do I qualify for 190?", "which visa is best for me", "should I apply for 491", "what are my chances of getting invited", "Is 491 better for me than 190", "am I eligible"]) {
     const r = buildResponse(q, "AU", "en");
-    check(isBoundaryQuestion(q) && r.kind === "boundary" && /does not decide eligibility, recommend a visa, rank options or predict outcomes/.test(r.message), `'${q}' -> the neutral boundary message`);
+    check(isBoundaryQuestion(q) && r.kind === "boundary" && /can’t determine which visa is suitable for you here/.test(r.message), `'${q}' -> the neutral boundary message`);
     check(!r.links.some((x) => x.category === "visa"), `'${q}' -> no individual visa page is pushed`);
   }
   check(!isBoundaryQuestion("I want to compare 189 and 190") && !isBoundaryQuestion("where do I check my points"), "ordinary navigation questions are not treated as verdict requests");
@@ -237,9 +238,62 @@ async function main() {
   const panelSrc2 = readFileSync("components/site-guide/site-guide-panel.tsx", "utf8");
   check(/\{scope \? <GuideScopeRow/.test(panelSrc2), "the row is rendered only when a country is established");
   check(/onChange=\{context\.country === null \? changeCountry : undefined\}/.test(panelSrc2), "Change is offered only when the country was chosen in the panel, not when the page defines it");
-  check(/const changeCountry = \(\) => \{\s*setScope\(null\);\s*setResponse\(null\);\s*setPending\(""\);/.test(panelSrc2), "Change clears the sticky country, the answer and the pending question (back to the country choice)");
+  check(/const changeCountry = \(\) => \{\s*setScope\(null\);\s*setTurns\(\[\]\);/.test(panelSrc2), "Change clears the sticky country and the recent answers (back to the country choice)");
   check(/if \(r\.country && r\.country !== scope && r\.kind !== "boundary"\) setScope\(r\.country\);/.test(panelSrc2), "an explicit country mention still sets the sticky country (behaviour kept)");
   check(/useState<GuideCountry \| null>\(context\.country\)/.test(panelSrc2) && !/localStorage/.test(panelSrc2), "the panel's country starts from the page and is not stored: closing the panel resets it");
+
+  console.log("\n14. short conversational answers (keyword-style input)");
+  const words = (m: string) => m.trim().split(/\s+/).length;
+  const short = (q: string, c: GuideCountry | null = null, loc = "en") => buildResponse(q, c, loc, false);
+  const hrefs = (q: string, c: GuideCountry | null = null) => short(q, c).links.map((x) => x.href);
+  const VERDICT = /you qualify|you are eligible|you may be eligible|best for you|you should|your chances|we recommend/i;
+  const cases: Array<[string, GuideCountry | null, (r: ReturnType<typeof short>) => boolean, string]> = [
+    ["190", null, (r) => /^Subclass 190 is a permanent skilled visa that requires nomination by an Australian state or territory\. It is points-tested and requires an invitation to apply\.$/.test(r.message) && r.links.map((x) => x.href).join() === "/visas/190,/tools/visa-comparison/189-vs-190,/tools/points-calculator/australia", "190 -> description, subclass 190, 189 vs 190, points"],
+    ["subclass 190", null, (r) => r.message === short("190").message, "subclass 190 = 190"],
+    ["skilled nominated", null, (r) => r.message === short("190").message, "skilled nominated = 190"],
+    ["what is 190?", null, (r) => r.message === short("190").message, "'what is 190?' = 190"],
+    ["visa", null, (r) => r.links.map((x) => x.href).join() === "/visas/australia,/visas/canada,/tools/visa-comparison", "visa -> Australia visas, Canada visas, Compare visas"],
+    ["points", null, (r) => r.kind === "choose-country" && r.message === "Are you researching Australia or Canada?", "points (no country) -> one short country question"],
+    ["points", "AU", (r) => r.links.length === 2 && r.links[0].href === "/tools/points-calculator/australia", "points (Australia) -> only Australia"],
+    ["points", "CA", (r) => r.links.length === 1 && r.links[0].href === "/tools/points-calculator/canada", "points (Canada) -> only Canada"],
+    ["software engineer", null, (r) => /ANZSCO 261313/.test(r.message) && r.links[0].href === "/occupations/261313-software-engineer" && r.links[1].href === "/tools/skills-assessment?q=261313", "software engineer -> ANZSCO 261313, occupation, Skills Assessment Finder"],
+    ["261313", null, (r) => /ANZSCO 261313/.test(r.message), "261313 = software engineer"],
+    ["software developer", null, (r) => /ANZSCO 261313/.test(r.message), "software developer = software engineer"],
+    ["chef", null, (r) => r.message === "LogiVisa has occupation and skills-assessment research for Chef." && r.links.map((x) => x.id).join() === "au-occupations,au-skills-assessment,au-guide-chef-vs-cook", "chef -> occupation, Skills Assessment Finder, Chef vs Cook guide"],
+    ["skills assessment", null, (r) => r.links[0].href === "/tools/skills-assessment" && r.country === "AU", "skills assessment -> the Skills Assessment Finder"],
+    ["Canada", null, (r) => r.links.map((x) => x.href).join() === "/visas/canada,/tools/points-calculator/canada,/visas/canada-pnp-non-express-entry" && r.country === "CA", "Canada -> Canada research, CRS calculator, PNP"],
+    ["Express Entry", null, (r) => r.links[0].href === "/visas/canada" && r.links[1].href === "/tools/points-calculator/canada", "Express Entry -> Canada research and the CRS calculator"],
+    ["PNP", null, (r) => r.links[0].href === "/visas/canada-pnp-non-express-entry", "PNP -> PNP research"],
+    ["189 vs 190", null, (r) => r.links[0].href === "/tools/visa-comparison/189-vs-190", "189 vs 190 -> the comparison page"],
+  ];
+  for (const [q, c, ok, label] of cases) {
+    const r = short(q, c);
+    check(ok(r), label);
+    if (r.kind !== "choose-country") check(words(r.message) <= 40 && r.links.length >= 1 && r.links.length <= 4, `'${q}': answer is short (${words(r.message)} words) with ${r.links.length} route(s)`);
+    check(!VERDICT.test(r.message), `'${q}': no eligibility verdict`);
+  }
+  check(short("190").handoff && short("Canada").handoff, "recognised answers allow the AI Assistant handoff");
+  for (const q of ["do I qualify for 190", "what are my chances", "best visa for me", "which visa", "should I apply"]) {
+    const r = short(q, "AU");
+    check(r.kind === "boundary" && r.assessment && /can’t determine which visa is suitable for you here/.test(r.message) && r.links.length >= 1 && !r.links.some((x) => x.category === "visa"), `'${q}' -> the brief boundary answer, requirements link and Start Assessment`);
+  }
+  const noCountryBoundary = short("do I qualify for 190", null);
+  check(noCountryBoundary.links.map((x) => x.href).join() === "/visas/australia,/visas/canada", "a boundary answer without a country offers both research hubs");
+  const unknown = short("random unsupported input");
+  check(unknown.kind === "fallback" && unknown.handoff && /couldn’t confidently match/.test(unknown.message) && unknown.links.length >= 1, "unsupported input -> never silent: unknown message, Browse topics, AI Assistant");
+  check(short("xyzzy", "CA").links[0].href === "/visas/canada", "unknown input on a Canada page browses Canada only");
+  check(buildResponse("190", "CA", "en", true).links.every((x) => x.country !== "AU"), "on a Canada page '190' does not switch to Australian pages");
+  check(buildResponse("190", "AU", "tr", true).links[0].href === "/tr/visas/190" && buildResponse("190", "AU", "zh-Hans", true).links[0].href === "/zh-Hans/visas/190", "short answers keep the locale prefix");
+  check(!VERDICT.test(Object.values(short("190", null, "tr")).join(" ")), "Turkish short answers carry no verdict wording");
+  for (const e of SHORT_ANSWERS) for (const lc of LOCALES) {
+    check(e.message[lc].length > 10 && e.message[lc].length < 260, `${e.aliases[0]} (${e.country}) ${lc}: message present and short`);
+    for (const sp of e.links) check(DESTINATIONS.some((d) => d.id === sp.id) && (!sp.path || pageExists(sp.path) || /^\/occupations\/\d{6}-[a-z-]+$/.test(sp.path)), `${e.aliases[0]} -> ${sp.id}${sp.path ?? ""} resolves`);
+  }
+  const panelSrc3 = readFileSync("components/site-guide/site-guide-panel.tsx", "utf8");
+  check(/Ask LogiVisa Guide/.test(panelSrc3) && /Try “190”, “software engineer”, “Canada”, “points”…/.test(panelSrc3) && /send: \{ en: "Ask"/.test(panelSrc3), "the input is labelled 'Ask LogiVisa Guide' with the example placeholder and an Ask button");
+  check(/e\.preventDefault\(\);\s*const value = text\.trim\(\);\s*if \(!value\) return;/.test(panelSrc3) && /setTurns\(\(prev\) => \[\.\.\.prev, \{ ask: value, answer: r \}\]\.slice\(-MAX_TURNS\)\)/.test(panelSrc3), "every non-empty submission adds a visible answer; only the last few are kept");
+  check(/!conversation \|\| showQuick/.test(panelSrc3), "the quick-actions list collapses after the first question");
+  check(!/Please enter a complete question/i.test(panelSrc3 + readFileSync("lib/site-guide/response-builder.ts", "utf8")), "the guide never asks for a complete question");
 
   if (failures) { console.error(`\n❌ ${failures} check(s) failed`); process.exit(1); }
   console.log("\n✅ ALL CHECKS PASSED");
