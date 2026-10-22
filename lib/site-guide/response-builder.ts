@@ -2,7 +2,7 @@
  * Builds what the guide shows: page-context suggestions, quick actions and the answer to a typed question. Every sentence is a fixed template; the
  * guide never concludes anything about the person (no eligibility, recommendation, ranking or prediction) and only links to existing pages.
  */
-import { isBoundaryQuestion, matchIntent, normalise, scoreDestination } from "./intent-map";
+import { detectCountry, isBoundaryQuestion, matchIntent, normalise, scoreDestination } from "./intent-map";
 import { matchShortAnswers, type ShortAnswer } from "./short-answers";
 import { AI_ASSISTANT_PATH, COMPARISON_PAIRS, destinationById, destinationsFor } from "./route-registry";
 import type { Destination, GuideCountry, GuideLink, GuideLocale, GuideResponse, L3, PageContext } from "./types";
@@ -220,9 +220,12 @@ export function buildResponse(text: string, scope: GuideCountry | null, locale: 
 
   switch (intent.kind) {
     case "boundary": {
-      const c = scope;
-      const req = (id: string) => linkById(id, locale, { titleOverride: pick(T.viewRequirements, l) });
-      const links = c === "CA" ? [req("ca-visas-hub"), linkById("ca-points-calculator", locale)] : c === "AU" ? [req("au-visas-hub"), linkById("au-points-calculator", locale)] : [req("au-visas-hub"), linkById("ca-visas-hub", locale)];
+      // An Australian subclass number in the question establishes Australia, unless the page itself is about the other country.
+      const c = lock ? scope : (detectCountry(text) ?? scope);
+      const req = (id: string, title: L3 = T.viewRequirements) => linkById(id, locale, { titleOverride: pick(title, l) });
+      const named = Array.from(new Set(normalise(text).match(/\b\d{3}\b/g) ?? [])).filter((n) => destinationById(`au-visa-${n}`));
+      const subclassLink = c === "AU" && named.length === 1 ? [req(`au-visa-${named[0]}`, { en: `View subclass ${named[0]} requirements`, tr: `${named[0]} alt sınıfı gereklilikleri`, "zh-Hans": `查看 ${named[0]} 子类要求` })] : null;
+      const links = c === "CA" ? [req("ca-visas-hub"), linkById("ca-points-calculator", locale)] : c === "AU" ? [...(subclassLink ?? [req("au-visas-hub")]), linkById("au-points-calculator", locale)] : [req("au-visas-hub"), linkById("ca-visas-hub", locale)];
       return handoffOnly("boundary", pick(T.boundary, l), links, c, true);
     }
     case "comparison": {

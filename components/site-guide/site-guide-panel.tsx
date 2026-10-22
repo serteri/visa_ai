@@ -100,7 +100,7 @@ export default function SiteGuidePanel({ locale, context, panelId, onClose }: Si
     const value = text.trim();
     if (!value) return;
     const r = buildResponse(value, scope, locale, context.country !== null);
-    if (r.country && r.country !== scope && r.kind !== "boundary") setScope(r.country);
+    if (r.country && r.country !== scope) setScope(r.country);
     setTurns((prev) => [...prev, { ask: value, answer: r }].slice(-MAX_TURNS));
     setText("");
     setShowQuick(false);

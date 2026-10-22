@@ -176,7 +176,7 @@ async function main() {
   for (const q of ["Do I qualify for 190?", "which visa is best for me", "should I apply for 491", "what are my chances of getting invited", "Is 491 better for me than 190", "am I eligible"]) {
     const r = buildResponse(q, "AU", "en");
     check(isBoundaryQuestion(q) && r.kind === "boundary" && /can’t determine which visa is suitable for you here/.test(r.message), `'${q}' -> the neutral boundary message`);
-    check(!r.links.some((x) => x.category === "visa"), `'${q}' -> no individual visa page is pushed`);
+    check(!r.links.some((x) => x.category === "visa") || (/\b(190|491)\b/.test(q) && !/190.*491|491.*190/.test(q) && r.links.filter((x) => x.category === "visa").length === 1), `'${q}' -> a visa page only when one subclass is named`);
   }
   check(!isBoundaryQuestion("I want to compare 189 and 190") && !isBoundaryQuestion("where do I check my points"), "ordinary navigation questions are not treated as verdict requests");
   check(/Navigation help only/.test(panel) && /not migration advice, an eligibility decision or a recommendation/.test(panel), "the panel states it is navigation help, not advice");
@@ -239,8 +239,23 @@ async function main() {
   check(/\{scope \? <GuideScopeRow/.test(panelSrc2), "the row is rendered only when a country is established");
   check(/onChange=\{context\.country === null \? changeCountry : undefined\}/.test(panelSrc2), "Change is offered only when the country was chosen in the panel, not when the page defines it");
   check(/const changeCountry = \(\) => \{\s*setScope\(null\);\s*setTurns\(\[\]\);/.test(panelSrc2), "Change clears the sticky country and the recent answers (back to the country choice)");
-  check(/if \(r\.country && r\.country !== scope && r\.kind !== "boundary"\) setScope\(r\.country\);/.test(panelSrc2), "an explicit country mention still sets the sticky country (behaviour kept)");
+  check(/if \(r\.country && r\.country !== scope\) setScope\(r\.country\);/.test(panelSrc2), "an explicit country mention still sets the sticky country (behaviour kept)");
   check(/useState<GuideCountry \| null>\(context\.country\)/.test(panelSrc2) && !/localStorage/.test(panelSrc2), "the panel's country starts from the page and is not stored: closing the panel resets it");
+  console.log("\n15. Australian subclass numbers establish Australia context");
+  const CA_HREF = /canada|\/ca-|points-calculator\/canada/i;
+  for (const q of ["189", "190", "491", "482", "485", "500", "186", "820", "801", "189 vs 190", "do I qualify for 190", "should I apply for 491", "Is 491 better for me than 190"]) {
+    const r = buildResponse(q, null, "en", false);
+    check(r.country === "AU" || r.kind === "choose-country" && false, `'${q}' establishes Australia context`, `country=${r.country} kind=${r.kind}`);
+    check(r.links.length > 0 && r.links.every((x) => x.country === "AU" || x.country === "ANY") && !r.links.some((x) => CA_HREF.test(x.href)), `'${q}': Australian destinations only, no Canada links`);
+  }
+  const q190 = buildResponse("do I qualify for 190", null, "en", false);
+  check(q190.kind === "boundary" && /can’t determine which visa is suitable for you here/.test(q190.message) && q190.assessment, "'do I qualify for 190' keeps the safe boundary response and Start Assessment");
+  check(q190.links[0].title === "View subclass 190 requirements" && q190.links[0].href === "/visas/190", "'do I qualify for 190' -> View subclass 190 requirements");
+  check(buildResponse("189 vs 190", null, "en", false).links[0].href === "/tools/visa-comparison/189-vs-190", "'189 vs 190' -> the Australian comparison page");
+  const generic = buildResponse("what are my chances", null, "en", false);
+  check(generic.kind === "boundary" && generic.country === null && generic.links.some((x) => x.country === "AU") && generic.links.some((x) => x.country === "CA"), "generic 'what are my chances' stays country-neutral (both hubs)");
+  const onCaPage = buildResponse("do I qualify for 190", "CA", "en", true);
+  check(!onCaPage.links.some((x) => x.country === "AU"), "on a Canada page a typed Australian subclass still does not switch the page's country");
 
   console.log("\n14. short conversational answers (keyword-style input)");
   check(resolvePageContext("/guide").country === null && resolvePageContext("/tr/guide").country === null && buildResponse("Canada", resolvePageContext("/guide").country, "en", false).country === "CA", "the /guide page itself is country-neutral: 'Canada' answers Canada there");
@@ -276,9 +291,9 @@ async function main() {
   check(short("190").handoff && short("Canada").handoff, "recognised answers allow the AI Assistant handoff");
   for (const q of ["do I qualify for 190", "what are my chances", "best visa for me", "which visa", "should I apply"]) {
     const r = short(q, "AU");
-    check(r.kind === "boundary" && r.assessment && /can’t determine which visa is suitable for you here/.test(r.message) && r.links.length >= 1 && !r.links.some((x) => x.category === "visa"), `'${q}' -> the brief boundary answer, requirements link and Start Assessment`);
+    check(r.kind === "boundary" && r.assessment && /can’t determine which visa is suitable for you here/.test(r.message) && r.links.length >= 1 && r.links.filter((x) => x.category === "visa").length <= (/190/.test(q) ? 1 : 0), `'${q}' -> the brief boundary answer, requirements link and Start Assessment`);
   }
-  const noCountryBoundary = short("do I qualify for 190", null);
+  const noCountryBoundary = short("what are my chances", null);
   check(noCountryBoundary.links.map((x) => x.href).join() === "/visas/australia,/visas/canada", "a boundary answer without a country offers both research hubs");
   const unknown = short("random unsupported input");
   check(unknown.kind === "fallback" && unknown.handoff && /couldn’t confidently match/.test(unknown.message) && unknown.links.length >= 1, "unsupported input -> never silent: unknown message, Browse topics, AI Assistant");
