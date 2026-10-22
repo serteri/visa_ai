@@ -13,8 +13,10 @@ export const OCCUPATION_PDF = {
   file: "/australia-skilled-occupation-list-2026.pdf",
   resourcePath: "/resources/occupation-list",
   compiledOn: "2026-10-08",
-  /** The count printed on the PDF cover ("690 occupations"); scripts/test-occupation-pdf-page.tsx checks it against the file. */
-  occupationCount: 690,
+  /** The entries the PDF lists, as printed on its cover ("690 occupations"): one row each, every title distinct. The test counts the rendered rows and the source JSON. */
+  entryCount: 690,
+  /** The distinct ANZSCO codes among those entries: six codes appear under two titles on the Home Affairs list. */
+  distinctCodes: 684,
 } as const;
 
 export const ABS_ANZSCO_URL = "https://www.abs.gov.au/statistics/classifications/australian-and-new-zealand-standard-classification-occupation-anzsco";

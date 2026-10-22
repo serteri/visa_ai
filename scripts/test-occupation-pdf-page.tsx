@@ -118,10 +118,19 @@ async function main() {
   check(/<a [^>]*href="\/legal"/.test(html) && /<a [^>]*href="\/terms"/.test(html), "a privacy-information link and a Terms of Service link exist");
   check(!/newsletter|marketing|subscribe|promotional|special offers|updates and offers/i.test(t), "no marketing-consent or newsletter language was introduced");
   check(!/urgent|hurry|limited time|only \d+ left|countdown|instant/i.test(t), "no urgency, scarcity or 'instant' claims");
-  const value = "The PDF gives you one reference table covering 690 occupations, with each occupation’s ANZSCO code, list placement, relevant visa subclasses, assessing authority and source date.";
+  const value = "The PDF gives you one reference table covering 690 occupation entries, with each entry’s ANZSCO code, list placement, relevant visa subclasses, assessing authority and source date.";
   check(t.includes(value), "the value-proposition sentence is present");
+  // The numbers are verified against the file itself, not copied from the cover.
   const pdfBytes = await pdfPages(new Uint8Array(readFileSync(`public${OCCUPATION_PDF.file}`)));
-  check(new RegExp(`${OCCUPATION_PDF.occupationCount} occupations`).test(pdfBytes[0].replace(/\s+/g, " ")), "the occupation count in that sentence matches the PDF's own cover");
+  const coverCount = Number((pdfBytes[0].replace(/\s+/g, " ").match(/(\d+) occupations/) ?? [])[1]);
+  const renderedCodes = pdfBytes.slice(1).flatMap((pg) => pg.match(/(?<!\d)\d{6}(?!\d)/g) ?? []);
+  const sourceRows = JSON.parse(readFileSync("public/skilled-occupation-list.json", "utf8")) as Array<{ anzsco_code: string; occupation_en: string }>;
+  check(renderedCodes.length === coverCount, "PDF rendered rows == the count printed on the PDF cover", `${renderedCodes.length} vs ${coverCount}`);
+  check(sourceRows.length === renderedCodes.length && JSON.stringify([...sourceRows.map((r) => r.anzsco_code)].sort()) === JSON.stringify([...renderedCodes].sort()), "...and == the rows of the source dataset the PDF is generated from (same codes)", `${sourceRows.length}`);
+  check(coverCount === OCCUPATION_PDF.entryCount && new Set(sourceRows.map((r) => r.occupation_en)).size === OCCUPATION_PDF.entryCount, "the landing-page figure (690 entries) is that count, and every entry has a distinct title");
+  check(new Set(renderedCodes).size === OCCUPATION_PDF.distinctCodes, "the distinct-code figure (684) matches the PDF's codes", String(new Set(renderedCodes).size));
+  const { indexableEntries } = await import("../lib/occupations/index-data");
+  check(t.includes(`The PDF contains ${OCCUPATION_PDF.entryCount} occupation entries (${OCCUPATION_PDF.distinctCodes} distinct ANZSCO codes`) && t.includes(`The online occupation index currently has ${indexableEntries("en").length} searchable occupation pages.`) && indexableEntries("en").length === 585, "the page states 690 entries (684 distinct codes) and, separately, the 585 searchable online pages");
   check(t.includes("compiled 8 October 2026") && t.includes("not an official government PDF") && t.includes("current Home Affairs information remains authoritative") && t.includes("compiled by LogiVisa from official sources"), "the disclaimer concept is intact (LogiVisa-compiled, dated, official sources, not an official PDF, Home Affairs authoritative)");
   for (const loc of ["tr", "zh-Hans"] as const) {
     const h = await render(pdf, loc);

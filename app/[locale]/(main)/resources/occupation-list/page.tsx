@@ -6,6 +6,7 @@ import Link from "next/link";
 import { LeadMagnetForm } from "@/components/LeadMagnetForm";
 import { OccupationPdfEvents } from "@/components/occupations/occupation-pdf-events";
 import { OCCUPATION_PDF } from "@/lib/occupations/hub-content";
+import { indexableEntries } from "@/lib/occupations/index-data";
 import { longDate } from "@/lib/reports/public-sources";
 import { pageAlternates, publicPath, publicUrl } from "@/lib/seo/urls";
 import type { Locale } from "@/lib/i18n/config";
@@ -35,9 +36,14 @@ const COPY = {
   formTitle: { en: "Get the PDF in your inbox", tr: "PDF'i gelen kutunuza alın", zh: "将 PDF 发送到您的邮箱" } as L3,
   whatTitle: { en: "What the 2026 occupation list PDF contains", tr: "2026 meslek listesi PDF’inin içeriği", zh: "2026 年职业清单 PDF 的内容" } as L3,
   what: (count: number): L3 => ({
-    en: `The PDF gives you one reference table covering ${count} occupations, with each occupation’s ANZSCO code, list placement, relevant visa subclasses, assessing authority and source date.`,
-    tr: `PDF, ${count} mesleği kapsayan tek bir referans tablosu sunar; her mesleğin ANZSCO kodu, liste yeri, ilgili vize alt sınıfları, değerlendirme kurumu ve kaynak tarihi yer alır.`,
-    zh: `这份 PDF 提供一张涵盖 ${count} 个职业的参考表，列出每个职业的 ANZSCO 代码、清单归属、相关签证子类、评估机构和来源日期。`,
+    en: `The PDF gives you one reference table covering ${count} occupation entries, with each entry’s ANZSCO code, list placement, relevant visa subclasses, assessing authority and source date.`,
+    tr: `PDF, ${count} meslek kaydını kapsayan tek bir referans tablosu sunar; her kaydın ANZSCO kodu, liste yeri, ilgili vize alt sınıfları, değerlendirme kurumu ve kaynak tarihi yer alır.`,
+    zh: `这份 PDF 提供一张涵盖 ${count} 个职业条目的参考表，列出每个条目的 ANZSCO 代码、清单归属、相关签证子类、评估机构和来源日期。`,
+  }),
+  counts: (entries: number, codes: number, pages: number): L3 => ({
+    en: `The PDF contains ${entries} occupation entries (${codes} distinct ANZSCO codes: a few codes appear under two titles on the Home Affairs list). The online occupation index currently has ${pages} searchable occupation pages.`,
+    tr: `PDF ${entries} meslek kaydı içerir (${codes} farklı ANZSCO kodu: İçişleri Bakanlığı listesinde birkaç kod iki unvanla yer alır). Çevrimiçi meslek dizininde şu anda ${pages} aranabilir meslek sayfası vardır.`,
+    zh: `这份 PDF 包含 ${entries} 个职业条目（${codes} 个不同的 ANZSCO 代码：内政部清单中有少数代码对应两个职业名称）。在线职业索引目前有 ${pages} 个可搜索的职业页面。`,
   }),
   highlights: [
     { en: "ANZSCO code and occupation title", tr: "ANZSCO kodu ve meslek unvanı", zh: "ANZSCO 代码和职业名称" },
@@ -148,7 +154,7 @@ export default async function OccupationListPage({
               </h2>
             </div>
 
-            <p className="mb-4 text-sm leading-relaxed text-slate-700">{pick(COPY.what(OCCUPATION_PDF.occupationCount), locale)}</p>
+            <p className="mb-4 text-sm leading-relaxed text-slate-700">{pick(COPY.what(OCCUPATION_PDF.entryCount), locale)}</p>
 
             <ul className="space-y-3">
               {COPY.highlights.map((point) => (
@@ -158,7 +164,8 @@ export default async function OccupationListPage({
                 </li>
               ))}
             </ul>
-            <p className="mt-5 text-xs text-slate-600">{pick(COPY.note, locale)}</p>
+            <p className="mt-5 text-xs text-slate-600">{pick(COPY.counts(OCCUPATION_PDF.entryCount, OCCUPATION_PDF.distinctCodes, indexableEntries(locale).length), locale)}</p>
+            <p className="mt-2 text-xs text-slate-600">{pick(COPY.note, locale)}</p>
 
             <div className="mt-6 border-t border-slate-200 pt-4 text-sm text-slate-700">
               <p>{pick(COPY.searchText, locale)}</p>
