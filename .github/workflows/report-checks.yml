@@ -125,6 +125,9 @@ jobs:
 
       - name: SEO hygiene (prefixless English links, /guide product page, /tr and /zh-Hans /guide redirects, sitemap, occupation canonical unchanged)
         run: npm run test:seo-hygiene
+
+      - name: Occupation hub (/occupations title, H1, PDF-intent section, official source, accurate PDF labelling, FAQ, analytics, unchanged occupation architecture)
+        run: npm run test:occupation-hub
       - name: "Canada report is Canadian (deep check of the rendered PDF text, no Australian content, Australia unchanged, English-only in every locale)"
         run: npm run test:canada-report
       - name: Target visa field, DISABLED mode, engine carries the target (en / tr / zh-Hans)

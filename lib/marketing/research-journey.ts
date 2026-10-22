@@ -43,6 +43,16 @@ export function researchLinks(locale: string, code?: string): ResearchLink[] {
     {
       label: researchText(
         locale,
+        "Australian skilled occupation list",
+        "Avustralya kalifiye meslek listesi",
+        "澳大利亚技术职业清单",
+      ),
+      path: "/occupations",
+      destination: "occupation_list",
+    },
+    {
+      label: researchText(
+        locale,
         "Compare 189 / 190 / 491",
         "189 / 190 / 491 karşılaştır",
         "对比 189 / 190 / 491",

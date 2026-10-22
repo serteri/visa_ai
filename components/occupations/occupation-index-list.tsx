@@ -9,7 +9,7 @@ export function OccupationList({ locale, entries }: { locale: string; entries: I
     <ul className="grid gap-x-8 gap-y-2 text-sm sm:grid-cols-2">
       {entries.map((e) => (
         <li key={e.code}>
-          <Link className="text-cyan-900 underline" href={publicPath(locale, `/occupations/${e.slug}`)}>
+          <Link className="text-cyan-900 underline" data-occ-event="occupation_result_click" href={publicPath(locale, `/occupations/${e.slug}`)}>
             {e.name}
           </Link>{" "}
           <span className="font-mono text-xs text-slate-500">{e.code}</span>

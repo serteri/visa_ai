@@ -102,6 +102,12 @@ export function Hero({
           >
             {text("Compare visas", "Vizeleri karşılaştır", "对比签证")}
           </Link>
+          <Link
+            className="self-center py-3 text-[var(--cf-accent)] underline underline-offset-4"
+            href={publicPath(locale, "/occupations")}
+          >
+            {text("Australian skilled occupation list", "Avustralya kalifiye meslek listesi", "澳大利亚技术职业清单")}
+          </Link>
         </div>
         <div className="mt-7 flex flex-wrap justify-center gap-x-5 gap-y-3 text-sm text-[var(--cf-muted)]">
           {[

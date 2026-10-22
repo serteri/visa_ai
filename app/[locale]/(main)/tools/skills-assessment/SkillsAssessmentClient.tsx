@@ -432,6 +432,7 @@ export function SkillsAssessmentClient({ locale, initialQuery }: { locale: strin
 
         {selected && <ResearchLinks locale={locale} code={selected.code} links={[
           ...(selectedPage ? [{ label: text("Read occupation details", "Meslek bilgileri", "阅读职业详情"), path: `/occupations/${buildOccupationSlug(selectedPage)}`, destination: "anzsco_finder" }] : []),
+          { label: text("Search the Australian skilled occupation list", "Avustralya kalifiye meslek listesini ara", "搜索澳大利亚技术职业清单"), path: "/occupations", destination: "occupation_list" },
           { label: text("Calculate points", "Puan hesapla", "计算积分"), path: "/tools/points-calculator/australia", destination: "points_calculator" },
           { label: text("Explore document checklist references", "Belge kontrol listesi kaynakları", "探索材料清单参考"), path: "/tools/document-checklist-2026", destination: "document_checklist" },
         ]} />}

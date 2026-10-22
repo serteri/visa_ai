@@ -28,7 +28,13 @@ export type AnalyticsEventName =
   | "site_guide_quick_action"
   | "site_guide_route_click"
   | "site_guide_ai_assistant_handoff"
-  | "site_guide_dismiss";
+  | "site_guide_dismiss"
+  | "occupation_search_start"
+  | "occupation_result_click"
+  | "occupation_pdf_click"
+  | "official_occupation_list_click"
+  | "skills_assessment_click_from_occupations"
+  | "assessment_click_from_occupations";
 
 /** The only parameters that may be sent, and the only value types. */
 const ALLOWED_PARAMS = ["occupation_code", "locale", "subclass", "calculator", "link_host", "page_type", "destination", "source_page_type", "source_page_id", "continuation_stage", "entry_source", "product_type", "source_type", "source_slug", "destination_type", "destination_slug", "country", "interaction_type"] as const;
@@ -57,7 +63,7 @@ export function sanitizeParams(params: Record<string, unknown> = {}): AnalyticsP
     if (key === "destination_slug" && !/^[a-z0-9]+(?:-[a-z0-9]+){0,6}$/.test(v)) continue;
     if (key === "country" && v !== "AU" && v !== "CA") continue;
     if (key === "interaction_type" && !["nudge", "launcher", "quick_action", "free_text", "context_link", "route_click", "handoff", "dismiss"].includes(v)) continue;
-    if (key === "destination" && !["points_calculator", "skills_assessment", "state_nomination", "anzsco_finder", "visa_comparison", "document_checklist", "cost_calculator"].includes(v)) continue;
+    if (key === "destination" && !["points_calculator", "skills_assessment", "state_nomination", "anzsco_finder", "visa_comparison", "document_checklist", "cost_calculator", "occupation_list"].includes(v)) continue;
     out[key] = v;
   }
   return out;

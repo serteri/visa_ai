@@ -49,6 +49,7 @@ const ACT_ROUNDS = "https://www.act.gov.au/migration/resources/canberra-matrix-i
 const L = {
   skills: { label: "Skills Assessment Finder", path: "/tools/skills-assessment", type: "tool", destination: "skills_assessment" },
   anzsco: { label: "ANZSCO Finder", path: "/tools/anzsco-finder", type: "tool", destination: "anzsco_finder" },
+  occList: { label: "Australian skilled occupation list", path: "/occupations", type: "occupation", destination: "occupation_list" },
   points: { label: "Points Calculator", path: "/tools/points-calculator", type: "tool", destination: "points_calculator" },
   compare: { label: "Visa comparison", path: "/tools/visa-comparison", type: "tool", destination: "visa_comparison" },
   state: { label: "State nomination research", path: "/tools/state-nomination", type: "tool", destination: "state_nomination" },
@@ -118,7 +119,7 @@ export const RESEARCH_GUIDES: ResearchGuide[] = [
       { label: "ABS: ANZSCO classification", url: ABS_ROOT, note: "Current ANZSCO release information" },
       { label: "Trades Recognition Australia", url: TRA, note: "Current Migration Skills Assessment and OSAP information" },
     ],
-    related: [L.chef, L.cook, { label: "TRA MSA vs OSAP", path: "/guides/tra-msa-vs-osap", type: "guide" }, L.skills, L.anzsco],
+    related: [L.chef, L.cook, { label: "TRA MSA vs OSAP", path: "/guides/tra-msa-vs-osap", type: "guide" }, L.skills, L.anzsco, L.occList],
     value: "Both ABS descriptions in one table with skill levels, tasks and the exclusion wording, the TRA context from primary sources, and no verdict on which applies. The existing occupation pages carry only a short 'do not confuse' note.",
   },
   {
@@ -229,7 +230,7 @@ export const RESEARCH_GUIDES: ResearchGuide[] = [
       { label: "ACS: IT occupations and ANZSCO codes", url: ACS_IT, note: "Duties and process for 261312 and 261313" },
       { label: "ABS: ANZSCO classification", url: ABS_ROOT, note: "Current ANZSCO release information" },
     ],
-    related: [L.dev, L.swe, L.anzsco, L.skills, { label: "Skills assessment vs visa requirements", path: "/guides/skills-assessment-vs-visa-eligibility", type: "guide" }],
+    related: [L.dev, L.swe, L.anzsco, L.occList, L.skills, { label: "Skills assessment vs visa requirements", path: "/guides/skills-assessment-vs-visa-eligibility", type: "guide" }],
     value: "Both ABS entries and ACS's own wording in one table, with the specialisations and alternative titles that explain the overlap. The existing occupation pages carry only a short 'compare with' note.",
   },
   {
