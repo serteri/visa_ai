@@ -1,5 +1,7 @@
 import type { Metadata } from "next";
 
+import { pageAlternates } from "@/lib/seo/urls";
+
 import { TermsEn, TermsTr, TermsZh } from "./terms-content";
 
 type TermsPageProps = {
@@ -32,7 +34,7 @@ function getMetadataFor(locale: string): Metadata {
 // template still applies automatically on top of this.
 export async function generateMetadata({ params }: TermsPageProps): Promise<Metadata> {
   const { locale } = await params;
-  return getMetadataFor(locale);
+  return { ...getMetadataFor(locale), alternates: pageAlternates(locale, "/terms") };
 }
 
 export default async function TermsPage({ params }: TermsPageProps) {

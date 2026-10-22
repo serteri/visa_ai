@@ -1,5 +1,7 @@
 import type { Metadata } from "next";
 
+import { pageAlternates } from "@/lib/seo/urls";
+
 import { ContactPageClient } from "./ContactPageClient";
 
 type ContactPageProps = {
@@ -29,7 +31,7 @@ function getMetadataFor(locale: string): Metadata {
 
 export async function generateMetadata({ params }: ContactPageProps): Promise<Metadata> {
   const { locale } = await params;
-  return getMetadataFor(locale);
+  return { ...getMetadataFor(locale), alternates: pageAlternates(locale, "/contact") };
 }
 
 export default async function ContactPage({ params }: ContactPageProps) {

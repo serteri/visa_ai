@@ -6,7 +6,7 @@ import { LanguageProvider } from "@/contexts/language-context";
 import { getTranslations, t } from "@/lib/i18n/get-translations";
 import type { Locale } from "@/lib/i18n/config";
 import { KnowledgeChatUI } from "@/components/KnowledgeChatUI";
-import { publicPath } from "@/lib/seo/urls";
+import { publicPath, publicUrl } from "@/lib/seo/urls";
 
 type PageProps = {
   params: Promise<{ locale: string }>;
@@ -18,6 +18,10 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   const translations = await getTranslations(locale as Locale);
 
   return {
+    // An interactive chat tool (credit-restore links carry a token): not a search landing page and not in the sitemap, so noindex,follow with a
+    // self-canonical. It must never canonicalise to the homepage.
+    robots: { index: false, follow: true },
+    alternates: { canonical: publicUrl(locale, "/ai-assistant") },
     title: t(translations, "assistant.title", "LogiVisa AI Consultant"),
     description: t(
       translations,

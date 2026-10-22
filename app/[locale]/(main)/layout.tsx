@@ -85,12 +85,8 @@ export async function generateMetadata({
       // ?dpl=. It correctly resolves to "/" for English (rewritten, URL bar
       // stays at "/") and "/tr/" or "/zh-Hans/" for the other locales.
       canonical: "./",
-      languages: {
-        en: BASE_URL,
-        tr: `${BASE_URL}/tr`,
-        "zh-Hans": `${BASE_URL}/zh-Hans`,
-        "x-default": BASE_URL,
-      },
+      // No `languages` here: hreflang must name the equivalent page, and only the page knows it. A layout-level set pointed every
+      // inheriting page (contact, legal, terms, rounds...) at the locale homepages. Pages declare pageAlternates(locale, path).
     },
     openGraph: {
       type: "website",

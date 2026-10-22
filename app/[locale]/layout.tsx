@@ -66,15 +66,8 @@ export const metadata: Metadata = {
     "Subclass 500",
     "ANZSCO code finder",
   ],
-  alternates: {
-    canonical: BASE_URL,
-    languages: {
-      en: BASE_URL,
-      tr: `${BASE_URL}/tr`,
-      "zh-Hans": `${BASE_URL}/zh-Hans`,
-      "x-default": BASE_URL,
-    },
-  },
+  // No site-wide `alternates`: a canonical or hreflang set here is inherited by every page that does not declare its own, and would name the
+  // homepage (see lib/seo/urls.ts pageAlternates for the per-page declaration).
   openGraph: {
     type: "website",
     locale: "en_AU",

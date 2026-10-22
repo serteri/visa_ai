@@ -4,6 +4,7 @@ import { notFound } from "next/navigation";
 import { SampleReportIntro } from "@/components/landing/SampleReportSection";
 import { PremiumReportShowcase } from "@/components/sections/PremiumReportShowcase";
 import { activeLocales, isValidLocale } from "@/lib/i18n/config";
+import { publicUrl } from "@/lib/seo/urls";
 
 type PageProps = { params: Promise<{ locale: string }> };
 
@@ -12,7 +13,11 @@ export function generateStaticParams() {
 }
 
 // A product preview, not search content: the real report pages (synthetic profile), kept out of the index and out of the sitemap on purpose.
-export const metadata: Metadata = { title: "Sample Assessment Report", robots: { index: false, follow: true }, referrer: "no-referrer" };
+// Intentionally not indexable (unchanged). The canonical is the page's own public URL: English is prefixless, never the internal /en/ route.
+export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
+  const { locale } = await params;
+  return { title: "Sample Assessment Report", robots: { index: false, follow: true }, referrer: "no-referrer", alternates: { canonical: publicUrl(locale, "/sample-report") } };
+}
 
 export default async function SampleReportPage({ params }: PageProps) {
   const { locale } = await params;
