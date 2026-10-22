@@ -243,6 +243,7 @@ async function main() {
   check(/useState<GuideCountry \| null>\(context\.country\)/.test(panelSrc2) && !/localStorage/.test(panelSrc2), "the panel's country starts from the page and is not stored: closing the panel resets it");
 
   console.log("\n14. short conversational answers (keyword-style input)");
+  check(resolvePageContext("/guide").country === null && resolvePageContext("/tr/guide").country === null && buildResponse("Canada", resolvePageContext("/guide").country, "en", false).country === "CA", "the /guide page itself is country-neutral: 'Canada' answers Canada there");
   const words = (m: string) => m.trim().split(/\s+/).length;
   const short = (q: string, c: GuideCountry | null = null, loc = "en") => buildResponse(q, c, loc, false);
   const hrefs = (q: string, c: GuideCountry | null = null) => short(q, c).links.map((x) => x.href);

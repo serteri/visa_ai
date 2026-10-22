@@ -51,7 +51,8 @@ export function resolvePageContext(pathname: string, search = ""): PageContext {
   if (p.startsWith("/tools/points-calculator")) return { hidden: false, pageType: "points", country: "AU" };
   if (p.startsWith("/tools/")) return { hidden: false, pageType: "tool", country: "AU" };
 
-  if (p === "/guides" || p.startsWith("/guides/") || p === "/guide" || p.startsWith("/guide/") || p.startsWith("/rehber")) {
+  if (p === "/guide" || p.startsWith("/guide/")) return { hidden: false, pageType: "other", country: null };
+  if (p === "/guides" || p.startsWith("/guides/") || p.startsWith("/rehber")) {
     return { hidden: false, pageType: "guide", country: "AU" };
   }
   return { hidden: false, pageType: "other", country: null };
