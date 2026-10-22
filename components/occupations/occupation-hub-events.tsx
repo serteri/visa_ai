@@ -10,7 +10,7 @@ import { trackEvent, type AnalyticsEventName } from "@/lib/analytics/events";
 
 const CLICK_EVENTS = new Set<AnalyticsEventName>([
   "occupation_result_click",
-  "occupation_pdf_click",
+  "occupations_to_pdf_click",
   "official_occupation_list_click",
   "skills_assessment_click_from_occupations",
   "assessment_click_from_occupations",

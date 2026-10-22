@@ -88,24 +88,6 @@ export default async function OccupationIndexPage({ params }: PageProps) {
             </form>
           </section>
 
-          <section aria-labelledby="occ-pdf" className="rounded-2xl border border-slate-200 bg-slate-50 p-5" data-occupation-pdf-intent>
-            <h2 id="occ-pdf" className="text-lg font-semibold text-slate-900">{c.pdfTitle}</h2>
-            <p className="mt-2 text-sm leading-relaxed text-slate-700">{c.pdfBody(compiled, dataDate)}</p>
-            <ul className="mt-3 space-y-2 text-sm">
-              <li>
-                <a href={HOME_AFFAIRS_SOL_URL} target="_blank" rel="noopener noreferrer" data-official-source data-occ-event="official_occupation_list_click" className={linkClass}>
-                  {c.officialLink}
-                </a>
-              </li>
-              <li>
-                <Link href={publicPath(locale, OCCUPATION_PDF.resourcePath)} data-occ-event="occupation_pdf_click" className={linkClass}>
-                  {c.pdfLink(compiled)}
-                </Link>
-                <span className="block text-xs text-slate-600">{c.pdfNote}</span>
-              </li>
-            </ul>
-          </section>
-
           <section aria-labelledby="occ-which" className="space-y-3">
             <h2 id="occ-which" className="text-lg font-semibold text-slate-900">{c.whichTitle}</h2>
             <p className="text-sm text-slate-700">{c.whichIntro}</p>
@@ -119,6 +101,24 @@ export default async function OccupationIndexPage({ params }: PageProps) {
             </dl>
             <p className="text-sm text-slate-700">{c.anzsco}</p>
             <p className="text-sm font-medium text-slate-800">{c.notEligibility}</p>
+          </section>
+
+          <section aria-labelledby="occ-pdf" className="rounded-2xl border border-slate-200 bg-slate-50 p-5" data-occupation-pdf-intent>
+            <h2 id="occ-pdf" className="text-lg font-semibold text-slate-900">{c.pdfTitle}</h2>
+            <p className="mt-2 text-sm leading-relaxed text-slate-700">{c.pdfBody(compiled, dataDate)}</p>
+            <ul className="mt-3 space-y-2 text-sm">
+              <li>
+                <a href={HOME_AFFAIRS_SOL_URL} target="_blank" rel="noopener noreferrer" data-official-source data-occ-event="official_occupation_list_click" className={linkClass}>
+                  {c.officialLink}
+                </a>
+              </li>
+              <li>
+                <Link href={publicPath(locale, OCCUPATION_PDF.resourcePath)} data-occ-event="occupations_to_pdf_click" className={linkClass}>
+                  {c.pdfLink(compiled)}
+                </Link>
+                <span className="block text-xs text-slate-600">{c.pdfNote(compiled)}</span>
+              </li>
+            </ul>
           </section>
 
           <nav aria-label={c.toolsTitle} className="flex flex-wrap gap-x-6 gap-y-2 text-sm">

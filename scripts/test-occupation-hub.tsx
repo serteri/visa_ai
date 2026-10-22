@@ -31,17 +31,17 @@ async function main() {
   console.log("\n1. metadata (English): query-aligned title and description, self-canonical, hreflang unchanged");
   const en = await meta("en");
   const title = (en.title as { absolute: string }).absolute;
-  check(title === "Australia Skilled Occupation List 2026 | ANZSCO Search & PDF", "title: Australia Skilled Occupation List 2026 | ANZSCO Search & PDF", title);
-  check(title.length <= 60 && /Skilled Occupation List/.test(title) && /ANZSCO/.test(title) && /PDF/.test(title), "the title is 60 characters or fewer and carries the target concept");
+  check(title === "Australia Skilled Occupation List 2026 | Search ANZSCO Codes", "title: Australia Skilled Occupation List 2026 | Search ANZSCO Codes", title);
+  check(title.length <= 60 && /Skilled Occupation List/.test(title) && /ANZSCO/.test(title) && !/PDF/i.test(title), "the title is 60 characters or fewer, carries the concept and does NOT contain PDF (that intent belongs to /resources/occupation-list)");
   const d = String(en.description);
-  check(/ANZSCO code or title/.test(d) && /list placement with sources/.test(d) && /dated reference PDF/.test(d) && /Home Affairs remains the official source/.test(d), "the description: search by ANZSCO code or title, list placement with sources, a dated reference PDF, Home Affairs is the official source", d);
+  check(/ANZSCO code or title/.test(d) && /list placement, assessing authority and sources/.test(d) && !/PDF/i.test(d) && /Home Affairs remains the official source/.test(d), "the description: search by ANZSCO code or title, list placement, assessing authority and sources, Home Affairs is the official source; no PDF", d);
   check(d.length <= 170, "the description fits a result snippet", String(d.length));
   const alt = en.alternates as { canonical: string; languages: Record<string, string> };
   check(alt.canonical === "https://www.logivisa.com/occupations", "the English canonical is the prefixless self URL");
   check(JSON.stringify(alt.languages) === JSON.stringify({ en: "https://www.logivisa.com/occupations", tr: "https://www.logivisa.com/tr/occupations", "zh-Hans": "https://www.logivisa.com/zh-Hans/occupations", "x-default": "https://www.logivisa.com/occupations" }), "hreflang is unchanged: en, tr, zh-Hans, x-default (English)");
   const tr = await meta("tr"), zh = await meta("zh-Hans");
   check((tr.alternates as { canonical: string }).canonical === "https://www.logivisa.com/tr/occupations" && (zh.alternates as { canonical: string }).canonical === "https://www.logivisa.com/zh-Hans/occupations", "TR and zh-Hans keep their own self-canonical");
-  check(/Avustralya Kalifiye Meslek Listesi 2026/.test((tr.title as { absolute: string }).absolute) && /澳大利亚技术职业清单 2026/.test((zh.title as { absolute: string }).absolute), "TR and zh-Hans titles are localized");
+  check(/Avustralya Kalifiye Meslek Listesi 2026/.test((tr.title as { absolute: string }).absolute) && /澳大利亚技术职业清单 2026/.test((zh.title as { absolute: string }).absolute) && !/PDF/i.test((tr.title as { absolute: string }).absolute + (zh.title as { absolute: string }).absolute), "TR and zh-Hans titles are localized and carry no PDF");
   check(!(en.robots) , "the page stays indexable (no robots override)");
 
   console.log("\n2. the English page: H1, intro, search, PDF-intent section, list explanation, FAQ");
@@ -52,14 +52,15 @@ async function main() {
   check(t.includes("Search LogiVisa’s source-dated Australian occupation data by occupation title or ANZSCO code") && t.includes("links to official sources and a downloadable dated reference"), "the intro explains what the page contains");
   check(t.includes("Australia does not use one single occupation list for every skilled visa") && t.includes("Different lists apply to different visas") && t.includes("Home Affairs currently references the CSOL, MLTSSL, STSOL and ROL") && t.includes("Being on a list is not personal visa eligibility"), "it says: no single list, different lists for different visas, CSOL/MLTSSL/STSOL/ROL, list inclusion is not eligibility");
   check(/<form[^>]*action="\/tools\/anzsco-finder"[^>]*method="get"/.test(html) && /name="q"/.test(html) && t.includes("Search by occupation or ANZSCO code"), "the main CTA: 'Search by occupation or ANZSCO code' is a search form into the existing ANZSCO finder (no new tool)");
-  check(html.indexOf("Search by occupation or ANZSCO code") < html.indexOf("Looking for the 2026 skilled occupation list PDF?") && html.indexOf("Looking for the 2026 skilled occupation list PDF?") < html.indexOf("Browse the occupation index"), "order: search, then the PDF-intent section, then the index");
-  check(t.includes("Looking for the 2026 skilled occupation list PDF?"), "the PDF-intent section is present");
+  check(html.indexOf("Search by occupation or ANZSCO code") < html.indexOf("Which skilled occupation list applies?") && html.indexOf("Which skilled occupation list applies?") < html.indexOf("Need a downloadable, dated reference?") && html.indexOf("Need a downloadable, dated reference?") < html.indexOf("Browse the occupation index"), "order: search, which-list explanation, then the PDF as a secondary resource, then the index");
+  check(t.includes("Need a downloadable, dated reference?") && !t.includes("Looking for the 2026 skilled occupation list PDF?"), "the PDF section is kept, as a secondary resource with a non-keyword heading");
   check(t.includes("maintains the current skilled occupation list information, including the relevant legislative instruments") && t.includes("verify current information with Home Affairs"), "it says Home Affairs maintains the current information and to verify with Home Affairs");
   check(html.includes(`href="${HOME_AFFAIRS_SOL_URL}"`) && /data-official-source[^>]*data-occ-event="official_occupation_list_click"|data-occ-event="official_occupation_list_click"[^>]*>/.test(html) && t.includes("Open the official Home Affairs skilled occupation list"), "it links directly to the official Home Affairs Skilled Occupation List");
   check(HOME_AFFAIRS_SOL_URL === "https://immi.homeaffairs.gov.au/visas/working-in-australia/skill-occupation-list", "...at its exact URL");
   check(t.includes("LogiVisa-compiled reference") && t.includes("compiled 8 October 2026") && t.includes("not an official government PDF") && t.includes("not an official government document"), "the PDF is labelled a LogiVisa-compiled, dated reference, never an official PDF");
+  check(t.includes("Download the 2026 occupation list PDF"), "the secondary CTA reads 'Download the 2026 occupation list PDF'");
   check(!/(?<!not )(an|the) official (government )?(PDF|document)(?! \()/i.test(t.replace(/Home Affairs list data/g, "")) || /not an official government (PDF|document)/.test(t), "no text calls LogiVisa's PDF official");
-  check(html.includes(`href="${OCCUPATION_PDF.resourcePath}"`) && /occupation_pdf_click/.test(html), "the PDF link goes to the existing delivery page (/resources/occupation-list) and is tracked");
+  check(html.includes(`href="${OCCUPATION_PDF.resourcePath}"`) && /data-occ-event="occupations_to_pdf_click"/.test(html), "the PDF link goes to /resources/occupation-list and is tracked as occupations_to_pdf_click");
   check(t.includes("occupation data dated 9 July 2026"), "the occupation data date is shown");
   check(t.includes("Which skilled occupation list applies?") && ["CSOL", "MLTSSL", "STSOL", "ROL"].every((c) => t.includes(c)) && t.includes("Core Skills Occupation List") && t.includes("Medium and Long-term Strategic Skills List") && t.includes("Short-term Skilled Occupation List") && t.includes("Regional Occupation List"), "'Which skilled occupation list applies?' covers CSOL, MLTSSL, STSOL and ROL");
   check(t.includes("ANZSCO 2022 for subclass 186 and 482, and ANZSCO 2013 for all other visas"), "it explains the ANZSCO 2022 (186 / 482) and ANZSCO 2013 (other visas) labelling");
@@ -97,12 +98,12 @@ async function main() {
   check(existsSync("app/[locale]/(main)/resources/occupation-list/page.tsx") && /Get the PDF in your inbox/.test(readFileSync("app/[locale]/(main)/resources/occupation-list/page.tsx", "utf8")), "the existing delivery page (email form) is untouched and still serves it");
 
   console.log("\n6. analytics: fixed events, no typed text");
-  const events = ["occupation_search_start", "occupation_result_click", "occupation_pdf_click", "official_occupation_list_click", "skills_assessment_click_from_occupations", "assessment_click_from_occupations"];
+  const events = ["occupation_search_start", "occupation_result_click", "occupations_to_pdf_click", "official_occupation_list_click", "skills_assessment_click_from_occupations", "assessment_click_from_occupations"];
   const evSrc = readFileSync("lib/analytics/events.ts", "utf8");
   check(events.every((e) => evSrc.includes(`"${e}"`)), "the six events are defined in the existing analytics module (no new system)");
   const used = [...html.matchAll(/data-occ-event="([a-z_]+)"/g)].map((m) => m[1]);
   check(used.length > 0 && used.every((u) => events.includes(u)), "every tracked element uses one of those events", used.join(","));
-  check(["occupation_search_start", "occupation_pdf_click", "official_occupation_list_click", "skills_assessment_click_from_occupations", "assessment_click_from_occupations", "occupation_result_click"].every((e) => used.includes(e)), "all six are wired on the page");
+  check(["occupation_search_start", "occupations_to_pdf_click", "official_occupation_list_click", "skills_assessment_click_from_occupations", "assessment_click_from_occupations", "occupation_result_click"].every((e) => used.includes(e)), "all six are wired on the page");
   const wrapper = readFileSync("components/occupations/occupation-hub-events.tsx", "utf8");
   check(!/\.value|innerText|textContent|href|FormData/.test(wrapper.replace(/\/\*[\s\S]*?\*\//g, "")) && /trackEvent\(name, \{ locale \}\)/.test(wrapper) && /trackEvent\("occupation_search_start", \{ locale \}\)/.test(wrapper), "the tracker sends only the event name and the locale: no search text, no link text, no URL");
   check(JSON.stringify(sanitizeParams({ locale: "en", q: "software engineer", email: "a@b.co", occupation: "chef" })) === JSON.stringify({ locale: "en" }), "the allow-list drops search text, email and occupation");

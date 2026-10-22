@@ -1,47 +1,75 @@
 import type { Metadata } from "next";
 import { FileText, CheckCircle, Info } from "lucide-react";
 
+import Link from "next/link";
+
 import { LeadMagnetForm } from "@/components/LeadMagnetForm";
+import { OccupationPdfEvents } from "@/components/occupations/occupation-pdf-events";
+import { OCCUPATION_PDF } from "@/lib/occupations/hub-content";
+import { longDate } from "@/lib/reports/public-sources";
+import { pageAlternates, publicPath, publicUrl } from "@/lib/seo/urls";
+import type { Locale } from "@/lib/i18n/config";
 
 import { LEAD_MAGNETS, pick } from "@/lib/lead-magnets";
 
 type L3 = { en: string; tr: string; zh: string };
 const COPY = {
   title: {
-    en: "2026 Australian Skilled Occupation List (compiled from official sources)",
-    tr: "2026 Avustralya Kalifiye Meslek Listesi (resmi kaynaklardan derlenmiştir)",
-    zh: "2026 澳大利亚技术职业清单（根据官方来源整理）",
+    en: "Australian Skilled Occupation List 2026 PDF",
+    tr: "Avustralya Kalifiye Meslek Listesi 2026 PDF",
+    zh: "澳大利亚技术职业清单 2026 PDF",
   } as L3,
   description: {
-    en: "A PDF of the Australian skilled occupation lists with ANZSCO codes, visa subclasses and assessing authorities, compiled by LogiVisa from official sources. The source and date are inside the PDF. It is not a government document.",
-    tr: "ANZSCO kodları, vize alt sınıfları ve değerlendirme kurumlarıyla Avustralya kalifiye meslek listelerinin, LogiVisa tarafından resmi kaynaklardan derlenmiş PDF'i. Kaynak ve tarih PDF'in içindedir. Resmi bir devlet belgesi değildir.",
-    zh: "由 LogiVisa 根据官方来源整理的澳大利亚技术职业清单 PDF，含 ANZSCO 代码、签证子类和评估机构。来源和日期见 PDF 内部。它不是政府文件。",
+    en: "Get a dated, LogiVisa-compiled PDF of the Australian skilled occupation lists with ANZSCO codes, list placement and assessing authorities. Not an official government PDF.",
+    tr: "ANZSCO kodları, liste yeri ve değerlendirme kurumlarıyla Avustralya kalifiye meslek listelerinin tarihli, LogiVisa tarafından derlenmiş PDF’ini alın. Resmî bir devlet PDF’i değildir.",
+    zh: "获取由 LogiVisa 整理的带日期的澳大利亚技术职业清单 PDF，含 ANZSCO 代码、清单归属和评估机构。不是政府官方 PDF。",
   } as L3,
-  badge: { en: "Compiled from official sources", tr: "Resmi kaynaklardan derlenmiştir", zh: "根据官方来源整理" } as L3,
-  h1: { en: "2026 Australian Skilled Occupation List", tr: "2026 Avustralya Kalifiye Meslek Listesi", zh: "2026 澳大利亚技术职业清单" } as L3,
-  intro: {
-    en: "A reference table of occupations on the Australian skilled occupation lists, compiled by LogiVisa from the Department of Home Affairs lists. It is not an official or government document; the source and the date it was compiled are inside the PDF. Enter your details and we will send it to your inbox.",
-    tr: "Avustralya kalifiye meslek listelerindeki mesleklerin, LogiVisa tarafından İçişleri Bakanlığı listelerinden derlenmiş başvuru tablosu. Resmi veya devlet belgesi değildir; kaynak ve derleme tarihi PDF'in içindedir. Bilgilerinizi girin, gelen kutunuza gönderelim.",
-    zh: "由 LogiVisa 根据内政部清单整理的澳大利亚技术职业清单参考表。它不是官方或政府文件；来源和整理日期见 PDF 内部。填写您的信息，我们会发送到您的邮箱。",
-  } as L3,
+  badge: { en: "LogiVisa-compiled reference", tr: "LogiVisa tarafından derlenmiş referans", zh: "LogiVisa 整理的参考资料" } as L3,
+  h1: { en: "Australian Skilled Occupation List 2026 PDF", tr: "Avustralya Kalifiye Meslek Listesi 2026 PDF", zh: "澳大利亚技术职业清单 2026 PDF" } as L3,
+  intro: (compiled: string): L3 => ({
+    en: `A dated reference compiled by LogiVisa from official sources (Department of Home Affairs list data and ABS ANZSCO), compiled ${compiled}. It is not an official government PDF, and current Home Affairs information remains authoritative. Enter your details and we will email it to you.`,
+    tr: `LogiVisa tarafından resmî kaynaklardan (İçişleri Bakanlığı liste verileri ve ABS ANZSCO) derlenmiş tarihli bir referanstır; derleme tarihi ${compiled}. Resmî bir devlet PDF’i değildir; güncel İçişleri Bakanlığı bilgileri esas alınır. Bilgilerinizi girin, size e-postayla gönderelim.`,
+    zh: `由 LogiVisa 根据官方来源（内政部清单数据和 ABS ANZSCO）整理的带日期参考资料，整理于 ${compiled}。它不是政府官方 PDF，当前内政部信息仍具权威性。填写您的信息，我们会发送到您的邮箱。`,
+  }),
   kicker: { en: "Free · sent by email", tr: "Ücretsiz · e-postayla gönderilir", zh: "免费 · 通过邮件发送" } as L3,
   formTitle: { en: "Get the PDF in your inbox", tr: "PDF'i gelen kutunuza alın", zh: "将 PDF 发送到您的邮箱" } as L3,
-  whatTitle: { en: "What is in this document?", tr: "Bu belgede neler var?", zh: "此文件包含什么？" } as L3,
+  whatTitle: { en: "What the 2026 occupation list PDF contains", tr: "2026 meslek listesi PDF’inin içeriği", zh: "2026 年职业清单 PDF 的内容" } as L3,
   what: {
-    en: "The PDF lists occupations by their ANZSCO code (the Australian and New Zealand Standard Classification of Occupations), with the lists they appear on, the visa subclasses those lists relate to and the assessing authority.",
-    tr: "PDF, mesleklerin ANZSCO kodunu (Avustralya ve Yeni Zelanda Standart Meslek Sınıflandırması), hangi listelerde yer aldığını, bu listelerin ilişkili olduğu vize alt sınıflarını ve değerlendirme kurumunu listeler.",
-    zh: "PDF 按 ANZSCO 代码（澳大利亚和新西兰标准职业分类）列出职业，以及其所在清单、这些清单对应的签证子类和评估机构。",
+    en: "One table, by occupation, drawn from the Department of Home Affairs lists, with ANZSCO titles from the Australian Bureau of Statistics. Each entry shows:",
+    tr: "İçişleri Bakanlığı listelerinden, ANZSCO unvanları Avustralya İstatistik Bürosu’ndan alınan, meslek bazında tek bir tablo. Her kayıt şunları gösterir:",
+    zh: "按职业列出的一张表，数据来自内政部清单，ANZSCO 名称来自澳大利亚统计局。每个条目显示：",
   } as L3,
   highlights: [
-    { en: "ANZSCO code, occupation title, list, visa subclasses and assessing authority for each entry", tr: "Her kayıt için ANZSCO kodu, meslek adı, liste, vize alt sınıfları ve değerlendirme kurumu", zh: "每个条目的 ANZSCO 代码、职业名称、清单、签证子类和评估机构" },
-    { en: "Compiled by LogiVisa from Department of Home Affairs lists; the source and date are printed on the cover", tr: "LogiVisa tarafından İçişleri Bakanlığı listelerinden derlenmiştir; kaynak ve tarih kapakta yazılıdır", zh: "由 LogiVisa 根据内政部清单整理；来源和日期印在封面上" },
-    { en: "General information only: check the current lists with the Department of Home Affairs", tr: "Yalnızca genel bilgi: güncel listeleri İçişleri Bakanlığı'ndan kontrol edin", zh: "仅为一般信息：请向内政部核对现行清单" },
+    { en: "ANZSCO code", tr: "ANZSCO kodu", zh: "ANZSCO 代码" },
+    { en: "Occupation title", tr: "Meslek unvanı", zh: "职业名称" },
+    { en: "List placement (CSOL, MLTSSL, STSOL, ROL)", tr: "Liste yeri (CSOL, MLTSSL, STSOL, ROL)", zh: "清单归属（CSOL、MLTSSL、STSOL、ROL）" },
+    { en: "The visa subclasses associated with the published lists", tr: "Yayımlanmış listelerle ilişkili vize alt sınıfları", zh: "已公布清单对应的签证子类" },
+    { en: "Assessing authority", tr: "Değerlendirme kurumu", zh: "评估机构" },
+    { en: "The compilation date and the sources, printed on the cover", tr: "Derleme tarihi ve kaynaklar, kapakta basılıdır", zh: "整理日期和来源，印在封面上" },
   ] as L3[],
+  note: {
+    en: "General information only: check the current lists with the Department of Home Affairs.",
+    tr: "Yalnızca genel bilgi: güncel listeleri İçişleri Bakanlığı’ndan kontrol edin.",
+    zh: "仅为一般信息：请向内政部核对当前清单。",
+  } as L3,
+  searchCta: { en: "Search occupations online", tr: "Meslekleri çevrimiçi arayın", zh: "在线搜索职业" } as L3,
+  searchText: {
+    en: "Looking up one occupation or ANZSCO code? The occupation index lets you search and browse it, with the list placement and sources for each.",
+    tr: "Tek bir meslek veya ANZSCO kodu mu arıyorsunuz? Meslek dizini, her biri için liste yeri ve kaynaklarla birlikte arama ve göz atma imkânı sunar.",
+    zh: "只想查某个职业或 ANZSCO 代码？职业索引可搜索和浏览，并列出每个职业的清单归属和来源。",
+  } as L3,
 };
 
 export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }): Promise<Metadata> {
   const { locale } = await params;
-  return { title: pick(COPY.title, locale), description: pick(COPY.description, locale) };
+  const title = pick(COPY.title, locale);
+  const description = pick(COPY.description, locale);
+  return {
+    title,
+    description,
+    alternates: pageAlternates(locale, "/resources/occupation-list"),
+    openGraph: { title, description, type: "website", url: publicUrl(locale, "/resources/occupation-list") },
+  };
 }
 
 export default async function OccupationListPage({
@@ -50,8 +78,18 @@ export default async function OccupationListPage({
   params: Promise<{ locale: string }>;
 }) {
   const { locale } = await params;
+  const compiled = longDate(OCCUPATION_PDF.compiledOn, locale as Locale);
+  const pageSchema = {
+    "@context": "https://schema.org",
+    "@type": "WebPage",
+    name: pick(COPY.title, locale),
+    description: pick(COPY.description, locale),
+    url: publicUrl(locale, "/resources/occupation-list"),
+    inLanguage: locale,
+  };
 
   return (
+    <OccupationPdfEvents locale={locale}>
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-indigo-50/30 dark:from-zinc-950 dark:via-zinc-900 dark:to-indigo-950/20">
       {/* ── Hero ── */}
       <section className="relative overflow-hidden px-4 pb-12 pt-12 sm:px-6 lg:px-8">
@@ -76,7 +114,7 @@ export default async function OccupationListPage({
             {pick(COPY.h1, locale)}
           </h1>
 
-          <p className="mt-5 text-lg leading-relaxed text-slate-700">{pick(COPY.intro, locale)}</p>
+          <p className="mt-5 text-lg leading-relaxed text-slate-700">{pick(COPY.intro(compiled), locale)}</p>
         </div>
       </section>
 
@@ -110,23 +148,33 @@ export default async function OccupationListPage({
               </h2>
             </div>
 
-            <p className="mb-6 text-sm leading-relaxed text-slate-700">{pick(COPY.what, locale)}</p>
+            <p className="mb-4 text-sm leading-relaxed text-slate-700">{pick(COPY.what, locale)}</p>
 
             <ul className="space-y-3">
               {COPY.highlights.map((point) => (
                 <li key={point.en} className="flex items-start gap-3">
                   <CheckCircle className="mt-0.5 h-5 w-5 shrink-0 text-emerald-700" />
-                  <span className="text-sm text-slate-700">
-                    {pick(point, locale)}
-                  </span>
+                  <span className="text-sm text-slate-700">{pick(point, locale)}</span>
                 </li>
               ))}
             </ul>
+            <p className="mt-5 text-xs text-slate-600">{pick(COPY.note, locale)}</p>
+
+            <div className="mt-6 border-t border-slate-200 pt-4 text-sm text-slate-700">
+              <p>{pick(COPY.searchText, locale)}</p>
+              <Link
+                href={publicPath(locale, "/occupations")}
+                data-pdf-event="occupation_pdf_to_search_click"
+                className="mt-2 inline-block font-semibold text-indigo-800 underline underline-offset-4"
+              >
+                {pick(COPY.searchCta, locale)}
+              </Link>
+            </div>
           </div>
         </div>
       </section>
-
-
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(pageSchema) }} />
     </div>
+    </OccupationPdfEvents>
   );
 }

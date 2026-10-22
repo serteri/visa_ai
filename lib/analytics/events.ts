@@ -31,7 +31,10 @@ export type AnalyticsEventName =
   | "site_guide_dismiss"
   | "occupation_search_start"
   | "occupation_result_click"
-  | "occupation_pdf_click"
+  | "occupations_to_pdf_click"
+  | "occupation_pdf_lead_start"
+  | "occupation_pdf_submit"
+  | "occupation_pdf_to_search_click"
   | "official_occupation_list_click"
   | "skills_assessment_click_from_occupations"
   | "assessment_click_from_occupations";

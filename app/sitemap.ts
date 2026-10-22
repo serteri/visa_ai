@@ -32,7 +32,7 @@ export function buildSitemap(): MetadataRoute.Sitemap {
     }
   };
 
-  for (const path of ["", "/full-check", "/tools/points-calculator", "/tools/anzsco-finder", "/tools/points-calculator/australia", "/tools/skills-assessment", "/tools/visa-comparison", "/tools/state-nomination", "/tools/document-checklist-2026", "/tools/cost-calculator"]) add(path || "/");
+  for (const path of ["", "/full-check", "/tools/points-calculator", "/tools/anzsco-finder", "/tools/points-calculator/australia", "/tools/skills-assessment", "/tools/visa-comparison", "/tools/state-nomination", "/tools/document-checklist-2026", "/tools/cost-calculator", "/resources/occupation-list"]) add(path || "/");
 
   // The occupation index: overview, one page per ANZSCO major group and per starting letter (only groups / letters that list a page).
   add("/occupations");

@@ -128,6 +128,9 @@ jobs:
 
       - name: Occupation hub (/occupations title, H1, PDF-intent section, official source, accurate PDF labelling, FAQ, analytics, unchanged occupation architecture)
         run: npm run test:occupation-hub
+
+      - name: Occupation PDF page (PDF intent ownership, honest labelling, reciprocal cross-links, analytics privacy)
+        run: npm run test:occupation-pdf-page
       - name: "Canada report is Canadian (deep check of the rendered PDF text, no Australian content, Australia unchanged, English-only in every locale)"
         run: npm run test:canada-report
       - name: Target visa field, DISABLED mode, engine carries the target (en / tr / zh-Hans)

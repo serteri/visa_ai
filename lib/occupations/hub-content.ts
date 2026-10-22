@@ -21,16 +21,16 @@ type T3 = (en: string, tr: string, zh: string) => string;
 
 export function hubMeta(t: T3) {
   return {
-    // English: the query-aligned title (60 characters, set as the full title so the site suffix does not push it over).
+    // The occupation hub owns search / browse / ANZSCO intent; the PDF intent belongs to /resources/occupation-list, so no "PDF" in the title.
     title: t(
-      "Australia Skilled Occupation List 2026 | ANZSCO Search & PDF",
-      "Avustralya Kalifiye Meslek Listesi 2026 | ANZSCO Arama ve PDF",
-      "澳大利亚技术职业清单 2026 | ANZSCO 搜索与 PDF",
+      "Australia Skilled Occupation List 2026 | Search ANZSCO Codes",
+      "Avustralya Kalifiye Meslek Listesi 2026 | ANZSCO Kodu Arama",
+      "澳大利亚技术职业清单 2026 | 搜索 ANZSCO 代码",
     ),
     description: t(
-      "Search Australian occupations by ANZSCO code or title, see list placement with sources, and open a dated reference PDF. Home Affairs remains the official source.",
-      "Avustralya mesleklerini ANZSCO kodu veya unvanla arayın, listedeki yeri kaynaklarıyla görün ve tarihli bir referans PDF'ini açın. Resmî kaynak İçişleri Bakanlığı'dır.",
-      "按 ANZSCO 代码或职业名搜索澳大利亚职业，查看带来源的清单收录情况，并打开带日期的参考 PDF。官方来源仍为内政部。",
+      "Search Australian occupations by ANZSCO code or title and see list placement, assessing authority and sources. Home Affairs remains the official source.",
+      "Avustralya mesleklerini ANZSCO kodu veya unvanla arayın; kalifiye meslek listesindeki yeri, değerlendirme kurumu ve kaynaklara göz atın. Resmî kaynak İçişleri Bakanlığı'dır.",
+      "按 ANZSCO 代码或职业名搜索澳大利亚职业，浏览技术职业清单归属、评估机构和来源。官方来源仍为内政部。",
     ),
     h1: t("Australia Skilled Occupation List 2026", "Avustralya Kalifiye Meslek Listesi 2026", "澳大利亚技术职业清单 2026"),
   };
@@ -57,7 +57,7 @@ export function hubCopy(t: T3, total: number) {
     searchLabel: t("Occupation title or ANZSCO code", "Meslek unvanı veya ANZSCO kodu", "职业名称或 ANZSCO 代码"),
     searchPlaceholder: t("e.g. Software Engineer or 261313", "ör. Yazılım Mühendisi veya 261313", "例如 软件工程师 或 261313"),
     searchButton: t("Search occupations", "Meslek ara", "搜索职业"),
-    pdfTitle: t("Looking for the 2026 skilled occupation list PDF?", "2026 kalifiye meslek listesi PDF’ini mi arıyorsunuz?", "在找 2026 年技术职业清单 PDF？"),
+    pdfTitle: t("Need a downloadable, dated reference?", "İndirilebilir, tarihli bir referansa mı ihtiyacınız var?", "需要可下载的带日期参考资料？"),
     pdfBody: (compiled: string, dataDate: string) =>
       t(
         `The Department of Home Affairs maintains the current skilled occupation list information, including the relevant legislative instruments, on its website. LogiVisa’s PDF is a separate reference: a dated snapshot compiled by LogiVisa from Home Affairs list data (compiled ${compiled}; occupation data dated ${dataDate}). It is not an official government document, so verify current information with Home Affairs.`,
@@ -65,13 +65,18 @@ export function hubCopy(t: T3, total: number) {
         `澳大利亚内政部在其网站上维护当前的技术职业清单信息及相关立法文件。LogiVisa 的 PDF 是另一份参考资料：由 LogiVisa 根据内政部清单数据整理的带日期快照（整理于 ${compiled}；职业数据日期 ${dataDate}）。它不是政府官方文件，请向内政部核实当前信息。`,
       ),
     officialLink: t("Open the official Home Affairs skilled occupation list", "Resmî İçişleri Bakanlığı kalifiye meslek listesini açın", "打开内政部官方技术职业清单"),
-    pdfLink: (compiled: string) =>
+    pdfLink: (_compiled: string) =>
       t(
-        `Get the LogiVisa-compiled reference PDF (compiled ${compiled}; free, sent by email)`,
-        `LogiVisa tarafından derlenen referans PDF’ini alın (derleme ${compiled}; ücretsiz, e-postayla)`,
-        `获取 LogiVisa 整理的参考 PDF（整理于 ${compiled}；免费，通过邮件发送）`,
+        "Download the 2026 occupation list PDF",
+        "2026 meslek listesi PDF’ini indirin",
+        "下载 2026 年职业清单 PDF",
       ),
-    pdfNote: t("LogiVisa-compiled reference, not an official government PDF.", "LogiVisa tarafından derlenmiş referanstır, resmî devlet PDF’i değildir.", "LogiVisa 整理的参考资料，不是政府官方 PDF。"),
+    pdfNote: (compiled: string) =>
+      t(
+        `LogiVisa-compiled reference (compiled ${compiled}; free, sent by email), not an official government PDF.`,
+        `LogiVisa tarafından derlenmiş referans (derleme ${compiled}; ücretsiz, e-postayla), resmî devlet PDF’i değildir.`,
+        `LogiVisa 整理的参考资料（整理于 ${compiled}；免费，通过邮件发送），不是政府官方 PDF。`,
+      ),
     whichTitle: t("Which skilled occupation list applies?", "Hangi kalifiye meslek listesi geçerli?", "适用哪份技术职业清单？"),
     whichIntro: t(
       "On the Home Affairs list each occupation shows the list or lists it sits on and the visa subclasses shown for it. In summary, as the list shows them:",
