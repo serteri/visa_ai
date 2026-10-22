@@ -35,7 +35,7 @@ const LIST_NAMES: Record<string, string> = {
   STSOL: "Short-term Skilled Occupation List (STSOL)",
   ROL: "Regional Occupation List (ROL)",
   RSOL: "Regional Skilled Occupation List (RSOL)",
-  CSOL: "Consolidated Sponsored Occupation List (CSOL)",
+  CSOL: "Core Skills Occupation List (CSOL)",
 };
 
 export function buildFactRows(record: OccupationRecord, c: OccupationPageContent, snapshot: AdminStateData): FactRow[] {
@@ -78,7 +78,7 @@ export function buildFactRows(record: OccupationRecord, c: OccupationPageContent
   if (tokens.length) {
     add({ id: "lists", group: "lists", label: t("National skilled occupation lists", "Ulusal nitelikli meslek listeleri", "国家技术职业清单"), value: tokens.map((x) => LIST_NAMES[x] ?? x).join("; "), sourceName: t("LogiVisa occupation dataset; Home Affairs lists", "LogiVisa meslek veri seti; İçişleri (Home Affairs) listeleri", "LogiVisa 职业数据集；内政部清单"), sourceUrl: HOME_AFFAIRS_SOL_URL, verified: datasetDate });
     const subs = deriveSubclasses(record);
-    if (subs.length) add({ id: "subclasses", group: "lists", label: t("Subclasses mapped to those lists (LogiVisa mapping)", "Bu listelere eşlenen alt sınıflar (LogiVisa eşlemesi)", "与这些清单对应的子类（LogiVisa 对应表）"), value: subs.join(", "), sourceName: t("LogiVisa list-to-subclass mapping", "LogiVisa liste-alt sınıf eşlemesi", "LogiVisa 清单—子类对应表"), sourceUrl: HOME_AFFAIRS_SOL_URL, verified: datasetDate });
+    if (subs.length && !c.research?.lists.subclasses) add({ id: "subclasses", group: "lists", label: t("Subclasses mapped to those lists (LogiVisa mapping)", "Bu listelere eşlenen alt sınıflar (LogiVisa eşlemesi)", "与这些清单对应的子类（LogiVisa 对应表）"), value: subs.join(", "), sourceName: t("LogiVisa list-to-subclass mapping", "LogiVisa liste-alt sınıf eşlemesi", "LogiVisa 清单—子类对应表"), sourceUrl: HOME_AFFAIRS_SOL_URL, verified: datasetDate });
   }
 
   // 4. State and territory program information: from the admin state data (the snapshot the reports use), with its verified date.

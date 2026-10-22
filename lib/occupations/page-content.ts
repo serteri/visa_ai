@@ -7,7 +7,7 @@ import occupationsData from "@/src/data/occupations.json";
 import type { Locale } from "@/lib/i18n/config";
 import { authorityDisplayName, resolveAssessingAuthority } from "@/lib/skills-assessment/resolve-authority";
 import { occupationRichness, stateListRows, latestVerifiedDate, type OccupationRichness, type StateListRow } from "./richness";
-import { research149311, type Research149311 } from "./research-149311";
+import { occupationResearch, type OccupationResearch } from "./research";
 import { traBlockFor, traBlockText, traDescriptionNote, type TraBlock } from "./tra-block";
 import { buildOccupationSlug, deriveSubclasses, findAnzscoListEntry, localizedDuties, localizedTitle, type OccupationRecord } from "./seo";
 
@@ -118,8 +118,8 @@ const STRINGS: Record<Locale, Strings> = {
 };
 
 export type OccupationPageContent = {
-  /** Source-backed research content for an occupation that has it (lib/occupations/research-149311.ts); null otherwise. */
-  research: Research149311 | null;
+  /** Source-backed research content for an occupation that has it (lib/occupations/research.ts); null otherwise. */
+  research: OccupationResearch | null;
   locale: Locale;
   slug: string;
   code: string;
@@ -185,7 +185,7 @@ export function occupationPageContent(record: OccupationRecord, locale: Locale):
     ...(authorityDates.length ? [s.sources.authority(authorityDates[0])] : []),
     ...(stateDates.length ? [s.sources.states(stateDates[stateDates.length - 1])] : []),
   ];
-  const research = research149311(code, locale);
+  const research = occupationResearch(code, locale);
   const title = research?.title ?? s.titleSuffix(displayName, code);
   return {
     research,

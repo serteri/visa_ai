@@ -1,5 +1,7 @@
 import { researchText } from "@/lib/marketing/research-journey";
 
+import type { OccupationResearch } from "./research-types";
+
 /**
  * Source-backed research content for ANZSCO 149311 Conference and Event Organiser (SEO Sprint 2). Every statement paraphrases the
  * VETASSESS occupation page, the ANZSCO description or the published lists; nothing says whether a person qualifies, which visa
@@ -21,20 +23,13 @@ export const NOT_CONSIDERED_ROLES_149311 = [
   "Venue Banquet Manager",
 ] as const;
 
-export type Faq149311 = { q: string; a: string };
-export type Research149311 = {
-  title: string;
-  description: string;
-  h1: string;
-  intro: string;
-  duties: string[];
-  faqs: Faq149311[];
-};
-
-export function research149311(code: string, locale: string): Research149311 | null {
+export function research149311(code: string, locale: string): OccupationResearch | null {
   if (code !== RESEARCH_149311_CODE) return null;
   const t = (en: string, tr: string, zh: string) => researchText(locale, en, tr, zh);
   return {
+    code: RESEARCH_149311_CODE,
+    checked: RESEARCH_149311_CHECKED,
+    authority: { name: "VETASSESS", url: VETASSESS_149311_URL },
     title: t(
       "Conference and Event Organiser ANZSCO 149311 | Skills Assessment",
       "Conference and Event Organiser ANZSCO 149311 | Beceri Değerlendirmesi",
@@ -78,6 +73,83 @@ export function research149311(code: string, locale: string): Research149311 | n
         "活动结束后进行复盘、核对账目，并向客户或主办方汇报。",
       ),
     ],
+    dutiesHeading: t("Typical duties (paraphrased)", "Tipik görevler (özet)", "典型职责（概述）"),
+    glance: [
+      ["VETASSESS", t("Group C (professional occupations)", "C Grubu (mesleki meslekler)", "C 组（专业类职业）")],
+      [t("Qualification level", "Nitelik düzeyi", "学历层次"), t("AQF Diploma or higher (as VETASSESS states it)", "AQF Diploma veya üzeri (VETASSESS'in belirttiği gibi)", "AQF Diploma 或更高（按 VETASSESS 所述）")],
+    ],
+    about: {
+      heading: t("Occupation description", "Meslek tanımı", "职业描述"),
+      paragraphs: [
+        t(
+          "A Conference and Event Organiser organises and coordinates services for conferences, events, functions, banquets and seminars.",
+          "Conference and Event Organiser; konferans, etkinlik, resepsiyon, ziyafet ve seminer hizmetlerini organize eder ve koordine eder.",
+          "Conference and Event Organiser 负责组织和协调会议、活动、宴会及研讨会等服务。",
+        ),
+      ],
+    },
+    suitable: {
+      heading: t("Roles considered suitable under ANZSCO 149311", "ANZSCO 149311 kapsamında uygun görülen roller", "ANZSCO 149311 下被认为适用的职位"),
+      intro: t(
+        "VETASSESS identifies these job titles as suitable under this code:",
+        "VETASSESS, bu kod kapsamında şu iş unvanlarını uygun olarak belirler:",
+        "VETASSESS 认定以下职位名称适用于此代码：",
+      ),
+      roles: SUITABLE_ROLES_149311,
+    },
+    notConsidered: {
+      heading: t("Roles VETASSESS does not consider under ANZSCO 149311", "VETASSESS'in ANZSCO 149311 kapsamında değerlendirmediği roller", "VETASSESS 不在 ANZSCO 149311 下考虑的职位"),
+      intro: t(
+        "VETASSESS does not consider the following roles under ANZSCO 149311. According to VETASSESS, these occupations are classified elsewhere in ANZSCO or are not at the required skill level.",
+        "VETASSESS, aşağıdaki rolleri ANZSCO 149311 kapsamında değerlendirmez. VETASSESS'e göre bu meslekler ANZSCO'da başka yerde sınıflandırılır veya gereken beceri düzeyinde değildir.",
+        "VETASSESS 不在 ANZSCO 149311 下考虑以下职位。据 VETASSESS 所述，这些职业在 ANZSCO 中归入其他分类，或未达到所要求的技能水平。",
+      ),
+      roles: NOT_CONSIDERED_ROLES_149311,
+    },
+    assessment: {
+      heading: t("Skills assessment — VETASSESS", "Beceri değerlendirmesi — VETASSESS", "技能评估 — VETASSESS"),
+      finderLabel: t("LogiVisa Skills Assessment Finder", "LogiVisa Beceri Değerlendirme Bulucu", "LogiVisa 技能评估查询"),
+      officialLabel: t("Official VETASSESS page", "Resmî VETASSESS sayfası", "VETASSESS 官方页面"),
+      blocks: [
+        {
+          paragraphs: [
+            t(
+              "ANZSCO 149311 is assessed by VETASSESS, which places it in Group C and refers to a qualification comparable to an AQF Diploma or higher. VETASSESS assesses the level and content of the qualification and relevant employment, and the pathway can vary with how relevant they are.",
+              "ANZSCO 149311, VETASSESS tarafından değerlendirilir; VETASSESS bu mesleği C Grubu'na yerleştirir ve AQF Diploma veya daha yüksek düzeyde bir niteliğe atıf yapar. VETASSESS niteliğin düzeyini ve içeriğini ve ilgili istihdamı değerlendirir; yol, bunların ilgililiğine göre değişebilir.",
+              "ANZSCO 149311 由 VETASSESS 评估，VETASSESS 将其列入 C 组，并提到相当于 AQF Diploma 或更高的学历。VETASSESS 评估学历的层次与内容以及相关工作经历，具体路径可能因相关程度而异。",
+            ),
+          ],
+        },
+        {
+          paragraphs: [
+            t(
+              "VETASSESS describes Event Management as a highly relevant field of study. Hospitality, Marketing, Media, Communications or Public Relations degrees may need sufficient Event or Conference Management content to be considered relevant.",
+              "VETASSESS, Event Management'ı çok ilgili bir çalışma alanı olarak tanımlar. Otelcilik, Pazarlama, Medya, İletişim veya Halkla İlişkiler diplomaları için yeterli Etkinlik veya Konferans Yönetimi içeriği gerekebilir.",
+              "VETASSESS 将 Event Management 描述为高度相关的专业领域。酒店管理、市场营销、媒体、传播或公共关系学位可能需要包含足够的活动或会议管理内容才会被视为相关。",
+            ),
+          ],
+        },
+        {
+          paragraphs: [
+            t(
+              "This page does not make a skills assessment determination for anyone.",
+              "Bu sayfa kimse için bir beceri değerlendirmesi kararı vermez.",
+              "本页不为任何人作出技能评估结论。",
+            ),
+          ],
+        },
+      ],
+    },
+    afterDuties: [],
+    lists: {
+      sentence: (listText, subclasses) =>
+        t(
+          `ANZSCO 149311 appears on ${listText}, which are used by published visa and program contexts including subclasses ${subclasses}. Other visa requirements still apply.`,
+          `ANZSCO 149311 ${listText} listelerinde yer alır; bu listeler ${subclasses} alt sınıfları dahil yayımlanmış vize ve program bağlamlarında kullanılır. Diğer vize koşulları da geçerlidir.`,
+          `ANZSCO 149311 列于 ${listText}，这些清单被已公布的签证和项目使用，包括子类 ${subclasses}。其他签证要求仍然适用。`,
+        ),
+    },
+    visaSubclassPaths: ["190", "491", "482"],
     faqs: [
       {
         q: t("What is ANZSCO 149311?", "ANZSCO 149311 nedir?", "什么是 ANZSCO 149311？"),

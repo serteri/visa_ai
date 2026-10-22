@@ -6,6 +6,7 @@ import { prisma } from "@/lib/prisma";
 import { getVisitorContext } from "@/lib/visitor-tracking";
 
 import { CHAT_MODEL_ID, EMBEDDING_MODEL_ID, getPremiumChatModelId } from "./config";
+import { OCCUPATION_LIST_SOURCES, RETIRED_KNOWLEDGE_SOURCES } from "./knowledge-sources";
 import { correctedUIStreamResponse } from "./corrected-stream";
 import { prismaCreditStore } from "./credits";
 import { dropSupersededChunks } from "./document-versions";
@@ -17,19 +18,14 @@ import type { ProfileStore } from "./profile";
 import type { QuickProfileStore } from "./quick-profile";
 import type { RetrievedChunk } from "./types";
 
-// These 4 files are occupation-code lookup tables (ANZSCO/ROL/STSOL rows), not visa-detail content -- each row
+// These 3 files are occupation-code lookup tables (ANZSCO/ROL/STSOL rows), not visa-detail content -- each row
 // repeats visa names like "186 - Employer Nomination Scheme visa" across ~1,300 near-duplicate chunks (28% of the
 // whole knowledge base). Left unfiltered, they dominate cosine-similarity search for any "explain visa X" question
 // and crowd out the actual PDF chunks that contain fees/eligibility/processing-time details -- e.g. a Subclass 186
 // overview query put 5 of the top 6 results in this bucket and pushed the chunk with the AUD6,140 application cost
 // down to rank 10. Querying them separately with a small dedicated slot keeps them useful for genuine
 // occupation-eligibility questions without starving every other question of real visa content.
-export const OCCUPATION_LIST_SOURCES = [
-  "Skilled Occupation List.md",
-  "Skilled list.md",
-  "Skilled occupation list.xlsx",
-  "skilled-occupation-list.json",
-];
+export { OCCUPATION_LIST_SOURCES, RETIRED_KNOWLEDGE_SOURCES };
 
 /**
  * The knowledge base is embedded from English-language PDFs, but visitors often ask in Turkish -- a raw Turkish
@@ -64,7 +60,7 @@ async function retrieve(searchString: string, counts: { primary: number; occupat
     prisma.$queryRaw<RetrievedChunk[]>`
       SELECT content, metadata
       FROM document_chunks
-      WHERE metadata->>'source' NOT IN (${Prisma.join(OCCUPATION_LIST_SOURCES)})
+      WHERE metadata->>'source' NOT IN (${Prisma.join([...OCCUPATION_LIST_SOURCES, ...RETIRED_KNOWLEDGE_SOURCES])})
       ORDER BY embedding <=> ${vectorLiteral}::vector
       LIMIT ${over(counts.primary)}
     `,
