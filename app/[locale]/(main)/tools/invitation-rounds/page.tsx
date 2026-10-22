@@ -6,6 +6,7 @@ import { getInvitationRoundsSeoContent, buildInvitationRoundsSchema } from "@/li
 import eoiRounds from "@/src/data/eoi-rounds.json";
 import occupationPointsCutoff from "@/src/data/occupation-points-cutoff.json";
 import { getCachedInvitationRounds } from "@/lib/cache/public-read-models";
+import { normaliseDbRounds, type RoundView } from "@/lib/invitation-rounds/normalise";
 
 export const revalidate = 3600;
 
@@ -44,20 +45,11 @@ export default async function InvitationRoundsPage({ params }: PageProps) {
     console.error("Failed to load EOI rounds from database, using fallback JSON", error);
   }
 
-  const rounds =
-    dbRounds.length > 0
-      ? dbRounds.map((round) => ({
-          id: round.id,
-          date: round.roundDate.toISOString().slice(0, 10),
-          visaSubclass: round.visaSubclass,
-          visaName: round.visaName,
-          invitations: round.invitations,
-          lowestPoints: round.lowestPoints,
-          poolSize: round.poolSize,
-          notes: round.notes,
-          isEstimated: round.isEstimated,
-          source: round.source,
-        }))
+  // unstable_cache returns JSON on a cache hit (Dates become strings), so the rows are normalised, never assumed to be Dates.
+  const db = normaliseDbRounds(dbRounds);
+  const rounds: RoundView[] =
+    db.rounds.length > 0
+      ? db.rounds
       : eoiRounds.rounds.map((round) => ({
           ...round,
           poolSize: round.poolSize ?? null,
@@ -66,12 +58,7 @@ export default async function InvitationRoundsPage({ params }: PageProps) {
           source: round.source ?? "DoHA Official",
         }));
 
-  const latestScraped =
-    dbRounds.length > 0
-      ? dbRounds
-          .map((r) => r.createdAt)
-          .sort((a, b) => b.getTime() - a.getTime())[0]
-      : null;
+  const latestScraped = db.rounds.length > 0 ? db.latestScraped : null;
 
   const lastScrapedLabel = latestScraped
     ? latestScraped.toLocaleString("en-AU", {
