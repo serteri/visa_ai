@@ -114,9 +114,9 @@ export function research149311(code: string, locale: string): Research149311 | n
       {
         q: t("Is Marketing Specialist the same occupation?", "Marketing Specialist aynı meslek mi?", "Marketing Specialist 是同一个职业吗？"),
         a: t(
-          "VETASSESS lists Marketing Specialist among the roles it does not consider under ANZSCO 149311; such roles are classified elsewhere in ANZSCO. A separate occupation page covers that classification.",
-          "VETASSESS, Marketing Specialist'i ANZSCO 149311 kapsamında değerlendirmediği roller arasında sayar; bu tür roller ANZSCO'da başka yerde sınıflandırılır.",
-          "VETASSESS 将 Marketing Specialist 列为其不在 ANZSCO 149311 下考虑的职位之一；此类职位在 ANZSCO 中归入其他分类。",
+          "VETASSESS lists Marketing Specialist among the roles it does not consider under ANZSCO 149311. According to VETASSESS, such occupations are classified elsewhere in ANZSCO or are not at the required skill level.",
+          "VETASSESS, Marketing Specialist'i ANZSCO 149311 kapsamında değerlendirmediği roller arasında sayar. VETASSESS'e göre bu tür meslekler ANZSCO'da başka yerde sınıflandırılır veya gereken beceri düzeyinde değildir.",
+          "VETASSESS 将 Marketing Specialist 列为其不在 ANZSCO 149311 下考虑的职位之一。据 VETASSESS 所述，此类职业在 ANZSCO 中归入其他分类，或未达到所要求的技能水平。",
         ),
       },
       {

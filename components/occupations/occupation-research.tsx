@@ -149,9 +149,9 @@ export function OccupationResearch({ c, locale, part }: { c: OccupationPageConte
           <h3 className="pt-1 font-semibold text-slate-900">{t("Roles VETASSESS does not consider under ANZSCO 149311", "VETASSESS'in ANZSCO 149311 kapsamında değerlendirmediği roller", "VETASSESS 不在 ANZSCO 149311 下考虑的职位")}</h3>
           <p>
             {t(
-              "According to VETASSESS, these roles are classified elsewhere and are not considered under this code:",
-              "VETASSESS'e göre bu roller başka yerde sınıflandırılır ve bu kod kapsamında değerlendirilmez:",
-              "据 VETASSESS 所述，以下职位归入其他分类，不在此代码下考虑：",
+              "VETASSESS does not consider the following roles under ANZSCO 149311. According to VETASSESS, these occupations are classified elsewhere in ANZSCO or are not at the required skill level.",
+              "VETASSESS, aşağıdaki rolleri ANZSCO 149311 kapsamında değerlendirmez. VETASSESS'e göre bu meslekler ANZSCO'da başka yerde sınıflandırılır veya gereken beceri düzeyinde değildir.",
+              "VETASSESS 不在 ANZSCO 149311 下考虑以下职位。据 VETASSESS 所述，这些职业在 ANZSCO 中归入其他分类，或未达到所要求的技能水平。",
             )}
           </p>
           <ul className="list-disc space-y-1 pl-5">
