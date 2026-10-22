@@ -55,10 +55,10 @@ export function TermsGate({
 }
 
 /** Reusable "Terms of Service" link, styled consistently wherever the gate appears. */
-export function TermsGateLink({ children }: { children: React.ReactNode }) {
+export function TermsGateLink({ children, href = "/terms" }: { children: React.ReactNode; href?: string }) {
   return (
     <Link
-      href="/terms"
+      href={href}
       target="_blank"
       rel="noopener noreferrer"
       onClick={(event) => event.stopPropagation()}

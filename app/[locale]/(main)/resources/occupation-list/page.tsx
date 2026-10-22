@@ -34,15 +34,14 @@ const COPY = {
   kicker: { en: "Free · sent by email", tr: "Ücretsiz · e-postayla gönderilir", zh: "免费 · 通过邮件发送" } as L3,
   formTitle: { en: "Get the PDF in your inbox", tr: "PDF'i gelen kutunuza alın", zh: "将 PDF 发送到您的邮箱" } as L3,
   whatTitle: { en: "What the 2026 occupation list PDF contains", tr: "2026 meslek listesi PDF’inin içeriği", zh: "2026 年职业清单 PDF 的内容" } as L3,
-  what: {
-    en: "One table, by occupation, drawn from the Department of Home Affairs lists, with ANZSCO titles from the Australian Bureau of Statistics. Each entry shows:",
-    tr: "İçişleri Bakanlığı listelerinden, ANZSCO unvanları Avustralya İstatistik Bürosu’ndan alınan, meslek bazında tek bir tablo. Her kayıt şunları gösterir:",
-    zh: "按职业列出的一张表，数据来自内政部清单，ANZSCO 名称来自澳大利亚统计局。每个条目显示：",
-  } as L3,
+  what: (count: number): L3 => ({
+    en: `The PDF gives you one reference table covering ${count} occupations, with each occupation’s ANZSCO code, list placement, relevant visa subclasses, assessing authority and source date.`,
+    tr: `PDF, ${count} mesleği kapsayan tek bir referans tablosu sunar; her mesleğin ANZSCO kodu, liste yeri, ilgili vize alt sınıfları, değerlendirme kurumu ve kaynak tarihi yer alır.`,
+    zh: `这份 PDF 提供一张涵盖 ${count} 个职业的参考表，列出每个职业的 ANZSCO 代码、清单归属、相关签证子类、评估机构和来源日期。`,
+  }),
   highlights: [
-    { en: "ANZSCO code", tr: "ANZSCO kodu", zh: "ANZSCO 代码" },
-    { en: "Occupation title", tr: "Meslek unvanı", zh: "职业名称" },
-    { en: "List placement (CSOL, MLTSSL, STSOL, ROL)", tr: "Liste yeri (CSOL, MLTSSL, STSOL, ROL)", zh: "清单归属（CSOL、MLTSSL、STSOL、ROL）" },
+    { en: "ANZSCO code and occupation title", tr: "ANZSCO kodu ve meslek unvanı", zh: "ANZSCO 代码和职业名称" },
+    { en: "List placement: CSOL, MLTSSL, STSOL and ROL", tr: "Liste yeri: CSOL, MLTSSL, STSOL ve ROL", zh: "清单归属：CSOL、MLTSSL、STSOL 和 ROL" },
     { en: "The visa subclasses associated with the published lists", tr: "Yayımlanmış listelerle ilişkili vize alt sınıfları", zh: "已公布清单对应的签证子类" },
     { en: "Assessing authority", tr: "Değerlendirme kurumu", zh: "评估机构" },
     { en: "The compilation date and the sources, printed on the cover", tr: "Derleme tarihi ve kaynaklar, kapakta basılıdır", zh: "整理日期和来源，印在封面上" },
@@ -134,6 +133,7 @@ export default async function OccupationListPage({
               locale={locale}
               documentId="csol-2026"
               documentName={pick(LEAD_MAGNETS.occupation.name, locale)}
+              emailOnly
             />
           </div>
 
@@ -148,7 +148,7 @@ export default async function OccupationListPage({
               </h2>
             </div>
 
-            <p className="mb-4 text-sm leading-relaxed text-slate-700">{pick(COPY.what, locale)}</p>
+            <p className="mb-4 text-sm leading-relaxed text-slate-700">{pick(COPY.what(OCCUPATION_PDF.occupationCount), locale)}</p>
 
             <ul className="space-y-3">
               {COPY.highlights.map((point) => (

@@ -13,6 +13,8 @@ export const OCCUPATION_PDF = {
   file: "/australia-skilled-occupation-list-2026.pdf",
   resourcePath: "/resources/occupation-list",
   compiledOn: "2026-10-08",
+  /** The count printed on the PDF cover ("690 occupations"); scripts/test-occupation-pdf-page.tsx checks it against the file. */
+  occupationCount: 690,
 } as const;
 
 export const ABS_ANZSCO_URL = "https://www.abs.gov.au/statistics/classifications/australian-and-new-zealand-standard-classification-occupation-anzsco";

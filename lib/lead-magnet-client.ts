@@ -11,8 +11,8 @@ export type LeadSubmission = {
   locale: string;
   full_name: string;
   email: string;
-  /** Already joined with the dial code, or "" when the phone was left empty. */
-  phone: string;
+  /** Already joined with the dial code, or "" when the phone was left empty. Omitted by forms that do not ask for a phone number. */
+  phone?: string;
   termsAcceptedAt: string | null;
 };
 

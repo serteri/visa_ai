@@ -19,6 +19,7 @@ import {
   dialForCountryCode,
 } from "@/lib/country-codes";
 import { cn } from "@/lib/utils";
+import { publicPath } from "@/lib/seo/urls";
 import { DOCUMENT_IDS, FORM_TEXT, LEAD_MAGNETS, pick } from "@/lib/lead-magnets";
 import { validateLeadFields, type LeadFieldErrors } from "@/lib/lead-magnet-validation";
 import { submitLead } from "@/lib/lead-magnet-client";
@@ -47,6 +48,11 @@ export interface LeadMagnetFormProps {
   className?: string;
   /** Whether the form is rendered inline in a reading flow, bypassing redirects. */
   isInline?: boolean;
+  /**
+   * Name and email only: no phone field, no country-code selector, no phone in the submission, and the privacy line, acknowledgement and button wording of the
+   * occupation-list PDF page (privacy information and Terms of Service, both linked). Every other form keeps its fields and wording.
+   */
+  emailOnly?: boolean;
 }
 
 export function LeadMagnetForm({
@@ -56,6 +62,7 @@ export function LeadMagnetForm({
   onSuccess,
   className,
   isInline = false,
+  emailOnly = false,
 }: LeadMagnetFormProps) {
   // Resolve the API slug; fall back to documentId itself so unexpected values
   // still reach the server with a meaningful identifier rather than silently
@@ -123,7 +130,7 @@ export function LeadMagnetForm({
       locale,
       full_name: form.full_name,
       email: form.email,
-      phone: form.phone.trim() ? `${dialForCountryCode(countryIso)} ${form.phone.trim()}` : "",
+      ...(emailOnly ? {} : { phone: form.phone.trim() ? `${dialForCountryCode(countryIso)} ${form.phone.trim()}` : "" }),
       termsAcceptedAt,
     });
     setLoading(false);
@@ -220,7 +227,8 @@ export function LeadMagnetForm({
         )}
       </div>
 
-      {/* Phone */}
+      {/* Phone (not asked by the email-only form) */}
+      {!emailOnly && (
       <div className="space-y-1">
         <Label htmlFor="lmf-phone">
           {tx("Telefon Numarası (Opsiyonel)", "Phone Number (Optional)", "手机号（可选）")}
@@ -265,6 +273,8 @@ export function LeadMagnetForm({
         )}
       </div>
 
+      )}
+
       <p className="text-xs text-slate-700" data-required-legend>
         {pick(FORM_TEXT.legend, locale)}
       </p>
@@ -285,20 +295,37 @@ export function LeadMagnetForm({
           setTermsAcceptedAt(checked ? new Date().toISOString() : null);
           if (checked) setTermsError(false);
         }}
-        label={tx(
-          <>
-            <TermsGateLink>Kullanım Koşullarını</TermsGateLink> ve veri işleme
-            politikalarını okudum, onaylıyorum.
-          </>,
-          <>
-            I agree to the <TermsGateLink>Terms of Service</TermsGateLink> and
-            data processing policies.
-          </>,
-          <>
-            我已阅读并同意
-            <TermsGateLink>服务条款</TermsGateLink>和数据处理政策。
-          </>
-        )}
+        label={
+          emailOnly
+            ? tx(
+                <>
+                  <TermsGateLink href={publicPath(locale, "/legal")}>Gizlilik bilgilerini</TermsGateLink> ve{" "}
+                  <TermsGateLink href={publicPath(locale, "/terms")}>Kullanım Koşulları’nı</TermsGateLink> okuduğumu kabul ediyorum.
+                </>,
+                <>
+                  I acknowledge the <TermsGateLink href={publicPath(locale, "/legal")}>privacy information</TermsGateLink> and{" "}
+                  <TermsGateLink href={publicPath(locale, "/terms")}>Terms of Service</TermsGateLink>.
+                </>,
+                <>
+                  我已知悉<TermsGateLink href={publicPath(locale, "/legal")}>隐私信息</TermsGateLink>和
+                  <TermsGateLink href={publicPath(locale, "/terms")}>服务条款</TermsGateLink>。
+                </>
+              )
+            : tx(
+                <>
+                  <TermsGateLink>Kullanım Koşullarını</TermsGateLink> ve veri işleme
+                  politikalarını okudum, onaylıyorum.
+                </>,
+                <>
+                  I agree to the <TermsGateLink>Terms of Service</TermsGateLink> and
+                  data processing policies.
+                </>,
+                <>
+                  我已阅读并同意
+                  <TermsGateLink>服务条款</TermsGateLink>和数据处理政策。
+                </>
+              )
+        }
         errorText={tx(
           "Lütfen devam etmek için yasal koşulları onaylayın.",
           "Please accept the legal terms to proceed.",
@@ -314,15 +341,32 @@ export function LeadMagnetForm({
       >
         {loading
           ? tx("Gönderiliyor…", "Sending…", "发送中…")
-          : tx("📥 E-postama Gönder", "📥 Send to My Email", "📥 发送到我的邮箱")}
+          : emailOnly
+            ? tx("📥 PDF’i E-postama Gönder", "📥 Send PDF to My Email", "📥 将 PDF 发送到我的邮箱")
+            : tx("📥 E-postama Gönder", "📥 Send to My Email", "📥 发送到我的邮箱")}
       </Button>
 
       <p className="text-center text-xs text-slate-700">
-        {tx(
-          "Bilgileriniz yalnızca bu indirme için kullanılır ve üçüncü taraflarla paylaşılmaz.",
-          "Your details are used only for this download and are not shared with third parties.",
-          "您的信息仅用于本次下载，不会与第三方共享。"
-        )}
+        {emailOnly
+          ? tx(
+              <>
+                Bilgilerinizi istenen PDF’i size ulaştırmak için kullanırız.{" "}
+                <TermsGateLink href={publicPath(locale, "/legal")}>Gizlilik bilgilerimize</TermsGateLink> bakın.
+              </>,
+              <>
+                We use your details to deliver the requested PDF. See our{" "}
+                <TermsGateLink href={publicPath(locale, "/legal")}>privacy information</TermsGateLink>.
+              </>,
+              <>
+                我们使用您的信息来发送您所请求的 PDF。请参阅我们的
+                <TermsGateLink href={publicPath(locale, "/legal")}>隐私信息</TermsGateLink>。
+              </>
+            )
+          : tx(
+              "Bilgileriniz yalnızca bu indirme için kullanılır ve üçüncü taraflarla paylaşılmaz.",
+              "Your details are used only for this download and are not shared with third parties.",
+              "您的信息仅用于本次下载，不会与第三方共享。"
+            )}
       </p>
     </form>
   );
