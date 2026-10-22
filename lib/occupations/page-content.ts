@@ -7,6 +7,7 @@ import occupationsData from "@/src/data/occupations.json";
 import type { Locale } from "@/lib/i18n/config";
 import { authorityDisplayName, resolveAssessingAuthority } from "@/lib/skills-assessment/resolve-authority";
 import { occupationRichness, stateListRows, latestVerifiedDate, type OccupationRichness, type StateListRow } from "./richness";
+import { research149311, type Research149311 } from "./research-149311";
 import { traBlockFor, traBlockText, traDescriptionNote, type TraBlock } from "./tra-block";
 import { buildOccupationSlug, deriveSubclasses, findAnzscoListEntry, localizedDuties, localizedTitle, type OccupationRecord } from "./seo";
 
@@ -117,6 +118,8 @@ const STRINGS: Record<Locale, Strings> = {
 };
 
 export type OccupationPageContent = {
+  /** Source-backed research content for an occupation that has it (lib/occupations/research-149311.ts); null otherwise. */
+  research: Research149311 | null;
   locale: Locale;
   slug: string;
   code: string;
@@ -182,23 +185,25 @@ export function occupationPageContent(record: OccupationRecord, locale: Locale):
     ...(authorityDates.length ? [s.sources.authority(authorityDates[0])] : []),
     ...(stateDates.length ? [s.sources.states(stateDates[stateDates.length - 1])] : []),
   ];
-  const title = s.titleSuffix(displayName, code);
+  const research = research149311(code, locale);
+  const title = research?.title ?? s.titleSuffix(displayName, code);
   return {
+    research,
     locale,
     slug,
     code,
     displayName,
     title,
-    description,
-    h1: title,
-    intro: s.intro(displayName, code),
+    description: research?.description ?? description,
+    h1: research?.h1 ?? title,
+    intro: research?.intro ?? s.intro(displayName, code),
     headings: s.h2,
     labels: s.labels,
     details: { authority, lists, listTokens, subclasses: deriveSubclasses(record) },
     stateRows: states.map((r) => ({ ...r, levelLabel: s.stateLevel[r.level] })),
     stateNote: s.stateNote,
     stateNoData: s.stateNoData,
-    duties: entry ? localizedDuties(entry, locale) : [],
+    duties: research?.duties ?? (entry ? localizedDuties(entry, locale) : []),
     sourceLines,
     officialLabel: s.sources.official,
     officialUrl: HOME_AFFAIRS_SOL_URL,
@@ -223,5 +228,6 @@ export function occupationPageText(c: OccupationPageContent): string {
     c.title, c.description, c.h1, c.intro, ...Object.values(c.headings), ...Object.values(c.labels),
     c.details.authority, c.details.lists, ...c.stateRows.map((r) => `${r.state} ${r.levelLabel}`), c.stateNote, c.stateNoData,
     ...c.duties, ...c.sourceLines, c.officialLabel, ...c.related.map((r) => r.label), c.notice, c.tra ? traBlockText(c.tra) : undefined,
+    ...(c.research?.faqs.flatMap((f) => [f.q, f.a]) ?? []),
   ].filter(Boolean).join("\n");
 }

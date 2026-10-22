@@ -11,6 +11,7 @@ import { FactTables } from "@/components/occupations/fact-tables";
 import { getAdminStateData } from "@/lib/admin-data/loader";
 import { buildFactRows, ABS_ANZSCO_URL } from "@/lib/occupations/facts";
 import { majorGroupName, majorGroupOf } from "@/lib/occupations/index-data";
+import { OccupationResearch } from "@/components/occupations/occupation-research";
 import { OccupationDistinction } from "@/components/occupations/occupation-distinction";
 import { TraSkillsAssessment } from "@/components/occupations/tra-skills-assessment";
 import { ResearchLinks, ProfessionalHelp } from "@/components/research-links";
@@ -112,8 +113,9 @@ export default async function OccupationDetailsPage({ params }: PageProps) {
   const schema = {
     "@context": "https://schema.org",
     "@graph": [
-      { "@type": "Occupation", "@id": `${publicUrl(locale, `/occupations/${c.slug}`)}#occupation`, name: c.displayName, occupationalCategory: c.code, description: c.duties[0] ?? c.intro },
+      { "@type": "Occupation", "@id": `${publicUrl(locale, `/occupations/${c.slug}`)}#occupation`, name: c.displayName, occupationalCategory: c.code, description: c.research ? c.intro : c.duties[0] ?? c.intro },
       { "@type": "WebPage", url: publicUrl(locale, `/occupations/${c.slug}`), name: c.title, inLanguage: locale, dateModified: dataVerified, about: { "@id": `${publicUrl(locale, `/occupations/${c.slug}`)}#occupation` } },
+      ...(c.research ? [{ "@type": "FAQPage", "@id": `${publicUrl(locale, `/occupations/${c.slug}`)}#faq`, inLanguage: locale, mainEntity: c.research.faqs.map((f) => ({ "@type": "Question", name: f.q, acceptedAnswer: { "@type": "Answer", text: f.a } })) }] : []),
     ],
   };
   const resolved = resolveAssessingAuthority(c.code);
@@ -175,7 +177,7 @@ export default async function OccupationDetailsPage({ params }: PageProps) {
             {c.h1}
           </h1>
           <p className="mt-4 text-base text-slate-600">
-            {c.duties[0] ?? c.intro}
+            {c.research ? c.intro : c.duties[0] ?? c.intro}
           </p>
           <p className="mt-3 text-xs leading-relaxed text-slate-500">
             {text(
@@ -186,7 +188,9 @@ export default async function OccupationDetailsPage({ params }: PageProps) {
           </p>
         </header>
 
-        {c.tra ? <TraSkillsAssessment block={c.tra} locale={locale} /> : (
+        <OccupationResearch c={c} locale={locale} part="main" />
+
+        {c.research ? null : c.tra ? <TraSkillsAssessment block={c.tra} locale={locale} /> : (
           <section className="rounded-2xl border border-slate-200 bg-white p-6 sm:p-8">
             <h2 className="text-xl font-semibold text-slate-900">
               {text(
@@ -257,9 +261,11 @@ export default async function OccupationDetailsPage({ params }: PageProps) {
 
         <FactTables locale={locale} facts={facts} stateNote={`${c.stateNote} ${text("State information is read from LogiVisa's admin state data (the same data the reports use); the date in each row is when that state's data was last verified.", "Eyalet bilgileri LogiVisa'nın yönetim paneli eyalet verisinden okunur (raporların kullandığı aynı veri); her satırdaki tarih, o eyalet verisinin son doğrulandığı tarihtir.", "州信息读取自 LogiVisa 管理后台的州数据（与报告使用的数据相同）；每行日期为该州数据最近一次核对的日期。")}`} />
 
-        <ResearchLinks locale={locale} code={c.code} />
+        <OccupationResearch c={c} locale={locale} part="faq" />
 
-        {c.duties.length > 0 && (
+        {c.research ? null : <ResearchLinks locale={locale} code={c.code} />}
+
+        {c.duties.length > 0 && !c.research && (
           <Card className="border-slate-200/80 bg-white/95 shadow-lg shadow-slate-900/5">
             <CardHeader>
               <h2 className="text-lg font-semibold leading-none tracking-tight">

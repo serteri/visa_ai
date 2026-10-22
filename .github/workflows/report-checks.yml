@@ -131,6 +131,8 @@ jobs:
 
       - name: Occupation PDF page (PDF intent ownership, honest labelling, reciprocal cross-links, analytics privacy)
         run: npm run test:occupation-pdf-page
+      - name: Occupation 149311 research page (occupation-first title and H1, VETASSESS content, source-dated lists, FAQ, EN/TR/ZH)
+        run: npm run test:occupation-149311
       - name: "Canada report is Canadian (deep check of the rendered PDF text, no Australian content, Australia unchanged, English-only in every locale)"
         run: npm run test:canada-report
       - name: Target visa field, DISABLED mode, engine carries the target (en / tr / zh-Hans)

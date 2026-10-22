@@ -50,7 +50,7 @@ export function buildFactRows(record: OccupationRecord, c: OccupationPageContent
   // 1. Identity (ABS ANZSCO).
   add({ id: "code", group: "identity", label: t("ANZSCO code", "ANZSCO kodu", "ANZSCO 代码"), value: c.code, sourceName: t("ABS ANZSCO", "ABS ANZSCO", "ABS ANZSCO"), sourceUrl: ABS_ANZSCO_URL, verified: datasetDate });
   add({ id: "title", group: "identity", label: t("Occupation title", "Meslek adı", "职业名称"), value: c.displayName, sourceName: t("ABS ANZSCO", "ABS ANZSCO", "ABS ANZSCO"), sourceUrl: ABS_ANZSCO_URL, verified: datasetDate });
-  if (c.duties[0]) add({ id: "description", group: "identity", label: t("Description (first ANZSCO task)", "Tanım (ilk ANZSCO görevi)", "描述（ANZSCO 首项任务）"), value: c.duties[0], sourceName: t("ABS ANZSCO 2013 v1.3", "ABS ANZSCO 2013 v1.3", "ABS ANZSCO 2013 v1.3"), sourceUrl: ABS_ANZSCO_URL, verified: datasetDate });
+  if (c.duties[0] && !c.research) add({ id: "description", group: "identity", label: t("Description (first ANZSCO task)", "Tanım (ilk ANZSCO görevi)", "描述（ANZSCO 首项任务）"), value: c.duties[0], sourceName: t("ABS ANZSCO 2013 v1.3", "ABS ANZSCO 2013 v1.3", "ABS ANZSCO 2013 v1.3"), sourceUrl: ABS_ANZSCO_URL, verified: datasetDate });
 
   // 2. Skills assessment (registry).
   const resolved = resolveAssessingAuthority(c.code);
