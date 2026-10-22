@@ -22,18 +22,18 @@ async function main() {
   check(OCCUPATION_LIST_SOURCES.every((s) => !RETIRED_KNOWLEDGE_SOURCES.includes(s)), "no source is both active and retired");
 
   console.log("\n2. every active occupation-list source says 225113 = Marketing Specialist and 225112 = Market Research Analyst");
-  for (const source of OCCUPATION_LIST_SOURCES) {
-    const file = `data/knowledge/${source}`;
-    if (!existsSync(file)) { check(false, `${source} exists in data/knowledge`); continue; }
+  // data/knowledge is not committed (.gitignore), so CI reads the committed copy under public/; a local data/knowledge copy is checked too.
+  // The .xlsx has no committed copy and is only checked where data/knowledge has it.
+  for (const source of OCCUPATION_LIST_SOURCES) for (const file of [`public/${source}`, `data/knowledge/${source}`].filter((f) => existsSync(f))) {
     if (source.endsWith(".json")) {
       const rows = JSON.parse(readFileSync(file, "utf8")) as Array<{ anzsco_code: string; occupation_en: string }>;
-      check(rows.find((r) => r.anzsco_code === "225113")?.occupation_en === "Marketing Specialist" && rows.find((r) => r.anzsco_code === "225112")?.occupation_en === "Market Research Analyst", `${source}: 225113 Marketing Specialist, 225112 Market Research Analyst`);
+      check(rows.find((r) => r.anzsco_code === "225113")?.occupation_en === "Marketing Specialist" && rows.find((r) => r.anzsco_code === "225112")?.occupation_en === "Market Research Analyst", `${file}: 225113 Marketing Specialist, 225112 Market Research Analyst`);
     } else if (source.endsWith(".md")) {
       // A table row can wrap over several physical lines: split on the start of the next row.
       const lines = readFileSync(file, "utf8").split(/\r?\n(?=\| )/);
       const row = (code: string) => lines.find((l) => l.startsWith("|") && new RegExp(String.raw`\b${code}\b`).test(l)) ?? "";
-      check(row("225113").startsWith("| Marketing Specialist |") && row("225112").startsWith("| Market Research Analyst |"), `${source}: 225113 Marketing Specialist, 225112 Market Research Analyst`);
-      check(!/Market Research Analyst[^\n]*\b225113\b/.test(lines.join("\n")), `${source}: no row pairs Market Research Analyst with 225113`);
+      check(row("225113").startsWith("| Marketing Specialist |") && row("225112").startsWith("| Market Research Analyst |"), `${file}: 225113 Marketing Specialist, 225112 Market Research Analyst`);
+      check(!/Market Research Analyst[^\n]*\b225113\b/.test(lines.join("\n")), `${file}: no row pairs Market Research Analyst with 225113`);
     } else {
       const XLSX = await import("xlsx");
       const wb = XLSX.read(readFileSync(file));
@@ -42,12 +42,12 @@ async function main() {
         const cells = (r as unknown[]).map((c) => String(c ?? ""));
         if (cells.includes("225113")) { seen++; if (cells.some((c) => /Market Research Analyst/i.test(c))) bad++; }
       }
-      check(bad === 0, `${source}: no row pairs 225113 with Market Research Analyst`, `${seen} row(s) for 225113`);
+      check(bad === 0, `${file}: no row pairs 225113 with Market Research Analyst`, `${seen} row(s) for 225113`);
     }
   }
 
   console.log("\n3. the retired file is the one with the wrong mapping (guard stays meaningful)");
-  const stale = readFileSync("data/knowledge/Skilled list.md", "utf8");
+  const stale = readFileSync("public/Skilled list.md", "utf8");
   check(/"occupation":\s*"Market Research Analyst",\s*\n\s*"anzscoCode":\s*"225113"/.test(stale), "the retired 'Skilled list.md' still carries 225113 = Market Research Analyst, which is why it must stay retired");
 
   if (failures) { console.error(`\n${failures} check(s) failed`); process.exit(1); }
