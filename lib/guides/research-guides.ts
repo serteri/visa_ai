@@ -50,7 +50,7 @@ const L = {
   skills: { label: "Skills Assessment Finder", path: "/tools/skills-assessment", type: "tool", destination: "skills_assessment" },
   anzsco: { label: "ANZSCO Finder", path: "/tools/anzsco-finder", type: "tool", destination: "anzsco_finder" },
   occList: { label: "Australian skilled occupation list", path: "/occupations", type: "occupation", destination: "occupation_list" },
-  points: { label: "Points Calculator", path: "/tools/points-calculator", type: "tool", destination: "points_calculator" },
+  points: { label: "Points Calculator", path: "/tools/points-calculator/australia", type: "tool", destination: "points_calculator" },
   compare: { label: "Visa comparison", path: "/tools/visa-comparison", type: "tool", destination: "visa_comparison" },
   state: { label: "State nomination research", path: "/tools/state-nomination", type: "tool", destination: "state_nomination" },
   rounds: { label: "Invitation rounds", path: "/tools/invitation-rounds", type: "tool" },

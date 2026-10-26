@@ -10,20 +10,34 @@ type PageProps = {
   params: Promise<{ locale: string }>;
 };
 
+const HUB_META: Record<string, { title: string; description: string }> = {
+  en: {
+    title: "Visa Points Calculator Hub 2026 | Australia & Canada",
+    description: "Immigration points calculators for Australia and Canada: choose the Australian skilled migration points test (189, 190, 491) or the Canadian Express Entry CRS calculator.",
+  },
+  tr: {
+    title: "Vize Puan Hesaplayıcı Merkezi 2026 | Avustralya ve Kanada",
+    description: "Avustralya ve Kanada için göçmenlik puan hesaplayıcıları: Avustralya nitelikli göçmenlik puan testini (189, 190, 491) veya Kanada Express Entry CRS hesaplayıcısını seçin.",
+  },
+  "zh-Hans": {
+    title: "签证积分计算器中心 2026 | 澳大利亚与加拿大",
+    description: "澳大利亚和加拿大的移民积分计算器：选择澳大利亚技术移民积分测试（189、190、491）或加拿大快速通道 CRS 计算器。",
+  },
+};
+
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
   const { locale } = await params;
   const siteUrl = new URL(BASE_URL);
+  const meta = HUB_META[locale] ?? HUB_META.en;
 
   return {
     metadataBase: siteUrl,
-    title: "Visa Points Calculator Hub 2026 | Australia & Canada",
-    description:
-      "Calculate your immigration points for Australia (Skilled Migration) and Canada (Express Entry) instantly.",
+    title: meta.title,
+    description: meta.description,
     alternates: pageAlternates(locale, `/tools/points-calculator`),
     openGraph: {
-      title: "Visa Points Calculator Hub 2026 | Australia & Canada",
-      description:
-        "Calculate your immigration points for Australia (Skilled Migration) and Canada (Express Entry) instantly.",
+      title: meta.title,
+      description: meta.description,
       type: "website",
       url: publicUrl(locale, `/tools/points-calculator`),
       images: [{ url: "/og/default-og.png", width: 1200, height: 630 }],

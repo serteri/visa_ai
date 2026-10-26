@@ -1,175 +1,334 @@
-import type { SeoContentSectionProps } from "@/components/SeoContentSection";
+/**
+ * Visible copy of /tools/points-calculator/australia (SEO Sprint 4). Every statement paraphrases the Department of Home Affairs pages for
+ * subclasses 189, 190 and 491, the points table, the SkillSelect EOI pages and the invitation-rounds page (checked 2026-10-26; the visa pages are the
+ * 23 September 2026 versions). It states published rules; it never predicts an invitation, quotes a generic cutoff or fixes a round frequency.
+ * The calculator is arithmetic on the inputs the visitor enters.
+ */
+export const POINTS_CALC_CHECKED = "2026-10-26";
 
-type Locale = string;
+const HA = "https://immi.homeaffairs.gov.au";
+export const POINTS_CALC_SOURCES = {
+  pointsTable: `${HA}/visas/getting-a-visa/visa-listing/skilled-independent-189/points-table`,
+  eoi: `${HA}/visas/working-in-australia/skillselect/expression-of-interest`,
+  rounds: `${HA}/visas/working-in-australia/skillselect/invitation-rounds`,
+  v189: `${HA}/visas/getting-a-visa/visa-listing/skilled-independent-189/points-tested`,
+  v190: `${HA}/visas/getting-a-visa/visa-listing/skilled-nominated-190`,
+  v491: `${HA}/visas/getting-a-visa/visa-listing/skilled-work-regional-provisional-491`,
+} as const;
 
-interface PageContent {
-  toolLabel: string;
-  aboutTitle: string;
+export interface PointsCalcContent {
+  meta: { title: string; description: string };
+  h1: string;
+  /** Concise visible intro under the H1. */
   intro: string;
-  sections: { heading: string; body: string }[];
-  faqs: { q: string; a: string }[];
+  differ: { heading: string; intro: string; items: Array<{ subclass: "189" | "190" | "491"; title: string; text: string }>; note: string };
+  factors: { heading: string; intro: string; items: Array<{ name: string; text: string }> };
+  enough: { heading: string; paragraphs: string[] };
+  eoi: { heading: string; items: string[] };
   faqTitle: string;
+  faqs: Array<{ q: string; a: string }>;
+  links: { heading: string; items: Array<{ label: string; path: string; destination?: string }> };
+  sources: { heading: string; checked: string; items: Array<{ label: string; url: string }> };
+  cta: { text: string; button: string };
 }
 
-const content: Record<string, PageContent> = {
+const content: Record<string, PointsCalcContent> = {
   en: {
-    toolLabel: "Points Test Guide",
-    aboutTitle: "About the Australian Points Test Calculator",
+    meta: {
+      title: "Australia Visa Points Calculator 2026 | 189, 190 & 491",
+      description:
+        "Adds the published points for age, English, skilled employment, education, partner factors, Australian study and nomination where applicable (189, 190, 491). An estimate from your inputs; it does not determine an invitation or visa outcome.",
+    },
+    h1: "Australia Visa Points Calculator 2026",
     intro:
-      "The Australian skilled migration points test is the scoring system used by the Department of Home Affairs to rank Expression of Interest (EOI) applications in the SkillSelect pool. The minimum score to submit an EOI is 65 points; invitation rounds published by the Department show the scores at which recent invitations were issued. This page explains how the test works.",
-    sections: [
-      {
-        heading: "How the Australian Points Test Works",
-        body: "When you lodge an EOI through SkillSelect, the points test converts your age, English ability, work experience, education, and other factors into a numerical score. The Department of Home Affairs holds regular invitation rounds and invites the highest-scoring applicants in each visa subclass. Your score is calculated at the time of invitation, not when you first submitted your EOI, so a score can change when the details in an EOI are updated.",
-      },
-      {
-        heading: "Key Factors: Age, English, Experience and Education",
-        body: "Age earns up to 30 points for applicants aged 25–32, scaling down to 15 points at 40–44 and zero above 45. English ability contributes 0 points for Competent, 10 for Proficient and 20 for Superior. Overseas work experience adds 5–15 points and Australian work experience adds 5–20 points depending on duration. Education contributes up to 20 points for a doctoral qualification. Additional factors such as partner skills, state nomination, Australian study, specialist education and community language credentials can each add further points to your total.",
-      },
-      {
-        heading: "What Score Do You Need?",
-        body: "The minimum score to submit an EOI is 65 points. However, this threshold has never been enough to receive an invitation in recent rounds. For subclass 189 (Skilled Independent) the cutoff for most occupations has been 85–95 points. For subclass 190 (State Nominated) the state-specific cutoff is typically 75–90, while subclass 491 (Skilled Work Regional) may invite at lower thresholds. Invitation round data published by the Department shows the scores at which recent invitations were issued.",
-      },
-      {
-        heading: "Common Mistakes People Make",
-        body: "The most frequent mistakes include: misclassifying English proficiency level, underestimating years of work experience due to incorrect date calculations, selecting the wrong ANZSCO code for your occupation, omitting education qualifications that count for points, and failing to update the EOI when circumstances change. Some applicants also overlook the partner skills bonus, which adds up to 10 points if a partner holds a positive skills assessment and meets English requirements. Official DHA guidelines set out how each claimed point is assessed.",
-      },
-      {
-        heading: "Maximising Your Points Score",
-        body: "The points test awards points for several factors, and some of them can change over time. Superior English (IELTS 8+ in all bands) adds 20 points. Additional years of Australian or overseas work experience also add points. Age points depend on the applicant's age bracket. State nomination (190 or 491) adds 5 or 15 points respectively.",
-      },
-    ],
+      "This calculator adds the published points factors used for subclass 189, 190 and 491 from the details you enter, including when you use it as a 491 visa points calculator. 65 points is the published points threshold; meeting it does not guarantee an invitation. The result is an estimate based on your inputs and does not determine an invitation or visa outcome.",
+    differ: {
+      heading: "How points differ for 189, 190 and 491",
+      intro: "The points table is the same for all three; only the nomination or sponsorship factor differs.",
+      items: [
+        { subclass: "189", title: "Subclass 189 (Skilled Independent)", text: "No state or territory nomination points. Home Affairs periodically runs invitation rounds and ranks the EOIs in SkillSelect." },
+        { subclass: "190", title: "Subclass 190 (Skilled Nominated)", text: "A state or territory nomination contributes 5 points when it applies. State and territory agencies consider EOIs and decide whether to nominate; a nomination in SkillSelect triggers an invitation." },
+        { subclass: "491", title: "Subclass 491 (Skilled Work Regional)", text: "A nomination by a state or territory agency, or sponsorship by a relative in a designated regional area, contributes 15 points according to the published points table. State and territory agencies decide on their own nominations; family-sponsored EOIs are invited by Home Affairs in rounds." },
+      ],
+      note: "The calculator adds nomination points only when you select that factor. A nomination is never assumed, and these are not the same national ranking process for all three subclasses.",
+    },
+    factors: {
+      heading: "What contributes to the score",
+      intro: "The factors the calculator uses, with the published points range for each:",
+      items: [
+        { name: "Age", text: "up to 30 points (ages 25–32); fewer points in other bands up to 44, none from 45." },
+        { name: "English language", text: "0 for Competent, 10 for Proficient, 20 for Superior." },
+        { name: "Skilled employment outside Australia", text: "up to 15 points, by years in the nominated occupation." },
+        { name: "Skilled employment in Australia", text: "up to 20 points, by years in the nominated occupation." },
+        { name: "Combined employment cap", text: "overseas and Australian employment together count for at most 20 points." },
+        { name: "Educational qualifications", text: "up to 20 points for a doctorate, 15 for a bachelor's or master's degree, 10 for a diploma or trade qualification." },
+        { name: "Australian study requirement", text: "5 points for study in Australia that meets the published requirement." },
+        { name: "Specialist educational qualification", text: "10 points for a master's by research or doctorate in a STEM field from an Australian institution." },
+        { name: "Credentialled community language", text: "5 points." },
+        { name: "Study in regional Australia", text: "5 points." },
+        { name: "Partner skills", text: "up to 10 points, depending on the partner's skills assessment and English, or on having no partner." },
+        { name: "Professional Year in Australia", text: "5 points." },
+        { name: "Nomination or sponsorship", text: "5 points for a state or territory nomination (190); 15 points for a nomination or family sponsorship (491)." },
+      ],
+    },
+    enough: {
+      heading: "Is 65 points enough for an Australian skilled visa?",
+      paragraphs: [
+        "65 points is the published points threshold for subclass 189, 190 and 491. Meeting it does not guarantee an invitation: Home Affairs says not everyone who submits an EOI receives one.",
+        "Invitation outcomes depend on the program and process. For subclass 189, outcomes can vary between rounds and occupations. For subclass 190 and nominated 491, states and territories control their own nomination processes.",
+        "This page gives no personal probability and no generic cutoff range. Published results of past rounds are on the invitation rounds page.",
+      ],
+    },
+    eoi: {
+      heading: "Points calculator vs SkillSelect EOI",
+      items: [
+        "This LogiVisa tool is only a calculator. It does not submit an EOI and has no link to your EOI.",
+        "An EOI is submitted through the Australian Government's SkillSelect.",
+        "The official process expects a skills assessment for the nominated occupation before the EOI is submitted.",
+        "SkillSelect gives an indicative points score based on the claims entered in the EOI.",
+        "An EOI stays active for up to 2 years unless another event removes it.",
+      ],
+    },
+    faqTitle: "Frequently asked questions",
     faqs: [
-      {
-        q: "How often does the Department of Home Affairs run invitation rounds?",
-        a: "Invitation rounds for subclass 189 and 491 are typically held monthly, usually in the second or third week. Subclass 190 invitations are issued directly by state and territory governments on their own schedules, which vary throughout the year.",
-      },
-      {
-        q: "Can I submit an EOI without a positive skills assessment?",
-        a: "Yes — you can submit an EOI before your skills assessment is complete. However, you cannot lodge a visa application until you hold a valid positive skills assessment. Many applicants submit an EOI early to begin accumulating time in the pool while completing their assessment.",
-      },
-      {
-        q: "What happens if my points change after I submit my EOI?",
-        a: "An EOI must be updated to reflect changes in circumstances. Your score is recalculated at the time of invitation based on the information in your EOI at that date. You can update your EOI at any time without losing your original submission date.",
-      },
-      {
-        q: "Does the points calculator cover all skilled visa subclasses?",
-        a: "This calculator covers the three main General Skilled Migration (GSM) visas: subclass 189 (Skilled Independent), subclass 190 (State Nominated) and subclass 491 (Skilled Work Regional Provisional). Employer-sponsored visas (482, 186) use different criteria and are not points-tested.",
-      },
-      {
-        q: "How long does an EOI remain active in the SkillSelect pool?",
-        a: "An EOI is valid for two years from the date of submission. If no invitation is issued within two years, the EOI expires and a new one must be submitted. You can update your EOI at any time during the two-year validity period.",
-      },
+      { q: "What is the Australian skilled migration points test?", a: "It is the points table used for subclass 189, 190 and 491. It awards points for factors such as age, English, skilled employment, education and, where it applies, nomination or sponsorship. SkillSelect gives an indicative score based on the claims in an EOI." },
+      { q: "What is the minimum points threshold for 189, 190 and 491?", a: "The published threshold is 65 points for all three. Home Affairs says it will not invite an EOI below 65 points. An invitation states the points that must be scored when the application is assessed, which can be higher than 65 depending on the claims." },
+      { q: "Does 65 points guarantee an invitation?", a: "No. 65 points is a threshold, not a guarantee. Home Affairs says not everyone who submits an EOI receives an invitation, and outcomes depend on the program and process." },
+      { q: "How many points does subclass 190 nomination add?", a: "A state or territory nomination adds 5 points for subclass 190 when it applies. The calculator adds them only when you select the nomination factor." },
+      { q: "How many points does subclass 491 nomination add?", a: "A nomination by a state or territory agency, or family sponsorship in a designated regional area, adds 15 points for subclass 491 according to the published points table. The calculator adds them only when you select that factor." },
+      { q: "Do I need a skills assessment before submitting an EOI?", a: "The official process expects a skills assessment for the nominated occupation before the EOI is submitted, and the EOI records the assessment details. A suitable assessment must also still be valid when an invitation is issued." },
+      { q: "How long does an EOI stay active?", a: "An EOI stays active for up to 2 years from submission unless another event removes it. Home Affairs says an invitation could be received up to 2 years after submitting an EOI." },
+      { q: "Can my points change after I submit an EOI?", a: "An EOI can be updated in SkillSelect before an invitation, for example after a new qualification, new work experience or a change in circumstances. SkillSelect updates the indicative score, and the claims must be supported with evidence if an invitation is issued." },
+      { q: "Does this calculator decide whether I will get a visa?", a: "No. It adds published points values to the details you enter. It does not assess evidence, check an occupation list or skills assessment, or decide an invitation or visa outcome. Home Affairs and state and territory agencies make those decisions." },
+      { q: "Does the calculator include subclass 482 or 186?", a: "No. Subclass 482 and 186 are employer-sponsored visas and are not points-tested in the way 189, 190 and 491 are." },
     ],
-    faqTitle: "Frequently Asked Questions — Points Test",
+    links: {
+      heading: "Related research",
+      items: [
+        { label: "Skilled occupation list", path: "/occupations", destination: "occupation_list" },
+        { label: "Skills Assessment Finder", path: "/tools/skills-assessment", destination: "skills_assessment" },
+        { label: "ANZSCO Finder", path: "/tools/anzsco-finder", destination: "anzsco_finder" },
+        { label: "Visa comparison", path: "/tools/visa-comparison", destination: "visa_comparison" },
+        { label: "State nomination research", path: "/tools/state-nomination", destination: "state_nomination" },
+        { label: "Invitation rounds", path: "/tools/invitation-rounds", destination: "invitation_rounds" },
+        { label: "Subclass 189 information", path: "/visas/189" },
+        { label: "Subclass 190 information", path: "/visas/190" },
+        { label: "Subclass 491 information", path: "/visas/491" },
+      ],
+    },
+    sources: {
+      heading: "Official sources",
+      checked: "Checked",
+      items: [
+        { label: "Home Affairs points table", url: POINTS_CALC_SOURCES.pointsTable },
+        { label: "SkillSelect expression of interest", url: POINTS_CALC_SOURCES.eoi },
+        { label: "SkillSelect invitation rounds", url: POINTS_CALC_SOURCES.rounds },
+        { label: "Subclass 189", url: POINTS_CALC_SOURCES.v189 },
+        { label: "Subclass 190", url: POINTS_CALC_SOURCES.v190 },
+        { label: "Subclass 491", url: POINTS_CALC_SOURCES.v491 },
+      ],
+    },
+    cta: { text: "Create a structured report based on the information you enter.", button: "Start Assessment" },
   },
 
   tr: {
-    toolLabel: "Puan Testi Rehberi",
-    aboutTitle: "Avustralya Puan Testi Hesaplayıcısı Hakkında",
+    meta: {
+      title: "Avustralya Vize Puan Hesaplayıcı 2026 | 189, 190 ve 491",
+      description:
+        "Yaş, İngilizce, nitelikli iş deneyimi, eğitim, eş, Avustralya'da eğitim ve geçerliyse aday gösterme için yayımlanmış puanları toplar (189, 190, 491). Girdilerinize dayalı bir tahmindir; davet veya vize sonucunu belirlemez.",
+    },
+    h1: "Avustralya Vize Puan Hesaplayıcı 2026",
     intro:
-      "Avustralya yetenekli göçmenlik puan testi, İçişleri Bakanlığı'nın SkillSelect havuzundaki EOI başvurularını sıralamak için kullandığı puanlama sistemidir. Davet almak için en az 65 puan gereklidir ancak pratikte çoğu 189 vizesi daveti 80 veya üzeri puana sahip başvuru sahiplerine gitmektedir.",
-    sections: [
-      {
-        heading: "Avustralya Puan Testi Nasıl Çalışır?",
-        body: "SkillSelect üzerinden bir EOI sunduğunuzda, puan testi yaşınızı, İngilizce seviyenizi, iş deneyiminizi, eğitiminizi ve diğer faktörleri sayısal bir puana dönüştürür. Bakanlık, her vize alt sınıfında en yüksek puana sahip başvuranları davet eder. Puanınız, EOI'nizi ilk gönderdiğinizde değil, davet anında hesaplanır.",
-      },
-      {
-        heading: "Temel Faktörler: Yaş, İngilizce, Deneyim ve Eğitim",
-        body: "Yaş, 25-32 yaş arası başvuranlara maksimum 30 puan sağlar ve 40-44 yaşına kadar 15 puana düşer. İngilizce yeterliliği Yeterli için 0, Uzman için 10 ve Üstün için 20 puan sağlar. Yurt dışı iş deneyimi 5-15 puan, Avustralya iş deneyimi ise süreye göre 5-20 puan ekler. Eğitim, doktora derecesi için maksimum 20 puana ulaşır.",
-      },
-      {
-        heading: "Kaç Puana İhtiyacınız Var?",
-        body: "EOI sunmak için minimum puan 65'tir. Ancak bu eşiğin son rauntlarda davet almak için hiçbir zaman yeterli olmadığı görülmüştür. 189 alt sınıfı için çoğu mesleğin kesim puanı 85-95 arasındadır. 190 alt sınıfı için devlet bazlı kesim genellikle 75-90, 491 daha düşük eşiklerde davet edebilir.",
-      },
-      {
-        heading: "İnsanların Yaptığı Yaygın Hatalar",
-        body: "En sık yapılan hatalar şunlardır: İngilizce yeterlilik seviyesinin yanlış sınıflandırılması, hatalı tarih hesaplamaları nedeniyle iş deneyimi yıllarının eksik gösterilmesi, meslek için yanlış ANZSCO kodunun seçilmesi ve koşullar değiştiğinde EOI'nin güncellenmemesi.",
-      },
-      {
-        heading: "Puanınızı Nasıl Maksimize Edersiniz?",
-        body: "Üstün İngilizce düzeyine ulaşmak (tüm IELTS bantlarında 8+) 20 puan ekler. Avustralya veya yurt dışı iş deneyiminin birikmesi de önemli puanlar ekler. Devlet adaylığı (190 veya 491), sırasıyla 5 veya 15 ekstra puan sağlar.",
-      },
-    ],
+      "Bu hesaplayıcı, girdiğiniz bilgilerle 189, 190 ve 491 alt sınıfları için kullanılan yayımlanmış puan faktörlerini toplar; 491 vizesi puan hesaplayıcısı olarak da kullanılabilir. 65 puan yayımlanmış puan eşiğidir; eşiği karşılamak davet almayı garanti etmez. Sonuç, girdilerinize dayalı bir tahmindir ve davet veya vize sonucunu belirlemez.",
+    differ: {
+      heading: "189, 190 ve 491 için puanlar nasıl farklılaşır?",
+      intro: "Puan tablosu üçü için aynıdır; yalnızca aday gösterme veya sponsorluk faktörü farklıdır.",
+      items: [
+        { subclass: "189", title: "Alt sınıf 189 (Skilled Independent)", text: "Eyalet veya bölge adaylığı puanı yoktur. İçişleri Bakanlığı (Home Affairs) zaman zaman davet rauntları düzenler ve SkillSelect'teki EOI'leri sıralar." },
+        { subclass: "190", title: "Alt sınıf 190 (Skilled Nominated)", text: "Eyalet veya bölge adaylığı, geçerli olduğunda 5 puan sağlar. Eyalet ve bölge kurumları EOI'leri değerlendirir ve aday gösterip göstermeyeceğine karar verir; SkillSelect'te bir aday gösterme davetin başlamasını sağlar." },
+        { subclass: "491", title: "Alt sınıf 491 (Skilled Work Regional)", text: "Bir eyalet veya bölge kurumunun adaylığı ya da belirlenmiş bölgesel alandaki bir akrabanın sponsorluğu, yayımlanmış puan tablosuna göre 15 puan sağlar. Eyalet ve bölge kurumları kendi adaylıklarına karar verir; aile sponsorluğundaki EOI'leri Home Affairs raundlarda davet eder." },
+      ],
+      note: "Hesaplayıcı aday gösterme puanlarını yalnızca bu faktörü seçtiğinizde ekler. Aday gösterme hiçbir zaman varsayılmaz ve üç alt sınıf aynı ulusal sıralama sürecini kullanmaz.",
+    },
+    factors: {
+      heading: "Puana neler katkı yapar?",
+      intro: "Hesaplayıcının kullandığı faktörler ve her biri için yayımlanmış puan aralığı:",
+      items: [
+        { name: "Yaş", text: "en fazla 30 puan (25–32 yaş); diğer bantlarda 44 yaşına kadar daha az, 45 yaşından itibaren puan yok." },
+        { name: "İngilizce", text: "Competent için 0, Proficient için 10, Superior için 20." },
+        { name: "Avustralya dışında nitelikli iş deneyimi", text: "aday gösterilen meslekte yıla göre en fazla 15 puan." },
+        { name: "Avustralya'da nitelikli iş deneyimi", text: "aday gösterilen meslekte yıla göre en fazla 20 puan." },
+        { name: "Birleşik iş deneyimi sınırı", text: "yurt dışı ve Avustralya deneyimi birlikte en fazla 20 puan sayılır." },
+        { name: "Eğitim nitelikleri", text: "doktora için en fazla 20, lisans veya yüksek lisans için 15, diploma veya meslek niteliği için 10 puan." },
+        { name: "Avustralya'da eğitim koşulu", text: "yayımlanmış koşulu karşılayan Avustralya'daki eğitim için 5 puan." },
+        { name: "Uzmanlık eğitim niteliği", text: "Avustralya'daki bir kurumdan STEM alanında araştırmaya dayalı yüksek lisans veya doktora için 10 puan." },
+        { name: "Belgelendirilmiş toplum dili", text: "5 puan." },
+        { name: "Bölgesel Avustralya'da eğitim", text: "5 puan." },
+        { name: "Eşin becerileri", text: "eşin beceri değerlendirmesine ve İngilizcesine veya eşin bulunmamasına bağlı olarak en fazla 10 puan." },
+        { name: "Avustralya'da Professional Year", text: "5 puan." },
+        { name: "Aday gösterme veya sponsorluk", text: "eyalet veya bölge adaylığı (190) için 5 puan; aday gösterme veya aile sponsorluğu (491) için 15 puan." },
+      ],
+    },
+    enough: {
+      heading: "65 puan, Avustralya nitelikli vizesi için yeterli mi?",
+      paragraphs: [
+        "65 puan, 189, 190 ve 491 alt sınıfları için yayımlanmış puan eşiğidir. Eşiği karşılamak davet almayı garanti etmez: Home Affairs, EOI sunan herkesin davet almadığını belirtir.",
+        "Davet sonuçları programa ve sürece bağlıdır. 189 alt sınıfında sonuçlar raundlara ve mesleklere göre değişebilir. 190 ve aday gösterilen 491 için eyaletler ve bölgeler kendi aday gösterme süreçlerini yönetir.",
+        "Bu sayfa kişiye özel bir olasılık veya genel bir kesim puanı aralığı vermez. Geçmiş raundların yayımlanmış sonuçları davet rauntları sayfasındadır.",
+      ],
+    },
+    eoi: {
+      heading: "Puan hesaplayıcı ile SkillSelect EOI farkı",
+      items: [
+        "Bu LogiVisa aracı yalnızca bir hesaplayıcıdır. EOI sunmaz ve EOI'nizle bağlantısı yoktur.",
+        "EOI, Avustralya Hükümeti'nin SkillSelect sistemi üzerinden sunulur.",
+        "Resmî süreç, EOI sunulmadan önce aday gösterilen meslek için bir beceri değerlendirmesi bekler.",
+        "SkillSelect, EOI'de girilen beyanlara göre gösterge niteliğinde bir puan verir.",
+        "Bir EOI, başka bir olay onu kaldırmadıkça en fazla 2 yıl boyunca aktif kalır.",
+      ],
+    },
+    faqTitle: "Sık sorulan sorular",
     faqs: [
-      {
-        q: "İçişleri Bakanlığı davet rauntlarını ne sıklıkla düzenler?",
-        a: "189 ve 491 alt sınıfları için davet rauntları genellikle aylık olarak, genellikle ikinci veya üçüncü haftada düzenlenir. 190 davetleri, eyalet ve bölge hükümetleri tarafından kendi programlarına göre verilir.",
-      },
-      {
-        q: "Olumlu bir beceri değerlendirmesi olmadan EOI sunabilir miyim?",
-        a: "Evet — beceri değerlendirmeniz tamamlanmadan önce EOI sunabilirsiniz. Ancak geçerli, olumlu bir beceri değerlendirmesi olmadan vize başvurusu lodgement edilemez.",
-      },
-      {
-        q: "EOI sunduktan sonra puanlarım değişirse ne olur?",
-        a: "Koşullarınızdaki değişiklikleri yansıtmak için EOI'nizi güncellemeniz gerekir. Puanınız, davet anında EOI'nizdeki bilgilere göre yeniden hesaplanır.",
-      },
-      {
-        q: "Puan hesaplayıcısı tüm yetenekli vize alt sınıflarını kapsıyor mu?",
-        a: "Bu hesaplayıcı üç ana Genel Yetenekli Göçmenlik (GSM) vizesini kapsar: alt sınıf 189, 190 ve 491. İşveren tarafından desteklenen vizeler (482, 186) farklı kriterler kullanır.",
-      },
-      {
-        q: "Bir EOI, SkillSelect havuzunda ne kadar süre aktif kalır?",
-        a: "Bir EOI, sunuluş tarihinden itibaren iki yıl geçerlidir. İki yıl içinde davet alınmazsa, EOI sona erer ve yeni bir tane sunulmalıdır.",
-      },
+      { q: "Avustralya nitelikli göçmenlik puan testi nedir?", a: "189, 190 ve 491 alt sınıfları için kullanılan puan tablosudur. Yaş, İngilizce, nitelikli iş deneyimi, eğitim ve geçerliyse aday gösterme veya sponsorluk gibi faktörlere puan verir. SkillSelect, EOI'deki beyanlara göre gösterge niteliğinde bir puan verir." },
+      { q: "189, 190 ve 491 için asgari puan eşiği nedir?", a: "Yayımlanmış eşik üçü için de 65 puandır. Home Affairs, 65 puanın altındaki bir EOI'yi davet etmeyeceğini belirtir. Davet, başvuru değerlendirilirken alınması gereken puanı belirtir; bu puan beyanlara bağlı olarak 65'ten yüksek olabilir." },
+      { q: "65 puan davet almayı garanti eder mi?", a: "Hayır. 65 puan bir eşiktir, garanti değildir. Home Affairs, EOI sunan herkesin davet almadığını belirtir; sonuçlar programa ve sürece bağlıdır." },
+      { q: "190 aday gösterme kaç puan ekler?", a: "Bir eyalet veya bölge adaylığı, geçerli olduğunda 190 alt sınıfı için 5 puan ekler. Hesaplayıcı bu puanları yalnızca aday gösterme faktörünü seçtiğinizde ekler." },
+      { q: "491 aday gösterme kaç puan ekler?", a: "Bir eyalet veya bölge kurumunun adaylığı ya da belirlenmiş bölgesel alanda aile sponsorluğu, yayımlanmış puan tablosuna göre 491 alt sınıfı için 15 puan ekler. Hesaplayıcı bu puanları yalnızca o faktörü seçtiğinizde ekler." },
+      { q: "EOI sunmadan önce beceri değerlendirmesi gerekir mi?", a: "Resmî süreç, EOI sunulmadan önce aday gösterilen meslek için bir beceri değerlendirmesi bekler ve EOI değerlendirme bilgilerini kaydeder. Uygun bir değerlendirme, davet verildiğinde de geçerli olmalıdır." },
+      { q: "Bir EOI ne kadar süre aktif kalır?", a: "Bir EOI, başka bir olay onu kaldırmadıkça sunulduğu tarihten itibaren en fazla 2 yıl aktif kalır. Home Affairs, EOI sunulduktan sonra en fazla 2 yıl içinde davet alınabileceğini belirtir." },
+      { q: "EOI sunduktan sonra puanlarım değişebilir mi?", a: "EOI, davetten önce SkillSelect üzerinden güncellenebilir; örneğin yeni bir nitelik, yeni iş deneyimi veya koşullarda değişiklik olduğunda. SkillSelect gösterge puanı günceller ve davet verilirse beyanların kanıtlarla desteklenmesi gerekir." },
+      { q: "Bu hesaplayıcı vize alıp almayacağımı belirler mi?", a: "Hayır. Girdiğiniz bilgilere yayımlanmış puan değerlerini ekler. Kanıtları değerlendirmez, meslek listesini veya beceri değerlendirmesini denetlemez, davet veya vize sonucunu belirlemez. Bu kararları Home Affairs ile eyalet ve bölge kurumları verir." },
+      { q: "Hesaplayıcı 482 veya 186 alt sınıfını kapsıyor mu?", a: "Hayır. 482 ve 186 işveren sponsorluğundaki vizelerdir ve 189, 190 ve 491 gibi puan testine tabi değildir." },
     ],
-    faqTitle: "Sıkça Sorulan Sorular — Puan Testi",
+    links: {
+      heading: "İlgili araştırmalar",
+      items: [
+        { label: "Nitelikli meslek listesi", path: "/occupations", destination: "occupation_list" },
+        { label: "Beceri Değerlendirme Bulucu", path: "/tools/skills-assessment", destination: "skills_assessment" },
+        { label: "ANZSCO Bulucu", path: "/tools/anzsco-finder", destination: "anzsco_finder" },
+        { label: "Vize karşılaştırması", path: "/tools/visa-comparison", destination: "visa_comparison" },
+        { label: "Eyalet adaylığı araştırması", path: "/tools/state-nomination", destination: "state_nomination" },
+        { label: "Davet rauntları", path: "/tools/invitation-rounds", destination: "invitation_rounds" },
+        { label: "Alt sınıf 189 bilgileri", path: "/visas/189" },
+        { label: "Alt sınıf 190 bilgileri", path: "/visas/190" },
+        { label: "Alt sınıf 491 bilgileri", path: "/visas/491" },
+      ],
+    },
+    sources: {
+      heading: "Resmî kaynaklar",
+      checked: "Kontrol",
+      items: [
+        { label: "Home Affairs puan tablosu", url: POINTS_CALC_SOURCES.pointsTable },
+        { label: "SkillSelect EOI", url: POINTS_CALC_SOURCES.eoi },
+        { label: "SkillSelect davet rauntları", url: POINTS_CALC_SOURCES.rounds },
+        { label: "Alt sınıf 189", url: POINTS_CALC_SOURCES.v189 },
+        { label: "Alt sınıf 190", url: POINTS_CALC_SOURCES.v190 },
+        { label: "Alt sınıf 491", url: POINTS_CALC_SOURCES.v491 },
+      ],
+    },
+    cta: { text: "Girdiğiniz bilgilere dayalı yapılandırılmış bir rapor oluşturun.", button: "Değerlendirme Başlat" },
   },
 
   "zh-Hans": {
-    toolLabel: "积分测试指南",
-    aboutTitle: "关于澳大利亚积分测试计算器",
+    meta: {
+      title: "澳大利亚签证积分计算器 2026 | 189、190 和 491",
+      description:
+        "累加年龄、英语、技术工作经验、学历、配偶因素、澳大利亚学习以及适用时的提名所对应的已公布积分（189、190、491）。结果是基于您所填信息的估算，不决定邀请或签证结果。",
+    },
+    h1: "澳大利亚签证积分计算器 2026",
     intro:
-      "澳大利亚技术移民积分测试是内政部用于在SkillSelect池中对意向申请（EOI）进行排名的评分系统。获得邀请的最低要求是65分——但实际上大多数189签证邀请发放给80分或以上的申请人。了解积分测试的运作方式以及如何最大化您的分数是规划签证之旅最重要的步骤之一。",
-    sections: [
-      {
-        heading: "澳大利亚积分测试如何运作",
-        body: "当您通过SkillSelect提交EOI时，积分测试将您的年龄、英语能力、工作经验、教育程度和其他因素转换为数字分数。内政部定期举行邀请轮次，邀请每个签证子类中得分最高的申请人。您的分数在邀请时计算，而不是在您首次提交EOI时，因此更新 EOI 中的信息后，分数可能随之变化。",
-      },
-      {
-        heading: "关键因素：年龄、英语、经验和教育",
-        body: "年龄为25-32岁的申请人最多可获得30分，到40-44岁降至15分。英语能力：胜任0分，熟练10分，优秀20分。海外工作经验增加5-15分，澳大利亚工作经验根据时长增加5-20分。教育方面，博士学位最多可获得20分。",
-      },
-      {
-        heading: "您需要多少分？",
-        body: "提交EOI的最低分数是65分。然而，这个门槛在最近的轮次中从未足以获得邀请。对于189签证，大多数职业的截止分数为85-95分。190签证的州特定截止分数通常为75-90，而491签证可能在较低门槛下发出邀请。",
-      },
-      {
-        heading: "常见错误",
-        body: "最常见的错误包括：错误分类英语水平、由于错误的日期计算而低估工作经验年数、为您的职业选择错误的ANZSCO代码、忘记计入所有相关的学历，以及情况变化时未能更新EOI。",
-      },
-      {
-        heading: "如何最大化您的积分",
-        body: "积分测试对多个因素计分，其中部分因素会随时间变化。参加英语考试达到优秀级别（所有IELTS单项8分以上）可增加20分，通常是提高分数最快的方式。积累更多澳大利亚或海外工作经验也会增加可观的分数。州提名（190或491）分别增加5或15分。",
-      },
-    ],
+      "本计算器根据您填写的信息，累加 189、190 和 491 子类所使用的已公布积分项目，也可用作 491 签证积分计算器。65 分是已公布的积分门槛；达到门槛并不保证获得邀请。结果是基于您所填信息的估算，不决定邀请或签证结果。",
+    differ: {
+      heading: "189、190 和 491 的积分有何不同",
+      intro: "三者使用同一张积分表，只有提名或担保项目不同。",
+      items: [
+        { subclass: "189", title: "189 子类（Skilled Independent）", text: "没有州或领地提名积分。内政部（Home Affairs）定期举行邀请轮次，并对 SkillSelect 中的 EOI 排序。" },
+        { subclass: "190", title: "190 子类（Skilled Nominated）", text: "州或领地提名在适用时计 5 分。州和领地机构审议 EOI 并决定是否提名；SkillSelect 中的提名会触发邀请。" },
+        { subclass: "491", title: "491 子类（Skilled Work Regional）", text: "州或领地机构的提名，或指定地区亲属的担保，按已公布的积分表计 15 分。州和领地机构自行决定其提名；家庭担保的 EOI 由内政部在邀请轮次中发出邀请。" },
+      ],
+      note: "只有当您选择该项目时，计算器才会加上提名积分。提名从不被默认假设，三个子类也并不使用同一个全国性的排序流程。",
+    },
+    factors: {
+      heading: "哪些项目计入积分",
+      intro: "计算器使用的项目及各自已公布的积分范围：",
+      items: [
+        { name: "年龄", text: "最高 30 分（25–32 岁）；其他年龄段至 44 岁分数较低，45 岁起不计分。" },
+        { name: "英语", text: "Competent 0 分，Proficient 10 分，Superior 20 分。" },
+        { name: "澳大利亚境外技术工作经验", text: "按提名职业的年限，最高 15 分。" },
+        { name: "澳大利亚境内技术工作经验", text: "按提名职业的年限，最高 20 分。" },
+        { name: "工作经验合计上限", text: "境外与澳大利亚工作经验合计最多计 20 分。" },
+        { name: "学历", text: "博士最高 20 分，学士或硕士 15 分，文凭或职业资质 10 分。" },
+        { name: "澳大利亚学习要求", text: "满足已公布要求的澳大利亚学习计 5 分。" },
+        { name: "专业学历", text: "澳大利亚院校 STEM 领域的研究型硕士或博士计 10 分。" },
+        { name: "认证社区语言", text: "5 分。" },
+        { name: "在澳大利亚地区学习", text: "5 分。" },
+        { name: "配偶技能", text: "根据配偶的技能评估和英语水平，或无配偶，最高 10 分。" },
+        { name: "澳大利亚 Professional Year", text: "5 分。" },
+        { name: "提名或担保", text: "州或领地提名（190）5 分；提名或家庭担保（491）15 分。" },
+      ],
+    },
+    enough: {
+      heading: "65 分够申请澳大利亚技术签证吗？",
+      paragraphs: [
+        "65 分是 189、190 和 491 子类已公布的积分门槛。达到门槛并不保证获得邀请：内政部表示，并非每位提交 EOI 的人都会收到邀请。",
+        "邀请结果取决于具体项目和流程。189 子类的结果可能因轮次和职业而异。对于 190 以及获提名的 491，各州和领地自行掌握其提名流程。",
+        "本页不提供个人概率，也不给出通用的分数线范围。以往轮次的已公布结果见邀请轮次页面。",
+      ],
+    },
+    eoi: {
+      heading: "积分计算器与 SkillSelect EOI 的区别",
+      items: [
+        "LogiVisa 的这个工具只是一个计算器，不会提交 EOI，也与您的 EOI 没有关联。",
+        "EOI 通过澳大利亚政府的 SkillSelect 提交。",
+        "官方流程要求在提交 EOI 之前，已有针对所提名职业的技能评估。",
+        "SkillSelect 会根据 EOI 中填写的声明给出一个参考性积分。",
+        "除非有其他情形将其移除，EOI 最长保持有效 2 年。",
+      ],
+    },
+    faqTitle: "常见问题",
     faqs: [
-      {
-        q: "内政部多久举行一次邀请轮次？",
-        a: "189和491子类的邀请轮次通常每月举行一次，通常在第二或第三周。190邀请由州和领地政府按照各自的时间表直接发出，全年各有不同。",
-      },
-      {
-        q: "在没有正面技能评估的情况下可以提交EOI吗？",
-        a: "是的——您可以在技能评估完成之前提交EOI。但是，在持有有效的正面技能评估之前，您无法提交签证申请。",
-      },
-      {
-        q: "提交EOI后我的积分发生变化怎么办？",
-        a: "您必须更新您的EOI以反映您情况的任何变化。您的分数在邀请时根据EOI中的信息重新计算。您可以随时更新EOI而不会失去原始提交日期。",
-      },
-      {
-        q: "积分计算器涵盖所有技术签证子类吗？",
-        a: "此计算器涵盖三种主要的一般技术移民（GSM）签证：189子类（独立技术）、190子类（州提名）和491子类（地区技术临时）。雇主担保签证（482、186）使用不同标准，不进行积分测试。",
-      },
-      {
-        q: "EOI在SkillSelect池中保持活跃多长时间？",
-        a: "EOI自提交之日起有效期为两年。如果在两年内未收到邀请，EOI将过期，您必须重新提交。在两年有效期内，您可以随时更新EOI。",
-      },
+      { q: "什么是澳大利亚技术移民积分测试？", a: "它是 189、190 和 491 子类使用的积分表，对年龄、英语、技术工作经验、学历以及适用时的提名或担保等项目计分。SkillSelect 会根据 EOI 中的声明给出一个参考性积分。" },
+      { q: "189、190 和 491 的最低积分门槛是多少？", a: "三者已公布的门槛均为 65 分。内政部表示不会邀请低于 65 分的 EOI。邀请函会写明申请审理时必须达到的分数，视声明内容可能高于 65 分。" },
+      { q: "65 分能保证获得邀请吗？", a: "不能。65 分是门槛，而不是保证。内政部表示，并非每位提交 EOI 的人都会收到邀请，结果取决于具体项目和流程。" },
+      { q: "190 的提名加多少分？", a: "州或领地提名在适用时为 190 子类加 5 分。只有当您选择提名项目时，计算器才会加上这些分数。" },
+      { q: "491 的提名加多少分？", a: "按已公布的积分表，州或领地机构的提名或指定地区的家庭担保为 491 子类加 15 分。只有当您选择该项目时，计算器才会加上这些分数。" },
+      { q: "提交 EOI 之前需要先有技能评估吗？", a: "官方流程要求在提交 EOI 之前，已有针对所提名职业的技能评估，EOI 会记录评估的相关信息。发出邀请时，合适的评估也必须仍然有效。" },
+      { q: "EOI 能保持有效多久？", a: "除非有其他情形将其移除，EOI 自提交之日起最长保持有效 2 年。内政部表示，在提交 EOI 后最长 2 年内都可能收到邀请。" },
+      { q: "提交 EOI 后我的积分会变化吗？", a: "在收到邀请之前，可以通过 SkillSelect 更新 EOI，例如取得新学历、积累新的工作经验或情况发生变化。SkillSelect 会更新参考积分；如果获得邀请，声明必须有证据支持。" },
+      { q: "这个计算器能决定我是否会获得签证吗？", a: "不能。它只是把已公布的积分值加到您填写的信息上，不评估证据，不核对职业清单或技能评估，也不决定邀请或签证结果。这些决定由内政部以及各州和领地机构作出。" },
+      { q: "计算器包含 482 或 186 子类吗？", a: "不包含。482 和 186 是雇主担保签证，不像 189、190 和 491 那样进行积分测试。" },
     ],
-    faqTitle: "常见问题——积分测试",
+    links: {
+      heading: "相关研究",
+      items: [
+        { label: "技术职业清单", path: "/occupations", destination: "occupation_list" },
+        { label: "技能评估查询", path: "/tools/skills-assessment", destination: "skills_assessment" },
+        { label: "ANZSCO 查询", path: "/tools/anzsco-finder", destination: "anzsco_finder" },
+        { label: "签证对比", path: "/tools/visa-comparison", destination: "visa_comparison" },
+        { label: "州担保研究", path: "/tools/state-nomination", destination: "state_nomination" },
+        { label: "邀请轮次", path: "/tools/invitation-rounds", destination: "invitation_rounds" },
+        { label: "189 子类信息", path: "/visas/189" },
+        { label: "190 子类信息", path: "/visas/190" },
+        { label: "491 子类信息", path: "/visas/491" },
+      ],
+    },
+    sources: {
+      heading: "官方来源",
+      checked: "核对",
+      items: [
+        { label: "内政部积分表", url: POINTS_CALC_SOURCES.pointsTable },
+        { label: "SkillSelect 意向表达（EOI）", url: POINTS_CALC_SOURCES.eoi },
+        { label: "SkillSelect 邀请轮次", url: POINTS_CALC_SOURCES.rounds },
+        { label: "189 子类", url: POINTS_CALC_SOURCES.v189 },
+        { label: "190 子类", url: POINTS_CALC_SOURCES.v190 },
+        { label: "491 子类", url: POINTS_CALC_SOURCES.v491 },
+      ],
+    },
+    cta: { text: "根据您输入的信息生成结构化报告。", button: "开始评估" },
   },
 };
 
-export function getPointsCalcSeoContent(locale: string): PageContent {
+export function getPointsCalcSeoContent(locale: string): PointsCalcContent {
   return content[locale] ?? content.en;
 }
 

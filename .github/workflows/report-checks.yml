@@ -137,6 +137,8 @@ jobs:
         run: npm run test:occupation-225113
       - name: Chat occupation sources (the retired stale list cannot return 225113 as Market Research Analyst)
         run: npm run test:chat-occupation-sources
+      - name: Points calculator SEO (Australia page title / H1, 65-point wording, EOI and skills-assessment accuracy, no cutoff or monthly-round claims, FAQ = schema, EN/TR/ZH)
+        run: npm run test:points-calculator-seo
       - name: "Canada report is Canadian (deep check of the rendered PDF text, no Australian content, Australia unchanged, English-only in every locale)"
         run: npm run test:canada-report
       - name: Target visa field, DISABLED mode, engine carries the target (en / tr / zh-Hans)

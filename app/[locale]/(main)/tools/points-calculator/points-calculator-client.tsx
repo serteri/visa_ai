@@ -384,7 +384,7 @@ function ScoreRow({
 
 // ─── Main component ────────────────────────────────────────────────────────────
 
-export function PointsCalculatorClient({ locale, hideHeader }: { locale: string; hideHeader?: boolean }) {
+export function PointsCalculatorClient({ locale, hideHeader, header }: { locale: string; hideHeader?: boolean; header?: ReactNode }) {
   const { t } = useTranslation();
   const { data: session } = useSession();
   const isSignedIn = !!session?.user;
@@ -475,7 +475,8 @@ export function PointsCalculatorClient({ locale, hideHeader }: { locale: string;
 
       <div className="mx-auto w-full max-w-6xl px-4 sm:px-6 lg:px-8">
         {/* Page header */}
-        {!hideHeader && (
+        {!hideHeader && header}
+        {!hideHeader && !header && (
           <div className="mb-10 text-center">
             <span className="inline-block rounded-full border border-[#53917E]/30 bg-[#53917E]/10 px-4 py-1 text-xs font-semibold uppercase tracking-widest text-[#53917E]">
               {t("pc.header.badge")}

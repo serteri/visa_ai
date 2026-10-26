@@ -78,7 +78,7 @@ export function LandingHeader({ locale }: LandingHeaderProps) {
 
             <DropdownMenu label={tx("Araçlar", "Tools", "工具")}>
               <DropdownLink href="/tools/anzsco-finder" locale={locale}>{tx("Meslek Ara", "Occupation Search", "职业搜索")}</DropdownLink>
-              <DropdownLink href="/tools/points-calculator" locale={locale}>{tx("Puan Hesapla (AUS)", "Points Calculator (AUS)", "积分计算器")}</DropdownLink>
+              <DropdownLink href="/tools/points-calculator/australia" locale={locale}>{tx("Puan Hesapla (AUS)", "Points Calculator (AUS)", "积分计算器")}</DropdownLink>
               <DropdownLink href="/tools/skills-assessment" locale={locale}>{tx("Beceri Değerlendirme", "Skills Assessment", "技能评估")}</DropdownLink>
               <DropdownLink href="/ai-visa-match" locale={locale}>AI Visa Match ⚡</DropdownLink>
             </DropdownMenu>
