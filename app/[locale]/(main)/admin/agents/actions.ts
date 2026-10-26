@@ -1,6 +1,6 @@
 "use server";
 
-import { revalidatePath } from "next/cache";
+import { revalidateAdminViews } from "@/lib/cache/revalidate-admin";
 
 import { prisma } from "@/lib/prisma";
 import { isAdminAuthenticated } from "@/lib/admin-auth";
@@ -28,7 +28,7 @@ export async function approveAgentLegacy(agentId: string): Promise<void> {
     data: { approvalStatus: "APPROVED" },
   });
 
-  revalidatePath("/", "layout");
+  await revalidateAdminViews();
 }
 
 export async function rejectAgentLegacy(agentId: string): Promise<void> {
@@ -40,5 +40,5 @@ export async function rejectAgentLegacy(agentId: string): Promise<void> {
     data: { approvalStatus: "REJECTED" },
   });
 
-  revalidatePath("/", "layout");
+  await revalidateAdminViews();
 }

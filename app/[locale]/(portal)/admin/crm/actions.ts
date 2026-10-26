@@ -5,7 +5,7 @@ import { z } from "zod";
 import { prisma } from "@/lib/prisma";
 import { AGENT_GUIDE_POOL_ENABLED, canAgentSeeClient, getApprovedAgent } from "@/lib/crm/agent-access";
 import { PDF_LEAD_SOURCES } from "@/lib/crm/pdf-lead-sources";
-import { revalidatePath } from "next/cache";
+import { revalidateAdminViews } from "@/lib/cache/revalidate-admin";
 import { redirect } from "next/navigation";
 import { sendAgentAssignedEmail } from "@/lib/email/agent-notifications";
 import { getCurrentUser } from "@/lib/auth/rbac";
@@ -38,7 +38,7 @@ export async function assignLeadToAgent(leadId: string, agentId: string, locale:
     select: { isUnlocked: true, paymentStatus: true, source: true },
   });
 
-  revalidatePath("/", "layout");
+  await revalidateAdminViews();
 
   // Notification is best-effort, never carries client details, and is not sent for a full-check report that has not been paid for.
   const unpaidReport = lead.source === "full_check" && !(lead.isUnlocked && lead.paymentStatus === "paid");
@@ -65,7 +65,7 @@ export async function approveAgentAction(agentId: string): Promise<void> {
     data: { approvalStatus: "APPROVED" },
   });
 
-  revalidatePath("/", "layout");
+  await revalidateAdminViews();
 }
 
 /** Rejects a self-registered agent -- keeps their content locked behind
@@ -79,7 +79,7 @@ export async function rejectAgentAction(agentId: string): Promise<void> {
     data: { approvalStatus: "REJECTED" },
   });
 
-  revalidatePath("/", "layout");
+  await revalidateAdminViews();
 }
 
 export type CreateAgentState = { error?: string };
@@ -145,7 +145,7 @@ export async function createAgentAction(
     },
   });
 
-  revalidatePath("/", "layout");
+  await revalidateAdminViews();
   // redirect() throws internally -- must not be wrapped in a try/catch that
   // could swallow it. Ends the action; the client never sees a returned
   // state on the success path.

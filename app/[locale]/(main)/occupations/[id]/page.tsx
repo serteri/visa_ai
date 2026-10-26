@@ -8,7 +8,7 @@ import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Breadcrumbs, jsonLd } from "@/components/seo/breadcrumbs";
 import { FactTables } from "@/components/occupations/fact-tables";
-import { getAdminStateData } from "@/lib/admin-data/loader";
+import { getAdminStateDataForStaticPages } from "@/lib/admin-data/loader";
 import { buildFactRows, ABS_ANZSCO_URL } from "@/lib/occupations/facts";
 import { majorGroupName, majorGroupOf } from "@/lib/occupations/index-data";
 import { OccupationResearch } from "@/components/occupations/occupation-research";
@@ -47,8 +47,9 @@ export function generateStaticParams() {
   );
 }
 
-// Static pages that re-render hourly (and when the admin saves, through the cache tag): the state rows come from the admin state data.
-export const revalidate = 3600;
+// Built at deployment and never regenerated at runtime (no timer, no tag): the state rows are the admin state data as of the build, so a new
+// deployment publishes new state data. A timed revalidate here would regenerate each of the ~2,000 pages (three locales) on traffic, one ISR write each.
+export const revalidate = false;
 
 type PageProps = { params: Promise<{ locale: string; id: string }> };
 
@@ -107,7 +108,7 @@ export default async function OccupationDetailsPage({ params }: PageProps) {
   const c = occupationPageContent(occupation, locale as Locale);
   const text = (en: string, tr: string, zh: string) =>
     researchText(locale, en, tr, zh);
-  const snapshot = await getAdminStateData();
+  const snapshot = await getAdminStateDataForStaticPages();
   const facts = buildFactRows(occupation, c, snapshot);
   const dataVerified = facts.map((f) => f.verified).sort().at(-1) ?? c.lastModified;
   const schema = {

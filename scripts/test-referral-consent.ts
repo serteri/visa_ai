@@ -128,6 +128,12 @@ async function main() {
   // eslint-disable-next-line @typescript-eslint/no-require-imports
   const realCache = require("next/cache");
   require.cache[nextCachePath]!.exports = { ...realCache, revalidatePath: () => undefined, revalidateTag: () => undefined };
+  // The admin actions revalidate through lib/cache/revalidate-admin (it calls revalidatePath); stub it the same way.
+  // eslint-disable-next-line @typescript-eslint/no-require-imports
+  const adminViewsPath = require.resolve("../lib/cache/revalidate-admin");
+  // eslint-disable-next-line @typescript-eslint/no-require-imports
+  require(adminViewsPath);
+  require.cache[adminViewsPath]!.exports = { revalidateAdminViews: async () => undefined };
   const flush = () => new Promise((r) => setTimeout(r, 80));
   const { NextRequest } = await import("next/server");
   const session = (id: string | null) => (id ? setNextAuthSession({ user: { id, email: USERS[id].email, role: USERS[id].role, approvalStatus: USERS[id].approvalStatus } } as never) : signOutAll());

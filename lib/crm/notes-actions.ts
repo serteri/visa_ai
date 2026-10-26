@@ -1,6 +1,6 @@
 "use server";
 
-import { revalidatePath } from "next/cache";
+import { revalidateAdminViews } from "@/lib/cache/revalidate-admin";
 
 import { prisma } from "@/lib/prisma";
 import { getCurrentUser } from "@/lib/auth/rbac";
@@ -40,7 +40,7 @@ export async function addLeadNoteAction(leadId: string, content: string): Promis
 
   // Locale-agnostic layout revalidate -- both /agent/lead/[id] and
   // /admin/crm/lead/[id] read this same lead's notes.
-  revalidatePath("/", "layout");
+  await revalidateAdminViews();
 
   return { note };
 }

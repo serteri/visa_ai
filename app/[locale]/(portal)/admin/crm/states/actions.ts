@@ -1,6 +1,7 @@
 "use server";
 
 import { revalidatePath, updateTag } from "next/cache";
+import { revalidateAdminViews } from "@/lib/cache/revalidate-admin";
 
 import { ADMIN_STATE_DATA_TAG } from "@/lib/admin-data/loader";
 import { markStateVerified, restoreAuditField, saveStateProgram } from "@/lib/admin-data/service";
@@ -77,7 +78,7 @@ export async function draftTranslationAction(stateCode: string, fieldPath: strin
 export async function runMonitorNowAction(): Promise<void> {
   await requireAdminActor();
   await runStateMonitor({ trigger: "manual" });
-  revalidatePath("/", "layout");
+  await revalidateAdminViews();
 }
 
 /** Marks a state's detected change as applied (admin only), after the state's data was updated. Report data is not touched. */
@@ -86,7 +87,7 @@ export async function markStateAppliedAction(formData: FormData): Promise<void> 
   const state = String(formData.get("state") ?? "");
   if (!(STATE_CODES as readonly string[]).includes(state)) throw new Error("Unknown state");
   await prismaMonitorStore.markApplied(state, new Date());
-  revalidatePath("/", "layout");
+  await revalidateAdminViews();
 }
 
 // ---- Update from official source ---------------------------------------------------------------------------------------------------------------

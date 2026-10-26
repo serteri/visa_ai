@@ -150,7 +150,7 @@ section("Step 4. fact rows (value | source + link | verified date), registration
   t("an ACS occupation has no registration row", acs.length > 0 && acs.every((o) => !buildFactRows(o, occupationPageContent(o, "en"), snap).some((r) => r.group === "registration")));
   const page = readFileSync("app/[locale]/(main)/occupations/[id]/page.tsx", "utf8");
   t("the page shows ABS attribution for the ANZSCO descriptions, and the Occupation + WebPage JSON-LD with dateModified", /data-abs-attribution/.test(page) && /"@type": "Occupation"/.test(page) && /dateModified: dataVerified/.test(page) && /<Breadcrumbs /.test(page));
-  t("the page reads the state data from the admin snapshot and re-renders hourly", /getAdminStateData\(\)/.test(page) && /export const revalidate = 3600/.test(page));
+  t("the page reads the state data from the admin snapshot as of the build and is never regenerated at runtime (no timer; scripts/test-isr-config.ts)", /getAdminStateDataForStaticPages\(\)/.test(page) && /export const revalidate = false/.test(page));
   const layout2 = readFileSync("app/[locale]/(main)/layout.tsx", "utf8");
   t("the locale layout no longer emits a WebApplication or an Offer / price", !/WebApplication/.test(layout2) && !/"Offer"/.test(layout2) && !/priceCurrency/.test(layout2));
   t("the old hard-coded state table is gone from the page (no direct stateRows rendering)", !/c\.stateRows\.map/.test(page));
@@ -244,8 +244,8 @@ section("Step 7. subclass 189 / 190 / 491 information pages: sourced facts, stat
   const patched = buildVisaFactRows("190", "en", withPrograms(snap, { [code]: { lastVerifiedAt: "2031-03-04T00:00:00.000Z", programYear: "2099-00" } })).find((r) => r.id === base.id)!;
   t("a state row follows the admin snapshot (verified date and program year change with it)", patched.verified === "2031-03-04" && /2099-00/.test(patched.value) && base.verified !== "2031-03-04");
   const visaPage = readFileSync("app/[locale]/(main)/visas/[subclass]/page.tsx", "utf8");
-  t("the page renders the fact tables above the older cards, with breadcrumbs, JSON-LD and an hourly re-render", /data-visa-facts/.test(visaPage) && (visaPage.match(/<FactTable /g) ?? []).length >= 2 && /<Breadcrumbs /.test(visaPage) && /dateModified/.test(visaPage) && /export const revalidate = 3600/.test(visaPage));
-  t("state facts come only from getAdminStateData (no hard-coded state table)", /getAdminStateData\(\)/.test(visaPage));
+  t("the page renders the fact tables above the older cards, with breadcrumbs, JSON-LD and no runtime regeneration", /data-visa-facts/.test(visaPage) && (visaPage.match(/<FactTable /g) ?? []).length >= 2 && /<Breadcrumbs /.test(visaPage) && /dateModified/.test(visaPage) && /export const revalidate = false/.test(visaPage));
+  t("state facts come only from the admin state data snapshot (no hard-coded state table)", /getAdminStateDataForStaticPages\(\)/.test(visaPage));
 }
 
 section("Step 8. cost calculator: published visa application charges, each with source and verified date");

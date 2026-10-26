@@ -5,8 +5,6 @@ import { Metadata } from "next"
 import { getCachedGuideDownloadStats } from "@/lib/cache/public-read-models"
 import { publicUrl } from "@/lib/seo/urls"
 
-export const revalidate = 3600
-
 export async function generateMetadata({
   params: { locale },
 }: {

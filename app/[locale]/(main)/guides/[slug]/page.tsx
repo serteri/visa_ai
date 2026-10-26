@@ -6,6 +6,7 @@ import { ArrowLeft } from "lucide-react";
 import guides from "@/src/data/guides.json";
 import { InlineLeadCta } from "../InlineLeadCta";
 import { FinalGuideCta } from "../FinalGuideCta";
+import { activeLocales } from "@/lib/i18n/config";
 import { pageAlternates, publicPath, publicUrl } from "@/lib/seo/urls";
 import { ResearchGuideView } from "@/components/guides/research-guide-view";
 import { findResearchGuide, RESEARCH_GUIDES } from "@/lib/guides/research-guides";
@@ -107,8 +108,10 @@ function ArticleBlock({ block, locale }: { block: string; locale: string }) {
   return <p className="mt-5 text-lg leading-8 text-slate-700">{renderInline(block, locale)}</p>;
 }
 
+// Every locale x guide, so the pages are built at deployment instead of being generated on the first request (a runtime ISR write each).
 export async function generateStaticParams() {
-  return [...guides.map((guide) => ({ slug: guide.slug })), ...RESEARCH_GUIDES.map((guide) => ({ slug: guide.slug }))];
+  const slugs = [...guides.map((guide) => guide.slug), ...RESEARCH_GUIDES.map((guide) => guide.slug)];
+  return activeLocales.flatMap((locale) => slugs.map((slug) => ({ locale, slug })));
 }
 
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {

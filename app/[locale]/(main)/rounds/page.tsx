@@ -7,8 +7,6 @@ import { getTranslations, t } from "@/lib/i18n/get-translations";
 import { isValidLocale } from "@/lib/i18n/config";
 import { pageAlternates } from "@/lib/seo/urls";
 
-export const revalidate = 300;
-
 export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }): Promise<Metadata> {
   const { locale } = await params;
   return { alternates: pageAlternates(locale, "/rounds") };

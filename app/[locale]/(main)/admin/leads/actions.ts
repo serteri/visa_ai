@@ -1,7 +1,7 @@
 "use server";
 
 import { redirect } from "next/navigation";
-import { revalidatePath } from "next/cache";
+import { revalidateAdminViews } from "@/lib/cache/revalidate-admin";
 
 import {
   clearAdminSession,
@@ -32,7 +32,7 @@ export async function assignLeadToAgentLegacy(leadId: string, agentId: string): 
   if (!agent) throw new Error("Agent not found or not approved");
 
   await prisma.userReport.update({ where: { id: leadId }, data: { agentId } });
-  revalidatePath("/", "layout");
+  await revalidateAdminViews();
 }
 
 // Only accept a same-origin, locale-admin-scoped relative path (set as a

@@ -8,8 +8,6 @@ import occupationPointsCutoff from "@/src/data/occupation-points-cutoff.json";
 import { getCachedInvitationRounds } from "@/lib/cache/public-read-models";
 import { normaliseDbRounds, type RoundView } from "@/lib/invitation-rounds/normalise";
 
-export const revalidate = 3600;
-
 const BASE_URL = SITE_ORIGIN;
 
 type PageProps = { params: Promise<{ locale: string }> };

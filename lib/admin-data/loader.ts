@@ -27,6 +27,22 @@ async function loadFromDb(): Promise<AdminStateData> {
 
 const cached = unstable_cache(loadFromDb, ["admin-state-data"], { tags: [ADMIN_STATE_DATA_TAG], revalidate: 60 });
 
+/**
+ * The snapshot for statically generated public pages (the occupation and visa pages). It is read once per process, directly from the database, outside
+ * unstable_cache: a cache entry with `revalidate` (or a tag) would make every page that reads it re-render on that timer and on every admin save, one ISR
+ * write per page. The pages are built at deployment, so a new deployment is what publishes new state data to them. Reading never throws (the seed is the
+ * fallback, as in getAdminStateData); a failure is logged because the pages then keep the seed until the next deployment.
+ */
+let staticPagesSnapshot: Promise<AdminStateData> | null = null;
+export function getAdminStateDataForStaticPages(): Promise<AdminStateData> {
+  if (process.env.ADMIN_DATA_MODE === "seed" || !process.env.DATABASE_URL) return Promise.resolve(seedStateData());
+  staticPagesSnapshot ??= loadFromDb().catch((dbErr) => {
+    console.error("[admin-data] static pages: could not read state programs; using the bundled seed", dbErr instanceof Error ? dbErr.message : dbErr);
+    return seedStateData();
+  });
+  return staticPagesSnapshot;
+}
+
 export async function getAdminStateData(): Promise<AdminStateData> {
   // ADMIN_DATA_MODE=seed: never read the database (the test bootstrap sets it; Prisma loads .env by itself, so an unset DATABASE_URL is not enough).
   if (process.env.ADMIN_DATA_MODE === "seed" || !process.env.DATABASE_URL) return seedStateData();

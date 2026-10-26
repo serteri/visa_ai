@@ -8,13 +8,13 @@ import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { VisaPdfDownloadCard } from "@/components/visa-pdf-download-card";
 import { getTranslations } from "@/lib/i18n/get-translations";
-import type { Locale } from "@/lib/i18n/config";
+import { activeLocales, type Locale } from "@/lib/i18n/config";
 import visaDetails from "@/src/data/visa-details.json";
 import subclass186Raw from "@/src/data/visas/subclass-186.json";
 import { ResearchLinks } from "@/components/research-links";
 import { Breadcrumbs, jsonLd } from "@/components/seo/breadcrumbs";
 import { FactTable } from "@/components/occupations/fact-tables";
-import { getAdminStateData } from "@/lib/admin-data/loader";
+import { getAdminStateDataForStaticPages } from "@/lib/admin-data/loader";
 import { buildVisaFactRows, isFactSubclass } from "@/lib/visas/facts";
 import { researchLinks, researchText, type ResearchLink } from "@/lib/marketing/research-journey";
 import { publicPath } from "@/lib/seo/urls";
@@ -119,8 +119,8 @@ const VISA_DETAILS: VisaDetail[] = [
 const BASE_URL = SITE_ORIGIN;
 
 export const dynamic = "force-static";
-// Static, re-rendered hourly (and when the admin saves, through the cache tag): the 190 and 491 pages read the state data from the admin snapshot.
-export const revalidate = 3600;
+// Built at deployment, never regenerated at runtime: the 190 and 491 pages read the admin state data as of the build, so a new deployment publishes new state data.
+export const revalidate = false;
 
 const VISA_SUBCLASSES = ["189", "190", "491", "482", "485", "500", "820", "801", "canada-express-entry", "186_direct_entry", "186_labour_agreement", "186_trt"] as const;
 
@@ -274,8 +274,9 @@ function getMinPointsLabel(translations: Record<string, unknown>, minPoints: num
   return String(minPoints);
 }
 
+// Every locale x subclass, so the pages are built at deployment instead of being generated on the first request (a runtime ISR write each).
 export function generateStaticParams() {
-  return VISA_SUBCLASSES.map((subclass) => ({ subclass }));
+  return activeLocales.flatMap((locale) => VISA_SUBCLASSES.map((subclass) => ({ locale, subclass })));
 }
 
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
@@ -371,7 +372,7 @@ export default async function VisaSubclassPage({ params }: PageProps) {
   const minimumScoreLabel = t(translations, "visas.minimumScoreLabel", "Minimum Score");
 
   const factSubclass = isFactSubclass(normalizedSubclass) ? normalizedSubclass : null;
-  const snapshot = factSubclass ? await getAdminStateData() : null;
+  const snapshot = factSubclass ? await getAdminStateDataForStaticPages() : null;
   const allFacts = factSubclass && snapshot ? buildVisaFactRows(factSubclass, locale, snapshot) : [];
   const visaFacts = allFacts.filter((r) => r.group === "visa");
   const stateFacts = allFacts.filter((r) => r.group === "states");
