@@ -141,6 +141,10 @@ jobs:
         run: npm run test:points-calculator-seo
       - name: ISR config (no timed page regeneration, build-time occupation / visa / guide pages in three locales, no site-wide revalidatePath)
         run: npm run test:isr-config
+      - name: Analytics privacy (private / token URLs never reach GA4 or Meta, production-only loading, consent, QA mode, funnel events)
+        run: npm run test:analytics-privacy
+      - name: Analytics purchase (verified Stripe payment only, repeats collapsed, no identifiers sent)
+        run: npm run test:analytics-purchase
       - name: "Canada report is Canadian (deep check of the rendered PDF text, no Australian content, Australia unchanged, English-only in every locale)"
         run: npm run test:canada-report
       - name: Target visa field, DISABLED mode, engine carries the target (en / tr / zh-Hans)

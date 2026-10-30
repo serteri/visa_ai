@@ -6,6 +6,7 @@ import Link from "next/link";
 import { useLanguage, useTranslation } from "@/contexts/language-context";
 import { PdfDownloadModal } from "@/components/PdfDownloadModal";
 import { publicPath } from "@/lib/seo/urls";
+import { ConsentSettingsLink } from "@/components/analytics/consent-banner";
 
 export function GlobalDisclaimerFooter() {
   const { t } = useTranslation();
@@ -21,6 +22,9 @@ export function GlobalDisclaimerFooter() {
       >
         {t("footer.contact")}
       </Link>
+      <div className="mt-1">
+        <ConsentSettingsLink locale={language} />
+      </div>
 
       {/* Official Resources — opens the lead-capture modal; the PDF is
           emailed after the form is submitted, not linked directly. */}

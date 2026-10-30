@@ -23,6 +23,7 @@ import { publicPath } from "@/lib/seo/urls";
 import { DOCUMENT_IDS, FORM_TEXT, LEAD_MAGNETS, pick } from "@/lib/lead-magnets";
 import { validateLeadFields, type LeadFieldErrors } from "@/lib/lead-magnet-validation";
 import { submitLead } from "@/lib/lead-magnet-client";
+import { trackEvent } from "@/lib/analytics/events";
 import { LeadMagnetResult } from "@/components/lead-magnet-result";
 
 type FieldErrors = LeadFieldErrors;
@@ -137,11 +138,8 @@ export function LeadMagnetForm({
 
     if (outcome.kind === "sent" || outcome.kind === "not_delivered") {
       setResult(outcome);
-      if (outcome.kind === "sent" && isInline && typeof window !== "undefined") {
-        const anyWindow = window as any;
-        anyWindow.dataLayer = anyWindow.dataLayer || [];
-        anyWindow.dataLayer.push({ event: "lead_magnet_inline_success", form_location: "the_end_of_hope_and_wait_article", document_requested: documentId });
-      }
+      // The backend accepted the lead (the lead is stored whether or not the email went out): only now is a success counted. Fixed vocabulary, no form values.
+      trackEvent("lead_magnet_success", { document: slug, locale });
       if (outcome.kind === "sent") onSuccess?.();
       return;
     }

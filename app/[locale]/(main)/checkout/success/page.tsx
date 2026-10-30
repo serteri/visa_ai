@@ -1,5 +1,6 @@
 import { getStripeClient } from "@/lib/stripe";
 import { reportAccessToken, reportPdfPath } from "@/lib/reports/report-access";
+import { verifiedPurchase, type StripeSessionLike } from "@/lib/analytics/purchase";
 
 import { CheckoutSuccessClient } from "./success-client";
 
@@ -30,5 +31,13 @@ async function verifiedDownloadHref(sessionId: string | undefined, reportId: str
 
 export default async function CheckoutSuccessPage({ searchParams }: Props) {
   const { session_id, reportId } = await searchParams;
-  return <CheckoutSuccessClient downloadHref={await verifiedDownloadHref(session_id?.trim(), reportId?.trim())} />;
+  const sessionId = session_id?.trim();
+  // The purchase sent to analytics comes only from the session Stripe says was paid (lib/analytics/purchase.ts), never from this URL.
+  const [downloadHref, purchase] = await Promise.all([
+    verifiedDownloadHref(sessionId, reportId?.trim()),
+    process.env.STRIPE_SECRET_KEY
+      ? verifiedPurchase(sessionId, (id) => getStripeClient().checkout.sessions.retrieve(id) as unknown as Promise<StripeSessionLike>)
+      : null,
+  ]);
+  return <CheckoutSuccessClient downloadHref={downloadHref} purchase={purchase} />;
 }

@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { publicPath } from "@/lib/seo/urls";
+import { ConsentSettingsLink } from "@/components/analytics/consent-banner";
 
 interface LandingFooterProps {
   locale: string;
@@ -135,6 +136,7 @@ export function LandingFooter({ locale }: LandingFooterProps) {
                   {link.label}
                 </Link>
               ))}
+              <ConsentSettingsLink locale={locale} className="text-xs text-[var(--cf-muted)]/80 underline underline-offset-2 transition-colors hover:text-[var(--cf-accent)]" />
             </div>
           </div>
         </div>

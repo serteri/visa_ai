@@ -1,9 +1,10 @@
 "use client";
 
-import { useReducer, useMemo, useState } from "react";
+import { useEffect, useReducer, useMemo, useRef, useState } from "react";
 import { Info, Check, Save } from "lucide-react";
 import { useSession } from "next-auth/react";
 import { useTranslation } from "@/contexts/language-context";
+import { trackEvent } from "@/lib/analytics/events";
 import { calculateCanadaCRS } from "@/lib/points/calculate-canada-crs";
 import type { CanadaCRSInput, CanadaAgeBracket, CanadaEducationLevel, CLBLevel, SecondLanguageCLBBand, CanadianWorkExperienceYears } from "@/lib/points/canada-types";
 
@@ -295,6 +296,23 @@ export function CanadaPointsCalculatorClient({ locale }: { locale: string }) {
   const [form, dispatch] = useReducer(reducer, INIT);
 
   const calc = useMemo(() => calculateCanadaCRS(form), [form]);
+
+  // Analytics (no personal data, no answers or score): started on the first answer, completed once the core factors are answered.
+  const startedRef = useRef(false);
+  const completedRef = useRef(false);
+  useEffect(() => {
+    const speaking = form.firstLanguageAbilityScores;
+    const started = form.age !== INIT.age || form.education !== INIT.education || speaking.speaking !== "not_selected" || speaking.listening !== "not_selected" || speaking.reading !== "not_selected" || speaking.writing !== "not_selected";
+    if (started && !startedRef.current) {
+      startedRef.current = true;
+      trackEvent("calculator_start", { calculator: "canada_crs", locale });
+    }
+    const complete = form.age !== "not_selected" && form.education !== "not_selected" && Object.values(speaking).every((v) => v !== "not_selected");
+    if (complete && !completedRef.current) {
+      completedRef.current = true;
+      trackEvent("calculator_complete", { calculator: "canada_crs", locale });
+    }
+  }, [form, locale]);
   const isTr = locale === "tr";
   const isZh = locale === "zh-Hans";
 

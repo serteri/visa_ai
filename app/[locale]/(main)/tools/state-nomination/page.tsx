@@ -1,4 +1,5 @@
 import { RelatedGuidesNote } from "@/components/guides/related-guides-note";
+import { ToolUseTracker } from "@/components/analytics/tool-use-tracker";
 import { pageAlternates, publicUrl, SITE_ORIGIN } from "@/lib/seo/urls";
 import type { Metadata } from "next";
 import { StateNominationClient } from "./StateNominationClient";
@@ -38,6 +39,7 @@ export default async function StateNominationPage({ params }: PageProps) {
   const schemaJson = buildStateNominationSchema(locale);
   return (
     <>
+      <ToolUseTracker tool="state_nomination" locale={locale} />
       <StateNominationClient locale={locale} />
       <SeoContentSection {...seoContent} schemaJson={schemaJson} />
       <RelatedGuidesNote locale={locale} slugs={["state-occupation-list-vs-nomination", "skills-assessment-vs-visa-eligibility"]} lead="Related research:" />

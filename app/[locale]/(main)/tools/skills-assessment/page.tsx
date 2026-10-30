@@ -1,4 +1,5 @@
 import { RelatedGuidesNote } from "@/components/guides/related-guides-note";
+import { ToolUseTracker } from "@/components/analytics/tool-use-tracker";
 import { pageAlternates, publicUrl, SITE_ORIGIN } from "@/lib/seo/urls";
 import type { Metadata } from "next";
 import { SkillsAssessmentClient } from "./SkillsAssessmentClient";
@@ -37,6 +38,7 @@ export default async function SkillsAssessmentPage({ params, searchParams }: Pag
   const schemaJson = buildSkillsAssessmentSchema(locale);
   return (
     <>
+      <ToolUseTracker tool="skills_assessment_finder" locale={locale} />
       <SkillsAssessmentClient key={q ?? ""} locale={locale} initialQuery={q} />
       <SeoContentSection {...seoContent} schemaJson={schemaJson} />
       <RelatedGuidesNote locale={locale} slugs={["skills-assessment-vs-visa-eligibility", "tra-msa-vs-osap", "engineers-australia-accredited-vs-cdr"]} lead="Related research on how a skills assessment differs from the other steps:" />

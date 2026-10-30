@@ -1,6 +1,6 @@
 /**
- * Product analytics events (Google Analytics, only when NEXT_PUBLIC_GA_ID is set -- the layout mounts <GoogleAnalytics>
- * conditionally; without it gtag never exists and events are dropped after 10 s). No personal data: only a fixed set of non-identifying
+ * Product analytics events (Google Analytics). gtag only exists after components/analytics/analytics-provider.tsx loaded it (production deployment on a
+ * production host, no QA session, analytics consent given); before that an event waits at most 10 s and is then dropped. No personal data: only a fixed set of non-identifying
  * parameters (occupation code, locale, visa subclass, link host) is ever sent -- never an email, name, input value,
  * points total or free text.
  */
@@ -37,10 +37,12 @@ export type AnalyticsEventName =
   | "occupation_pdf_to_search_click"
   | "official_occupation_list_click"
   | "skills_assessment_click_from_occupations"
-  | "assessment_click_from_occupations";
+  | "assessment_click_from_occupations"
+  | "tool_use"
+  | "lead_magnet_success";
 
 /** The only parameters that may be sent, and the only value types. */
-const ALLOWED_PARAMS = ["occupation_code", "locale", "subclass", "calculator", "link_host", "page_type", "destination", "source_page_type", "source_page_id", "continuation_stage", "entry_source", "product_type", "source_type", "source_slug", "destination_type", "destination_slug", "country", "interaction_type"] as const;
+const ALLOWED_PARAMS = ["occupation_code", "locale", "subclass", "calculator", "link_host", "page_type", "destination", "source_page_type", "source_page_id", "continuation_stage", "entry_source", "product_type", "source_type", "source_slug", "destination_type", "destination_slug", "country", "interaction_type", "tool", "document"] as const;
 type ParamKey = (typeof ALLOWED_PARAMS)[number];
 export type AnalyticsParams = Partial<Record<ParamKey, string>>;
 
@@ -52,7 +54,10 @@ export function sanitizeParams(params: Record<string, unknown> = {}): AnalyticsP
     if ((key === "occupation_code" || key === "source_page_id") && !/^\d{6}$/.test(v)) continue;
     if (key === "locale" && !["en", "tr", "zh-Hans"].includes(v)) continue;
     if (key === "subclass" && !/^\d{3}$/.test(v)) continue;
-    if (key === "calculator" && v !== "australia_points") continue;
+    if (key === "calculator" && v !== "australia_points" && v !== "canada_crs") continue;
+    if (key === "tool" && !["anzsco_finder", "skills_assessment_finder", "state_nomination", "cost_calculator"].includes(v)) continue;
+    // A lead-magnet document id: lower-case words, digits and hyphens (csol-2026), never typed text.
+    if (key === "document" && !/^[a-z0-9]+(?:-[a-z0-9]+){0,4}$/.test(v)) continue;
     if (key === "page_type" && !["occupation", "visa", "tool", "visa_comparison", "points_calculator"].includes(v)) continue;
     if (key === "link_host" && !/^(?:[a-z0-9-]+\.)+[a-z]{2,}$/i.test(v)) continue;
     if (key === "source_page_type" && !["occupation", "visa", "tool", "home", "comparison", "points", "guide", "canada", "other"].includes(v)) continue;
@@ -77,8 +82,11 @@ const pending: PendingEvent[] = [];
 let waiter: ReturnType<typeof setInterval> | null = null;
 
 function gaDisabled(): boolean {
-  const gaId = process.env.NEXT_PUBLIC_GA_ID?.trim();
-  return Boolean(gaId && (window as unknown as Record<string, unknown>)[`ga-disable-${gaId}`]);
+  const w = window as unknown as Record<string, unknown> & { __lv?: { blocked?: boolean; gaId?: string | null } };
+  // The provider (components/analytics/analytics-provider.tsx) sets `blocked` for private pages, QA sessions and withdrawn consent.
+  if (w.__lv?.blocked) return true;
+  const gaId = w.__lv?.gaId || process.env.NEXT_PUBLIC_GA_ID?.trim();
+  return Boolean(gaId && w[`ga-disable-${gaId}`]);
 }
 
 /** Sends what is queued when gtag exists. Returns false while gtag.js has not been initialised yet. */

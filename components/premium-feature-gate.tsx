@@ -101,6 +101,8 @@ export function PremiumFeatureGate({
     // swallow the NEXT_REDIRECT it throws), so it hands the URL back in
     // state and this effect forces the navigation on the client instead.
     if (unlockState.status === "redirect" && unlockState.redirectUrl) {
+      // The server created the Stripe Checkout session: only now is a checkout initiated (not when the form was merely submitted).
+      trackEvent("checkout_initiated", { product_type: "premium", locale });
       window.location.href = unlockState.redirectUrl;
     }
   }, [locale, onUnlocked, reportId, unlockState]);
@@ -116,16 +118,6 @@ export function PremiumFeatureGate({
     }
     setTermsError(false);
 
-    // Fires right as the form action (unlockAction -> /api/checkout ->
-    // Stripe redirect) is about to run -- the earliest point at which the
-    // user has actually committed to checkout, as opposed to just opening
-    // the modal (setShowModal(true) above, which many visitors abandon).
-    if (paidCheckoutEnabled) {
-      trackEvent("checkout_initiated", {
-        product_type: "premium",
-        locale,
-      });
-    }
   }
 
   const termsLabel = isTr ? (

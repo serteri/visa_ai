@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { ToolUseTracker } from "@/components/analytics/tool-use-tracker";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 
@@ -48,6 +49,7 @@ export default async function CostCalculatorPage({ params }: PageProps) {
   const excluded = Object.keys(EXCLUDED_SUBCLASSES).join(", ");
   return (
     <main className="min-h-screen bg-background pb-16 pt-6">
+      <ToolUseTracker tool="cost_calculator" locale={locale} />
       <section className="mx-auto max-w-5xl space-y-6 px-4 sm:px-6">
         <Breadcrumbs locale={locale} crumbs={crumbs} />
         <div className="rounded-2xl border border-slate-200 bg-card p-6 shadow-sm sm:p-8">

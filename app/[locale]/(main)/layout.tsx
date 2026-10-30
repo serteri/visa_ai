@@ -1,7 +1,6 @@
 import { Suspense } from "react";
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
-import { GoogleAnalytics } from "@next/third-parties/google";
 
 import { LanguageProvider } from "@/contexts/language-context";
 import { ShellHeaderGate, ShellFooterGate } from "@/components/shell-gates";
@@ -9,7 +8,9 @@ import { RefCapture } from "@/components/ref-capture";
 import { OutboundLinkTracker } from "@/components/analytics/outbound-link-tracker";
 import { ResearchContinuationTracker } from "@/components/analytics/research-continuation-tracker";
 import { AssessmentEntryTracker } from "@/components/analytics/assessment-entry-tracker";
-import { AssessmentPrivacyBoundary } from "@/components/analytics/assessment-privacy-boundary";
+import { AnalyticsProvider } from "@/components/analytics/analytics-provider";
+import { ConsentBanner } from "@/components/analytics/consent-banner";
+import { META_PIXEL_ID } from "@/lib/analytics/policy";
 import { Toaster } from "@/components/ui/sonner";
 import { SiteGuide } from "@/components/site-guide/site-guide";
 import { isValidLocale, type Locale } from "@/lib/i18n/config";
@@ -125,6 +126,11 @@ export default async function LocaleLayout({
   const translations = await getTranslations(locale as Locale);
   const showAdmin = process.env.SHOW_ADMIN === "true";
   const gaId = process.env.NEXT_PUBLIC_GA_ID?.trim();
+  // Deployment environment as Vercel reports it for THIS build (not NODE_ENV, which is "production" for Preview builds too). The provider also checks the
+  // hostname in the browser; see lib/analytics/policy.ts. The optional test property is never the production one and is ignored on production hosts.
+  const vercelEnv = process.env.VERCEL_ENV;
+  const testGaId = process.env.NEXT_PUBLIC_GA_TEST_ID?.trim();
+  const testMode = process.env.NEXT_PUBLIC_ANALYTICS_TEST_MODE === "true";
   // A WebSite node only: no Offer / price (the earlier site-wide application schema asserted a price of 0 AUD on every page; the points calculator page keeps its own).
   const siteSchema = {
     "@context": "https://schema.org",
@@ -149,12 +155,13 @@ export default async function LocaleLayout({
       <ShellFooterGate locale={locale} />
       <Toaster />
       <SiteGuide locale={locale} />
-      {gaId ? <Suspense fallback={null}><AssessmentPrivacyBoundary gaId={gaId}>
-        <GoogleAnalytics gaId={gaId} />
-        <OutboundLinkTracker locale={locale} />
-        <ResearchContinuationTracker locale={locale} />
-        <AssessmentEntryTracker locale={locale} />
-      </AssessmentPrivacyBoundary></Suspense> : null}
+      <Suspense fallback={null}>
+        <AnalyticsProvider vercelEnv={vercelEnv} gaId={gaId} pixelId={META_PIXEL_ID} testGaId={testGaId} testMode={testMode} />
+        <ConsentBanner locale={locale} vercelEnv={vercelEnv} gaId={gaId} pixelId={META_PIXEL_ID} testGaId={testGaId} testMode={testMode} />
+      </Suspense>
+      <OutboundLinkTracker locale={locale} />
+      <ResearchContinuationTracker locale={locale} />
+      <AssessmentEntryTracker locale={locale} />
     </LanguageProvider>
   );
 }

@@ -1,0 +1,62 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="robots" content="noindex,nofollow">
+<meta name="referrer" content="no-referrer">
+<title>LogiVisa</title>
+</head>
+<body>
+<!--
+  Isolated frame that sends the Meta Pixel `Purchase` for a purchase the server has verified. The Pixel always reads document.location and
+  document.referrer; the checkout success page URL carries the Stripe session id, so the Pixel must not run there. This frame has a fixed URL without a
+  query string and is embedded with referrerpolicy="no-referrer", so the Pixel sees neither. Same-origin only; marketing consent, a production host and no
+  QA session are required; the payload is validated and used once. The Pixel id must equal META_PIXEL_ID in lib/analytics/policy.ts (a test checks it).
+-->
+<script>
+(function () {
+  var PROD_HOSTS = ["www.logivisa.com", "logivisa.com"];
+  var PIXEL_ID = "1499026238624549";
+  var sent = false;
+
+  function allowed() {
+    try {
+      if (PROD_HOSTS.indexOf(location.hostname) < 0) return false;
+      var c = JSON.parse(localStorage.getItem("lv_consent_v1") || "null");
+      if (!c || c.v !== 1 || c.marketing !== true) return false;
+      if (/(?:^|;\s*)lv_qa=v1\.\d{10,13}(?:;|$)/.test(document.cookie)) return false;
+      return true;
+    } catch (e) {
+      return false;
+    }
+  }
+
+  function loadPixel() {
+    var f = window, b = document;
+    if (f.fbq) return;
+    var n = f.fbq = function () { n.callMethod ? n.callMethod.apply(n, arguments) : n.queue.push(arguments); };
+    if (!f._fbq) f._fbq = n;
+    n.push = n; n.loaded = true; n.version = "2.0"; n.queue = [];
+    n.disablePushState = true;
+    n("set", "autoConfig", false, PIXEL_ID);
+    n("init", PIXEL_ID);
+    var t = b.createElement("script");
+    t.async = true;
+    t.src = "https://connect.facebook.net/en_US/fbevents.js";
+    b.head.appendChild(t);
+  }
+
+  window.addEventListener("message", function (ev) {
+    if (sent || ev.origin !== location.origin || ev.source !== window.parent) return;
+    var p = ev.data && ev.data.lvPurchase;
+    if (!p) return;
+    if (!/^[0-9a-f]{32}$/.test(p.txn) || typeof p.value !== "number" || !(p.value > 0) || p.value >= 100000 || !/^[A-Z]{3}$/.test(p.currency) || !/^[a-z_]{2,30}$/.test(p.product)) return;
+    if (!allowed()) return;
+    sent = true;
+    loadPixel();
+    window.fbq("track", "Purchase", { value: p.value, currency: p.currency, content_type: "product", content_name: p.product }, { eventID: p.txn });
+  });
+})();
+</script>
+</body>
+</html>

@@ -1,41 +1,15 @@
 "use client";
 
-import { useEffect } from "react";
-import { useSearchParams } from "next/navigation";
 import { useParams } from "next/navigation";
 import Link from "next/link";
 
-import { PREMIUM_PRICE_AUD, PRODUCT_PRICE_AUD_CENTS } from "@/lib/pricing";
-
-declare global {
-  interface Window {
-    fbq?: (...args: unknown[]) => void;
-  }
-}
+import { PurchaseTracker } from "@/components/analytics/purchase-tracker";
+import type { PurchasePayload } from "@/lib/analytics/purchase-client";
 
 /** The success page's UI. `downloadHref` is issued by the server page only after it has verified the Stripe session. */
-export function CheckoutSuccessClient({ downloadHref }: { downloadHref: string | null }) {
+export function CheckoutSuccessClient({ downloadHref, purchase }: { downloadHref: string | null; purchase: PurchasePayload | null }) {
   const params = useParams();
-  const searchParams = useSearchParams();
   const locale = (params.locale as string) ?? "en";
-  const product = searchParams.get("product");
-
-  useEffect(() => {
-    if (typeof window !== "undefined" && typeof window.fbq === "function") {
-      // The actual GST-inclusive AUD total Stripe charged (lib/pricing.ts):
-      // the readiness report ("premium") or a PDF guide (pdf_book,
-      // pdf_book_global). This value must match what was actually charged
-      // for ad-platform ROAS to be meaningful.
-      const isPdfBook = product === "pdf_book" || product === "pdf_book_global";
-      const value = isPdfBook ? PRODUCT_PRICE_AUD_CENTS[product] / 100 : PREMIUM_PRICE_AUD;
-      window.fbq("track", "Purchase", {
-        value,
-        currency: "AUD",
-        content_type: "product",
-        content_name: product ?? "premium",
-      });
-    }
-  }, [product]);
 
   const isTr = locale === "tr";
   const isZh = locale === "zh-Hans";
@@ -43,6 +17,7 @@ export function CheckoutSuccessClient({ downloadHref }: { downloadHref: string |
 
   return (
     <main className="flex min-h-screen flex-col items-center justify-center bg-slate-50 px-4 pb-24 dark:bg-zinc-950">
+      <PurchaseTracker purchase={purchase} />
       <div className="mx-auto max-w-md rounded-2xl border border-emerald-200 bg-white p-10 text-center shadow-xl dark:border-emerald-800/40 dark:bg-zinc-900">
         <div className="mx-auto mb-6 flex h-16 w-16 items-center justify-center rounded-full bg-emerald-100 text-4xl dark:bg-emerald-900/30">
           ✅

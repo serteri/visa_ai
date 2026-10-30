@@ -1,4 +1,5 @@
 import { pageAlternates, publicUrl, SITE_ORIGIN } from "@/lib/seo/urls";
+import { ToolUseTracker } from "@/components/analytics/tool-use-tracker";
 import type { Metadata } from "next";
 
 import { RichOccupationLinks } from "@/components/occupations/rich-occupation-links";
@@ -41,6 +42,7 @@ export default async function AnzscoFinderPage({ params, searchParams }: PagePro
   const schemaJson = buildAnzscoSchema(locale);
   return (
     <>
+      <ToolUseTracker tool="anzsco_finder" locale={locale} />
       <AnzscoSearchTool locale={locale} initialQuery={q} />
       <div className="px-4 pb-8">
         <RichOccupationLinks locale={locale} />
