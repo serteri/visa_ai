@@ -28,6 +28,8 @@ export function OccupationPdfEvents({ locale, children }: { locale: string; chil
   const onClick = (e: MouseEvent<HTMLElement>) => {
     const anchor = (e.target as HTMLElement).closest?.("a[data-pdf-event]") as HTMLElement | null;
     if (anchor?.dataset.pdfEvent === "occupation_pdf_to_search_click") trackEvent("occupation_pdf_to_search_click", { locale });
+    // The tool name is one of a fixed vocabulary (sanitizeParams drops anything else); nothing the visitor typed is read.
+    if (anchor?.dataset.pdfEvent === "occupation_pdf_to_tool_click") trackEvent("occupation_pdf_to_tool_click", { locale, tool: anchor.dataset.pdfTool });
   };
 
   return (

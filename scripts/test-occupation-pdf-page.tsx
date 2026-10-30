@@ -167,6 +167,31 @@ async function main() {
   check(/name="phone"/.test(defaultHtml) && /Phone Number \(Optional\)/.test(defaultHtml) && /Your details are used only for this download/.test(defaultHtml) && /Send to My Email/.test(defaultHtml) && !/Send PDF to My Email/.test(defaultHtml), "every other lead form keeps its phone field and wording (the change is opt-in)");
   check(!/phone/i.test(readFileSync("components/occupations/occupation-pdf-events.tsx", "utf8").replace(/\/\*[\s\S]*?\*\//g, "").replace(/\/\/.*/g, "")), "no phone reference exists in the page's analytics");
 
+  console.log("\n7. PDF -> tools conversion: clickable links in the PDF, tool links on the landing page");
+  const pdfRaw = readFileSync(`public${OCCUPATION_PDF.file}`);
+  const { getDocumentProxy } = await import("unpdf");
+  const doc = await getDocumentProxy(new Uint8Array(pdfRaw));
+  const links: { page: number; url: string }[] = [];
+  for (let i = 1; i <= doc.numPages; i++) for (const a of await (await doc.getPage(i)).getAnnotations()) if (a.subtype === "Link" && a.url) links.push({ page: i, url: a.url as string });
+  const want = ["/tools/anzsco-finder", "/tools/skills-assessment", "/tools/visa-comparison"];
+  check(links.length === 3 && links.every((l) => l.page === 1), "the PDF has exactly three link annotations, all on the cover");
+  check(want.every((p) => links.some((l) => l.url.startsWith(`https://www.logivisa.com${p}?`))), "they point at the ANZSCO Finder, the Skills Assessment Finder and the visa comparison (tools, not the homepage)");
+  check(links.every((l) => { const u = new URL(l.url); return u.protocol === "https:" && [...u.searchParams.keys()].every((k) => k.startsWith("utm_")) && u.searchParams.get("utm_source") === "occupation_list_pdf" && !u.hash; }), "every link is HTTPS and carries only utm_* attribution (no identifier)");
+  const sitemapPaths = new Set(buildSitemap().map((e) => new URL(e.url).pathname));
+  check(want.every((p) => sitemapPaths.has(p)), "every link target is a live, sitemapped page");
+  const cover = (await pdfPages(new Uint8Array(pdfRaw)))[0];
+  check(cover.includes("Continue your occupation research online") && /Compiled by LogiVisa on 8 October 2026\. This is not an official or government document\./.test(cover) && /General information only\. Not migration advice/.test(cover), "the cover keeps its date, provenance and general-information disclaimer, and adds the 'Continue your occupation research online' section");
+  const allPages = await pdfPages(new Uint8Array(pdfRaw));
+  const src = JSON.parse(readFileSync("public/skilled-occupation-list.json", "utf8")) as { anzsco_code: string; occupation_en: string }[];
+  const tableText = allPages.slice(1).join(" ").replace(/\s+/g, " ");
+  check(allPages.length === 27 && src.length === OCCUPATION_PDF.entryCount && src.every((r) => tableText.includes(r.anzsco_code)) && /Compiled by LogiVisa on 8 October 2026/.test(cover), "table integrity: 26 table pages, every source ANZSCO code present, 690 entries");
+  check(/pdf-test|noindex/i.test(readFileSync("app/robots.ts", "utf8")) === false && !/australia-skilled-occupation-list/.test(readFileSync("proxy.ts", "utf8")), "the PDF is not noindexed or redirected (robots, proxy)");
+  for (const [loc, pre] of [["en", ""], ["tr", "/tr"], ["zh-Hans", "/zh-Hans"]] as const) {
+    const h = await render(pdf, loc);
+    check(h.includes(`href="${pre}/tools/skills-assessment"`) && h.includes(`href="${pre}/tools/visa-comparison"`) && h.includes(`href="${pre}/occupations"`) && /data-pdf-tool="skills_assessment_finder"/.test(h), `${loc}: the landing page links the occupation index, the Skills Assessment Finder and the visa comparison with the locale prefix`);
+  }
+  check(sanitizeParams({ tool: "visa_comparison", locale: "en" }).tool === "visa_comparison" && sanitizeParams({ tool: "jane@x.com" }).tool === undefined && /occupation_pdf_to_tool_click/.test(evSrc), "occupation_pdf_to_tool_click carries only a fixed tool name");
+
   if (failures) { console.error(`\n❌ ${failures} check(s) failed`); process.exit(1); }
   console.log("\n✅ ALL CHECKS PASSED");
   process.exit(0);

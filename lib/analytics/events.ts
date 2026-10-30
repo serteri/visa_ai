@@ -35,6 +35,7 @@ export type AnalyticsEventName =
   | "occupation_pdf_lead_start"
   | "occupation_pdf_submit"
   | "occupation_pdf_to_search_click"
+  | "occupation_pdf_to_tool_click"
   | "official_occupation_list_click"
   | "skills_assessment_click_from_occupations"
   | "assessment_click_from_occupations"
@@ -55,7 +56,7 @@ export function sanitizeParams(params: Record<string, unknown> = {}): AnalyticsP
     if (key === "locale" && !["en", "tr", "zh-Hans"].includes(v)) continue;
     if (key === "subclass" && !/^\d{3}$/.test(v)) continue;
     if (key === "calculator" && v !== "australia_points" && v !== "canada_crs") continue;
-    if (key === "tool" && !["anzsco_finder", "skills_assessment_finder", "state_nomination", "cost_calculator"].includes(v)) continue;
+    if (key === "tool" && !["anzsco_finder", "skills_assessment_finder", "state_nomination", "cost_calculator", "visa_comparison"].includes(v)) continue;
     // A lead-magnet document id: lower-case words, digits and hyphens (csol-2026), never typed text.
     if (key === "document" && !/^[a-z0-9]+(?:-[a-z0-9]+){0,4}$/.test(v)) continue;
     if (key === "page_type" && !["occupation", "visa", "tool", "visa_comparison", "points_calculator"].includes(v)) continue;

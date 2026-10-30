@@ -12,6 +12,7 @@ import { jsPDF } from "jspdf";
 
 import { notoSansRegularBase64 } from "../lib/readiness/pdf-font";
 import { notoSansBoldBase64 } from "../lib/readiness/pdf-font-bold";
+import { OCCUPATION_PDF } from "../lib/occupations/hub-content";
 
 type SkilledOccupationRow = {
   anzsco_code: string;
@@ -80,6 +81,33 @@ function setText(c: { r: number; g: number; b: number }) {
   doc.setTextColor(c.r, c.g, c.b);
 }
 
+/** Where the PDF points people next: the real tools, as clickable HTTPS links. utm_* is the only attribution carried (no identifier of any person). */
+const PDF_ONLINE_LINKS = [
+  { label: "Search ANZSCO occupations", path: "/tools/anzsco-finder" },
+  { label: "Find the relevant skills assessing authority", path: "/tools/skills-assessment" },
+  { label: "Explore published visa information", path: "/tools/visa-comparison" },
+] as const;
+const pdfLinkUrl = (path: string) => `https://www.logivisa.com${path}?utm_source=occupation_list_pdf&utm_medium=pdf&utm_campaign=occupation_list_2026`;
+
+function drawOnlineLinks(startY: number) {
+  const x = pageW / 2 + 14;
+  doc.setFont(FONT, "bold");
+  doc.setFontSize(10);
+  setText({ r: 248, g: 250, b: 252 });
+  doc.text("Continue your occupation research online", x, startY);
+  PDF_ONLINE_LINKS.forEach((l, i) => {
+    const y0 = startY + 7 + i * 8.5;
+    doc.setFont(FONT, "bold");
+    doc.setFontSize(9);
+    setText({ r: 6, g: 182, b: 212 });
+    doc.textWithLink(l.label, x, y0, { url: pdfLinkUrl(l.path) });
+    doc.setFont(FONT, "normal");
+    doc.setFontSize(7.5);
+    setText({ r: 148, g: 163, b: 184 });
+    doc.text(`logivisa.com${l.path}`, x, y0 + 3.8);
+  });
+}
+
 function drawCover() {
   setFill(NAVY);
   doc.rect(0, 0, pageW, pageH, "F");
@@ -122,7 +150,8 @@ function drawCover() {
   legend.forEach((line, i) => doc.text(line, margin, legendY + i * 6));
 
   // Provenance: this is a compilation, not a government document, and it says where it came from and when.
-  const compiledOn = new Intl.DateTimeFormat("en-AU", { day: "numeric", month: "long", year: "numeric", timeZone: "Australia/Brisbane" }).format(new Date());
+  // The date comes from OCCUPATION_PDF (the date the landing page and its test show), not from the day the script runs, so adding a link block does not re-date the data.
+  const compiledOn = new Intl.DateTimeFormat("en-AU", { day: "numeric", month: "long", year: "numeric", timeZone: "UTC" }).format(new Date(`${OCCUPATION_PDF.compiledOn}T00:00:00Z`));
   doc.setFontSize(9);
   setText({ r: 203, g: 213, b: 225 });
   doc.text(
@@ -134,6 +163,8 @@ function drawCover() {
     legendY + 4 * 6 + 8,
     { maxWidth: contentW }
   );
+  drawOnlineLinks(legendY);
+  doc.setFont(FONT, "normal");
   doc.setFontSize(8);
   setText({ r: 148, g: 163, b: 184 });
   doc.text(

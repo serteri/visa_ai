@@ -63,6 +63,11 @@ const COPY = {
     tr: "Tek bir meslek veya ANZSCO kodu mu arıyorsunuz? Meslek dizini, her biri için liste yeri ve kaynaklarla birlikte arama ve göz atma imkânı sunar.",
     zh: "只想查某个职业或 ANZSCO 代码？职业索引可搜索和浏览，并列出每个职业的清单归属和来源。",
   } as L3,
+  toolsTitle: { en: "After you have the PDF", tr: "PDF’i aldıktan sonra", zh: "拿到 PDF 之后" } as L3,
+  tools: [
+    { path: "/tools/skills-assessment", tool: "skills_assessment_finder", label: { en: "Find the relevant skills assessing authority", tr: "İlgili beceri değerlendirme kurumunu bulun", zh: "查找相关的技能评估机构" } },
+    { path: "/tools/visa-comparison", tool: "visa_comparison", label: { en: "Explore published visa information", tr: "Yayımlanmış vize bilgilerine göz atın", zh: "浏览已公布的签证信息" } },
+  ] as { path: string; tool: string; label: L3 }[],
 };
 
 export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }): Promise<Metadata> {
@@ -176,6 +181,21 @@ export default async function OccupationListPage({
               >
                 {pick(COPY.searchCta, locale)}
               </Link>
+              <p className="mt-5 font-semibold text-slate-800">{pick(COPY.toolsTitle, locale)}</p>
+              <ul className="mt-2 space-y-1">
+                {COPY.tools.map((t) => (
+                  <li key={t.tool}>
+                    <Link
+                      href={publicPath(locale, t.path)}
+                      data-pdf-event="occupation_pdf_to_tool_click"
+                      data-pdf-tool={t.tool}
+                      className="font-semibold text-indigo-800 underline underline-offset-4"
+                    >
+                      {pick(t.label, locale)}
+                    </Link>
+                  </li>
+                ))}
+              </ul>
             </div>
           </div>
         </div>
