@@ -78,10 +78,10 @@ async function main() {
   check(!/Canada Assessment|Canada report/i.test(t), "no Canada call to action");
 
   console.log("\n5. FAQ");
-  const faqs = ["What is ANZSCO 225113?", "Who assesses Marketing Specialist?", "Is Marketing Consultant included under 225113?", "Is Marketing Coordinator included?", "Is Brand Manager included?", "What qualification level does VETASSESS reference?", "What fields of study are highly relevant?", "How is Marketing Specialist different from Advertising Specialist?", "How is it different from Market Research Analyst?", "Which published occupation lists include Marketing Specialist?", "Is Marketing Specialist used in Australian skilled visa programs?", "Does being on an occupation list mean I get permanent residence?"];
-  check(faqs.every((q) => t.includes(q)), "all twelve FAQ questions render");
+  const faqs = ["What is ANZSCO 225113?", "Who assesses Marketing Specialist?", "Is Marketing Consultant included under 225113?", "Is Marketing Coordinator included?", "Is Brand Manager included?", "What qualification level does VETASSESS reference?", "What fields of study are highly relevant?", "How is Marketing Specialist different from Advertising Specialist?", "How is it different from Market Research Analyst?", "Which published occupation lists include Marketing Specialist?", "Is Marketing Specialist used in Australian skilled visa programs?", "Does being on an occupation list mean I get permanent residence?", "Do the 482 and 186 visas restrict Marketing Specialist beyond the skills assessment?"];
+  check(faqs.every((q) => t.includes(q)), "all thirteen FAQ questions render");
   const ld = [...en.matchAll(/<script type="application\/ld\+json">([\s\S]*?)<\/script>/g)].map((x) => x[1]).join("\n");
-  check(/"@type":"FAQPage"/.test(ld) && (ld.match(/"@type":"Question"/g) ?? []).length === 12 && faqs.every((q) => ld.includes(JSON.stringify(q).slice(1, -1))), "FAQPage schema carries exactly the twelve visibly rendered questions");
+  check(/"@type":"FAQPage"/.test(ld) && (ld.match(/"@type":"Question"/g) ?? []).length === 13 && faqs.every((q) => ld.includes(JSON.stringify(q).slice(1, -1))), "FAQPage schema carries exactly the thirteen visibly rendered questions");
   check(!/AggregateRating|"review"|"Rating"|"EligibilityRequirement"|GovernmentService|GovernmentOrganization/.test(ld), "no ratings, eligibility or government-document schema");
 
   console.log("\n6. indexable, canonical and hreflang unchanged, sitemap");
@@ -94,7 +94,7 @@ async function main() {
   console.log("\n7. TR and zh-Hans are localized without English blocks");
   for (const [loc, glance, marker, localName] of [["tr", "Bir bakışta", /Marketing Specialist beceri değerlendirmesi — VETASSESS/, "Pazarlama Uzmanı"], ["zh-Hans", "概览", /Marketing Specialist 技能评估 — VETASSESS/, "市场营销专家"]] as const) {
     const h = await render(loc);
-    const x = text(h);
+    const x = text(h.replace(/<span lang="en"[\s\S]*?<\/span><\/span>/g, " "));
     const mm = await meta(loc);
     check(x.includes(glance) && marker.test(x), `${loc}: sections are localized`);
     check(x.includes("VETASSESS") && /<h1[^>]*>\s*Marketing Specialist \(ANZSCO 225113\)\s*<\/h1>/.test(h) && ["Marketing Consultant", "Brand Manager", "Sales Promotion Officer", "Advertising Specialist", "Market Research Analyst"].every((r) => x.includes(r)), `${loc}: VETASSESS, the H1 and the official role names stay in English`);
@@ -112,6 +112,32 @@ async function main() {
   check(!/149311|225113|_149311|_225113/.test(src), "the renderer holds no occupation-specific code or constants");
   const other = renderToStaticMarkup(await page.default({ params: Promise.resolve({ locale: "en", id: "351311-chef" }) }));
   check(!other.includes("data-occupation-research") && other.includes("Continue your research"), "a different occupation keeps the generic template");
+
+  console.log("\n9. visa-specific caveats (subclass 482 and 186 instruments) are shown, sourced, and kept apart from the VETASSESS exclusion");
+  const cav = await import("../lib/occupations/research-225113");
+  check(JSON.stringify(cav.CAVEAT_NUMBERS_225113) === "[6,11]", "the caveat mapping for 225113 is circumstances 6 and 11 (item 84 of both instruments)");
+  check(cav.INSTRUMENT_482_225113.lin === "LIN 24/089" && cav.INSTRUMENT_482_225113.compilation === "3" && cav.INSTRUMENT_482_225113.compilationDate === "2025-11-07" && /^https:\/\/www\.legislation\.gov\.au\/F2024L01620\//.test(cav.INSTRUMENT_482_225113.url), "482 source: LIN 24/089, Compilation No. 3 (7 November 2025), legislation.gov.au F2024L01620");
+  check(cav.INSTRUMENT_186_225113.lin === "LIN 24/093" && cav.INSTRUMENT_186_225113.compilation === "4" && cav.INSTRUMENT_186_225113.compilationDate === "2026-03-28" && /^https:\/\/www\.legislation\.gov\.au\/F2024L01618\//.test(cav.INSTRUMENT_186_225113.url), "186 source: LIN 24/093, Compilation No. 4 (28 March 2026), legislation.gov.au F2024L01618");
+  check(cav.CIRCUMSTANCE_WORDING_225113[6].join(" ") === "The position: (a) is based in a front-line retail setting; or (b) predominantly involves direct client transactional interaction on a regular basis; or (c) predominantly involves selling educational courses to individual students; or (d) is based in a call centre and does not require a significant technical knowledge of products." && cav.CIRCUMSTANCE_WORDING_225113[11].join(" ") === "The position is in a business that has an annual turnover of less than AUD1,000,000.", "circumstances 6 and 11 carry the instruments' own wording, unaltered");
+  check(cav.LEGISLATION_225113_CHECKED === "2026-10-31" && t.includes("Checked 31 October 2026") , "the check date is stated on the page");
+  check(t.includes("Visa-specific occupation caveats: subclass 482 and 186 instruments") && t.includes("Circumstance 6") && t.includes("Circumstance 11") && t.includes("annual turnover of less than AUD1,000,000") && t.includes("front-line retail setting; or"), "EN: the section shows circumstances 6 and 11");
+  check(/data-official-source="true" href="https:\/\/www\.legislation\.gov\.au\/F2024L01620\/latest\/text"/.test(en) && /data-official-source="true" href="https:\/\/www\.legislation\.gov\.au\/F2024L01618\/latest\/text"/.test(en) && t.includes("(LIN 24/089), Compilation No. 3, 2025-11-07") && t.includes("(LIN 24/093), Compilation No. 4, 2026-03-28"), "both instruments are cited with their compilation dates and linked to legislation.gov.au");
+  check(t.includes("This is separate from the VETASSESS skills assessment above") && t.includes("How this differs from the VETASSESS employment exclusion") && t.includes("It decides what employment VETASSESS counts") && t.includes("are made separately; a result under one does not settle the other"), "skills assessment vs visa instrument: the two are kept distinct");
+  check(t.includes("This is VETASSESS assessment information, not a visa decision"), "the existing VETASSESS exclusion paragraph is unchanged");
+  check(t.includes("ANZSCO as the ABS classification in force on 23 November 2022") && t.includes("ANZSCO 2013 classification for other visas"), "the ANZSCO version distinction is stated");
+  const cavText = t.slice(t.indexOf("Visa-specific occupation caveats"), t.indexOf("Related visa research"));
+  check(!/\b(you (are|will be) (not )?eligible|ineligible|you (can|cannot|can't)|will be refused|will be granted|guarantee|recommend|should apply|best visa)/i.test(cavText) && /does not decide whether any position or person is affected/.test(cavText), "no eligibility verdict, outcome claim or recommendation: the section says it does not decide whether a position or person is affected");
+  check(!/\b(competitor|visaenvoy|widen\.com|migrationrepublic|rmaustralia)/i.test(en), "no competitor site is cited");
+  const pageSrc = readFileSync("app/[locale]/(main)/occupations/[id]/page.tsx", "utf8");
+  check(/export const revalidate = false;/.test(pageSrc) && !/export const revalidate = [1-9]/.test(pageSrc) && !/unstable_cache|revalidateTag|revalidatePath/.test(readFileSync("lib/occupations/research-225113.ts", "utf8") + readFileSync("components/occupations/occupation-research.tsx", "utf8")), "no ISR: the occupation page is still build-time static and the new section adds no cache or revalidation");
+  for (const [loc, heading, lead] of [["tr", "Vizeye özgü meslek kısıtları: 482 ve 186 alt sınıfı düzenlemeleri", "Koşul 6"], ["zh-Hans", "签证专属职业限制：482 和 186 子类法律文书", "情形 6"]] as const) {
+    const h = await render(loc);
+    const x = text(h);
+    const out = text(h.replace(/<span lang="en"[\s\S]*?<\/span><\/span>/g, " "));
+    check(x.includes(heading) && x.includes(lead) && /LIN 24\/089/.test(x) && /LIN 24\/093/.test(x) && x.includes("AUD1,000,000"), `${loc}: the section is localized and keeps the instrument names, LIN numbers and amounts intact`);
+    check(!/front-line retail setting|annual turnover of less than|predominantly involves/.test(out) && /lang="en"/.test(h) && x.includes("front-line retail setting; or"), `${loc}: the instruments' official English wording appears only in lang="en" blocks`);
+    check(/<h1[^>]*>\s*Marketing Specialist \(ANZSCO 225113\)\s*<\/h1>/.test(h) && x.includes("VETASSESS"), `${loc}: the H1 and the VETASSESS content are unchanged`);
+  }
 
   if (failures) { console.error(`\n${failures} check(s) failed`); process.exit(1); }
   console.log("\nAll checks passed");

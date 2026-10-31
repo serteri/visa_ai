@@ -8,6 +8,21 @@ export type ResearchBlock = { heading?: string; paragraphs?: string[]; bullets?:
 export type ResearchLink = { label: string; path: string; destination?: string };
 export type ResearchSection = { id?: string; heading: string; blocks: ResearchBlock[]; links?: ResearchLink[] };
 export type ResearchFaq = { q: string; a: string };
+/** Occupation-specific caveats in the visa instruments (legislation.gov.au), kept apart from the assessing authority's own requirements. */
+export type ResearchVisaCaveats = {
+  id: string;
+  heading: string;
+  paragraphs: string[];
+  /** The instrument's own wording of each applicable circumstance listed against the occupation, in English. */
+  circumstances: Array<{ number: number; label: string; summary: string; wording: string[] }>;
+  circumstancesIntro: string;
+  distinctionHeading: string;
+  distinction: string[];
+  note: string;
+  /** Instrument citations, each with the compilation read. */
+  sources: Array<{ label: string; url: string }>;
+  checked: string;
+};
 
 export type OccupationResearch = {
   code: string;
@@ -37,5 +52,7 @@ export type OccupationResearch = {
     sourceNote?: string;
   };
   visaSubclassPaths: string[];
+  /** Optional: occupation-specific caveats in the Subclass 482 / 186 instruments. */
+  visaCaveats?: ResearchVisaCaveats;
   faqs: ResearchFaq[];
 };

@@ -35,6 +35,35 @@ export const HIGHLY_RELEVANT_FIELDS_225113 = ["Marketing", "Advertising", "Busin
 /** Subclasses the Home Affairs list row for 225113 names (public/Skilled Occupation List.md, STSOL;CSOL): 190, 407, 489, 494, 491, 482 (Core Skills), 186 (Direct Entry). */
 export const LIST_SUBCLASSES_225113 = ["190", "491", "482", "186", "407", "489", "494"];
 
+/** The visa instruments read for the caveat section (legislation.gov.au, Federal Register of Legislation). */
+export const LEGISLATION_225113_CHECKED = "2026-10-31";
+export const INSTRUMENT_482_225113 = {
+  title: "Migration (Specification of Occupations\u2014Subclass 482 Visa) Instrument 2024",
+  lin: "LIN 24/089",
+  url: "https://www.legislation.gov.au/F2024L01620/latest/text",
+  compilation: "3",
+  compilationDate: "2025-11-07",
+} as const;
+export const INSTRUMENT_186_225113 = {
+  title: "Migration (Specification of Occupations and Relevant Assessing Authorities\u2014Subclass 186 Visa) Instrument 2024",
+  lin: "LIN 24/093",
+  url: "https://www.legislation.gov.au/F2024L01618/latest/text",
+  compilation: "4",
+  compilationDate: "2026-03-28",
+} as const;
+/** Column "applicable circumstance" of item 84 (Marketing Specialist, 225113) in both instruments. */
+export const CAVEAT_NUMBERS_225113 = [6, 11] as const;
+/** The instruments' own wording of circumstances 6 and 11 (identical in both instruments). */
+export const CIRCUMSTANCE_WORDING_225113: Record<number, string[]> = {
+  6: [
+    "The position: (a) is based in a front-line retail setting; or",
+    "(b) predominantly involves direct client transactional interaction on a regular basis; or",
+    "(c) predominantly involves selling educational courses to individual students; or",
+    "(d) is based in a call centre and does not require a significant technical knowledge of products.",
+  ],
+  11: ["The position is in a business that has an annual turnover of less than AUD1,000,000."],
+};
+
 export function research225113(code: string, locale: string): OccupationResearch | null {
   if (code !== RESEARCH_225113_CODE) return null;
   const t = (en: string, tr: string, zh: string) => researchText(locale, en, tr, zh);
@@ -273,6 +302,80 @@ export function research225113(code: string, locale: string): OccupationResearch
       ),
     },
     visaSubclassPaths: ["190", "491", "482", "186_direct_entry"],
+    visaCaveats: {
+      id: "visa-caveats",
+      heading: t(
+        "Visa-specific occupation caveats: subclass 482 and 186 instruments",
+        "Vizeye özgü meslek kısıtları: 482 ve 186 alt sınıfı düzenlemeleri",
+        "签证专属职业限制：482 和 186 子类法律文书",
+      ),
+      paragraphs: [
+        t(
+          "This is separate from the VETASSESS skills assessment above. The legislative instruments that specify the Core Skills Occupation List for the Subclass 482 (Skills in Demand, Core Skills stream) visa and for the Subclass 186 (Employer Nomination Scheme) visa list ANZSCO 225113 Marketing Specialist with applicable circumstances 6 and 11. The Home Affairs list row marks the same two visas (482 Core Skills and 186 Direct Entry) with \"caveats apply\".",
+          "Bu bölüm yukarıdaki VETASSESS beceri değerlendirmesinden ayrıdır. Subclass 482 (Skills in Demand, Core Skills akışı) ve Subclass 186 (Employer Nomination Scheme) vizeleri için Core Skills Occupation List'i belirleyen yasal düzenlemeler, ANZSCO 225113 Marketing Specialist'i 6 ve 11 numaralı uygulanabilir koşullarla listeler. İçişleri Bakanlığı liste satırı aynı iki vizeyi (482 Core Skills ve 186 Direct Entry) \"caveats apply\" (kısıtlar geçerli) ile işaretler.",
+          "本节与上文的 VETASSESS 技能评估是分开的。为 482 子类（Skills in Demand，Core Skills 类别）和 186 子类（Employer Nomination Scheme）签证规定 Core Skills Occupation List 的法律文书，将 ANZSCO 225113 Marketing Specialist 与适用情形 6 和 11 一并列出。内政部清单该行也对同样两个签证（482 Core Skills 和 186 Direct Entry）标注了 \"caveats apply\"（适用限制）。",
+        ),
+        t(
+          "In both instruments the circumstances concern the position in which the person is to work. Where a circumstance listed against the occupation applies to that position, the instrument says the occupation does not apply to the person. Other conditions of each visa still apply, and this page does not decide whether any position or person is affected.",
+          "Her iki düzenlemede de koşullar, kişinin çalışacağı pozisyonla ilgilidir. Meslekle birlikte listelenen bir koşul o pozisyona uygulanıyorsa, düzenleme mesleğin o kişiye uygulanmadığını belirtir. Her vizenin diğer koşulları da geçerlidir ve bu sayfa hiçbir pozisyonun veya kişinin etkilenip etkilenmediğine karar vermez.",
+          "在两份文书中，这些情形都针对该人员将要任职的职位。如果与该职业一并列出的某项情形适用于该职位，文书规定该职业不适用于此人。每种签证的其他条件仍然适用，本页不判断任何职位或个人是否受到影响。",
+        ),
+      ],
+      circumstancesIntro: t(
+        "The circumstances listed against 225113, in the instruments' own wording (English):",
+        "225113 ile birlikte listelenen koşullar, düzenlemelerin kendi ifadesiyle (İngilizce):",
+        "与 225113 一并列出的情形，按文书原文（英文）：",
+      ),
+      circumstances: CAVEAT_NUMBERS_225113.map((n) => ({
+        number: n,
+        label: t(`Circumstance ${n}`, `Koşul ${n}`, `情形 ${n}`),
+        summary:
+          n === 6
+            ? t(
+                "Concerns a position in a front-line retail setting, one that mainly involves regular direct client transactions, one that mainly involves selling educational courses to individual students, or a call-centre position without significant technical product knowledge.",
+                "Ön cephe perakende ortamındaki bir pozisyonu, ağırlıklı olarak düzenli doğrudan müşteri işlemleri içeren bir pozisyonu, ağırlıklı olarak bireysel öğrencilere eğitim kursu satan bir pozisyonu veya önemli ölçüde teknik ürün bilgisi gerektirmeyen bir çağrı merkezi pozisyonunu kapsar.",
+                "涉及前线零售环境的职位、主要涉及经常性直接客户交易的职位、主要向个人学生销售教育课程的职位，或不需要大量产品技术知识的呼叫中心职位。",
+              )
+            : t(
+                "Concerns a position in a business with an annual turnover of less than AUD1,000,000.",
+                "Yıllık cirosu AUD1,000,000'un altında olan bir işletmedeki pozisyonu kapsar.",
+                "涉及年营业额低于 AUD1,000,000 的企业中的职位。",
+              ),
+        wording: CIRCUMSTANCE_WORDING_225113[n],
+      })),
+      distinctionHeading: t(
+        "How this differs from the VETASSESS employment exclusion",
+        "VETASSESS istihdam dışlamasından farkı",
+        "与 VETASSESS 工作经历排除规定的区别",
+      ),
+      distinction: [
+        t(
+          "The VETASSESS exclusion above (front-line retail or regular direct client transactional employment is not accepted as Marketing Specialist employment) is part of VETASSESS's skills assessment. It decides what employment VETASSESS counts.",
+          "Yukarıdaki VETASSESS dışlaması (ön cephe perakende veya düzenli doğrudan müşteri işlemi içeren istihdamın Marketing Specialist istihdamı olarak kabul edilmemesi) VETASSESS beceri değerlendirmesinin parçasıdır. VETASSESS'in hangi istihdamı saydığını belirler.",
+          "上文的 VETASSESS 排除规定（前线零售或经常性直接客户交易的工作不被接受为 Marketing Specialist 工作经历）属于 VETASSESS 技能评估的一部分，决定 VETASSESS 认可哪些工作经历。",
+        ),
+        t(
+          "Circumstances 6 and 11 are made in the visa instruments and concern the nominated position, including, for circumstance 11, the size of the business. The two sets of rules cover some similar ground but are made separately; a result under one does not settle the other.",
+          "6 ve 11 numaralı koşullar vize düzenlemelerinde yer alır ve aday gösterilen pozisyonla ilgilidir; 11 numaralı koşulda ayrıca işletmenin büyüklüğüyle. İki kural seti benzer konuları kısmen kapsasa da ayrı ayrı yapılmıştır; birindeki sonuç diğerini belirlemez.",
+          "情形 6 和 11 出自签证法律文书，针对被提名的职位；其中情形 11 还涉及企业规模。两套规则在部分内容上相似，但各自独立制定，一方的结果并不决定另一方。",
+        ),
+        t(
+          "Both instruments define ANZSCO as the ABS classification in force on 23 November 2022. The Home Affairs list links the ANZSCO 2022 classification for subclasses 186 and 482 and the ANZSCO 2013 classification for other visas; the code for Marketing Specialist is 225113 in each.",
+          "Her iki düzenleme de ANZSCO'yu, ABS'nin 23 Kasım 2022'de yürürlükte olan sınıflandırması olarak tanımlar. İçişleri Bakanlığı listesi, 186 ve 482 alt sınıfları için ANZSCO 2022, diğer vizeler için ANZSCO 2013 sınıflandırmasına bağlantı verir; Marketing Specialist'in kodu her ikisinde de 225113'tür.",
+          "两份文书都将 ANZSCO 定义为澳大利亚统计局（ABS）在 2022 年 11 月 23 日生效的分类。内政部清单对 186 和 482 子类链接 ANZSCO 2022 分类，对其他签证链接 ANZSCO 2013 分类；Marketing Specialist 在两者中的代码均为 225113。",
+        ),
+      ],
+      note: t(
+        "General information from published instruments, not advice about a position or a person. Instruments are amended over time: check the current versions on legislation.gov.au and the Department of Home Affairs.",
+        "Yayımlanmış düzenlemelerden genel bilgi; bir pozisyon veya kişi hakkında tavsiye değildir. Düzenlemeler zamanla değiştirilir: güncel sürümleri legislation.gov.au ve İçişleri Bakanlığı'ndan kontrol edin.",
+        "以上为根据已公布法律文书整理的一般信息，不是针对职位或个人的建议。法律文书会不时修订：请在 legislation.gov.au 和澳大利亚内政部核对当前版本。",
+      ),
+      sources: [
+        { label: `${INSTRUMENT_482_225113.title} (${INSTRUMENT_482_225113.lin}), Compilation No. ${INSTRUMENT_482_225113.compilation}, ${INSTRUMENT_482_225113.compilationDate}`, url: INSTRUMENT_482_225113.url },
+        { label: `${INSTRUMENT_186_225113.title} (${INSTRUMENT_186_225113.lin}), Compilation No. ${INSTRUMENT_186_225113.compilation}, ${INSTRUMENT_186_225113.compilationDate}`, url: INSTRUMENT_186_225113.url },
+      ],
+      checked: LEGISLATION_225113_CHECKED,
+    },
     faqs: [
       {
         q: t("What is ANZSCO 225113?", "ANZSCO 225113 nedir?", "什么是 ANZSCO 225113？"),
@@ -360,6 +463,18 @@ export function research225113(code: string, locale: string): OccupationResearch
           "Marketing Specialist appears on published occupation lists that are used in Australian skilled visa program rules; see the related visa research on this page. Occupation-list inclusion does not decide an individual's visa, nomination, sponsorship or permanent residence outcome.",
           "Marketing Specialist, Avustralya nitelikli vize programı kurallarında kullanılan yayımlanmış meslek listelerinde yer alır; bu sayfadaki ilgili vize araştırmasına bakın. Bir meslek listesinde yer almak, bir kişinin vize, aday gösterme, sponsorluk veya daimi oturum sonucunu belirlemez.",
           "Marketing Specialist 列于澳大利亚技术签证项目规则所使用的已公布职业清单；请参阅本页的相关签证研究。列入职业清单并不决定个人的签证、提名、担保或永久居留结果。",
+        ),
+      },
+      {
+        q: t(
+          "Do the 482 and 186 visas restrict Marketing Specialist beyond the skills assessment?",
+          "482 ve 186 vizeleri Marketing Specialist için beceri değerlendirmesinin ötesinde kısıt getirir mi?",
+          "482 和 186 签证对 Marketing Specialist 是否有技能评估之外的限制？",
+        ),
+        a: t(
+          "The published Core Skills Occupation List instruments for subclass 482 and subclass 186 list ANZSCO 225113 with applicable circumstances 6 (including a front-line retail setting or predominantly direct client transactional interaction) and 11 (a business with annual turnover under AUD1,000,000). Where a listed circumstance applies to the position, the instrument says the occupation does not apply. These are separate from VETASSESS's employment requirements, and this page does not assess any position or person.",
+          "Subclass 482 ve subclass 186 için yayımlanmış Core Skills Occupation List düzenlemeleri, ANZSCO 225113'ü 6 (ön cephe perakende ortamı veya ağırlıklı olarak doğrudan müşteri işlemi dahil) ve 11 (yıllık cirosu AUD1,000,000'un altındaki işletme) numaralı uygulanabilir koşullarla listeler. Listelenen bir koşul pozisyona uygulanıyorsa düzenleme mesleğin uygulanmadığını belirtir. Bunlar VETASSESS'in istihdam gerekliliklerinden ayrıdır ve bu sayfa hiçbir pozisyonu veya kişiyi değerlendirmez.",
+          "482 子类和 186 子类已公布的 Core Skills Occupation List 法律文书将 ANZSCO 225113 与适用情形 6（包括前线零售环境或主要涉及直接客户交易互动）和 11（年营业额低于 AUD1,000,000 的企业）一并列出。若所列情形适用于该职位，文书规定该职业不适用。这些规定独立于 VETASSESS 的工作经历要求，本页不评估任何职位或个人。",
         ),
       },
       {

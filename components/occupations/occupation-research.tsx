@@ -226,6 +226,40 @@ export function OccupationResearch({ c, locale, part }: { c: OccupationPageConte
         </CardContent>
       </Card>
 
+      {r.visaCaveats && (
+        <Card className={sectionClass} id={r.visaCaveats.id}>
+          <CardHeader>
+            <h2 className={h2}>{r.visaCaveats.heading}</h2>
+          </CardHeader>
+          <CardContent className="space-y-3 text-sm text-slate-600">
+            {r.visaCaveats.paragraphs.map((p) => <p key={p}>{p}</p>)}
+            <p className="font-semibold text-slate-900">{r.visaCaveats.circumstancesIntro}</p>
+            <ul className="space-y-3">
+              {r.visaCaveats.circumstances.map((x) => (
+                <li key={x.number} data-visa-circumstance={x.number}>
+                  <span className="font-medium text-slate-900">{x.label}</span>
+                  <span className="mt-1 block">{x.summary}</span>
+                  <span className="mt-1 block text-xs text-slate-500">{t("Instrument wording (English)", "Düzenleme metni (İngilizce)", "文书原文（英文）")}:</span>
+                  <span lang="en" className="mt-1 block space-y-1 border-l-2 border-slate-200 pl-3">
+                    {x.wording.map((w) => <span key={w} className="block">{w}</span>)}
+                  </span>
+                </li>
+              ))}
+            </ul>
+            <h3 className="pt-1 font-semibold text-slate-900">{r.visaCaveats.distinctionHeading}</h3>
+            {r.visaCaveats.distinction.map((p) => <p key={p}>{p}</p>)}
+            <p className="text-xs text-slate-500">{r.visaCaveats.note}</p>
+            <p className="flex flex-wrap gap-x-5 gap-y-2 text-xs text-slate-500">
+              <span>{t("Sources", "Kaynaklar", "来源")}:</span>
+              {r.visaCaveats.sources.map((x) => <span key={x.url}>{src(x.url, x.label)}</span>)}
+              <span>
+                {t("Checked", "Kontrol", "核对")} {longDate(r.visaCaveats.checked, c.locale)}
+              </span>
+            </p>
+          </CardContent>
+        </Card>
+      )}
+
       <Card className={sectionClass} id="related-visa-research">
         <CardHeader>
           <h2 className={h2}>{t("Related visa research", "İlgili vize araştırması", "相关签证研究")}</h2>
