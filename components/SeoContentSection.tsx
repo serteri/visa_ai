@@ -21,6 +21,11 @@ export interface SeoContentSectionProps {
   faqTitle: string;
   aboutTitle: string;
   schemaJson: string;
+  /** Render the content expanded (it is then in the server HTML); the toggle still collapses it. */
+  defaultOpen?: boolean;
+  sourcesLabel?: string;
+  /** Official sources, shown under the FAQ. */
+  sources?: { label: string; url: string }[];
 }
 
 function FaqAccordion({ faqs, faqTitle }: { faqs: FaqItem[]; faqTitle: string }) {
@@ -44,11 +49,9 @@ function FaqAccordion({ faqs, faqTitle }: { faqs: FaqItem[]; faqTitle: string })
                 <ChevronDown className="mt-0.5 h-4 w-4 shrink-0 text-slate-400" />
               )}
             </button>
-            {openIdx === i && (
-              <div className="px-5 pb-4">
-                <p className="text-sm leading-relaxed text-slate-600">{faq.a}</p>
-              </div>
-            )}
+            <div className="px-5 pb-4" hidden={openIdx !== i}>
+              <p className="text-sm leading-relaxed text-slate-600">{faq.a}</p>
+            </div>
           </div>
         ))}
       </div>
@@ -64,8 +67,11 @@ export function SeoContentSection({
   faqTitle,
   aboutTitle,
   schemaJson,
+  defaultOpen = false,
+  sourcesLabel,
+  sources,
 }: SeoContentSectionProps) {
-  const [open, setOpen] = useState(false);
+  const [open, setOpen] = useState(defaultOpen);
 
   return (
     <section className="border-t border-slate-200 bg-slate-50">
@@ -109,6 +115,17 @@ export function SeoContentSection({
 
             {/* FAQ */}
             <FaqAccordion faqs={faqs} faqTitle={faqTitle} />
+
+            {sources && sources.length > 0 && (
+              <p className="flex flex-wrap gap-x-5 gap-y-2 text-xs text-slate-500">
+                <span>{sourcesLabel ?? "Official sources"}:</span>
+                {sources.map((x) => (
+                  <a key={x.url} data-official-source href={x.url} target="_blank" rel="noopener noreferrer" className="font-medium text-cyan-800 underline">
+                    {x.label}
+                  </a>
+                ))}
+              </p>
+            )}
           </div>
         )}
       </div>

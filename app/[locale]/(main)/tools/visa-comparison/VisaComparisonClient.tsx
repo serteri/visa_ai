@@ -88,6 +88,17 @@ export function VisaComparisonClient({ locale }: { locale: string }) {
           <Button asChild className="mt-4 bg-[#53917E] hover:bg-[#53917E]/90">
             <Link href={publicPath(locale, `/tools/points-calculator/australia`)}>{copy.ctaButton}</Link>
           </Button>
+          <p className="mt-4 text-sm text-slate-600">
+            {researchText(locale, "Researching an occupation first? See which authority is listed to assess it with the ", "Önce bir mesleği mi araştırıyorsunuz? Hangi kurumun değerlendirme için listelendiğini ", "先研究某个职业？可通过")}
+            <Link className="font-medium text-cyan-800 underline" href={publicPath(locale, `/tools/skills-assessment`)}>
+              {researchText(locale, "Skills Assessing Authority Finder", "Beceri Değerlendirme Kurumu Bulucu ile görün", "技能评估机构查询")}
+            </Link>
+            {researchText(locale, ", or look up its code with the ", "; kodunu ", "查看所列评估机构，或用")}
+            <Link className="font-medium text-cyan-800 underline" href={publicPath(locale, `/tools/anzsco-finder`)}>
+              {researchText(locale, "ANZSCO Code Finder", "ANZSCO Kod Bulucu ile arayın", "ANZSCO 职业代码查询")}
+            </Link>
+            {researchText(locale, ".", ".", "查询其代码。")}
+          </p>
         </div>
       </section>
     </main>

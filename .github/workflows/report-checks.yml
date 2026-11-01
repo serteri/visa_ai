@@ -131,6 +131,8 @@ jobs:
 
       - name: Occupation PDF page (PDF intent ownership, honest labelling, reciprocal cross-links, analytics privacy)
         run: npm run test:occupation-pdf-page
+      - name: Tool landing pages (ANZSCO Finder, Skills Assessment Finder)
+        run: npm run test:tool-landing
       - name: Occupation 149311 research page (occupation-first title and H1, VETASSESS content, source-dated lists, FAQ, EN/TR/ZH)
         run: npm run test:occupation-149311
       - name: Occupation 225113 research page (225113 is Marketing Specialist, VETASSESS Group B, pathways, comparison, source-dated lists, FAQ, EN/TR/ZH)
