@@ -1,5 +1,6 @@
 'use client'
 
+import { PrivacyNotice } from "@/components/privacy-notice"
 import { useState } from 'react'
 import { Locale } from "@/lib/i18n/config"
 import { submitDownloadForm } from "./actions"
@@ -245,6 +246,7 @@ export function DownloadForm({
         <p className="text-xs text-gray-500 mt-2 text-center">
           {translations.guidePage.spamDisclaimer}
         </p>
+        <PrivacyNotice locale={locale} className="mt-1 text-center text-xs text-gray-500" />
       </form>
     </div>
   )

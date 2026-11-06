@@ -67,7 +67,7 @@ export function LandingFooter({ locale }: LandingFooterProps) {
     },
     {
       label: isTr ? "Gizlilik" : isZh ? "隐私" : "Privacy",
-      href: publicPath(locale, `/legal`),
+      href: publicPath(locale, `/privacy`),
     },
   ];
 

@@ -3,6 +3,7 @@
 import { useState } from "react";
 
 import { Button } from "@/components/ui/button";
+import { PrivacyNotice } from "@/components/privacy-notice";
 import { getProductPriceDisplay } from "@/lib/pricing";
 
 type ProductType = "premium" | "pdf_book" | "pdf_book_global";
@@ -93,6 +94,7 @@ export function StripeCheckoutButton({
       </Button>
 
       {error ? <p className="text-sm text-red-600">{error}</p> : null}
+      <PrivacyNotice locale={locale} />
     </div>
   );
 }

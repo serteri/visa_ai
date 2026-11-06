@@ -2,10 +2,13 @@
 
 import { ComplianceNotice } from "@/components/sections/compliance-notice";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { useTranslation } from "@/contexts/language-context";
+import Link from "next/link";
+import { useLanguage, useTranslation } from "@/contexts/language-context";
+import { publicPath } from "@/lib/seo/urls";
 
 export default function LegalPage() {
   const { t } = useTranslation();
+  const { language } = useLanguage();
 
   return (
     <main className="ambient-bg flex-1 py-16">
@@ -54,6 +57,20 @@ export default function LegalPage() {
             <p>{t("legal.privacyReferralText1")}</p>
             <p>{t("legal.privacyReferralText2")}</p>
             <p>{t("legal.privacyReferralText3")}</p>
+          </CardContent>
+        </Card>
+
+        <Card data-testid="privacy-policy-link">
+          <CardHeader>
+            <CardTitle>{t("legal.privacyPolicyTitle")}</CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-3 text-sm text-muted-foreground">
+            <p>{t("legal.privacyPolicyText")}</p>
+            <p>
+              <Link href={publicPath(language, "/privacy")} className="font-semibold underline underline-offset-2">
+                {t("legal.privacyPolicyLink")}
+              </Link>
+            </p>
           </CardContent>
         </Card>
       </section>

@@ -1,5 +1,6 @@
 "use client";
 
+import { PrivacyNotice } from "@/components/privacy-notice";
 import { useState } from "react";
 import { AlertCircle, Check, Loader2 } from "lucide-react";
 
@@ -159,6 +160,7 @@ export function PricingPlans({ locale }: { locale: string }) {
           );
         })}
       </div>
+      <PrivacyNotice locale={locale} className="mt-6 text-center text-xs text-slate-600" />
     </div>
   );
 }

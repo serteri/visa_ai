@@ -22,6 +22,13 @@ export function GlobalDisclaimerFooter() {
       >
         {t("footer.contact")}
       </Link>
+      <span aria-hidden="true" className="mx-2">·</span>
+      <Link
+        href={publicPath(language, "/privacy")}
+        className="mt-1 inline-block font-medium text-foreground/70 underline underline-offset-2 hover:text-foreground"
+      >
+        {t("footer.privacyPolicy")}
+      </Link>
       <div className="mt-1">
         <ConsentSettingsLink locale={language} />
       </div>

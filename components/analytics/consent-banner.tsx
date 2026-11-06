@@ -87,7 +87,7 @@ export function ConsentBanner({ locale, vercelEnv, gaId, pixelId, testGaId, test
           "Siteyi nasıl kullandığınızı anlamak için Google Analytics'i, reklamlarımızı ölçmek için Meta Pixel'i kullanmak istiyoruz. İkisi de sitenin çalışması için gerekli değildir. Adınızı, e-postanızı, yanıtlarınızı veya rapor bağlantılarınızı hiçbirine göndermeyiz. Seçiminizi istediğiniz zaman alt bilgideki “Gizlilik tercihleri” ile değiştirebilirsiniz.",
           "我们希望使用 Google Analytics 了解网站的使用情况，并使用 Meta Pixel 衡量我们的广告效果。两者都不是网站运行所必需的。我们不会向它们发送您的姓名、邮箱、答案或报告链接。您可以随时通过页脚的“隐私选择”更改选择。",
         )}{" "}
-        <Link href={publicPath(locale, "/legal")} className="font-medium text-cyan-900 underline underline-offset-4">
+        <Link href={publicPath(locale, "/privacy")} className="font-medium text-cyan-900 underline underline-offset-4">
           {t("Privacy information", "Gizlilik bilgileri", "隐私信息")}
         </Link>
       </p>

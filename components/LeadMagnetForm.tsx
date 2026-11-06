@@ -1,5 +1,6 @@
 "use client";
 
+import { PrivacyNotice } from "@/components/privacy-notice";
 import { useState } from "react";
 
 import { Button } from "@/components/ui/button";
@@ -297,15 +298,15 @@ export function LeadMagnetForm({
           emailOnly
             ? tx(
                 <>
-                  <TermsGateLink href={publicPath(locale, "/legal")}>Gizlilik bilgilerini</TermsGateLink> ve{" "}
+                  <TermsGateLink href={publicPath(locale, "/privacy")}>Gizlilik bilgilerini</TermsGateLink> ve{" "}
                   <TermsGateLink href={publicPath(locale, "/terms")}>Kullanım Koşulları’nı</TermsGateLink> okuduğumu kabul ediyorum.
                 </>,
                 <>
-                  I acknowledge the <TermsGateLink href={publicPath(locale, "/legal")}>privacy information</TermsGateLink> and{" "}
+                  I acknowledge the <TermsGateLink href={publicPath(locale, "/privacy")}>privacy information</TermsGateLink> and{" "}
                   <TermsGateLink href={publicPath(locale, "/terms")}>Terms of Service</TermsGateLink>.
                 </>,
                 <>
-                  我已知悉<TermsGateLink href={publicPath(locale, "/legal")}>隐私信息</TermsGateLink>和
+                  我已知悉<TermsGateLink href={publicPath(locale, "/privacy")}>隐私信息</TermsGateLink>和
                   <TermsGateLink href={publicPath(locale, "/terms")}>服务条款</TermsGateLink>。
                 </>
               )
@@ -349,15 +350,15 @@ export function LeadMagnetForm({
           ? tx(
               <>
                 Bilgilerinizi istenen PDF’i size ulaştırmak için kullanırız.{" "}
-                <TermsGateLink href={publicPath(locale, "/legal")}>Gizlilik bilgilerimize</TermsGateLink> bakın.
+                <TermsGateLink href={publicPath(locale, "/privacy")}>Gizlilik bilgilerimize</TermsGateLink> bakın.
               </>,
               <>
                 We use your details to deliver the requested PDF. See our{" "}
-                <TermsGateLink href={publicPath(locale, "/legal")}>privacy information</TermsGateLink>.
+                <TermsGateLink href={publicPath(locale, "/privacy")}>privacy information</TermsGateLink>.
               </>,
               <>
                 我们使用您的信息来发送您所请求的 PDF。请参阅我们的
-                <TermsGateLink href={publicPath(locale, "/legal")}>隐私信息</TermsGateLink>。
+                <TermsGateLink href={publicPath(locale, "/privacy")}>隐私信息</TermsGateLink>。
               </>
             )
           : tx(
@@ -366,6 +367,7 @@ export function LeadMagnetForm({
               "您的信息仅用于本次下载，不会与第三方共享。"
             )}
       </p>
+      <PrivacyNotice locale={locale} />
     </form>
   );
 }

@@ -11,6 +11,7 @@ import { defaultCountry, isSupportedCountry, isPartnerFamilySponsorship, type Su
 import { PremiumFeatureGate } from "@/components/premium-feature-gate";
 import { TermsGate, TermsGateLink } from "@/components/terms-gate";
 import { ReferralConsentBox } from "./referral-consent-box";
+import { PrivacyNotice } from "@/components/privacy-notice";
 import { applyDestination, destinationFromParam, isDestination, passportIsDestination, toPassportLocale, type Destination } from "@/lib/intake/passport";
 import { LogiAIAssistant } from "@/components/LogiAIAssistant";
 import { downloadReportPdf } from "@/lib/client/download-report-pdf";
@@ -525,6 +526,7 @@ export function FullCheckWaitlistForm({
               <Button type="submit" className="h-auto min-h-11 w-full whitespace-normal rounded-lg px-4 py-3 text-center text-sm font-semibold leading-snug" disabled={isPending}>
                 {isPending ? txt("Oluşturuluyor...", "Generating...", "生成中...") : txt("Vize Bilgi Raporunuzu oluşturun", "Generate your Visa Information Report", "生成您的签证信息报告")}
               </Button>
+              <PrivacyNotice locale={locale} />
             </>
           )}
         </form>

@@ -1,5 +1,6 @@
 "use client";
 
+import { PrivacyNotice } from "@/components/privacy-notice";
 import { useActionState, useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import { CheckCircle2, Lock, Mail, Phone, ShieldCheck, Sparkles, Zap } from "lucide-react";
@@ -328,6 +329,8 @@ export function PremiumFeatureGate({
                       : paidCheckoutEnabled ? (isTr ? "Ödemeye geç" : isZh ? "前往付款" : "Continue to payment") : (isTr ? "Raporu aç" : isZh ? "打开报告" : "Open report")}
                   </Button>
                 </div>
+
+                <PrivacyNotice locale={locale} />
 
                 <div className="grid gap-2 text-xs text-muted-foreground sm:grid-cols-3">
                   <div className="flex items-center gap-1.5 rounded-md border border-border/60 px-2 py-1.5">
