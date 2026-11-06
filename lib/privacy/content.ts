@@ -93,7 +93,7 @@ const EN: PrivacyCopy = {
             "Vercel hosts the site.",
             "Neon hosts our database.",
             "Cloudflare stores uploaded files (R2 storage).",
-            "Migration agents receive your details only when you tick the consent box that names the agent (see Agent referral).",
+            "Migration agents do not receive your details: sharing with agents is not active at the moment (see Agent referral).",
           ],
         },
         { p: "We do not send your name, email, answers or report links to Google Analytics. Report, dashboard, sign-in, registration, Visa Journey, agent and admin pages send them nothing." },
@@ -111,7 +111,7 @@ const EN: PrivacyCopy = {
       id: "agent",
       title: "Agent referral",
       blocks: [
-        { p: "If you arrive through a migration agent's link, we keep the agent's reference in a cookie for 30 days. We share your name, email, phone number and report with that agent only if you tick the optional consent box that names the agent; you can buy and use your report without ticking it. You can withdraw consent at any time with the link in your report email. The agent may receive a commission if you buy a report. Details are on the [Legal page]({legal})." },
+        { p: "Sharing your details with migration agents is not active at the moment: we do not share your name, email, phone number or report with any migration agent, and the form shows no agent consent box. If you arrive through an agent's link, we keep the agent's reference in a cookie for 30 days. The agent may receive a commission if you buy a report, and can see the reference and the purchase status, not your details. Details are on the [Legal page]({legal})." },
       ],
     },
     {
@@ -181,9 +181,9 @@ const EN: PrivacyCopy = {
         {
           ul: [
             "Access and correction: ask for a copy of what we hold about you, or for a correction.",
-            "Deletion: ask us to delete your information. Deletion removes your reports, downloads, messages, alerts, assistant profile and account. We keep payment records until their 5 years end, and the agent consent log described below. Files you uploaded are removed from storage separately.",
-            "Agent consent log: each entry records the consent wording and version, the date, a hashed IP address, your browser details, the report reference and the agent reference. It holds no name or email. The log is append-only: entries cannot be edited or deleted, and a withdrawal adds a new entry. The hashed IP address is a one-way code made from your IP address and a secret value.",
-            "Self-service: you can delete saved calculations, quiz results, visa tracking and journeys from your dashboard, unsubscribe from points alerts with the link in each alert email, withdraw agent consent with the link in your report email, and change your analytics choice at any time.",
+            "Deletion: ask us to delete your information. Deletion removes your reports, downloads, messages, alerts, assistant profile and account. We keep payment records until their 5 years end. Files you uploaded are removed from storage separately.",
+            "Agent consent: sharing with agents is not active, and no consent records are being kept at the moment.",
+            "Self-service: you can delete saved calculations, quiz results, visa tracking and journeys from your dashboard, unsubscribe from points alerts with the link in each alert email, and change your analytics choice at any time.",
           ],
         },
       ],
@@ -282,7 +282,7 @@ const TR: PrivacyCopy = {
             "Vercel siteyi barındırır.",
             "Neon veritabanımızı barındırır.",
             "Cloudflare yüklenen dosyaları saklar (R2 depolama).",
-            "Göç danışmanları, bilgilerinizi yalnızca ajanı adıyla belirten onay kutusunu işaretlerseniz alır (bkz. Ajan yönlendirme).",
+            "Göç danışmanları bilgilerinizi almaz: danışmanlarla paylaşım şu anda etkin değildir (bkz. Ajan yönlendirme).",
           ],
         },
         { p: "Adınızı, e-postanızı, yanıtlarınızı veya rapor bağlantılarınızı Google Analytics'e göndermeyiz. Rapor, panel, giriş, kayıt, Vize Yolculuğu, ajan ve yönetici sayfaları onlara hiçbir şey göndermez." },
@@ -314,7 +314,7 @@ const TR: PrivacyCopy = {
       id: "agent",
       title: "Ajan yönlendirme",
       blocks: [
-        { p: "Bir göç danışmanının bağlantısıyla gelirseniz, danışmanın referansını 30 gün boyunca bir çerezde tutarız. Adınızı, e-postanızı, telefon numaranızı ve raporunuzu o danışmanla yalnızca danışmanı adıyla belirten isteğe bağlı onay kutusunu işaretlerseniz paylaşırız; kutuyu işaretlemeden de raporunuzu satın alıp kullanabilirsiniz. Onayınızı rapor e-postanızdaki bağlantıyla istediğiniz zaman geri çekebilirsiniz. Bir rapor satın alırsanız danışman komisyon alabilir. Ayrıntılar [Yasal Uyarı sayfasındadır]({legal})." },
+        { p: "Bilgilerinizin göç danışmanlarıyla paylaşılması şu anda etkin değildir: adınızı, e-postanızı, telefon numaranızı veya raporunuzu hiçbir danışmanla paylaşmayız ve form bir danışman onay kutusu göstermez. Bir danışmanın bağlantısıyla gelirseniz danışmanın referansını 30 gün boyunca bir çerezde tutarız. Bir rapor satın alırsanız danışman komisyon alabilir ve referansı ile satın alma durumunu görebilir; bilgilerinizi göremez. Ayrıntılar [Yasal Uyarı sayfasındadır]({legal})." },
       ],
     },
     {
@@ -384,9 +384,9 @@ const TR: PrivacyCopy = {
         {
           ul: [
             "Erişim ve düzeltme: sizinle ilgili tuttuğumuz bilgilerin bir kopyasını veya bir düzeltmeyi isteyin.",
-            "Silme: bilgilerinizin silinmesini isteyin. Silme; raporlarınızı, indirmelerinizi, mesajlarınızı, uyarılarınızı, asistan profilinizi ve hesabınızı kaldırır. Ödeme kayıtlarını 5 yıllık süreleri dolana kadar ve aşağıda anlatılan ajan onay günlüğünü tutarız. Yüklediğiniz dosyalar depolamadan ayrıca kaldırılır.",
-            "Ajan onay günlüğü: her kayıt, onay metnini ve sürümünü, tarihi, özetlenmiş bir IP adresini, tarayıcı bilgilerinizi, rapor referansını ve ajan referansını içerir. İçinde ad veya e-posta yoktur. Günlük yalnızca eklemelidir: kayıtlar düzenlenemez veya silinemez, geri çekme yeni bir kayıt ekler. Özetlenmiş IP adresi, IP adresinizden ve gizli bir değerden üretilen tek yönlü bir koddur.",
-            "Kendi kendinize: panelinizden kayıtlı hesaplamaları, test sonuçlarını, vize takibini ve yolculukları silebilir, her uyarı e-postasındaki bağlantıyla puan uyarılarından çıkabilir, rapor e-postanızdaki bağlantıyla ajan onayını geri çekebilir ve analitik seçiminizi istediğiniz zaman değiştirebilirsiniz.",
+            "Silme: bilgilerinizin silinmesini isteyin. Silme; raporlarınızı, indirmelerinizi, mesajlarınızı, uyarılarınızı, asistan profilinizi ve hesabınızı kaldırır. Ödeme kayıtlarını 5 yıllık süreleri dolana kadar tutarız. Yüklediğiniz dosyalar depolamadan ayrıca kaldırılır.",
+            "Ajan onayı: danışmanlarla paylaşım etkin değildir ve şu anda hiçbir onay kaydı tutulmamaktadır.",
+            "Kendi kendinize: panelinizden kayıtlı hesaplamaları, test sonuçlarını, vize takibini ve yolculukları silebilir, her uyarı e-postasındaki bağlantıyla puan uyarılarından çıkabilir ve analitik seçiminizi istediğiniz zaman değiştirebilirsiniz.",
           ],
         },
       ],
@@ -485,7 +485,7 @@ const ZH: PrivacyCopy = {
             "Vercel 托管网站。",
             "Neon 托管我们的数据库。",
             "Cloudflare 存储上传的文件（R2 存储）。",
-            "移民代理仅在您勾选了写明该代理的同意框时才会收到您的信息（见“代理推荐”）。",
+            "移民代理不会收到您的信息：目前未启用向代理共享（见“代理推荐”）。",
           ],
         },
         { p: "我们不会把您的姓名、邮箱、答案或报告链接发送给 Google Analytics。报告、个人面板、登录、注册、签证旅程、代理和管理页面不会向它们发送任何内容。" },
@@ -503,7 +503,7 @@ const ZH: PrivacyCopy = {
       id: "agent",
       title: "代理推荐",
       blocks: [
-        { p: "如果您通过移民代理的链接访问，我们会在 Cookie 中保存该代理的编号 30 天。仅当您勾选了写明该代理的可选同意框时，我们才会与该代理共享您的姓名、邮箱、电话号码和报告；不勾选也可以购买并使用您的报告。您可以随时通过报告邮件中的链接撤回同意。如果您购买报告，代理可能获得佣金。详情见[法律声明页面]({legal})。" },
+        { p: "目前未启用向移民代理共享您的信息：我们不会向任何移民代理提供您的姓名、邮箱、电话号码或报告，表单也不显示代理同意框。如果您通过代理的链接访问，我们会在 Cookie 中保存该代理的编号 30 天。如果您购买报告，代理可能获得佣金，并可看到该编号和购买状态，但看不到您的信息。详情见[法律声明页面]({legal})。" },
       ],
     },
     {
@@ -573,9 +573,9 @@ const ZH: PrivacyCopy = {
         {
           ul: [
             "查阅与更正：要求获取我们持有的您的信息副本，或要求更正。",
-            "删除：要求我们删除您的信息。删除会移除您的报告、下载记录、留言、提醒、助手资料和账户。付款记录保留至其 5 年期限届满，下文所述的代理同意日志也会保留。您上传的文件会另行从存储中删除。",
-            "代理同意日志：每条记录包含同意文本及版本、日期、哈希处理后的 IP 地址、您的浏览器信息、报告编号和代理编号，不包含姓名或邮箱。该日志只能追加：记录不可编辑或删除，撤回会新增一条记录。哈希处理后的 IP 地址是由您的 IP 地址和一个秘密值生成的单向代码。",
-            "自助操作：您可以在个人面板中删除已保存的计算、测验结果、签证跟踪和旅程，通过每封提醒邮件中的链接退订分数提醒，通过报告邮件中的链接撤回代理同意，并随时更改您的分析选择。",
+            "删除：要求我们删除您的信息。删除会移除您的报告、下载记录、留言、提醒、助手资料和账户。付款记录保留至其 5 年期限届满。您上传的文件会另行从存储中删除。",
+            "代理同意：目前未启用向代理共享，也没有保存任何同意记录。",
+            "自助操作：您可以在个人面板中删除已保存的计算、测验结果、签证跟踪和旅程，通过每封提醒邮件中的链接退订分数提醒，并随时更改您的分析选择。",
           ],
         },
       ],

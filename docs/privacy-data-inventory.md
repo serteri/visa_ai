@@ -151,3 +151,12 @@ Bu bölümün önceki bölümlere düzeltmeleri:
 - **`user_reports` satırı silinirse** (`delete-user-data.ts` ya da 24 aylık temizlik): günlük satırları kalır, ama doğrudan bir kişiye bağlanamaz hâle gelir; elde yalnızca bir UUID, bir ajan kimliği, rıza metni, `ip_hash` ve user agent kalır. `ip_hash` anahtarlı bir özettir (`AUTH_SECRET`); gizli değeri bilen biri aday IP'leri deneyerek eşleştirebilir, bu yüzden "anonim" değil "kimliksiz" demek daha doğru.
 - **Kalan dış bağlar** (kodun dışında): Stripe oturum `metadata`'sında `reportId` ve e-posta (Stripe tarafında silinmez), Resend'in gönderim günlükleri (rapor bağlantısında `reportId` var), `transactions.lead_id` (satır silinince NULL olur), Neon'un geçmiş/yedek kayıtları ve `user_reports` silinmeden önce alınmış her yedek.
 - **Şu an:** tablo canlıda yok (bölüm 11), yani günlükte hiçbir satır bulunmuyor.
+
+### 13a. Düzeltme (7 Kasım 2026): ajan onay günlüğü şu an çalışmıyor
+
+Bölüm 13'teki alan ve bağ analizi **tablo oluşturulursa** geçerlidir. Bugün `referral_consents` üretimde yok (bölüm 11), dolayısıyla:
+- Günlükte hiçbir satır yok ve yazılmıyor. Rıza kutusu form'da gösterilmiyor: `app/api/referral-consent/prompt/route.ts` yalnızca `consentTableReady()` doğruysa `show: true` döner ("saklayamayacağımız bir seçeneği sunmayız"). Rıza yazımı başarısız olursa kod "rıza yok" sayar ve satın alma akışını bozmaz (`lib/consent/referral-consent.ts`).
+- Hiçbir ajan müşteri adı, e-postası, telefonu veya raporu görmez (`canAgentSeeClient` rıza satırı gerektirir). Ajan e-postaları ve portal yalnızca "bir lead atandı" ve referansla satın alma durumunu gösterir (`lib/email/agent-notifications.ts`, `lib/crm/leads.ts`). Komisyon ve `logivisa_ref` çerezi (30 gün) çalışmaya devam eder.
+- `/legal` (EN/TR/ZH) ve `/privacy` buna göre yeniden yazıldı: paylaşım etkin değil, kutu gizli, ajan referansı ve satın alma durumunu görür, bilgileri görmez. "Onay kaydı / yalnızca ekleme günlüğü / geri çekme bağlantısı" ifadeleri kaldırıldı.
+- **`/terms` bölüm 12 (dokunulmadı):** hâlâ "adınızı, e-postanızı, telefonunuzu ve raporunuzu o danışmanla yalnızca onay kutusunu işaretlerseniz paylaşırız... rıza kayıt günlüğü" diyor. Paylaşım kapalı olduğu için yanlış bir vaat değil ama bugünkü durumu anlatmıyor; karar sizin.
+- Tabloyu oluşturmak ayrı bir üretim yazmasıdır (`prisma/manual-migrations/2026-10-10-create-referral-consents.sql`) ve burada yapılmadı.

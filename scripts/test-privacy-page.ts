@@ -130,6 +130,21 @@ t("the cron route is registered and needs the bearer secret", JSON.parse(read("v
 for (const f of ["scripts/null-raw-ip.ts", "scripts/delete-user-data.ts"]) t(`${f}: writes only with --confirm, and the dry run is a READ ONLY transaction`, /includes\("--confirm"\)/.test(src(f)) && /SET TRANSACTION READ ONLY/.test(src(f)) && /if \(!CONFIRM\)/.test(src(f)));
 t("delete-user-data: logs every run without the email itself", /logs/.test(src("scripts/delete-user-data.ts")) && /emailSha256/.test(src("scripts/delete-user-data.ts")) && /appendFileSync/.test(src("scripts/delete-user-data.ts")));
 
+console.log("agent sharing is not active: /legal and /privacy say so and make no consent-log promise")
+for (const l of locales) {
+  const legal = JSON.parse(read(`public/locales/${l}.json`)) as Record<string, string>;
+  const legalText = [1, 2, 3].map((i) => legal[`legal.privacyReferralText${i}`]).join(" ");
+  t(`${l}: /legal has no append-only or consent-log promise and no "tick the box" sharing`, !/append-only|never edited|yalnızca ekleme|silinmeyen|只增不改|永不删除|unless you tick|işaretlemediğiniz sürece|除非您勾选/i.test(legalText), legalText.slice(0, 60));
+  t(`${l}: /legal says sharing is not active and the box is hidden`, /not active|etkin değildir|未启用/.test(legalText) && /hidden|gizlidir|隐藏/.test(legalText));
+  t(`${l}: /legal says the agent sees a reference and purchase status, not the details`, /purchase status|satın alma durumunu|购买状态/.test(legalText));
+  const policy = [sectionText(PRIVACY_COPY[l], "agent"), sectionText(PRIVACY_COPY[l], "share"), sectionText(PRIVACY_COPY[l], "rights")].join(" ");
+  t(`${l}: /privacy agent, share and rights text make no consent-log or withdrawal promise`, !/append-only|yalnızca eklemeli|只能追加|withdraw agent consent|ajan onayını geri|撤回代理同意|tick the optional consent|işaretlemeden|不勾选/i.test(policy));
+  t(`${l}: /privacy says sharing with agents is not active`, /not active|etkin değildir|未启用/.test(sectionText(PRIVACY_COPY[l], "agent")));
+}
+const prompt = read("app/api/referral-consent/prompt/route.ts");
+t("the consent box is offered only when the consent table exists (consentTableReady), so no choice is shown that cannot be stored", /consentTableReady\(\)\)\) return NextResponse\.json\(\{ show: false \}/.test(prompt));
+t("a failed read or write of the consent record means no consent, never a failed purchase", /Fails closed/.test(read("lib/consent/referral-consent.ts")) && /Never throws: a failed write means no consent/.test(read("lib/consent/referral-consent.ts")));
+
 if (failures) {
   console.error(`\n${failures} check(s) failed`);
   process.exit(1);
