@@ -145,6 +145,15 @@ const prompt = read("app/api/referral-consent/prompt/route.ts");
 t("the consent box is offered only when the consent table exists (consentTableReady), so no choice is shown that cannot be stored", /consentTableReady\(\)\)\) return NextResponse\.json\(\{ show: false \}/.test(prompt));
 t("a failed read or write of the consent record means no consent, never a failed purchase", /Fails closed/.test(read("lib/consent/referral-consent.ts")) && /Never throws: a failed write means no consent/.test(read("lib/consent/referral-consent.ts")));
 
+console.log("leads and full_check_waitlist are not cleaned up: no subscription field exists")
+t("retention rules do not touch leads or full_check_waitlist", !RETENTION_RULES.some((r) => r.table === "leads" || r.table === "full_check_waitlist"));
+t("the retention file explains why (no subscription column) and that deletion is by request", /NOT cleaned up: `leads` and `full_check_waitlist`/.test(read("lib/retention/run.ts")) && /subscri/.test(read("lib/retention/run.ts")));
+const dbSchema = read("db/schema.ts");
+const leadsAndWaitlist = dbSchema.slice(dbSchema.indexOf("export const fullCheckWaitlist"), dbSchema.indexOf("export const fullCheckUsage"));
+t("db/schema.ts: neither table has a subscription, consent, opt-in or unsubscribe column (if one is added, add a retention exemption first)", !/subscri|consent|opt_?in|unsub|newsletter|marketing/i.test(leadsAndWaitlist));
+t("RETENTION_DRY_RUN default is unchanged (dry run unless exactly 'false')", isDryRun({}) && !isDryRun({ RETENTION_DRY_RUN: "false" }));
+for (const l of locales) t(`${l}: the policy says the two lists are not deleted automatically`, /not deleted automatically|otomatik silinmez|不会自动删除/.test(sectionText(PRIVACY_COPY[l], "retention")));
+
 if (failures) {
   console.error(`\n${failures} check(s) failed`);
   process.exit(1);

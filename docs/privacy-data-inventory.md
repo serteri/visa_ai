@@ -160,3 +160,7 @@ Bölüm 13'teki alan ve bağ analizi **tablo oluşturulursa** geçerlidir. Bugü
 - `/legal` (EN/TR/ZH) ve `/privacy` buna göre yeniden yazıldı: paylaşım etkin değil, kutu gizli, ajan referansı ve satın alma durumunu görür, bilgileri görmez. "Onay kaydı / yalnızca ekleme günlüğü / geri çekme bağlantısı" ifadeleri kaldırıldı.
 - **`/terms` bölüm 12 (dokunulmadı):** hâlâ "adınızı, e-postanızı, telefonunuzu ve raporunuzu o danışmanla yalnızca onay kutusunu işaretlerseniz paylaşırız... rıza kayıt günlüğü" diyor. Paylaşım kapalı olduğu için yanlış bir vaat değil ama bugünkü durumu anlatmıyor; karar sizin.
 - Tabloyu oluşturmak ayrı bir üretim yazmasıdır (`prisma/manual-migrations/2026-10-10-create-referral-consents.sql`) ve burada yapılmadı.
+
+### 12a. Düzeltme (7 Kasım 2026): `leads` ve `full_check_waitlist` temizlikten çıkarıldı
+
+Bölüm 12'deki saklama listesinden bu iki tablo çıkarıldı. Nedeni: ne `db/schema.ts`'de ne de canlı tablolarda (salt-okunur `information_schema` sorgusu, 30 ve 26 sütun) abonelik, onay, abonelikten çıkma ya da durum bilgisi taşıyan bir sütun var; yani 24 aylık bir kural aktif aboneyi eskisinden ayıramaz. Satırlar, silme talebine (`scripts/delete-user-data.ts`) kadar kalır. Politika bunu söylüyor. Bir abonelik sütunu eklenirse önce muafiyet kuralı yazılmalı (`scripts/test-privacy-page.ts` bu durumda uyarır).

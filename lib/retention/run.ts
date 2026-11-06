@@ -3,11 +3,15 @@
  *
  *   transactions                                  5 years
  *   contact messages                              12 months
- *   guide downloads (guide_downloads, pdf_downloads) and report entries (user_reports, leads, full_check_waitlist)   24 months
+ *   guide downloads (guide_downloads, pdf_downloads) and report entries (user_reports)   24 months
  *   chat (visitors without credits, their profiles, restore tokens and requests)   90 days
  *
  * DRY RUN BY DEFAULT: unless RETENTION_DRY_RUN is exactly "false" the run only counts the rows each rule would delete. Nothing is deleted in production until
  * the founder sets RETENTION_DRY_RUN=false in the Vercel environment.
+ *
+ * NOT cleaned up: `leads` and `full_check_waitlist`. Neither the code (db/schema.ts) nor the live tables have any column that says whether someone subscribed, opted
+ * in or unsubscribed (checked 7 November 2026), so a 24-month rule could not tell an active subscriber from an old one. Their rows stay until a person asks for
+ * deletion (scripts/delete-user-data.ts). Add a subscription column and a rule here before cleaning them.
  *
  * Chat visitors that hold a credit balance (premium_credits > 0) or are linked to an email (chat_credit_links) are never deleted: the pricing page says credits
  * never expire. Payment records (transactions) are deleted only after 5 years; deleting an old report leaves its transaction row (the link is set to NULL).
@@ -22,8 +26,6 @@ export const RETENTION_RULES: RetentionRule[] = [
   { id: "guide_downloads", table: "guide_downloads", where: "created_at < now() - interval '24 months'", description: "guide downloads older than 24 months" },
   { id: "pdf_downloads", table: "pdf_downloads", where: "created_at < now() - interval '24 months'", description: "PDF downloads older than 24 months" },
   { id: "user_reports", table: "user_reports", where: "created_at < now() - interval '24 months'", description: "report entries older than 24 months" },
-  { id: "leads", table: "leads", where: "created_at < now() - interval '24 months'", description: "report-form leads older than 24 months" },
-  { id: "full_check_waitlist", table: "full_check_waitlist", where: "created_at < now() - interval '24 months'", description: "report-form waitlist rows older than 24 months" },
   { id: "chat_restore_requests", table: "chat_restore_requests", where: "created_at < now() - interval '90 days'", description: "credit-restore requests older than 90 days" },
   { id: "chat_restore_tokens", table: "chat_restore_tokens", where: "created_at < now() - interval '90 days'", description: "credit-restore tokens older than 90 days" },
   {
