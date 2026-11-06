@@ -6,8 +6,7 @@ import { cn } from "@/lib/utils";
 export function TrustBanner({ className }: { className?: string }) {
   return (
     <p className={cn("text-center text-xs text-slate-500", className)}>
-      🔒 256-bit AES Encryption &nbsp;|&nbsp; Private Cloud Storage &nbsp;|&nbsp; Designed for Australian Privacy
-      Standards
+      🔒 Connections are encrypted with HTTPS &nbsp;|&nbsp; Uploaded files open only through short-lived links
     </p>
   );
 }

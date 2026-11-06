@@ -48,12 +48,7 @@ export function DownloadForm({
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    // Phone is now required — block submission (and the PDF) when empty.
-    if (!phone.trim()) {
-      setError(translations.guidePage.form.phoneRequired)
-      return
-    }
-
+    // The phone number is optional (the server does not require it).
     setIsSubmitting(true)
     setError(null)
 
@@ -61,7 +56,7 @@ export function DownloadForm({
       firstName,
       lastName,
       email,
-      phone: `${dialForCountryCode(countryIso)} ${phone.trim()}`,
+      phone: phone.trim() ? `${dialForCountryCode(countryIso)} ${phone.trim()}` : undefined,
       locale,
     })
 
@@ -166,7 +161,7 @@ export function DownloadForm({
         <RequiredLegend locale={locale} />
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
-            <Label htmlFor="firstName">{translations.guidePage.form.firstName}</Label>
+            <Label htmlFor="firstName">{translations.guidePage.form.firstName}<span className="text-red-700 ml-1" aria-hidden="true">*</span></Label>
             <Input
               id="firstName"
               type="text"
@@ -177,7 +172,7 @@ export function DownloadForm({
             />
           </div>
           <div>
-            <Label htmlFor="lastName">{translations.guidePage.form.lastName}</Label>
+            <Label htmlFor="lastName">{translations.guidePage.form.lastName}<span className="text-red-700 ml-1" aria-hidden="true">*</span></Label>
             <Input
               id="lastName"
               type="text"
@@ -189,7 +184,7 @@ export function DownloadForm({
           </div>
         </div>
         <div>
-          <Label htmlFor="email">{translations.guidePage.form.email}</Label>
+          <Label htmlFor="email">{translations.guidePage.form.email}<span className="text-red-700 ml-1" aria-hidden="true">*</span></Label>
           <Input
             id="email"
             type="email"
@@ -202,7 +197,6 @@ export function DownloadForm({
         <div>
           <Label htmlFor="phone">
             {translations.guidePage.form.phone}
-            <span className="text-red-700 ml-1" aria-hidden="true">*</span>
           </Label>
           <div className="flex gap-2">
             <Select value={countryIso} onValueChange={setCountryIso} disabled={limitReached || isSubmitting}>
@@ -222,7 +216,6 @@ export function DownloadForm({
               type="tel"
               value={phone}
               onChange={(e) => setPhone(e.target.value)}
-              required
               disabled={limitReached || isSubmitting}
             />
           </div>

@@ -362,9 +362,15 @@ export function LeadMagnetForm({
               </>
             )
           : tx(
-              "Bilgileriniz yalnızca bu indirme için kullanılır ve üçüncü taraflarla paylaşılmaz.",
-              "Your details are used only for this download and are not shared with third parties.",
-              "您的信息仅用于本次下载，不会与第三方共享。"
+              <>
+                Bilgileriniz reklam için satılmaz veya paylaşılmaz. E-posta göndermek için Resend gibi hizmet sağlayıcılar kullanılır. Ayrıntılar için <TermsGateLink href={publicPath(locale, "/privacy")}>Gizlilik Politikası</TermsGateLink>.
+              </>,
+              <>
+                Your details are not sold or shared for advertising. Service providers such as Resend are used to send the email. See the <TermsGateLink href={publicPath(locale, "/privacy")}>Privacy Policy</TermsGateLink>.
+              </>,
+              <>
+                您的信息不会被出售或用于广告共享。我们使用 Resend 等服务提供商发送邮件。详情见<TermsGateLink href={publicPath(locale, "/privacy")}>隐私政策</TermsGateLink>。
+              </>
             )}
       </p>
       <PrivacyNotice locale={locale} />
