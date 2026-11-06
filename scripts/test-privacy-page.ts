@@ -44,7 +44,7 @@ console.log("the protected facts (contact address, providers, numbers, dates) ar
 for (const l of locales) {
   const c = PRIVACY_COPY[l];
   t(`${l}: contact address ${PRIVACY_CONTACT_EMAIL} appears in the contact and rights sections`, sectionText(c, "who").includes(PRIVACY_CONTACT_EMAIL) && sectionText(c, "rights").includes(PRIVACY_CONTACT_EMAIL));
-  for (const name of ["Stripe", "Resend", "OpenAI", "Google", "Meta", "Vercel", "Neon", "Cloudflare"]) t(`${l}: provider ${name} is named in "share"`, sectionText(c, "share").includes(name));
+  for (const name of ["Stripe", "Resend", "OpenAI", "Google", "Vercel", "Neon", "Cloudflare"]) t(`${l}: provider ${name} is named in "share"`, sectionText(c, "share").includes(name));
   t(`${l}: names the OAIC`, sectionText(c, "complaints").includes("OAIC") && sectionText(c, "complaints").includes("oaic.gov.au"));
   t(`${l}: names the Neon region`, sectionText(c, "overseas").includes("ap-southeast-2"));
   const datesOk = [c.updatedLabel, sectionText(c, "changes")].every((x) => x.includes("2026") && x.includes("6"));
@@ -54,10 +54,10 @@ for (const id of required.filter((id) => id !== "changes")) {
   const base = numbers(sectionText(PRIVACY_COPY.en, id));
   for (const l of ["tr", "zh-Hans"] as const) t(`${l}/${id}: same numbers as English (${base || "none"})`, numbers(sectionText(PRIVACY_COPY[l], id)) === base, numbers(sectionText(PRIVACY_COPY[l], id)));
 }
-for (const word of ["lv_consent", "_ga", "_gid", "_gat", "_fbp", "_fbc", "httpOnly"]) t(`cookie name ${word} is the same in all languages`, locales.every((l) => sectionText(PRIVACY_COPY[l], "cookies").includes(word)));
+for (const word of ["lv_consent", "lv_report_session", "logivisa_ref", "_ga", "_gid", "_gat", "httpOnly"]) t(`cookie name ${word} is the same in all languages`, locales.every((l) => sectionText(PRIVACY_COPY[l], "cookies").includes(word)));
 
 console.log("no unverifiable promises, no compliance claims, no placeholders");
-const banned = [/\bTODO\b/i, /\bKVKK\b/i, /\bGDPR\b/i, /Privacy Act/i, /Gizlilik Yasas/i, /隐私法/, /anonim/i, /匿名/, /fully anonymous/i, /\bsecure\b(?! link| token)/i];
+const banned = [/\bMeta\b/, /Pixel/i, /_fbp|_fbc/, /\bTODO\b/i, /\bKVKK\b/i, /\bGDPR\b/i, /Privacy Act/i, /Gizlilik Yasas/i, /隐私法/, /anonim/i, /匿名/, /fully anonymous/i, /\bsecure\b(?! link| token)/i];
 for (const l of locales) {
   const text = allText(PRIVACY_COPY[l]);
   for (const re of banned) t(`${l}: does not contain ${re}`, !re.test(text), (text.match(re) ?? [""])[0]);

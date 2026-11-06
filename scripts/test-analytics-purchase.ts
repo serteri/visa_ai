@@ -7,7 +7,7 @@
 import { readFileSync } from "node:fs";
 
 import { purchaseFromSession, purchaseTransactionId, verifiedPurchase, type StripeSessionLike } from "../lib/analytics/purchase";
-import { PURCHASE_LEDGER_PREFIX, reportPurchase, validPurchase, type PurchaseDeps, type PurchasePayload } from "../lib/analytics/purchase-client";
+import { PURCHASE_LEDGER_PREFIX, reportPurchase, validPurchase, type PurchaseDeps } from "../lib/analytics/purchase-client";
 
 let failures = 0;
 const check = (cond: boolean, msg: string, detail = "") => {
@@ -65,28 +65,25 @@ async function main() {
   const store = new Map<string, string>();
   const storage = { getItem: (k: string) => store.get(k) ?? null, setItem: (k: string, v: string) => void store.set(k, v) };
   const gaCalls: unknown[][] = [];
-  const metaCalls: PurchasePayload[] = [];
-  const deps = (over: Partial<PurchaseDeps> = {}): PurchaseDeps => ({ storage, gtag: (...a) => void gaCalls.push(a), postToMeta: (x) => void metaCalls.push(x), pageLocation: "https://www.logivisa.com/checkout/success", ...over });
+  const deps = (over: Partial<PurchaseDeps> = {}): PurchaseDeps => ({ storage, gtag: (...a) => void gaCalls.push(a), pageLocation: "https://www.logivisa.com/checkout/success", ...over });
   const first = reportPurchase(a!, deps());
-  check(first.ga && first.meta && first.done && gaCalls.length === 1 && metaCalls.length === 1, "first visit: one GA4 purchase and one Meta purchase");
+  check(first.ga && first.done && gaCalls.length === 1, "first visit: one GA4 purchase");
   const ev = gaCalls[0];
   check(ev[0] === "event" && ev[1] === "purchase" && (ev[2] as { transaction_id: string }).transaction_id === a!.txn && (ev[2] as { value: number }).value === 39.99 && (ev[2] as { currency: string }).currency === "AUD" && !/[?#]/.test((ev[2] as { page_location: string }).page_location) && (ev[2] as { page_referrer: string }).page_referrer === "", "the GA4 event has the transaction id, amount, currency, a path-only location and no referrer");
-  check(!/cs_|pi_|jane|@|rep_/.test(JSON.stringify(gaCalls) + JSON.stringify(metaCalls)), "nothing identifying is in what GA4 or Meta receive");
+  check(!/cs_|pi_|jane|@|rep_/.test(JSON.stringify(gaCalls)), "nothing identifying is in what GA4 receives");
   for (let i = 0; i < 5; i++) reportPurchase(a!, deps());
-  check(gaCalls.length === 1 && metaCalls.length === 1, "five more refreshes send nothing");
+  check(gaCalls.length === 1, "five more refreshes send nothing");
   const store2 = new Map<string, string>();
   const dev2 = (over: Partial<PurchaseDeps> = {}): PurchaseDeps => ({ ...deps(over), storage: { getItem: (k) => store2.get(k) ?? null, setItem: (k, v) => void store2.set(k, v) } });
-  gaCalls.length = 0; metaCalls.length = 0;
-  const onlyGa = reportPurchase(a!, dev2({ postToMeta: null }));
-  check(onlyGa.ga && !onlyGa.meta && !onlyGa.done && gaCalls.length === 1, "GA4 ready before the Meta frame: GA4 is sent, the call is not 'done'");
-  const later = reportPurchase(a!, dev2({ gtag: null }));
-  check(!later.ga && later.meta && later.done && gaCalls.length === 1 && metaCalls.length === 1, "when the frame is ready later only Meta is sent; GA4 is not sent twice");
+  gaCalls.length = 0;
+  const second = reportPurchase(a!, dev2());
+  check(second.ga && second.done && gaCalls.length === 1, "a second browser (empty ledger) sends once; GA4 collapses it on the same transaction id");
   const noStorage = reportPurchase(a!, { ...deps(), storage: null });
-  check(noStorage.ga && noStorage.meta, "without storage (private mode) the vendor-side deduplication on the transaction id is what is left (documented limitation)");
-  gaCalls.length = 0; metaCalls.length = 0;
+  check(noStorage.ga, "without storage (private mode) the vendor-side deduplication on the transaction id is what is left (documented limitation)");
+  gaCalls.length = 0;
   const store3 = new Map<string, string>();
-  const noConsent = reportPurchase(a!, { ...deps(), gtag: null, postToMeta: null, storage: { getItem: (k) => store3.get(k) ?? null, setItem: (k, v) => void store3.set(k, v) } });
-  check(!noConsent.ga && !noConsent.meta && !noConsent.done && gaCalls.length === 0 && metaCalls.length === 0 && ![...store3.keys()].some((k) => k.startsWith(PURCHASE_LEDGER_PREFIX)), "without consent nothing is sent and nothing is marked as sent (a later consent can still send it)");
+  const noConsent = reportPurchase(a!, { ...deps(), gtag: null, storage: { getItem: (k) => store3.get(k) ?? null, setItem: (k, v) => void store3.set(k, v) } });
+  check(!noConsent.ga && !noConsent.done && gaCalls.length === 0 && ![...store3.keys()].some((k) => k.startsWith(PURCHASE_LEDGER_PREFIX)), "without consent nothing is sent and nothing is marked as sent (a later consent can still send it)");
   check(!validPurchase({ ...a, txn: "cs_live_abc" }) && !validPurchase({ ...a, value: 0 }) && !validPurchase({ ...a, currency: "aud" }) && !validPurchase(null) && reportPurchase({ ...a!, value: -1 }, deps()).done, "an invalid payload sends nothing");
 
   console.log("\n5. wiring: the page, the webhook and the old Pixel call");
@@ -94,11 +91,11 @@ async function main() {
   check(/verifiedPurchase\(sessionId, \(id\) => getStripeClient\(\)\.checkout\.sessions\.retrieve\(id\)/.test(page) && /<CheckoutSuccessClient downloadHref=\{downloadHref\} purchase=\{purchase\}/.test(page), "the success page derives the purchase from the retrieved Stripe session on the server");
   check(/verifiedDownloadHref\(sessionId, reportId\?\.trim\(\)\)/.test(page) && /session\.payment_status === "paid" \|\| session\.payment_status === "no_payment_required"/.test(page), "the existing download verification is unchanged");
   const client = read("app/[locale]/(main)/checkout/success/success-client.tsx");
-  check(!/fbq|searchParams|useSearchParams|PREMIUM_PRICE_AUD|PRODUCT_PRICE_AUD_CENTS/.test(client) && /<PurchaseTracker purchase=\{purchase\} \/>/.test(client), "the page-visit Meta Purchase (fixed price, fired from the URL's product) is gone");
+  check(!/fbq|searchParams|useSearchParams|PREMIUM_PRICE_AUD|PRODUCT_PRICE_AUD_CENTS/.test(client) && /<PurchaseTracker purchase=\{purchase\} \/>/.test(client), "the page-visit purchase (fixed price, fired from the URL's product) is gone");
   const webhook = read("app/api/stripe/webhook/route.ts") + read("app/api/webhooks/stripe/route.ts");
   check(!/gtag|fbq|trackEvent|analytics\/purchase|graph\.facebook|measurement_id|mp\/collect/.test(webhook), "the webhooks emit no analytics event, so a duplicated or retried webhook cannot create a purchase");
   const tracker = read("components/analytics/purchase-tracker.tsx");
-  check(/iframe/.test(tracker) && /referrerPolicy = "no-referrer"/.test(tracker) && /allow-scripts allow-same-origin/.test(tracker) && !/fbq\(/.test(tracker), "the Meta Purchase is sent from an isolated, referrer-less frame, not from the page whose URL holds the session id");
+  check(!/iframe|fbq|facebook|postToMeta/.test(tracker), "the purchase tracker sends to GA4 only: no frame, no Meta");
   check(/pageLocation: `\$\{window\.location\.origin\}\$\{window\.location\.pathname\}`/.test(tracker) && /analyticsConsent/.test(tracker), "GA4 gets a path-only location and only with analytics consent");
   const checkoutRoute = read("app/api/checkout/route.ts");
   check(/success_url: successUrl/.test(checkoutRoute) && /session_id=\{CHECKOUT_SESSION_ID\}/.test(checkoutRoute), "the checkout success URL and the Stripe session creation are unchanged");

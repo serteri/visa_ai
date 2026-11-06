@@ -4,7 +4,7 @@ const nextConfig: NextConfig = {
   // "Update from official source" uploads a PDF / DOCX / XLSX / CSV of up to 10 MB through a server action (Vercel itself caps a request body at 4.5 MB).
   experimental: { serverActions: { bodySizeLimit: "10mb" } },
   // Pages whose URL carries a credential (the report link's access token `t`, the Stripe session id) send no Referer when a link on them is followed, so the
-  // full URL cannot reach another page's analytics or another site as a referrer. The isolated purchase frame is not for search engines.
+  // full URL cannot reach another page's analytics or another site as a referrer.
   async headers() {
     const noReferrer = [{ key: "Referrer-Policy", value: "no-referrer" }];
     const locales = ":locale(tr|zh-Hans)";
@@ -13,7 +13,6 @@ const nextConfig: NextConfig = {
         { source: `/${p}`, headers: noReferrer },
         { source: `/${locales}/${p}`, headers: noReferrer },
       ]),
-      { source: "/analytics/purchase-frame.html", headers: [{ key: "X-Robots-Tag", value: "noindex, nofollow" }, ...noReferrer] },
     ];
   },
   async redirects() {

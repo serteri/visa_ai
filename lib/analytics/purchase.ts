@@ -7,7 +7,7 @@ import { createHmac } from "node:crypto";
  *   - Only a session whose payment_status is "paid" with a positive amount counts. "unpaid" (async payment pending or failed), "no_payment_required"
  *     (100% coupon, free) and an expired session produce nothing.
  *   - `txn` is an opaque, keyed hash of the payment intent (else the session id): the same for every refresh, webhook retry or second device, and it
- *     contains no Stripe identifier. It is the GA4 transaction_id and the Meta event_id, so the vendors can collapse repeats.
+ *     contains no Stripe identifier. It is the GA4 transaction_id, so GA4 can collapse repeats.
  *   - `value` / `currency` are what Stripe actually charged (after any coupon), not a list price. No name, email, report id or token is included.
  */
 export type VerifiedPurchase = { txn: string; value: number; currency: string; product: string };

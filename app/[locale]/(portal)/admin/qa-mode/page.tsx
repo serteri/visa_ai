@@ -22,13 +22,13 @@ export default async function QaModePage({ params }: PageProps) {
         </CardHeader>
         <CardContent className="space-y-4 text-sm text-slate-700">
           <p>
-            While QA mode is on in this browser, Google Analytics and the Meta Pixel are not loaded on the public site, so testing is not counted. It only
+            While QA mode is on in this browser, Google Analytics is not loaded on the public site, so testing is not counted. It only
             affects this browser, expires after 8 hours, and changes no checkout, payment, sign-in or report behaviour.
           </p>
           <QaModeControls />
           <p className="text-xs text-slate-500">
-            To verify: with QA mode on, open a public page with the browser network tab and filter for <code>google-analytics</code>, <code>googletagmanager</code>
-            and <code>facebook</code>; no request should appear. Turn it off and reload to confirm analytics resume (after consent).
+            To verify: with QA mode on, open a public page with the browser network tab and filter for <code>google-analytics</code> and <code>googletagmanager</code>;
+            no request should appear. Turn it off and reload to confirm analytics resume (after consent).
           </p>
         </CardContent>
       </Card>

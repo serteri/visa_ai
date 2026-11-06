@@ -10,7 +10,6 @@ import { ResearchContinuationTracker } from "@/components/analytics/research-con
 import { AssessmentEntryTracker } from "@/components/analytics/assessment-entry-tracker";
 import { AnalyticsProvider } from "@/components/analytics/analytics-provider";
 import { ConsentBanner } from "@/components/analytics/consent-banner";
-import { META_PIXEL_ID } from "@/lib/analytics/policy";
 import { Toaster } from "@/components/ui/sonner";
 import { SiteGuide } from "@/components/site-guide/site-guide";
 import { isValidLocale, type Locale } from "@/lib/i18n/config";
@@ -156,8 +155,8 @@ export default async function LocaleLayout({
       <Toaster />
       <SiteGuide locale={locale} />
       <Suspense fallback={null}>
-        <AnalyticsProvider vercelEnv={vercelEnv} gaId={gaId} pixelId={META_PIXEL_ID} testGaId={testGaId} testMode={testMode} />
-        <ConsentBanner locale={locale} vercelEnv={vercelEnv} gaId={gaId} pixelId={META_PIXEL_ID} testGaId={testGaId} testMode={testMode} />
+        <AnalyticsProvider vercelEnv={vercelEnv} gaId={gaId} testGaId={testGaId} testMode={testMode} />
+        <ConsentBanner locale={locale} vercelEnv={vercelEnv} gaId={gaId} testGaId={testGaId} testMode={testMode} />
       </Suspense>
       <OutboundLinkTracker locale={locale} />
       <ResearchContinuationTracker locale={locale} />
