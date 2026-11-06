@@ -65,3 +65,6 @@ test-output.pdf
 
 # Local experiments, logs and one-off verification scripts -- not versioned.
 /scratch/
+
+# data request log (scripts/delete-user-data.ts)
+/logs/

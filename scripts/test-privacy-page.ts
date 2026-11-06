@@ -10,6 +10,8 @@ import { readFileSync } from "node:fs";
 import { join } from "node:path";
 
 import { buildSitemap } from "../app/sitemap";
+import { createSeenSet, ipFingerprint } from "../lib/privacy/ip";
+import { isDryRun, RETENTION_RULES } from "../lib/retention/run";
 import { PRIVACY_CONTACT_EMAIL, PRIVACY_COPY, PRIVACY_EFFECTIVE_DATE, type PrivacyBlock, type PrivacyCopy, type PrivacyLocale } from "../lib/privacy/content";
 
 let failures = 0;
@@ -57,7 +59,7 @@ for (const id of required.filter((id) => id !== "changes")) {
 for (const word of ["lv_consent", "lv_report_session", "logivisa_ref", "_ga", "_gid", "_gat", "httpOnly"]) t(`cookie name ${word} is the same in all languages`, locales.every((l) => sectionText(PRIVACY_COPY[l], "cookies").includes(word)));
 
 console.log("no unverifiable promises, no compliance claims, no placeholders");
-const banned = [/\bMeta\b/, /Pixel/i, /_fbp|_fbc/, /\bTODO\b/i, /\bKVKK\b/i, /\bGDPR\b/i, /Privacy Act/i, /Gizlilik Yasas/i, /隐私法/, /anonim/i, /匿名/, /fully anonymous/i, /\bsecure\b(?! link| token)/i];
+const banned = [/\bMeta\b/, /Pixel/i, /_fbp|_fbc/, /\bTODO\b/i, /\bKVKK\b/i, /\bGDPR\b/i, /Privacy Act/i, /Gizlilik Yasas/i, /隐私法/, /tamamen anonim|tümüyle anonim/i, /完全匿名|彻底匿名/, /fully anonymous|completely anonymous/i, /\bsecure\b(?! link| token)/i];
 for (const l of locales) {
   const text = allText(PRIVACY_COPY[l]);
   for (const re of banned) t(`${l}: does not contain ${re}`, !re.test(text), (text.match(re) ?? [""])[0]);
@@ -95,6 +97,38 @@ const notice = read("components/privacy-notice.tsx");
 t("the note is a link in a new tab, not a checkbox", notice.includes('target="_blank"') && !/type="checkbox"|<input/.test(notice));
 t("the footer shown on every non-home page links to /privacy", read("components/global-disclaimer-footer.tsx").includes('publicPath(language, "/privacy")'));
 t("the consent banner links to /privacy", read("components/analytics/consent-banner.tsx").includes('publicPath(locale, "/privacy")'));
+
+console.log("raw IP addresses are not stored; the stand-ins behave")
+const fp = ipFingerprint("203.0.113.9", "secret-a");
+t("fingerprint: 32 hex characters, stable, keyed, and never the address", /^[0-9a-f]{32}$/.test(fp) && fp === ipFingerprint("203.0.113.9", "secret-a") && fp !== ipFingerprint("203.0.113.9", "secret-b") && fp !== ipFingerprint("203.0.113.10", "secret-a") && !fp.includes("203"));
+t('fingerprint: an unknown address stays "unknown"', ipFingerprint("unknown", "x") === "unknown" && ipFingerprint("", "x") === "unknown");
+let clock = 1000;
+const seen = createSeenSet(100, 3, () => clock);
+seen.add("a", "id-a");
+t("seen set: remembers a key inside its time limit", seen.has("a"));
+seen.removeById("id-a");
+t("seen set: a released download frees its slot", !seen.has("a"));
+seen.add("b");
+clock += 101;
+t("seen set: forgets after the time limit", !seen.has("b"));
+for (const k of ["c", "d", "e", "f"]) seen.add(k);
+t("seen set: keeps at most its size cap", ["c", "d", "e", "f"].filter((k) => seen.has(k)).length === 3);
+const src = (f: string) => read(f);
+t("full-check no longer stores the address on the report", !/ipAddress:\s*clientIp/.test(src("app/[locale]/(main)/full-check/actions.ts")));
+t("guide form stores null for the address and has no database lookup by address", /ipAddress: null/.test(src("app/[locale]/(main)/rehber/actions.ts")) && !/where: \{ ipAddress/.test(src("app/[locale]/(main)/rehber/actions.ts")) && !/ipAddress: ipAddress/.test(src("app/[locale]/(main)/rehber/actions.ts")));
+const pdfRoute = src("app/api/pdf-download/route.ts");
+t("pdf download writes an empty string (NOT NULL column) and no address to user_reports; no lookup by stored address", /ip_address: ""/.test(pdfRoute) && !/ipAddress: t\.ip/.test(pdfRoute) && !/eq\(pdfDownloads\.ip_address/.test(pdfRoute));
+t("chat visitors are keyed by fingerprint and browser, and a legacy row is adopted", /where: \{ fingerprint, userAgent \}/.test(src("lib/visitor-tracking.ts")) && /data: \{ fingerprint, userAgent \}/.test(src("lib/visitor-tracking.ts")) && /ipAddress: null/.test(src("lib/visitor-tracking.ts")));
+
+console.log("retention, deletion and the one-off script: dry run by default");
+t("RETENTION_DRY_RUN: dry run unless exactly 'false'", isDryRun({}) && isDryRun({ RETENTION_DRY_RUN: "true" }) && isDryRun({ RETENTION_DRY_RUN: "" }) && isDryRun({ RETENTION_DRY_RUN: "False" }) && !isDryRun({ RETENTION_DRY_RUN: "false" }));
+const rule = (id: string) => RETENTION_RULES.find((r) => r.id === id)?.where ?? "";
+t("retention periods: transactions 5 years, contact 12 months, downloads and reports 24 months, chat 90 days", /5 years/.test(rule("transactions")) && /12 months/.test(rule("contact_messages")) && ["guide_downloads", "pdf_downloads", "user_reports"].every((id) => /24 months/.test(rule(id))) && ["chat_restore_requests", "chat_restore_tokens", "chat_visitor_profiles", "chat_visitors"].every((id) => /90 days/.test(rule(id))));
+t("retention never deletes a chat visitor that holds credits or is linked to an email", /premium_credits = 0/.test(rule("chat_visitors")) && /chat_credit_links/.test(rule("chat_visitors")) && /chat_credit_links/.test(rule("chat_visitor_profiles")));
+t("the policy states the same periods", ["5", "12", "24", "90"].every((n) => numbers(sectionText(PRIVACY_COPY.en, "retention")).split(",").includes(n)));
+t("the cron route is registered and needs the bearer secret", JSON.parse(read("vercel.json")).crons.some((c: { path: string }) => c.path === "/api/cron/retention") && /CRON_SECRET/.test(read("app/api/cron/retention/route.ts")) && /safeEqual\(providedToken, secret\)/.test(read("app/api/cron/retention/route.ts")));
+for (const f of ["scripts/null-raw-ip.ts", "scripts/delete-user-data.ts"]) t(`${f}: writes only with --confirm, and the dry run is a READ ONLY transaction`, /includes\("--confirm"\)/.test(src(f)) && /SET TRANSACTION READ ONLY/.test(src(f)) && /if \(!CONFIRM\)/.test(src(f)));
+t("delete-user-data: logs every run without the email itself", /logs/.test(src("scripts/delete-user-data.ts")) && /emailSha256/.test(src("scripts/delete-user-data.ts")) && /appendFileSync/.test(src("scripts/delete-user-data.ts")));
 
 if (failures) {
   console.error(`\n${failures} check(s) failed`);

@@ -48,11 +48,11 @@ const EN: PrivacyCopy = {
             "Free guides and PDF downloads: your name, your email, a phone number if you give one, and the time you accepted the terms.",
             "Contact form: your name, email, phone number and message.",
             "Payments: card details are entered on the Stripe payment page and are not stored by us. We keep your email address, the amount, the GST amount and the Stripe session reference. Stripe also collects your billing address.",
-            "AI Assistant: the messages you type; the IP address and browser details (user agent) of your device, which we use to recognise the browser and apply the free message limit; your message count and credit balance; and, if you fill in the quick profile card or link a report, the answers on it. If you restore credits, your email address.",
+            "AI Assistant: the messages you type; a keyed hash of your IP address and the browser details (user agent) of your device, which we use to recognise the browser and apply the free message limit; your message count and credit balance; and, if you fill in the quick profile card or link a report, the answers on it. If you restore credits, your email address.",
             "Occupation tools that read a CV: the CV text you paste is sent to OpenAI to produce a suggestion. We do not save it in our database.",
             "Points alerts: your email address, target points and visa subclass.",
             "Accounts: if you sign in with Google, your name, email and profile picture; if you use an email link or a password, your email and, for a password, a hash of it. Items you save in your dashboard, and documents you upload to the document vault or the Visa Journey page.",
-            "Technical records: your IP address is stored with report requests, guide requests and assistant visitor records.",
+            "Technical records: report requests, guide requests and the assistant's visitor records do not store your IP address. The assistant recognises a browser from a keyed hash of its IP address together with its browser details; this is pseudonymous, not anonymous. Credit-restore requests keep the IP address for rate limiting.",
             "Internal scoring: we calculate an internal interest score and tier from the answers in a report request. It is for our own prioritisation and is not shown to migration agents.",
           ],
         },
@@ -136,7 +136,17 @@ const EN: PrivacyCopy = {
       id: "retention",
       title: "How long we keep it",
       blocks: [
-        { p: "We keep information for as long as we need it for the purpose it was collected, for our payment and consent records, and for as long as the law requires. We have not set fixed retention periods for most records yet. Time limits built into the site:" },
+        { p: "We keep information for as long as we need it for the purpose it was collected and for as long as the law requires. Time limits:" },
+        {
+          ul: [
+            "payment records: 5 years;",
+            "contact messages: 12 months;",
+            "guide downloads and report entries (report requests and the reports made from them): 24 months;",
+            "assistant data (visitor records, profile cards, credit-restore requests and tokens): 90 days. A visitor record that holds a credit balance or is linked to an email address is kept while the credits remain.",
+          ],
+        },
+        { p: "The automatic clean-up that applies these periods is built but not yet switched on." },
+        { p: "Time limits built into the site:" },
         {
           ul: [
             "sign-in email links work for 10 minutes;",
@@ -167,11 +177,11 @@ const EN: PrivacyCopy = {
       id: "rights",
       title: "Your rights: access, correction and deletion",
       blocks: [
-        { p: "Write to info@logivisa.com from the email address you used, say what you want, and we will handle the request. We process these requests by hand." },
+        { p: "Write to info@logivisa.com from the email address you used and say what you want. We reply to requests within 30 days. We process them ourselves, using a deletion script that we run by hand." },
         {
           ul: [
             "Access and correction: ask for a copy of what we hold about you, or for a correction.",
-            "Deletion: ask us to delete your information. We may need to keep payment records and the agent consent log described below.",
+            "Deletion: ask us to delete your information. Deletion removes your reports, downloads, messages, alerts, assistant profile and account. We keep payment records until their 5 years end, and the agent consent log described below. Files you uploaded are removed from storage separately.",
             "Agent consent log: each entry records the consent wording and version, the date, a hashed IP address, your browser details, the report reference and the agent reference. It holds no name or email. The log is append-only: entries cannot be edited or deleted, and a withdrawal adds a new entry. The hashed IP address is a one-way code made from your IP address and a secret value.",
             "Self-service: you can delete saved calculations, quiz results, visa tracking and journeys from your dashboard, unsubscribe from points alerts with the link in each alert email, withdraw agent consent with the link in your report email, and change your analytics choice at any time.",
           ],
@@ -227,11 +237,11 @@ const TR: PrivacyCopy = {
             "Ücretsiz rehberler ve PDF indirmeleri: adınız, e-postanız, verirseniz telefon numaranız ve koşulları kabul ettiğiniz zaman.",
             "İletişim formu: adınız, e-postanız, telefon numaranız ve mesajınız.",
             "Ödemeler: kart bilgileri Stripe ödeme sayfasında girilir ve bizde saklanmaz. E-posta adresinizi, tutarı, GST tutarını ve Stripe oturum referansını saklarız. Fatura adresinizi Stripe toplar.",
-            "Yapay zekâ asistanı: yazdığınız mesajlar; cihazınızın IP adresi ve tarayıcı bilgileri (user agent), ki bunları tarayıcıyı tanımak ve ücretsiz mesaj sınırını uygulamak için kullanırız; mesaj sayınız ve kredi bakiyeniz; hızlı profil kartını doldurursanız ya da bir raporu bağlarsanız üzerindeki yanıtlar. Kredi geri yüklerseniz e-posta adresiniz.",
+            "Yapay zekâ asistanı: yazdığınız mesajlar; cihazınızın IP adresinin anahtarlı özeti ve tarayıcı bilgileri (user agent), ki bunları tarayıcıyı tanımak ve ücretsiz mesaj sınırını uygulamak için kullanırız; mesaj sayınız ve kredi bakiyeniz; hızlı profil kartını doldurursanız ya da bir raporu bağlarsanız üzerindeki yanıtlar. Kredi geri yüklerseniz e-posta adresiniz.",
             "CV okuyan meslek araçları: yapıştırdığınız CV metni, bir öneri üretmek için OpenAI'ye gönderilir. Bunu veritabanımıza kaydetmeyiz.",
             "Puan uyarıları: e-posta adresiniz, hedef puan ve vize alt sınıfı.",
             "Hesaplar: Google ile giriş yaparsanız adınız, e-postanız ve profil resminiz; e-posta bağlantısı veya parola kullanırsanız e-postanız ve parola için onun özeti (hash). Panelinizde kaydettikleriniz ile belge kasasına veya Vize Yolculuğu sayfasına yüklediğiniz belgeler.",
-            "Teknik kayıtlar: IP adresiniz rapor taleplerinde, rehber taleplerinde ve asistan ziyaretçi kayıtlarında saklanır.",
+            "Teknik kayıtlar: rapor talepleri, rehber talepleri ve asistanın ziyaretçi kayıtları IP adresinizi saklamaz. Asistan, bir tarayıcıyı IP adresinin anahtarlı özetinden ve tarayıcı bilgilerinden tanır; bu takma adlıdır, anonim değildir. Kredi geri yükleme istekleri, hız sınırı için IP adresini tutar.",
             "Dahili puanlama: bir rapor talebindeki yanıtlardan dahili bir ilgi puanı ve seviyesi hesaplarız. Bu, kendi önceliklendirmemiz içindir ve göç danışmanlarına gösterilmez.",
           ],
         },
@@ -329,7 +339,17 @@ const TR: PrivacyCopy = {
       id: "retention",
       title: "Ne kadar süre saklıyoruz",
       blocks: [
-        { p: "Bilgileri, toplandıkları amaç için ihtiyaç duyduğumuz sürece, ödeme ve onay kayıtlarımız için ve yasanın gerektirdiği süre boyunca saklarız. Kayıtların çoğu için henüz sabit bir saklama süresi belirlemedik. Sitede yerleşik zaman sınırları:" },
+        { p: "Bilgileri, toplandıkları amaç için ihtiyaç duyduğumuz sürece ve yasanın gerektirdiği süre boyunca saklarız. Süre sınırları:" },
+        {
+          ul: [
+            "ödeme kayıtları: 5 yıl;",
+            "iletişim mesajları: 12 ay;",
+            "rehber indirmeleri ve rapor girdileri (rapor talepleri ve onlardan üretilen raporlar): 24 ay;",
+            "asistan verileri (ziyaretçi kayıtları, profil kartları, kredi geri yükleme istekleri ve belirteçleri): 90 gün. Kredi bakiyesi olan ya da bir e-posta adresine bağlı ziyaretçi kaydı, krediler durdukça saklanır.",
+          ],
+        },
+        { p: "Bu süreleri uygulayan otomatik temizlik hazırdır ancak henüz açılmamıştır." },
+        { p: "Sitede yerleşik zaman sınırları:" },
         {
           ul: [
             "e-posta ile giriş bağlantıları 10 dakika çalışır;",
@@ -360,11 +380,11 @@ const TR: PrivacyCopy = {
       id: "rights",
       title: "Haklarınız: erişim, düzeltme ve silme",
       blocks: [
-        { p: "Kullandığınız e-posta adresinden info@logivisa.com adresine yazın, ne istediğinizi belirtin; talebi biz yürütürüz. Bu talepleri elle işleriz." },
+        { p: "Kullandığınız e-posta adresinden info@logivisa.com adresine yazın ve ne istediğinizi belirtin. Talepleri 30 gün içinde yanıtlarız. Talepleri kendimiz işleriz; silme için elle çalıştırdığımız bir silme betiği kullanırız." },
         {
           ul: [
             "Erişim ve düzeltme: sizinle ilgili tuttuğumuz bilgilerin bir kopyasını veya bir düzeltmeyi isteyin.",
-            "Silme: bilgilerinizin silinmesini isteyin. Ödeme kayıtlarını ve aşağıda anlatılan ajan onay günlüğünü tutmamız gerekebilir.",
+            "Silme: bilgilerinizin silinmesini isteyin. Silme; raporlarınızı, indirmelerinizi, mesajlarınızı, uyarılarınızı, asistan profilinizi ve hesabınızı kaldırır. Ödeme kayıtlarını 5 yıllık süreleri dolana kadar ve aşağıda anlatılan ajan onay günlüğünü tutarız. Yüklediğiniz dosyalar depolamadan ayrıca kaldırılır.",
             "Ajan onay günlüğü: her kayıt, onay metnini ve sürümünü, tarihi, özetlenmiş bir IP adresini, tarayıcı bilgilerinizi, rapor referansını ve ajan referansını içerir. İçinde ad veya e-posta yoktur. Günlük yalnızca eklemelidir: kayıtlar düzenlenemez veya silinemez, geri çekme yeni bir kayıt ekler. Özetlenmiş IP adresi, IP adresinizden ve gizli bir değerden üretilen tek yönlü bir koddur.",
             "Kendi kendinize: panelinizden kayıtlı hesaplamaları, test sonuçlarını, vize takibini ve yolculukları silebilir, her uyarı e-postasındaki bağlantıyla puan uyarılarından çıkabilir, rapor e-postanızdaki bağlantıyla ajan onayını geri çekebilir ve analitik seçiminizi istediğiniz zaman değiştirebilirsiniz.",
           ],
@@ -420,11 +440,11 @@ const ZH: PrivacyCopy = {
             "免费指南和 PDF 下载：您的姓名、邮箱、您提供的电话号码，以及您接受条款的时间。",
             "联系表单：您的姓名、邮箱、电话号码和留言。",
             "付款：银行卡信息在 Stripe 付款页面输入，我们不保存。我们保存您的邮箱地址、金额、GST 金额和 Stripe 会话编号。账单地址由 Stripe 收集。",
-            "AI 助手：您输入的消息；您设备的 IP 地址和浏览器信息（user agent），我们用它们识别浏览器并执行免费消息次数限制；您的消息计数和积分余额；如果您填写快速资料卡或关联报告，还包括其中的答案。如果您恢复积分，则包括您的邮箱地址。",
+            "AI 助手：您输入的消息；您设备 IP 地址的密钥哈希值和浏览器信息（user agent），我们用它们识别浏览器并执行免费消息次数限制；您的消息计数和积分余额；如果您填写快速资料卡或关联报告，还包括其中的答案。如果您恢复积分，则包括您的邮箱地址。",
             "读取简历的职业工具：您粘贴的简历文本会发送给 OpenAI 以生成建议。我们不会把它保存到我们的数据库。",
             "分数提醒：您的邮箱地址、目标分数和签证子类。",
             "账户：如果您使用 Google 登录，则包括姓名、邮箱和头像；如果您使用邮件链接或密码，则包括邮箱，密码则保存其哈希值。您在个人面板中保存的内容，以及您上传到文件保管库或签证旅程页面的文件。",
-            "技术记录：您的 IP 地址会与报告请求、指南请求和助手访客记录一起保存。",
+            "技术记录：报告请求、指南请求和助手访客记录不保存您的 IP 地址。助手根据 IP 地址的密钥哈希值和浏览器信息识别浏览器；这是假名化的，并非匿名。积分恢复请求为限制频率而保留 IP 地址。",
             "内部评分：我们根据报告请求中的答案计算内部兴趣分数和等级。它仅用于我们自己的优先级排序，不会显示给移民代理。",
           ],
         },
@@ -508,7 +528,17 @@ const ZH: PrivacyCopy = {
       id: "retention",
       title: "保留多久",
       blocks: [
-        { p: "我们会在为收集目的所需的期间、为保存付款和同意记录以及法律要求的期间内保留信息。对大多数记录，我们尚未设定固定的保留期限。网站内置的时间限制：" },
+        { p: "我们会在为收集目的所需的期间以及法律要求的期间内保留信息。时间限制：" },
+        {
+          ul: [
+            "付款记录：5 年；",
+            "联系留言：12 个月；",
+            "指南下载和报告条目（报告请求及由其生成的报告）：24 个月；",
+            "助手数据（访客记录、资料卡、积分恢复请求和令牌）：90 天。持有积分余额或已关联邮箱地址的访客记录，在积分仍存在期间保留。",
+          ],
+        },
+        { p: "执行这些期限的自动清理已经开发完成，但尚未启用。" },
+        { p: "网站内置的时间限制：" },
         {
           ul: [
             "登录邮件链接 10 分钟内有效；",
@@ -539,11 +569,11 @@ const ZH: PrivacyCopy = {
       id: "rights",
       title: "您的权利：查阅、更正和删除",
       blocks: [
-        { p: "请用您使用的邮箱地址发送邮件至 info@logivisa.com，说明您的请求，我们会处理。这些请求由我们手动处理。" },
+        { p: "请用您使用的邮箱地址发送邮件至 info@logivisa.com，并说明您的请求。我们会在 30 天内答复请求。我们自行处理这些请求，删除时使用由我们手动运行的删除脚本。" },
         {
           ul: [
             "查阅与更正：要求获取我们持有的您的信息副本，或要求更正。",
-            "删除：要求我们删除您的信息。我们可能需要保留付款记录和下文所述的代理同意日志。",
+            "删除：要求我们删除您的信息。删除会移除您的报告、下载记录、留言、提醒、助手资料和账户。付款记录保留至其 5 年期限届满，下文所述的代理同意日志也会保留。您上传的文件会另行从存储中删除。",
             "代理同意日志：每条记录包含同意文本及版本、日期、哈希处理后的 IP 地址、您的浏览器信息、报告编号和代理编号，不包含姓名或邮箱。该日志只能追加：记录不可编辑或删除，撤回会新增一条记录。哈希处理后的 IP 地址是由您的 IP 地址和一个秘密值生成的单向代码。",
             "自助操作：您可以在个人面板中删除已保存的计算、测验结果、签证跟踪和旅程，通过每封提醒邮件中的链接退订分数提醒，通过报告邮件中的链接撤回代理同意，并随时更改您的分析选择。",
           ],

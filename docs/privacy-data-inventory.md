@@ -122,3 +122,32 @@ Analitik koşulları (`lib/analytics/policy.ts`): yalnızca üretim dağıtımı
 - Kodda kaldırılanlar: `loadPixel`/`fbq` yükleyicisi (`components/analytics/analytics-provider.tsx`), `META_PIXEL_ID` ve Pixel alanları (`lib/analytics/policy.ts`), onay penceresindeki Meta metni ve "reklam" seçeneği (`components/analytics/consent-banner.tsx`), satın alma çerçevesi (`public/analytics/purchase-frame.html`, `next.config.ts` başlığı, `purchase-client.ts`, `purchase-tracker.tsx`), yönetici QA sayfası metni, gizlilik politikasındaki Meta bölümleri ve `_fbp`/`_fbc` çerezleri.
 - Onay yapısı: `lv_consent_v1` artık `{v:1, analytics, ts}`. Daha önce saklanmış `marketing` alanlı seçimler okunmaya devam eder (alan yok sayılır). `lv_consent` çerezi `a` ya da `-` değeri taşır (eskiden `am`/`a-`/`-m`/`--`).
 - GA4 akışı: onay yokken yüklenmez, "Yalnızca gerekli olanlar" kapalı tutar, onay geri çekilince `_ga*` çerezleri silinir. Değişmedi.
+
+## 11. Üretim veritabanı salt-okunur kontrolü (6 Kasım 2026, düzeltmeler)
+
+Yalnızca `SELECT`, `READ ONLY` işlem içinde. `PROD_DATABASE_URL` kimlik doğrulamayı geçemedi; aynı sorgular `DATABASE_URL` ile (yine `READ ONLY` işlemde) çalıştı. Son 48 saatteki satır sayıları: `users` 0, `leads` 0, `user_reports` 0, `pdf_downloads` 0, `guide_downloads` 0, `contact_messages` 0, `chat_visitors` 5, `transactions` 0, `full_check_waitlist` 0, `referral_consents` **tablo yok**.
+
+Bu bölümün önceki bölümlere düzeltmeleri:
+- `referral_consents` tablosu canlıda **yok** (manuel migrasyon uygulanmamış). Kod "fail closed" çalışır: hiçbir ajan müşteri bilgisi göremez, rıza kutusu gösterilmez, onay günlüğü şu an hiçbir şey kaydetmez. Bölüm 5'teki "tetikleyici" bu yüzden şu an canlıda da yok.
+- `leads` ve `full_check_waitlist` tabloları canlıda **var** (`CLAUDE.md` yok diyordu).
+- `guide_downloads` tablosuna `app/[locale]/(main)/rehber/actions.ts` yazıyor (`/guide` ve `/rehber` formları). Bölüm 1 ve 8'deki "yazan kod bulunamadı" ifadesi yanlıştı.
+
+## 12. Ham IP, silme, saklama: bu dalda yapılanlar
+
+- **Ham IP artık yazılmıyor:** `user_reports` (rapor formu, rehber formu, PDF indirme), `guide_downloads`, `pdf_downloads` (NOT NULL olduğu için boş dize) ve `chat_visitors`. Şema değişmedi.
+- **Sohbet kimliği:** ziyaretçi eskiden IP+User-Agent ile tanınıyordu. IP yazılmadığı için tarayıcı artık `chat_visitors.fingerprint` (IP'nin `AUTH_SECRET` ile HMAC-SHA256 özeti, 32 karakter) + User-Agent ile tanınıyor (`lib/privacy/ip.ts`, `lib/visitor-tracking.ts`). Bu takma addır, anonim değildir. Eski satırlar (ham IP'li, fingerprint'siz) ilk istekte benimsenir: fingerprint yazılır, IP silinir; kredi bakiyesi korunur.
+- **Hız sınırı:** "her IP için her rehberden bir kopya" kuralı artık bellekte, sunucu örneği başına ve 24 saatlik (`createSeenSet`). Çok örnekli üretimde en iyi çaba düzeyindedir. E-posta başına kural (`/guide`: aynı e-posta tekrar indiremez) veritabanında sürüyor.
+- **Dokunulmayanlar:** `chat_restore_requests.ip_address` (kredi geri yükleme hız sınırı, saatte IP başına 10) ve `referral_consents.ip_hash`. Politika ilkini açıkça söylüyor.
+- **`scripts/null-raw-ip.ts`** mevcut ham IP'leri temizler (varsayılan kuru çalıştırma; `chat_visitors` için önce fingerprint yazar). **Çalıştırılmadı.**
+- **`scripts/delete-user-data.ts`** e-postayla silme (varsayılan kuru çalıştırma; her çalıştırma `logs/data-requests.jsonl` dosyasına e-posta yerine SHA-256 kısaltmasıyla yazılır, dosya git'te yok sayılır). Ödeme kayıtlarını, `chat_credit_purchases`'ı, `referral_consents`'ı, e-postasız `chat_visitors` satırlarını ve AGENT/ADMIN hesaplarını silmez; depolama kovasındaki dosya anahtarlarını silmek yerine listeler. **Çalıştırılmadı.**
+- **Saklama temizliği:** `lib/retention/run.ts` + `app/api/cron/retention/route.ts`, `vercel.json` içinde haftalık (`0 18 * * 0`). Süreler: ödeme kayıtları 5 yıl; iletişim mesajları 12 ay; rehber indirmeleri (`guide_downloads`, `pdf_downloads`) ve rapor girdileri (`user_reports`, `leads`, `full_check_waitlist`) 24 ay; sohbet (kredisiz ve e-postaya bağlı olmayan ziyaretçiler, profilleri, geri yükleme belirteç ve istekleri) 90 gün. **`RETENTION_DRY_RUN` tam olarak `false` olmadıkça yalnızca sayar.** Kredi bakiyesi olan ziyaretçiler silinmez (fiyat sayfası "krediler asla sona ermez" diyor). Üretimde silme açılmadı; dağıtım yapılırsa cron haftada bir yalnızca sayım yapıp günlüğe yazar.
+- **Çerezler:** `logivisa_ref` onaya bağlı değil ve politikada açıkça yazılı; `lv_report_session` zorunlu çerez olarak yazılı. Çerez onayı yalnızca Google Analytics'i yönetiyor.
+
+## 13. Ajan onay günlüğü: kişiye hangi alanla bağlanıyor (yalnızca bulgu, uygulama yok)
+
+`referral_consents` satırı şu alanları taşır: `report_id`, `agent_id`, `event`, rıza metni ve sürümü, `locale`, `ip_hash`, `user_agent` (en çok 300 karakter), `created_at`. Ad, e-posta ve telefon yoktur.
+
+- **Kişiye bağ:** yalnızca `report_id` üzerinden, o da `user_reports.id` (rastgele UUID). Kişiyi tanıtan alanlar (`full_name`, `email`, `phone`, `input_json`) `user_reports` satırındadır. `report_id` için veritabanında yabancı anahtar yoktur (tablo ham SQL ile oluşturulmuş).
+- **`user_reports` satırı silinirse** (`delete-user-data.ts` ya da 24 aylık temizlik): günlük satırları kalır, ama doğrudan bir kişiye bağlanamaz hâle gelir; elde yalnızca bir UUID, bir ajan kimliği, rıza metni, `ip_hash` ve user agent kalır. `ip_hash` anahtarlı bir özettir (`AUTH_SECRET`); gizli değeri bilen biri aday IP'leri deneyerek eşleştirebilir, bu yüzden "anonim" değil "kimliksiz" demek daha doğru.
+- **Kalan dış bağlar** (kodun dışında): Stripe oturum `metadata`'sında `reportId` ve e-posta (Stripe tarafında silinmez), Resend'in gönderim günlükleri (rapor bağlantısında `reportId` var), `transactions.lead_id` (satır silinince NULL olur), Neon'un geçmiş/yedek kayıtları ve `user_reports` silinmeden önce alınmış her yedek.
+- **Şu an:** tablo canlıda yok (bölüm 11), yani günlükte hiçbir satır bulunmuyor.

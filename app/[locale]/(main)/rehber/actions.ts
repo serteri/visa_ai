@@ -8,7 +8,9 @@ import { sendGuideDownloadEmails } from "@/lib/email/guide-download"
 import { getDictionary, Dictionary } from "@/lib/i18n/get-dictionary"
 import { Locale } from "@/lib/i18n/config"
 import { shouldSuppressReportEmails } from "@/lib/email/suppression"
+import { clientIpFromHeaders, createSeenSet, UNKNOWN_IP } from "@/lib/privacy/ip"
 
+const recentGuideIps = createSeenSet(24 * 60 * 60 * 1000)
 
 export async function submitDownloadForm(data: {
   firstName: string
@@ -19,7 +21,7 @@ export async function submitDownloadForm(data: {
   ipAddress?: string
 }) {
   const headersList = await headers()
-  const ipAddress = data.ipAddress || headersList.get("x-forwarded-for") || headersList.get("x-real-ip") || "unknown"
+  const ipAddress = data.ipAddress || clientIpFromHeaders(headersList)
   const dictionary = await getDictionary(data.locale)
 
   // 1. Check download count
@@ -42,17 +44,16 @@ export async function submitDownloadForm(data: {
     return { success: true, alreadyDownloaded: true }
   }
 
-  const existingByIp = await prisma.guideDownload.findFirst({
-    where: { ipAddress: ipAddress },
-  })
-  if (existingByIp) {
+  // The address is not stored; the one-download-per-address rule is a best-effort in-memory check (per server instance, forgotten after a day).
+  if (ipAddress !== UNKNOWN_IP && recentGuideIps.has(ipAddress)) {
     return { success: false, error: "ip_limit_reached" }
   }
 
   // 3. Save to DB
   await prisma.guideDownload.create({
-    data: { ...data, ipAddress },
+    data: { ...data, ipAddress: null },
   })
+  if (ipAddress !== UNKNOWN_IP) recentGuideIps.add(ipAddress)
 
   revalidateTag("public-guide-download-stats", "max")
 
@@ -118,7 +119,6 @@ export async function submitDownloadForm(data: {
       fullName: `${data.firstName} ${data.lastName}`,
       email: data.email,
       phone: data.phone,
-      ipAddress: ipAddress,
       locale: data.locale,
       source: "guide_download",
       reportJson: { guide: "Avustralya PR Rehberi 2026" }, // Placeholder

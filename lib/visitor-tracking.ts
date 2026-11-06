@@ -1,4 +1,5 @@
 import { prisma } from "@/lib/prisma";
+import { ipFingerprint, UNKNOWN_IP } from "@/lib/privacy/ip";
 import type { ChatVisitor } from "@prisma/client";
 
 function getClientIp(req: Request): string {
@@ -21,16 +22,28 @@ function getUserAgent(req: Request): string {
  * will be enforced against.
  */
 export async function getVisitorContext(req: Request): Promise<ChatVisitor> {
-  const ipAddress = getClientIp(req);
+  const ip = getClientIp(req);
   const userAgent = getUserAgent(req);
+  // The address itself is not stored: a keyed hash of it (lib/privacy/ip.ts) stands in, next to the browser details.
+  const fingerprint = ipFingerprint(ip);
 
   const existing = await prisma.chatVisitor.findFirst({
-    where: { ipAddress, userAgent },
+    where: { fingerprint, userAgent },
   });
 
   if (existing) return existing;
 
+  // A visitor row made before this change carries the raw address and no fingerprint: adopt it (keeps the credit balance) and drop the address.
+  if (ip !== UNKNOWN_IP) {
+    const legacy = await prisma.chatVisitor.findFirst({
+      where: { ipAddress: ip, userAgent, fingerprint: null },
+    });
+    if (legacy) {
+      return prisma.chatVisitor.update({ where: { id: legacy.id }, data: { fingerprint, ipAddress: null } });
+    }
+  }
+
   return prisma.chatVisitor.create({
-    data: { ipAddress, userAgent },
+    data: { fingerprint, userAgent },
   });
 }

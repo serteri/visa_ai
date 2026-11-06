@@ -6,6 +6,7 @@ import { eq, and, inArray, notInArray, count } from "drizzle-orm";
 import { PDF_SLUGS, PDF_LEAD_CATEGORY, type PdfProduct, sendPdfDeliveryEmail, sendPdfLeadAdminEmail } from "@/lib/email/pdf-delivery";
 import { shouldSkipInternalNotification, shouldSuppressReportEmails } from "@/lib/email/suppression";
 import { prisma } from "@/lib/prisma";
+import { clientIpFromHeaders, createSeenSet, UNKNOWN_IP } from "@/lib/privacy/ip";
 import { PDF_LEAD_SOURCE, marketForSlug } from "@/lib/crm/pdf-lead-sources";
 import { FREE_LIMIT as HANDLER_FREE_LIMIT, handlePdfDownload } from "@/lib/pdf-download/handle";
 
@@ -56,12 +57,13 @@ function resolveSlug(value: string | null): string {
 }
 
 function getClientIp(req: NextRequest): string {
-  return (
-    req.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ||
-    req.headers.get("x-real-ip") ||
-    "unknown"
-  );
+  return clientIpFromHeaders(req.headers);
 }
+
+// The address is not stored (pdf_downloads.ip_address gets an empty string: the column is NOT NULL). "One copy of each guide per address" is a best-effort
+// in-memory check: per server instance, forgotten after a day.
+const recentDownloads = createSeenSet(24 * 60 * 60 * 1000);
+const downloadKey = (ip: string, slug: string) => `${ip}|${slug}`;
 
 // Counts real (non-admin/test) downloads across both guides. The public
 // "free slots left" counter must never be depleted by internal testing.
@@ -89,15 +91,8 @@ export async function GET(req: NextRequest) {
     const freeRemaining = Math.max(0, FREE_LIMIT - totalDownloads);
     const isFree = totalDownloads < FREE_LIMIT;
 
-    // Per-slug dedup: a visitor can grab each guide once, not just one guide ever.
-    const [ipRow] = await db
-      .select({ value: count() })
-      .from(pdfDownloads)
-      .where(
-        and(eq(pdfDownloads.ip_address, ip), eq(pdfDownloads.pdf_slug, slug))
-      );
-
-    const alreadyDownloaded = Number(ipRow?.value ?? 0) > 0;
+    // Per-slug dedup: a visitor can grab each guide once, not just one guide ever (best effort, in memory).
+    const alreadyDownloaded = ip !== UNKNOWN_IP && recentDownloads.has(downloadKey(ip, slug));
 
     return Response.json({
       isFree,
@@ -121,20 +116,19 @@ export async function POST(req: NextRequest) {
       { body, ip },
       {
         isExcludedEmail,
-        countByIpAndSlug: async (ipAddress, slug) => {
-          const [row] = await db.select({ value: count() }).from(pdfDownloads).where(and(eq(pdfDownloads.ip_address, ipAddress), eq(pdfDownloads.pdf_slug, slug)));
-          return Number(row?.value ?? 0);
-        },
+        countByIpAndSlug: async (ipAddress, slug) => (ipAddress !== UNKNOWN_IP && recentDownloads.has(downloadKey(ipAddress, slug)) ? 1 : 0),
         countRealTotal: countRealTotalDownloads,
         insertLedgerRow: async (row) => {
           const [saved] = await db
             .insert(pdfDownloads)
-            .values({ full_name: row.full_name, email: row.email, phone: row.phone, ip_address: row.ip, pdf_slug: row.slug, is_paid: false, terms_accepted_at: row.termsAt })
+            .values({ full_name: row.full_name, email: row.email, phone: row.phone, ip_address: "", pdf_slug: row.slug, is_paid: false, terms_accepted_at: row.termsAt })
             .returning({ id: pdfDownloads.id });
           revalidateTag("public-guide-download-stats", "max");
+          if (saved?.id && row.ip !== UNKNOWN_IP) recentDownloads.add(downloadKey(row.ip, row.slug), saved.id);
           return saved?.id;
         },
         deleteLedgerRow: async (id) => {
+          recentDownloads.removeById(id);
           await db.delete(pdfDownloads).where(eq(pdfDownloads.id, id)).catch((err) => console.error("[pdf-download] could not release the ledger row:", err));
           revalidateTag("public-guide-download-stats", "max");
         },
@@ -155,7 +149,6 @@ export async function POST(req: NextRequest) {
                     isUnlocked: true,
                     reportJson: {},
                     inputJson: {},
-                    ipAddress: t.ip,
                   },
                 })
                 .catch((err) => console.error("[pdf-download] CRM lead creation failed (non-blocking):", err)),

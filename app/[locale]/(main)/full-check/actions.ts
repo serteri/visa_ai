@@ -666,8 +666,8 @@ export async function submitFullCheckWaitlist(
   // from the same IP within 24 hours mainly punished legitimate paying
   // customers (a household submitting for multiple family members, or
   // retrying after a mistake) rather than free-tier abuse, which is no
-  // longer the threat model. ip_address is still recorded on the report
-  // below for analytics/support purposes.
+  // longer the threat model. The address is no longer stored on the report;
+  // it is only hashed (with the agent consent record) when that is granted.
   const clientIp = await getClientIp();
 
   const leadQuality = buildLeadQuality({
@@ -864,7 +864,6 @@ export async function submitFullCheckWaitlist(
     leadTier: leadQuality.leadTier,
     pointsTier: internalLeadTier,
     report: generatedReport,
-    ipAddress: clientIp !== "unknown" ? clientIp : undefined,
     input: readinessInputForReport,
     // Affiliate/referral auto-assignment: skips the manual pool entirely
     // when a valid agent ?ref= cookie is present.
